@@ -1,6 +1,5 @@
 package com.zdonnell.eve.api;
 
-import com.zdonnell.eve.APICredentials;
 
 public class APIObject {
 	

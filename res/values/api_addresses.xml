@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Account -->
+    <string name="account_characters">/account/Characters.xml.aspx</string>
+    
+</resources>

@@ -2,7 +2,9 @@ package com.zdonnell.eve.api.account;
 
 import java.util.ArrayList;
 
-import com.zdonnell.eve.APICredentials;
+import android.R;
+
+import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.AccountDB;
 import com.zdonnell.eve.api.CachedTimeDB;
@@ -10,9 +12,11 @@ import com.zdonnell.eve.api.CachedTimeDB;
 public class Account extends APIObject {
 
 	CachedTimeDB cacheDB;
+	
 	AccountDB accountDB;
 	
-	public Account(int keyID, String verificationCode) {
+	public Account(int keyID, String verificationCode) 
+	{
 		super.setCredentials(new APICredentials(keyID, verificationCode));
 	}
 	
@@ -21,15 +25,16 @@ public class Account extends APIObject {
 	 * 
 	 * @return An Array list of {@link Character} objects
 	 */
-	public ArrayList<Character> characters() {
-		final String URL = "/account/Characters.xml.aspx";
+	public ArrayList<Character> characters() 
+	{	
+		final String URL = CharactersReqeust.URL; /* TODO Replace with string asset R.string.account_characters */
 		
 		boolean isCached = cacheDB.isCached(URL, credentials.keyID);
 
 		if (isCached) return accountDB.characters(credentials);
 		else 
 		{			
-			CharactersReqeust request = new CharactersReqeust();
+			CharactersReqeust request = new CharactersReqeust(credentials);
 			ArrayList<Character> characters = request.get();
 			
 			cacheDB.setCachedUntil(URL, credentials.keyID, request.cachedTime());
