@@ -2,8 +2,6 @@ package com.zdonnell.eve.api.account;
 
 import java.util.ArrayList;
 
-import android.R;
-
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.AccountDB;
@@ -27,7 +25,7 @@ public class Account extends APIObject {
 	 */
 	public ArrayList<Character> characters() 
 	{	
-		final String URL = CharactersReqeust.URL; /* TODO Replace with string asset R.string.account_characters */
+		final String URL = CharactersReqeust.URL;
 		
 		boolean isCached = cacheDB.isCached(URL, credentials.keyID);
 

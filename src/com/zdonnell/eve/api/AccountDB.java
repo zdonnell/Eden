@@ -1,5 +1,9 @@
 package com.zdonnell.eve.api;
 
+import java.util.ArrayList;
+
+import com.zdonnell.eve.api.account.Character;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -61,5 +65,10 @@ public class AccountDB {
 		{
 			
 		}
+	}
+
+	public ArrayList<Character> characters(APICredentials credentials) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

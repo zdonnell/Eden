@@ -38,6 +38,11 @@ public abstract class BaseRequest {
 	
 	private DocumentBuilder domBuilder;
 	
+	/**
+	 * @param url the full URL of the resource requested
+	 * @param postData A List of {@link NameValuePair} to be sent as POST Data
+	 * @return a String representation of the response
+	 */
 	protected String makeHTTPRequest(String url, List<NameValuePair> postData)
 	{
 		HttpClient httpclient = new DefaultHttpClient();
@@ -62,6 +67,10 @@ public abstract class BaseRequest {
 		return rawResponse;
 	}
 	
+	/**
+	 * @param xmlString a string that contains valid xml document markup
+	 * @return a {@link Document} assembled from the xmlString
+	 */
 	protected Document buildDocument(String xmlString)
 	{
 		factory = DocumentBuilderFactory.newInstance();
@@ -81,6 +90,9 @@ public abstract class BaseRequest {
 		return xmlDoc;
 	}
 	
+	/**
+	 * @return the time that the resource is cached until
+	 */
 	public String cachedTime() 
 	{
 		return cachedTime;
