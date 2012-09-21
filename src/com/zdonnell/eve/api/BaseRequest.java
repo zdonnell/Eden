@@ -22,6 +22,8 @@ import org.w3c.dom.Document;
 
 public abstract class BaseRequest {
 	
+	public final static String baseURL = "https://api.eveonline.com/";
+	
 	protected APICredentials credentials;
 	
 	protected int actorID;
@@ -30,7 +32,7 @@ public abstract class BaseRequest {
 	 * the time that the resource is cached until, based on the last successful
 	 * request
 	 */
-	private String cachedTime;
+	protected String cachedTime;
 	
 	private Document xmlDoc = null;
 	
@@ -43,10 +45,10 @@ public abstract class BaseRequest {
 	 * @param postData A List of {@link NameValuePair} to be sent as POST Data
 	 * @return a String representation of the response
 	 */
-	protected String makeHTTPRequest(String url, List<NameValuePair> postData)
+	protected String makeHTTPRequest(String resURL, List<NameValuePair> postData)
 	{
 		HttpClient httpclient = new DefaultHttpClient();
-		HttpPost httppost = new HttpPost(url);
+		HttpPost httppost = new HttpPost(baseURL + resURL);
 		
 		String rawResponse = null;
 		

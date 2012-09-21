@@ -10,6 +10,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.util.Log;
+
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.BaseRequest;
 
@@ -37,7 +39,7 @@ public class CharactersReqeust extends BaseRequest
 	 * 
 	 * @return an ArrayList of characters found on the account
 	 */
-	public ArrayList<Character> get()
+	public ArrayList<EveCharacter> get()
 	{
 		List<NameValuePair> POSTData = new ArrayList<NameValuePair>(2);
 		POSTData.add(new BasicNameValuePair("keyID", String.valueOf(credentials.keyID)));
@@ -49,15 +51,14 @@ public class CharactersReqeust extends BaseRequest
 		Document responseDoc = super.buildDocument(rawResponse);
 		
 		/* Get the nodes for each character */
-		Node rowset = responseDoc.getElementsByTagName("rowset").item(0);
-		NodeList charNodes = rowset.getChildNodes();
+		NodeList rows = responseDoc.getElementsByTagName("row");
 		
-		ArrayList<Character> characters = new ArrayList<Character>();
+		ArrayList<EveCharacter> characters = new ArrayList<EveCharacter>();
 		
 		/* Loop through the nodes and build character objects to add to the return ArrayList */
-		for (int x = 0; x < charNodes.getLength(); x++)
+		for (int x = 0; x < rows.getLength(); x++)
 		{
-			Node charNode = charNodes.item(x);
+			Node charNode = rows.item(x);
 			NamedNodeMap attributes = charNode.getAttributes();
 			
 			String name = attributes.getNamedItem("name").getTextContent();
@@ -65,8 +66,10 @@ public class CharactersReqeust extends BaseRequest
 			String charID = attributes.getNamedItem("characterID").getTextContent();
 			String corpID = attributes.getNamedItem("corporationID").getTextContent();
 			
-			characters.add(new Character(name, Integer.parseInt(charID), corpName, Integer.parseInt(corpID)));
+			characters.add(new EveCharacter(name, Integer.parseInt(charID), corpName, Integer.parseInt(corpID)));
 		}
+		
+		cachedTime = responseDoc.getElementsByTagName("cachedUntil").item(0).getTextContent();
 		
 		return characters;
 	}

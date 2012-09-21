@@ -2,7 +2,7 @@ package com.zdonnell.eve.api;
 
 import java.util.ArrayList;
 
-import com.zdonnell.eve.api.account.Character;
+import com.zdonnell.eve.api.account.EveCharacter;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -53,7 +53,7 @@ public class AccountDB {
 										TABLE_ID + " integer primary key autoincrement not null," +
 										TABLE_RESULT_URL + " text," +
 										TABLE_UNIQUE + " text," +
-										TABLE_EXPIRE + " integer," +
+										TABLE_EXPIRE + " integer" +
 										");";
 
 			db.execSQL(newTableQueryString);
@@ -67,7 +67,7 @@ public class AccountDB {
 		}
 	}
 
-	public ArrayList<Character> characters(APICredentials credentials) {
+	public ArrayList<EveCharacter> characters(APICredentials credentials) {
 		// TODO Auto-generated method stub
 		return null;
 	}

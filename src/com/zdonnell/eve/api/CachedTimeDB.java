@@ -111,7 +111,7 @@ public class CachedTimeDB {
 										TABLE_ID + " integer primary key autoincrement not null," +
 										TABLE_RESULT_URL + " text," +
 										TABLE_ACTOR_ID + " integer," +
-										TABLE_EXPIRE + " integer," +
+										TABLE_EXPIRE + " integer" +
 										");";
 
 			db.execSQL(newTableQueryString);

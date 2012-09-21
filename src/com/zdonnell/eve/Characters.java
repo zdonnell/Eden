@@ -1,19 +1,16 @@
 package com.zdonnell.eve;
 
-import java.util.List;
-import java.util.Map;
+import java.net.URL;
+import java.util.ArrayList;
 
 import android.app.Activity;
-import android.content.Context;
-import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.GridView;
-import android.widget.SimpleAdapter;
+
+import com.zdonnell.eve.api.account.Account;
+import com.zdonnell.eve.api.account.EveCharacter;
 
 public class Characters extends Activity {
 
@@ -23,7 +20,9 @@ public class Characters extends Activity {
         setContentView(R.layout.activity_main);
         
         GridView characterGrid = (GridView) findViewById(R.id.charGrid);
-        characterGrid.setAdapter(new CharacterAdapter(this, null, 0));
+        
+        Account slick50zd1 = new Account(892477, "vuywVBKCvhIuYT8xx1dx1YljvxFUj6x8JRrKkVNqGkbROXwchQb3eTrI3rC92u0s", this);
+        new GetCharacters().execute(slick50zd1);
     }
 
     @Override
@@ -37,26 +36,16 @@ public class Characters extends Activity {
      * @author Zach
      *
      */
-    private class CharacterAdapter extends CursorAdapter {
+    private class GetCharacters extends AsyncTask<Account, Integer, ArrayList<EveCharacter>>
+    {    
+    	protected ArrayList<EveCharacter> doInBackground(Account... accounts) 
+    	{
+            return accounts[0].characters();
+        }
 
-		public CharacterAdapter(Context context, Cursor c, int flags) {
-			super(context, c, flags);
-			// TODO Auto-generated constructor stub
-		}
-
-		@Override
-		public void bindView(View view, Context context, Cursor cursor) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public View newView(Context context, Cursor cursor, ViewGroup parent) {
-			LayoutInflater inflater = LayoutInflater.from(context);
-			View v = inflater.inflate(R.layout.char_list_item, parent, false);
-			bindView(v, context, cursor);
-			return v;
-		}
-
+        protected void onPostExecute(ArrayList<Character> characters) 
+        {
+            // TODO stuff
+        }
     }
 }

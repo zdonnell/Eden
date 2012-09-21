@@ -2,6 +2,8 @@ package com.zdonnell.eve.api.account;
 
 import java.util.ArrayList;
 
+import android.content.Context;
+
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.AccountDB;
@@ -13,17 +15,20 @@ public class Account extends APIObject {
 	
 	AccountDB accountDB;
 	
-	public Account(int keyID, String verificationCode) 
+	public Account(int keyID, String verificationCode, Context context) 
 	{
 		super.setCredentials(new APICredentials(keyID, verificationCode));
+		
+		cacheDB = new CachedTimeDB(context);
+		accountDB = new AccountDB(context);
 	}
 	
 	/**
 	 * Get the list of characters for the current account
 	 * 
-	 * @return An Array list of {@link Character} objects
+	 * @return An Array list of {@link EveCharacter} objects
 	 */
-	public ArrayList<Character> characters() 
+	public ArrayList<EveCharacter> characters() 
 	{	
 		final String URL = CharactersReqeust.URL;
 		
@@ -33,7 +38,7 @@ public class Account extends APIObject {
 		else 
 		{			
 			CharactersReqeust request = new CharactersReqeust(credentials);
-			ArrayList<Character> characters = request.get();
+			ArrayList<EveCharacter> characters = request.get();
 			
 			cacheDB.setCachedUntil(URL, credentials.keyID, request.cachedTime());
 			
