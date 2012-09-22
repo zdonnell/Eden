@@ -4,31 +4,32 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="16"
-        android:targetSdkVersion="15" />
+        android:minSdkVersion="13"
+        android:targetSdkVersion="16" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity
-            android:name=".MainDualActivity"
-            android:label="@string/title_activity_main_dual"
-            android:uiOptions="splitActionBarWhenNarrow" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".AddAccount"
             android:label="@string/title_activity_add_account" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zdonnell.eve.MainDualActivity" />
+        </activity>
+        <activity
+            android:name=".MainStripActivity"
+            android:label="@string/title_activity_main_strip" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

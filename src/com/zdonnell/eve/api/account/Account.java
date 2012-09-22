@@ -12,38 +12,36 @@ import com.zdonnell.eve.api.CachedTimeDB;
 public class Account extends APIObject {
 
 	CachedTimeDB cacheDB;
-	
+
 	AccountDB accountDB;
-	
-	public Account(int keyID, String verificationCode, Context context) 
-	{
+
+	public Account(int keyID, String verificationCode, Context context) {
 		super.setCredentials(new APICredentials(keyID, verificationCode));
-		
+
 		cacheDB = new CachedTimeDB(context);
 		accountDB = new AccountDB(context);
 	}
-	
+
 	/**
 	 * Get the list of characters for the current account
 	 * 
 	 * @return An Array list of {@link EveCharacter} objects
 	 */
-	public ArrayList<EveCharacter> characters() 
-	{	
+	public ArrayList<EveCharacter> characters() {
 		final String URL = CharactersReqeust.URL;
-		
+
 		boolean isCached = cacheDB.isCached(URL, credentials.keyID);
 
-		if (isCached) return accountDB.characters(credentials);
-		else 
-		{			
+		if (isCached)
+			return accountDB.characters(credentials);
+		else {
 			CharactersReqeust request = new CharactersReqeust(credentials);
 			ArrayList<EveCharacter> characters = request.get();
-			
+
 			cacheDB.setCachedUntil(URL, credentials.keyID, request.cachedTime());
-			
+
 			return characters;
 		}
 	}
-	
+
 }

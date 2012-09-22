@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="360px"
+    android:layout_height="360px"
+    android:orientation="vertical" >
+    
+	<ImageView 
+	    android:id="@+id/char_image"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:padding="2dip"/>
+	<ImageView
+	    android:src="@drawable/alphabg"
+	    android:scaleType="fitXY"
+	    android:id="@+id/tile_text_bg"
+        android:layout_alignParentBottom="true"
+	    android:layout_width="fill_parent"
+	    android:layout_height="40dip" >
+	</ImageView>
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+	    android:layout_width="fill_parent"
+	    android:layout_height="40dip"
+	    android:paddingLeft="6dip"
+	    android:orientation="vertical" >
+    
+		<TextView 
+		    android:id="@+id/char_tile_name"
+		    android:text="Character Name"
+		    android:textStyle="bold"
+		    android:textColor="#DDD"
+		    android:textSize="16dp"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:padding="2dip"/>
+		<TextView 
+		    android:id="@+id/char_tile_training"
+		    android:text="Currently Training: Skill V"
+		    android:textColor="#CCC"
+		    android:textSize="12dp"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:padding="2dip"
+		    android:layout_marginTop="-8dip"/>
+    
+	</LinearLayout>
+</RelativeLayout>
