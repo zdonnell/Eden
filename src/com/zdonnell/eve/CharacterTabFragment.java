@@ -21,21 +21,24 @@ import com.zdonnell.eve.api.account.EveCharacter;
 
 public class CharacterTabFragment extends Fragment {
 
+	public final static int COLUMNS = 2;
+	
 	private CharacterDB charDB;
 	
-	private PortraitService portraitService;
+	private ImageService imageService;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		charDB = new CharacterDB(inflater.getContext());
-		portraitService = new PortraitService(inflater.getContext());
+		imageService = new ImageService(inflater.getContext());
 
 		Account slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", inflater.getContext());
 		//new GetCharacters().execute(slick50zd1);
 
 		View main = (View) inflater.inflate(R.layout.character_fragment, container, false);
 		GridView charGrid = (GridView) main.findViewById(R.id.charGrid);
+		charGrid.setNumColumns(COLUMNS);
 
 		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
 
@@ -69,19 +72,17 @@ public class CharacterTabFragment extends Fragment {
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) 
 		{
-			Log.d("TESTTEST", "BINDING");
-
 			ImageView portrait = (ImageView) view.findViewById(R.id.char_image);
-			portraitService.setPortrait(portrait, cursor.getInt(2));
+			imageService.setPortrait(portrait, cursor.getInt(2), ImageService.CHAR);
+			
+			ImageView corpLogo = (ImageView) view.findViewById(R.id.corp_image);
+			imageService.setPortrait(corpLogo, cursor.getInt(4), ImageService.CORP);
 			
 			TextView charName = (TextView) view.findViewById(R.id.char_tile_name);
 			charName.setText(cursor.getString(1));
 			
 			TextView corpName = (TextView) view.findViewById(R.id.char_tile_training);
 			corpName.setText(cursor.getString(3));
-			
-			View textBG = view.findViewById(R.id.tile_text_bg);
-			//textBG.setAlpha(0.65f);
 		}
 
 		@Override
@@ -89,6 +90,7 @@ public class CharacterTabFragment extends Fragment {
 		{
 			LayoutInflater inflater = LayoutInflater.from(context);
 			View v = inflater.inflate(R.layout.character_tile, parent, false);
+			v.setLayoutParams(new ViewGroup.LayoutParams(parent.getWidth()/COLUMNS, parent.getWidth()/COLUMNS));
 			bindView(v, context, cursor);
 			return v;
 		}
