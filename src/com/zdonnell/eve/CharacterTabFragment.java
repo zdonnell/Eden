@@ -3,6 +3,7 @@ package com.zdonnell.eve;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,10 +27,14 @@ public class CharacterTabFragment extends Fragment {
 	private CharacterDB charDB;
 	
 	private ImageService imageService;
+	
+	private Context context;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+		context = inflater.getContext();
+		
 		charDB = new CharacterDB(inflater.getContext());
 		imageService = new ImageService(inflater.getContext());
 
@@ -70,7 +75,7 @@ public class CharacterTabFragment extends Fragment {
 		}
 
 		@Override
-		public void bindView(View view, Context context, Cursor cursor) 
+		public void bindView(View view, final Context context, Cursor cursor) 
 		{
 			ImageView portrait = (ImageView) view.findViewById(R.id.char_image);
 			imageService.setPortrait(portrait, cursor.getInt(2), ImageService.CHAR);
@@ -83,6 +88,15 @@ public class CharacterTabFragment extends Fragment {
 			
 			TextView corpName = (TextView) view.findViewById(R.id.char_tile_training);
 			corpName.setText(cursor.getString(3));
+			
+			view.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Intent intent = new Intent(context, SheetItemListActivity.class);
+	            	 startActivity(intent);
+				}
+			});
 		}
 
 		@Override

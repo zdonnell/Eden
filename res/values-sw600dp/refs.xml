@@ -1,0 +1,3 @@
+<resources>
+    <item type="layout" name="activity_sheetitem_list">@layout/activity_sheetitem_twopane</item>
+</resources>

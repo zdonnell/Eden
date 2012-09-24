@@ -11,10 +11,11 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:theme="@style/Theme.yelloworange"
-        android:uiOptions="splitActionBarWhenNarrow"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+        android:logo="@drawable/eden_logo"
+        android:theme="@style/Theme.yelloworange"
+        android:uiOptions="splitActionBarWhenNarrow" >
         <activity
             android:name=".AddAccount"
             android:label="@string/title_activity_add_account" >
@@ -30,6 +31,20 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".SheetItemListActivity"
+            android:label="@string/title_sheetitem_list" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.zdonnell.eve.MainStripActivity" />
+        </activity>
+        <activity
+            android:name=".SheetItemDetailActivity"
+            android:label="@string/title_sheetitem_detail" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".SheetItemListActivity" />
         </activity>
     </application>
 

@@ -1,14 +1,20 @@
 package com.zdonnell.eve;
 
+import java.text.NumberFormat;
+
 import android.app.ActionBar;
-import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.Html;
 import android.view.Menu;
+import android.widget.TextView;
+
+import com.zdonnell.eve.api.server.Server;
 
 public class MainStripActivity extends FragmentActivity {
 
@@ -26,7 +32,8 @@ public class MainStripActivity extends FragmentActivity {
     ViewPager mViewPager;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) 
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_strip);
         // Create the adapter that will return a fragment for each of the three primary sections
@@ -34,6 +41,13 @@ public class MainStripActivity extends FragmentActivity {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         ActionBar aBar = getActionBar();
+        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        aBar.setDisplayShowTitleEnabled(false);
+       
+        /* Load in the TQ status info to the actionBar */
+        aBar.setCustomView(R.layout.tq_status);
+        TextView ServerStatus = (TextView) findViewById(R.id.server_status);
+        new SyncStatus().execute(ServerStatus);
         
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -47,21 +61,17 @@ public class MainStripActivity extends FragmentActivity {
         return true;
     }
 
-    
-
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary
      * sections of the app.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
+        public SectionsPagerAdapter(FragmentManager fm) { super(fm); }
 
         @Override
-        public Fragment getItem(int i) {
+        public Fragment getItem(int i) 
+        {
         	Fragment fragment = new CharacterTabFragment();
 			return fragment;
         }
@@ -72,12 +82,44 @@ public class MainStripActivity extends FragmentActivity {
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
+        public CharSequence getPageTitle(int position) 
+        {
+            switch (position) 
+            {
                 case 0: return getString(R.string.title_characters).toUpperCase();
                 case 1: return getString(R.string.title_corporations).toUpperCase();
             }
             return null;
         }
     }
+    
+    private class SyncStatus extends AsyncTask<TextView, Integer, String[]> 
+	{	
+		TextView serverStatus;
+		
+		protected String[] doInBackground(TextView... views) 
+		{ 			
+			serverStatus = views[0];
+			
+			Server server = new Server();
+			
+			return server.status(); 
+		}
+
+		protected void onPostExecute(String[] status) 
+		{
+			String onlineOffline;
+			
+			if (status[0].equals("True")) 
+			{
+				NumberFormat nf = NumberFormat.getInstance();
+				serverStatus.setText(Html.fromHtml("<B><FONT COLOR='#669900'>ONLINE</FONT></B> " + nf.format(Integer.parseInt(status[1]))));
+			}
+			else
+			{
+				serverStatus.setText("<B><FONT COLOR='#CC0000'>OFFLINE</FONT></B>");
+			}
+			
+		}
+	}
 }

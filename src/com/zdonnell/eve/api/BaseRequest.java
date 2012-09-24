@@ -46,19 +46,20 @@ public abstract class BaseRequest {
 	 *            A List of {@link NameValuePair} to be sent as POST Data
 	 * @return a String representation of the response
 	 */
-	protected String makeHTTPRequest(String resURL, List<NameValuePair> postData) {
+	protected String makeHTTPRequest(String resURL, List<NameValuePair> postData) 
+	{
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost(baseURL + resURL);
 
 		String rawResponse = null;
 
-		try {
+		try 
+		{
 			httppost.setEntity(new UrlEncodedFormEntity(postData));
 			HttpResponse response = httpclient.execute(httppost);
 			HttpEntity returnEntity = response.getEntity();
 
-			if (returnEntity != null)
-				rawResponse = EntityUtils.toString(returnEntity);
+			if (returnEntity != null) rawResponse = EntityUtils.toString(returnEntity);
 
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
@@ -74,14 +75,15 @@ public abstract class BaseRequest {
 	 *            a string that contains valid xml document markup
 	 * @return a {@link Document} assembled from the xmlString
 	 */
-	protected Document buildDocument(String xmlString) {
+	protected Document buildDocument(String xmlString) 
+	{
 		factory = DocumentBuilderFactory.newInstance();
 
-		try {
+		try 
+		{
 			domBuilder = factory.newDocumentBuilder();
 
-			InputStream responseStream = new ByteArrayInputStream(
-					xmlString.getBytes());
+			InputStream responseStream = new ByteArrayInputStream(xmlString.getBytes());
 			xmlDoc = domBuilder.parse(responseStream);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -93,7 +95,8 @@ public abstract class BaseRequest {
 	/**
 	 * @return the time that the resource is cached until
 	 */
-	public String cachedTime() {
+	public String cachedTime() 
+	{
 		return cachedTime;
 	}
 }
