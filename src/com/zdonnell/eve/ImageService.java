@@ -24,13 +24,37 @@ import android.widget.ImageView;
  */
 public class ImageService {
 
+	final static String baseImageURL = "https://image.eveonline.com/";
+	
 	public final static int CHAR = 0;
 	public final static int CORP = 1;
 	
-	final static String baseImageURL = "https://image.eveonline.com/";
-
-	final static int CHAR_DIMENSION = 512;
-	final static int CORP_DIMENSION = 128;
+	/**
+	 * Dimensions to save the the portraits / corp logos at
+	 */
+	public static int[] dimensions = new int[2];
+	
+	/**
+	 * Extension for the images provided by the Eve Online Image server
+	 */
+	public static String[] imageExtensions = new String[2];
+	
+	/**
+	 * subURL of the image path
+	 */
+	public static String[] subURLs = new String[2];
+	
+	static {
+		/* Static initialization of type specific value arrays */
+		dimensions[CHAR] = 512;
+		dimensions[CORP] = 128;
+		
+		imageExtensions[CHAR] = ".jpg";
+		imageExtensions[CORP] = ".png";
+		
+		subURLs[CHAR] = "Characters/";
+		subURLs[CORP] = "Corporations/";
+	}
 	
 	/**
 	 * Hashmap to store loaded images in memory
@@ -86,12 +110,8 @@ public class ImageService {
 			/* The image isn't stored anywhere, download it */
 			else 
 			{
-				String midURL = (type == 0) ? "Character/" : "Corporation/";
-				int dimension = (type == 0) ? CHAR_DIMENSION : CORP_DIMENSION;
-				String extension = (type == 0) ? ".jpg" : ".png";
-				
 				/* Assemble the proper image URL */
-				String imageURL = baseImageURL + midURL + actorID + "_" + dimension + extension;
+				String imageURL = baseImageURL + subURLs[type] + actorID + "_" + dimensions[type] + imageExtensions[type];
 	
 				DownloadImageTask getImage = new DownloadImageTask(view, actorID);
 				getImage.execute(imageURL);
