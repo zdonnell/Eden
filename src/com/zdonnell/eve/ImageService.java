@@ -144,7 +144,8 @@ public class ImageService {
 	 * @author Zach
 	 *
 	 */
-	private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+	private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> 
+	{
 		ImageView bmImage;
 		int actorID;
 
