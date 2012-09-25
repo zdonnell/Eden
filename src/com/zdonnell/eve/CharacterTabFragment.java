@@ -2,17 +2,20 @@ package com.zdonnell.eve;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,7 +25,7 @@ import com.zdonnell.eve.api.account.EveCharacter;
 
 public class CharacterTabFragment extends Fragment {
 
-	public final static int COLUMNS = 2;
+	private int columns;
 	
 	private CharacterDB charDB;
 	
@@ -35,16 +38,19 @@ public class CharacterTabFragment extends Fragment {
 
 		context = inflater.getContext();
 		
-		charDB = new CharacterDB(inflater.getContext());
-		imageService = new ImageService(inflater.getContext());
+		charDB = new CharacterDB(context);
+		imageService = new ImageService(context);
 
-		Account slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", inflater.getContext());
+		Account slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", context);
 		//new GetCharacters().execute(slick50zd1);
-
+		
 		View main = (View) inflater.inflate(R.layout.character_fragment, container, false);
 		GridView charGrid = (GridView) main.findViewById(R.id.charGrid);
-		charGrid.setNumColumns(COLUMNS);
-
+		
+		columns = calcColumns((Activity) context);
+		
+		charGrid.setNumColumns(columns);
+		
 		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
 
 		return main;
@@ -104,9 +110,30 @@ public class CharacterTabFragment extends Fragment {
 		{
 			LayoutInflater inflater = LayoutInflater.from(context);
 			View v = inflater.inflate(R.layout.character_tile, parent, false);
-			v.setLayoutParams(new ViewGroup.LayoutParams(parent.getWidth()/COLUMNS, parent.getWidth()/COLUMNS));
+
+			v.setLayoutParams(new AbsListView.LayoutParams(parent.getWidth()/columns, parent.getWidth()/columns));
+
 			bindView(v, context, cursor);
 			return v;
 		}
+	}
+	
+	private int calcColumns(Activity context) 
+	{	
+		Point screenDimensions = new Point(0, 0);
+		context.getWindowManager().getDefaultDisplay().getSize(screenDimensions);
+		
+		DisplayMetrics metrics = new DisplayMetrics();
+		context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		
+		float logicalDensity = metrics.density;
+		int width = screenDimensions.x;
+		
+		float dp = (float) width / logicalDensity;
+		
+		int columns = (int) Math.round(dp / 200f);
+		if (columns < 2) columns = 2;
+		
+		return columns;
 	}
 }
