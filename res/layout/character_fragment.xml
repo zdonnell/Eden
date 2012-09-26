@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" 
-    android:background="#000">
+    android:background="#999">
 
     <GridView
         android:id="@+id/charGrid"
@@ -10,6 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:horizontalSpacing="1px"
+        android:verticalSpacing="1px"
 		>
     </GridView>
 

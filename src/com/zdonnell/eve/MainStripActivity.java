@@ -73,6 +73,10 @@ public class MainStripActivity extends FragmentActivity {
         public Fragment getItem(int i) 
         {
         	Fragment fragment = new CharacterTabFragment();
+        	Bundle savedInstanceState = new Bundle();
+        	savedInstanceState.putInt("tab", i);
+        	
+        	fragment.setArguments(savedInstanceState);
 			return fragment;
         }
 
