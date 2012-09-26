@@ -42,19 +42,16 @@ public class CachedTimeDB {
 	/**
 	 * Checks whether a given data request is still cached
 	 * 
-	 * @param URL
-	 *            the request URL
-	 * @param actorID
-	 *            the relevant ID, could be accountID, charID, corpID, etc.
+	 * @param URL the request URL
+	 * @param actorID the relevant ID, could be accountID, charID, corpID, etc.
 	 * @return
 	 */
-	public boolean isCached(String URL, int actorID) {
+	public boolean isCached(String URL, int actorID) 
+	{
 		boolean isCached = false;
-		String query = "SELECT " + TABLE_EXPIRE + " FROM cache_status WHERE "
-				+ TABLE_RESULT_URL + "=? AND " + TABLE_ACTOR_ID + "=?";
-
-		Cursor c = db.rawQuery(query,
-				new String[] { URL, String.valueOf(actorID) });
+		
+		String query = "SELECT " + TABLE_EXPIRE + " FROM cache_status WHERE " + TABLE_RESULT_URL + "=? AND " + TABLE_ACTOR_ID + "=?";
+		Cursor c = db.rawQuery(query, new String[] { URL, String.valueOf(actorID) });
 
 		/*
 		 * Check to see if there is even an entry, if there is, parse and
@@ -64,14 +61,16 @@ public class CachedTimeDB {
 			String dateTime = c.getString(0);
 			c.close();
 
-			SimpleDateFormat formatter = new SimpleDateFormat(
-					"yyyy-MM-dd HH:mm:ss");
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 			Date cachedUntil = new Date();
 
-			try {
+			try 
+			{
 				cachedUntil = formatter.parse(dateTime);
-			} catch (ParseException e) {
+			}
+			catch (ParseException e) 
+			{
 				/*
 				 * In error, it will be assumed that the request should query
 				 * the server
@@ -82,8 +81,7 @@ public class CachedTimeDB {
 
 			Date now = Calendar.getInstance().getTime();
 
-			if (now.before(cachedUntil))
-				isCached = true;
+			if (now.before(cachedUntil)) isCached = true;
 		}
 
 		return isCached;

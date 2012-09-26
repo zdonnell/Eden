@@ -52,14 +52,14 @@ public class ImageService {
 		imageExtensions[CHAR] = ".jpg";
 		imageExtensions[CORP] = ".png";
 		
-		subURLs[CHAR] = "Characters/";
-		subURLs[CORP] = "Corporations/";
+		subURLs[CHAR] = "Character/";
+		subURLs[CORP] = "Corporation/";
 	}
 	
 	/**
 	 * Hashmap to store loaded images in memory
 	 */
-	private HashMap<Integer, Bitmap> memCache = new HashMap<Integer, Bitmap>();;
+	private HashMap<Integer, Bitmap> memoryImageCache = new HashMap<Integer, Bitmap>();;
 	
 	private Context context;
 
@@ -74,47 +74,20 @@ public class ImageService {
 	 * 
 	 * @param view The ImageView to update with the acquired bitmap
 	 * @param actorID The Corporation or Character ID
-	 * @param type {@link CHAR} or {@link CORP}
+	 * @param actorType {@link CHAR} or {@link CORP}
 	 */
-	public void setPortrait(ImageView view, int actorID, int type) 
+	public void setPortrait(ImageView view, int actorID, int actorType) 
 	{
-		Bitmap cachedBM = null;
-
-		/* Check if the image is already loaded into memory */
-		if (memCache.containsKey(actorID)) view.setImageBitmap(memCache.get(actorID));
+		if (memoryImageCache.containsKey(actorID)) view.setImageBitmap(memoryImageCache.get(actorID));
 		else 
 		{		
-			/* Try to load it from storage */
 			try 
 			{
-				FileInputStream fis = context.openFileInput(actorID + ".png");
-				BufferedInputStream buf = new BufferedInputStream(fis);
-	
-				byte[] bitmapBytes = new byte[buf.available()];
-				buf.read(bitmapBytes);
-	
-				cachedBM = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
-				memCache.put(actorID, cachedBM);
-	
-				if (fis != null) fis.close();
-				if (buf != null) buf.close();
-	
-			} catch (FileNotFoundException e) {
-				// e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-	
-			if (cachedBM != null) view.setImageBitmap(cachedBM);
-			
-			/* The image isn't stored anywhere, download it */
-			else 
+				setImageFromStorage(actorID, view);
+			} 
+			catch (IOException e) 
 			{
-				/* Assemble the proper image URL */
-				String imageURL = baseImageURL + subURLs[type] + actorID + "_" + dimensions[type] + imageExtensions[type];
-	
-				DownloadImageTask getImage = new DownloadImageTask(view, actorID);
-				getImage.execute(imageURL);
+				setImageFromHTTP(actorID, actorType, view);
 			}
 		}
 	}
@@ -125,16 +98,60 @@ public class ImageService {
 	 * @param result The Bitmap to save
 	 * @param actorID The Char or Corp ID
 	 */
-	private void cacheBitmap(Bitmap result, int actorID) 
+	private void saveBitmap(Bitmap result, int actorID) 
 	{		
 		try 
 		{
 			FileOutputStream out = context.openFileOutput(actorID + ".png", 0);
 			result.compress(Bitmap.CompressFormat.PNG, 75, out);
 			out.close();
-		} catch (Exception e) {
+		} 
+		catch (Exception e) 
+		{
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * 
+	 * @param actorID
+	 * @param view
+	 * @throws IOException
+	 */
+	private void setImageFromStorage(int actorID, ImageView view) throws IOException 
+	{	
+		FileInputStream fis = context.openFileInput(actorID + ".png");
+		BufferedInputStream buf = new BufferedInputStream(fis);
+
+		byte[] bitmapBytes = new byte[buf.available()];
+		buf.read(bitmapBytes);
+
+		Bitmap bitmapFromSD = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
+		view.setImageBitmap(bitmapFromSD);
+		
+		memoryImageCache.put(actorID, bitmapFromSD);
+		
+		if (fis != null) fis.close();
+		if (buf != null) buf.close();
+	}
+	
+	/**
+	 * 
+	 * @param actorID
+	 * @param actorType
+	 * @param view
+	 */
+	private void setImageFromHTTP(int actorID, int actorType, ImageView view) 
+	{
+		String assembledImageURL = baseImageURL;
+		assembledImageURL += subURLs[actorType];
+		assembledImageURL += actorID;
+		assembledImageURL += "_" + dimensions[actorType];
+		assembledImageURL += imageExtensions[actorType];
+		
+		/* Execute the AsyncTask */
+		DownloadImageTask getImage = new DownloadImageTask(actorID, view);
+		getImage.execute(assembledImageURL);
 	}
 
 	/**
@@ -146,34 +163,45 @@ public class ImageService {
 	 */
 	private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> 
 	{
-		ImageView bmImage;
-		int actorID;
+		private int actorID;
+		private ImageView view;
 
-		public DownloadImageTask(ImageView bmImage, int actorID) 
+		/**
+		 * @param actorID
+		 * @param view the ImageView to update once the image is acquired
+		 */
+		public DownloadImageTask(int actorID, ImageView view) 
 		{
-			this.bmImage = bmImage;
 			this.actorID = actorID;
+			this.view = view;
 		}
 
 		protected Bitmap doInBackground(String... urls) 
 		{
-			String urldisplay = urls[0];
-			Bitmap mIcon11 = null;
-			try {
-				InputStream in = new java.net.URL(urldisplay).openStream();
-				mIcon11 = BitmapFactory.decodeStream(in);
-			} catch (Exception e) {
-				Log.e("Error", e.getMessage());
+			String imageURL = urls[0];
+			Bitmap imageServed = null;
+						
+			try 
+			{
+				InputStream in = new java.net.URL(imageURL).openStream();
+				imageServed = BitmapFactory.decodeStream(in);
+			} 
+			catch (Exception e) 
+			{
 				e.printStackTrace();
 			}
-			return mIcon11;
+			
+			return imageServed;
 		}
 
-		protected void onPostExecute(Bitmap result) 
+		protected void onPostExecute(Bitmap imageServed) 
 		{
-			if (bmImage != null) bmImage.setImageBitmap(result);
-			memCache.put(actorID, result);
-			cacheBitmap(result, actorID);
+			if (imageServed != null)
+			{
+				view.setImageBitmap(imageServed);
+				memoryImageCache.put(actorID, imageServed);
+				saveBitmap(imageServed, actorID);
+			}		
 		}
 	}
 }
