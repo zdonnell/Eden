@@ -51,7 +51,7 @@ public class CacheDatabase {
 	 * @param actorID the relevant ID, could be accountID, charID, corpID, etc.
 	 * @return
 	 */
-	public boolean isCached(String URL, int actorID) 
+	public boolean isCached(String URL, int actorID) throws CacheNotFoundException
 	{
 		boolean isCached = false;
 		
@@ -144,5 +144,10 @@ public class CacheDatabase {
 		{
 
 		}
+	}
+	
+	public class CacheNotFoundException extends Exception
+	{
+		
 	}
 }

@@ -23,6 +23,8 @@ import org.w3c.dom.Document;
 
 import android.content.Context;
 
+import com.zdonnell.eve.api.CacheDatabase.CacheNotFoundException;
+
 /**
  * Class to handle the storage and correct access of API Resources
  * 
@@ -60,11 +62,13 @@ public class ResourceManager {
 	 */
 	public Document getResource(String resourceURL, NameValuePair ...uniqueIDs)
 	{
-		if (cacheDatabase.isCached(resourceURL, uniqueIDs)) 
+		String cachedResource;
+		
+		try
 		{
-			return buildDocument(cacheDatabase.getCachedResource(resourceURL, uniqueIDs));
+			cachedResource = cacheDatabase.getCachedResource(resourceURL, uniqueIDs);
 		}
-		else
+		catch (CacheNotFoundException e)
 		{
 			ArrayList<NameValuePair> assembledPOSTData = new ArrayList<NameValuePair>();
 			for (NameValuePair nvp : uniqueIDs) assembledPOSTData.add(nvp);
@@ -72,13 +76,16 @@ public class ResourceManager {
 			assembledPOSTData.add(new BasicNameValuePair("keyID", String.valueOf(credentials.keyID)));
 			assembledPOSTData.add(new BasicNameValuePair("vCode", credentials.verificationCode));
 			
-			String rawResource = queryResource(resourceURL, assembledPOSTData);
+			cachedResource = queryResource(resourceURL, assembledPOSTData);
 			
-			if (rawResource != null)
+			if (cachedResource != null)
 			{
-				cacheDatabase.updateCache(resourceURL, uniqueIDs, rawResource);
-				return buildDocument(rawResource);
+				cacheDatabase.updateCache(resourceURL, uniqueIDs, cachedResource);
 			}
+		}
+		finally
+		{
+			return buildDocument(cachedResource);
 		}
 	}
 	
