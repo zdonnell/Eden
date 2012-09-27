@@ -40,37 +40,6 @@ public abstract class BaseRequest {
 	private DocumentBuilder domBuilder;
 
 	/**
-	 * @param url
-	 *            the full URL of the resource requested
-	 * @param postData
-	 *            A List of {@link NameValuePair} to be sent as POST Data
-	 * @return a String representation of the response
-	 */
-	protected String makeHTTPRequest(String resURL, List<NameValuePair> postData) 
-	{
-		HttpClient httpclient = new DefaultHttpClient();
-		HttpPost httppost = new HttpPost(baseURL + resURL);
-
-		String rawResponse = null;
-
-		try 
-		{
-			httppost.setEntity(new UrlEncodedFormEntity(postData));
-			HttpResponse response = httpclient.execute(httppost);
-			HttpEntity returnEntity = response.getEntity();
-
-			if (returnEntity != null) rawResponse = EntityUtils.toString(returnEntity);
-
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-		}
-
-		return rawResponse;
-	}
-
-	/**
 	 * @param xmlString
 	 *            a string that contains valid xml document markup
 	 * @return a {@link Document} assembled from the xmlString

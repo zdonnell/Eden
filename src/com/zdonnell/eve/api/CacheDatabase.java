@@ -6,13 +6,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.apache.http.NameValuePair;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class CachedTimeDB {
+public class CacheDatabase {
 
 	// the Activity or Application that is creating an object from this class.
 	Context context;
@@ -31,8 +33,11 @@ public class CachedTimeDB {
 	public final static String TABLE_RESULT_URL = "result_url";
 	public final static String TABLE_ACTOR_ID = "cache_unique";
 	public final static String TABLE_EXPIRE = "cached_until";
+	public final static String TABLE_RAW_RESPONSE = "cached_raw_response";
 
-	public CachedTimeDB(Context context) {
+
+	public CacheDatabase(Context context) 
+	{
 		this.context = context;
 
 		CustomSQLiteOpenHelper helper = new CustomSQLiteOpenHelper(context);
@@ -93,40 +98,50 @@ public class CachedTimeDB {
 	 * If a cache expiration date already exists for the data requested, it will
 	 * be replaced.
 	 * 
-	 * @param URL
-	 *            The URL of the request
-	 * @param actorID
-	 *            the relevant ID, could be accountID, charID, corpID, etc.
-	 * @param cachedUntil
-	 *            The time at which the cache expires (in <B>yyyy-MM-dd
-	 *            HH:mm:ss</B> format)
+	 * @param URL The URL of the request
+	 * @param uniqueIDs the relevant ID, could be accountID, charID, corpID, etc.
+	 * @param cachedUntil The time at which the cache expires (in <B>yyyy-MM-dd HH:mm:ss</B> format)
 	 */
-	public void setCachedUntil(String URL, int actorID, String cachedUntil) {
+	public void updateCache(String URL, NameValuePair[] uniqueIDs, String rawResponse) 
+	{
+		String actorIDString = "";
+		
+		for (NameValuePair ID : uniqueIDs) actorIDString += ID.getValue();
+		
+		String cachedUntil = "";
+		
 		String query = "INSERT OR REPLACE INTO " + TABLE_NAME + " ("
-				+ TABLE_RESULT_URL + ", " + TABLE_ACTOR_ID + ", "
-				+ TABLE_EXPIRE + ") VALUES (?, ?, ?)";
+				+ TABLE_RESULT_URL + ", " 
+				+ TABLE_ACTOR_ID + ", "
+				+ TABLE_RAW_RESPONSE + ", "
+				+ TABLE_EXPIRE + ") VALUES (?, ?, ?, ?)";
 
-		db.rawQuery(query, new String[] { URL, String.valueOf(actorID),
-				cachedUntil });
+		db.rawQuery(query, new String[] { URL, actorIDString, rawResponse, cachedUntil });
 	}
 
-	private class CustomSQLiteOpenHelper extends SQLiteOpenHelper {
-		public CustomSQLiteOpenHelper(Context context) {
+	private class CustomSQLiteOpenHelper extends SQLiteOpenHelper 
+	{
+		public CustomSQLiteOpenHelper(Context context) 
+		{
 			super(context, DB_NAME, null, DB_VERSION);
 		}
 
 		@Override
-		public void onCreate(SQLiteDatabase db) {
+		public void onCreate(SQLiteDatabase db) 
+		{
 			String newTableQueryString = "create table " + TABLE_NAME + " ("
 					+ TABLE_ID + " integer primary key autoincrement not null,"
-					+ TABLE_RESULT_URL + " text," + TABLE_ACTOR_ID
-					+ " integer," + TABLE_EXPIRE + " integer" + ");";
+					+ TABLE_RESULT_URL + " text,"
+					+ TABLE_ACTOR_ID + " integer,"
+					+ TABLE_RAW_RESPONSE + " text,"
+					+ TABLE_EXPIRE + " text);";
 
 			db.execSQL(newTableQueryString);
 		}
 
 		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) 
+		{
 
 		}
 	}

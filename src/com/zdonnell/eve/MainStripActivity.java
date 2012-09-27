@@ -3,6 +3,7 @@ package com.zdonnell.eve;
 import java.text.NumberFormat;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -47,7 +48,7 @@ public class MainStripActivity extends FragmentActivity {
         /* Load in the TQ status info to the actionBar */
         aBar.setCustomView(R.layout.tq_status);
         TextView ServerStatus = (TextView) findViewById(R.id.server_status);
-        new SyncStatus().execute(ServerStatus);
+        new SyncStatus(getBaseContext()).execute(ServerStatus);
         
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -101,19 +102,23 @@ public class MainStripActivity extends FragmentActivity {
 	{	
 		TextView serverStatus;
 		
+		Context context;
+		
+		public SyncStatus(Context context)
+		{
+			this.context = context;
+		}
+		
 		protected String[] doInBackground(TextView... views) 
 		{ 			
 			serverStatus = views[0];
-			
-			Server server = new Server();
+			Server server = new Server(context);
 			
 			return server.status(); 
 		}
 
 		protected void onPostExecute(String[] status) 
-		{
-			String onlineOffline;
-			
+		{			
 			if (status[0].equals("True")) 
 			{
 				NumberFormat nf = NumberFormat.getInstance();
