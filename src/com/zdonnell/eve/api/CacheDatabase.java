@@ -51,12 +51,15 @@ public class CacheDatabase {
 	 * @param actorID the relevant ID, could be accountID, charID, corpID, etc.
 	 * @return
 	 */
-	public boolean isCached(String URL, int actorID) throws CacheNotFoundException
+	public boolean isCached(String URL, NameValuePair[] actorIDs)
 	{
 		boolean isCached = false;
+		String uniqueIDString = "";
+		
+		for (NameValuePair ID : actorIDs) uniqueIDString += ID.getValue();
 		
 		String query = "SELECT " + TABLE_EXPIRE + " FROM cache_status WHERE " + TABLE_RESULT_URL + "=? AND " + TABLE_ACTOR_ID + "=?";
-		Cursor c = db.rawQuery(query, new String[] { URL, String.valueOf(actorID) });
+		Cursor c = db.rawQuery(query, new String[] { URL, uniqueIDString });
 
 		/*
 		 * Check to see if there is even an entry, if there is, parse and
@@ -92,6 +95,27 @@ public class CacheDatabase {
 		return isCached;
 	}
 
+	/**
+	 * 
+	 * @param URL
+	 * @param actorIDs
+	 * @return
+	 */
+	public String getCachedResource(String URL, NameValuePair[] actorIDs)
+	{
+		String uniqueIDString = "", rawResource = "";
+		
+		for (NameValuePair ID : actorIDs) uniqueIDString += ID.getValue();
+		
+		String query = "SELECT " + TABLE_RAW_RESPONSE + " FROM cache_status WHERE " + TABLE_RESULT_URL + "=? AND " + TABLE_ACTOR_ID + "=?";
+		Cursor c = db.rawQuery(query, new String[] { URL, uniqueIDString });
+		
+		if (c.moveToFirst()) rawResource = c.getString(0);
+		c.close();
+		
+		return rawResource;
+	}
+	
 	/**
 	 * Sets the Date and Time that the request will be cached for on the server.
 	 * 
@@ -144,10 +168,5 @@ public class CacheDatabase {
 		{
 
 		}
-	}
-	
-	public class CacheNotFoundException extends Exception
-	{
-		
 	}
 }

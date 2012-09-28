@@ -4,27 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal" >
-    
-    <ImageView 
+
+    <ImageView
         android:id="@+id/logo"
-        android:src="@drawable/eden_logo"
         android:layout_width="80dp"
         android:layout_height="40dp"
         android:layout_gravity="left|center_vertical"
         android:paddingLeft="10dp"
-        />
+        android:src="@drawable/eden_logo" />
 
-	    
-	    <TextView 
-	        android:layout_weight="1"
-	        android:id="@+id/server_status"
-	        android:textSize="14sp"
-	        android:gravity="center_vertical|right"
-	        android:layout_width="wrap_content"
-	        android:layout_height="match_parent"
-	        android:text="Server Status"
-	        android:textColor="#AAAAAA"
-	        android:paddingRight="10dp"
-	        />
-	
+    <TextView
+        android:id="@+id/server_status"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical|right"
+        android:paddingRight="10dp"
+        android:text="Server Status"
+        android:textColor="#AAAAAA"
+        android:textSize="14sp" />
+
 </LinearLayout>

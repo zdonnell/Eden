@@ -171,8 +171,6 @@ public class CharacterTabFragment extends Fragment {
 			}
 		}
 		
-		
-		
 		return columns;
 	}
 }

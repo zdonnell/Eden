@@ -46,6 +46,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SheetItemListActivity" />
         </activity>
+        <activity
+            android:name=".APITestActivity"
+            android:label="@string/title_activity_apitest" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.zdonnell.eve.MainStripActivity" />
+        </activity>
     </application>
 
 </manifest>
