@@ -18,7 +18,7 @@ public class APITestActivity extends Activity {
         setContentView(R.layout.activity_apitest);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
-        Account slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", getApplicationContext());
+        slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", getApplicationContext());
 		//new GetCharacters().execute(slick50zd1);
     }
 
@@ -27,7 +27,6 @@ public class APITestActivity extends Activity {
         getMenuInflater().inflate(R.menu.activity_apitest, menu);
         return true;
     }
-
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
