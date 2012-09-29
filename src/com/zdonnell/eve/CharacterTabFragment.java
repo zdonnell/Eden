@@ -11,7 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
-import android.util.AttributeSet;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +24,8 @@ import android.widget.TextView;
 
 import com.zdonnell.eve.api.account.Account;
 import com.zdonnell.eve.api.account.EveCharacter;
+import com.zdonnell.eve.api.character.APICharacter;
+import com.zdonnell.eve.api.character.QueuedSkill;
 
 public class CharacterTabFragment extends Fragment {
 
@@ -36,6 +38,8 @@ public class CharacterTabFragment extends Fragment {
 	private Context context;
 	
 	private int[] calculatedColumnWidths;
+	
+	Account slick50zd1, mercenoid22;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -47,12 +51,12 @@ public class CharacterTabFragment extends Fragment {
 
 		if (this.getArguments().getInt("tab") == 1) 
 		{
-			Account slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", context);
+			slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", context);
 			//new GetCharacters().execute(slick50zd1);
 		} 
 		else 
 		{
-			Account mercenoid22 = new Account(1171729, "4QsVKhpkQcM20jU1AahjcGzYFCSJljYFXld5X0wgLV8pYPJMeQRvQAUdDnSGhKvK", context);
+			mercenoid22 = new Account(1171729, "4QsVKhpkQcM20jU1AahjcGzYFCSJljYFXld5X0wgLV8pYPJMeQRvQAUdDnSGhKvK", context);
 			//new GetCharacters().execute(mercenoid22);
 		}
 		
@@ -63,7 +67,7 @@ public class CharacterTabFragment extends Fragment {
 		
 		charGrid.setNumColumns(columns);
 		
-		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
+		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters(), this));
 
 		return main;
 	}
@@ -83,18 +87,44 @@ public class CharacterTabFragment extends Fragment {
 			for (EveCharacter character : characters) charDB.addCharacter(character);
 		}
 	}
+	
+	private class SetTrainingTime extends AsyncTask<APICharacter, Integer, ArrayList<QueuedSkill>> 
+	{	
+		private TextView trainingTimeView;
+		
+		public SetTrainingTime(TextView trainingTimeView) { this.trainingTimeView = trainingTimeView; }
+		
+		protected ArrayList<QueuedSkill> doInBackground(APICharacter... characters) { return characters[0].skillQueue(); }
+
+		protected void onPostExecute(ArrayList<QueuedSkill> skillQueue) 
+		{
+			if (skillQueue.isEmpty()) trainingTimeView.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
+			else 
+			{
+				trainingTimeView.setText(Html.fromHtml("<FONT COLOR='#669900'>" + skillQueue.get(0).skillID + " " + skillQueue.get(0).skillLevel + "</FONT>"));
+			}
+		}
+	}
 
 	private class CharacterCursorAdapater extends CursorAdapter 
 	{
-		public CharacterCursorAdapater(Context context, Cursor c) 
+		Fragment fragment;
+		
+		public CharacterCursorAdapater(Context context, Cursor c, Fragment fragment) 
 		{
 			super(context, c, false);
+			this.fragment = fragment;
 			// TODO Auto-generated constructor stub
 		}
 
 		@Override
 		public void bindView(View view, final Context context, Cursor cursor) 
 		{			
+			APICharacter character;
+			
+			if (fragment.getArguments().getInt("tab") == 1) character = new APICharacter(slick50zd1.getCredentials(), cursor.getInt(0), context);
+			else character = new APICharacter(mercenoid22.getCredentials(), cursor.getInt(2), context);
+			
 			int calculatedWidth = calculatedColumnWidths[cursor.getPosition() % columns];
 			view.setLayoutParams(new AbsListView.LayoutParams(calculatedWidth, calculatedColumnWidths[0]));
 			
@@ -111,7 +141,7 @@ public class CharacterTabFragment extends Fragment {
 			charName.setText(cursor.getString(1));
 			
 			TextView corpName = (TextView) view.findViewById(R.id.char_tile_training);
-			corpName.setText(cursor.getString(3));
+			new SetTrainingTime(corpName).execute(character);
 			
 			view.setOnClickListener(new View.OnClickListener() {
 				
@@ -173,4 +203,6 @@ public class CharacterTabFragment extends Fragment {
 		
 		return columns;
 	}
+	
+	
 }

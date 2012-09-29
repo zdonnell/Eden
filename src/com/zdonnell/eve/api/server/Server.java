@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 
 import android.content.Context;
 
+import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.BaseRequest;
 import com.zdonnell.eve.api.ResourceManager;
@@ -14,7 +15,8 @@ public class Server extends APIObject {
 	
 	public Server(Context context)
 	{
-		resourceManager = new ResourceManager(context, credentials);
+		super.setCredentials(credentials);
+		resourceManager = new ResourceManager(context);
 	}
 	
 	/**
@@ -25,10 +27,10 @@ public class Server extends APIObject {
 	 */
 	public String[] status() 
 	{
-		final String resourceSpecificURL = "account/Characters.xml.aspx";
+		final String resourceSpecificURL = "server/ServerStatus.xml.aspx";
 		String fullURL = BaseRequest.baseURL + resourceSpecificURL;
 		
-		Document responseDoc = resourceManager.getResource(fullURL);
+		Document responseDoc = resourceManager.getResource(fullURL, true);
 
 		String[] status = new String[2];
 		

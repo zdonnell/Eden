@@ -15,4 +15,9 @@ public class APIObject {
 	protected void setCredentials(APICredentials credentials) {
 		this.credentials = credentials;
 	}
+	
+	public APICredentials getCredentials()
+	{
+		return credentials;
+	}
 }

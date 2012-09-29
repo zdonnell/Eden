@@ -34,7 +34,7 @@ public class Account extends APIObject {
 		final String resourceSpecificURL = "account/Characters.xml.aspx";
 		String fullURL = BaseRequest.baseURL + resourceSpecificURL;
 		
-		Document resourceDoc = resourceManager.getResource(fullURL);		
+		Document resourceDoc = resourceManager.getResource(fullURL, true);		
 		NodeList characterNodes = resourceDoc.getElementsByTagName("row");
 		
 		ArrayList<EveCharacter> characters = new ArrayList<EveCharacter>();

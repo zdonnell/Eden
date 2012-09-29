@@ -22,6 +22,7 @@ import org.apache.http.util.EntityUtils;
 import org.w3c.dom.Document;
 
 import android.content.Context;
+import android.util.Log;
 
 /**
  * Class to handle the storage and correct access of API Resources
@@ -42,6 +43,14 @@ public class ResourceManager {
 	private DocumentBuilderFactory factory;
 
 	private DocumentBuilder domBuilder;
+
+	private boolean needsCredentials = true;
+	
+	public ResourceManager(Context context)	
+	{
+		this(context, null);
+		needsCredentials = false;
+	}
 	
 	public ResourceManager(Context context, APICredentials credentials)	
 	{
@@ -58,11 +67,11 @@ public class ResourceManager {
 	 * @param uniqueIDs 
 	 * @return
 	 */
-	public Document getResource(String resourceURL, NameValuePair ...uniqueIDs)
+	public Document getResource(String resourceURL, boolean refresh, NameValuePair ...uniqueIDs)
 	{
-		String cachedResource;
+		String cachedResource = "";
 		
-		if (cacheDatabase.isCached(resourceURL, uniqueIDs))
+		if (cacheDatabase.isCached(resourceURL, uniqueIDs, refresh))
 		{
 			cachedResource = cacheDatabase.getCachedResource(resourceURL, uniqueIDs);
 		}
@@ -71,13 +80,18 @@ public class ResourceManager {
 			ArrayList<NameValuePair> assembledPOSTData = new ArrayList<NameValuePair>();
 			for (NameValuePair nvp : uniqueIDs) assembledPOSTData.add(nvp);
 			
-			assembledPOSTData.add(new BasicNameValuePair("keyID", String.valueOf(credentials.keyID)));
-			assembledPOSTData.add(new BasicNameValuePair("vCode", credentials.verificationCode));
+			if (needsCredentials)
+			{
+				assembledPOSTData.add(new BasicNameValuePair("keyID", String.valueOf(credentials.keyID)));
+				assembledPOSTData.add(new BasicNameValuePair("vCode", credentials.verificationCode));
+			}
 			
 			cachedResource = queryResource(resourceURL, assembledPOSTData);
 			
 			if (cachedResource != null)
 			{
+				Log.d("TESTEST", "--" + resourceURL + "--");
+				Log.d("TESTTEST", cachedResource);
 				cacheDatabase.updateCache(resourceURL, uniqueIDs, cachedResource);
 			}
 		}
@@ -92,6 +106,10 @@ public class ResourceManager {
 	 */
 	protected String queryResource(String resourceURL, List<NameValuePair> postData) 
 	{
+		Log.d("URL", "--**" + resourceURL + "**--");
+		for (NameValuePair n : postData) Log.d("POST", n.getName() + " " + n.getValue());
+		
+		
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost(resourceURL);
 

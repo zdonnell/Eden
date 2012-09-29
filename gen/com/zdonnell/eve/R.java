@@ -52,23 +52,24 @@ public final class R {
         public static final int zach=0x7f02001e;
     }
     public static final class id {
-        public static final int charGrid=0x7f090005;
-        public static final int char_image=0x7f090006;
-        public static final int char_tile_name=0x7f090009;
-        public static final int char_tile_training=0x7f09000a;
-        public static final int corp_image=0x7f090008;
-        public static final int imageView1=0x7f090004;
-        public static final int logo=0x7f09000d;
-        public static final int menu_addaccount=0x7f090010;
-        public static final int menu_settings=0x7f09000f;
-        public static final int pager=0x7f090000;
-        public static final int pager_title_strip=0x7f090001;
-        public static final int server_status=0x7f09000e;
-        public static final int sheetitem_detail=0x7f09000b;
-        public static final int sheetitem_detail_container=0x7f090002;
-        public static final int sheetitem_list=0x7f090003;
-        public static final int tile_text_bg=0x7f090007;
-        public static final int tq_status_root=0x7f09000c;
+        public static final int charGrid=0x7f090006;
+        public static final int charSpinner=0x7f090000;
+        public static final int char_image=0x7f090007;
+        public static final int char_tile_name=0x7f09000a;
+        public static final int char_tile_training=0x7f09000b;
+        public static final int corp_image=0x7f090009;
+        public static final int imageView1=0x7f090005;
+        public static final int logo=0x7f09000e;
+        public static final int menu_addaccount=0x7f090011;
+        public static final int menu_settings=0x7f090010;
+        public static final int pager=0x7f090001;
+        public static final int pager_title_strip=0x7f090002;
+        public static final int server_status=0x7f09000f;
+        public static final int sheetitem_detail=0x7f09000c;
+        public static final int sheetitem_detail_container=0x7f090003;
+        public static final int sheetitem_list=0x7f090004;
+        public static final int tile_text_bg=0x7f090008;
+        public static final int tq_status_root=0x7f09000d;
     }
     public static final class layout {
         public static final int activity_add_account=0x7f030000;

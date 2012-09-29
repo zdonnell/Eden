@@ -126,7 +126,7 @@ public class MainStripActivity extends FragmentActivity {
 			}
 			else
 			{
-				serverStatus.setText("<B><FONT COLOR='#CC0000'>OFFLINE</FONT></B>");
+				serverStatus.setText(Html.fromHtml("<B><FONT COLOR='#CC0000'>OFFLINE</FONT></B>"));
 			}
 			
 		}

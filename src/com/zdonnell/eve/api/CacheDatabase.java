@@ -51,7 +51,7 @@ public class CacheDatabase {
 	 * @param actorID the relevant ID, could be accountID, charID, corpID, etc.
 	 * @return
 	 */
-	public boolean isCached(String URL, NameValuePair[] actorIDs)
+	public boolean isCached(String URL, NameValuePair[] actorIDs, boolean refreshCache)
 	{
 		boolean isCached = false;
 		String uniqueIDString = "";
@@ -89,7 +89,13 @@ public class CacheDatabase {
 
 			Date now = Calendar.getInstance().getTime();
 
-			if (now.before(cachedUntil)) isCached = true;
+			if (now.before(cachedUntil)) {
+				isCached = true;
+			}
+			else if (!refreshCache)
+			{
+				isCached = true;
+			}
 		}
 
 		return isCached;
