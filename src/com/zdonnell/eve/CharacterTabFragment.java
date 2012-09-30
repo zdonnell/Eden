@@ -1,6 +1,8 @@
 package com.zdonnell.eve;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,10 +11,12 @@ import android.database.Cursor;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Html;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.account.Account;
 import com.zdonnell.eve.api.account.EveCharacter;
 import com.zdonnell.eve.api.character.APICharacter;
@@ -38,8 +43,10 @@ public class CharacterTabFragment extends Fragment {
 	private Context context;
 	
 	private int[] calculatedColumnWidths;
+		
+	private HashMap<Integer, QueueTimeRemainingCountdown> cachedTrainingTime = new HashMap<Integer, QueueTimeRemainingCountdown>();
 	
-	Account slick50zd1, mercenoid22;
+	Account slick50zd1, mercenoid22, slpeterson;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,15 +55,19 @@ public class CharacterTabFragment extends Fragment {
 		
 		charDB = new CharacterDB(context);
 		imageService = new ImageService(context);
-
+		
+		slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", context);
+		mercenoid22 = new Account(1171729, "4QsVKhpkQcM20jU1AahjcGzYFCSJljYFXld5X0wgLV8pYPJMeQRvQAUdDnSGhKvK", context);
+		slpeterson = new Account(339772, "4hlNY5h45OhfTgT6lo9RyXO4jEysiTDRYTXsEPenRBIuAheea3TBNn5LxnatkFjU", context);
+		//new GetCharacters().execute(slpeterson);
+		//new GetCharacters().execute(mercenoid22);
+		
 		if (this.getArguments().getInt("tab") == 1) 
 		{
-			slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", context);
 			//new GetCharacters().execute(slick50zd1);
 		} 
 		else 
 		{
-			mercenoid22 = new Account(1171729, "4QsVKhpkQcM20jU1AahjcGzYFCSJljYFXld5X0wgLV8pYPJMeQRvQAUdDnSGhKvK", context);
 			//new GetCharacters().execute(mercenoid22);
 		}
 		
@@ -66,8 +77,24 @@ public class CharacterTabFragment extends Fragment {
 		columns = calcColumns((Activity) context);
 		
 		charGrid.setNumColumns(columns);
+
+		Cursor charCursor = charDB.allCharacters();
+		int characterNum = charCursor.getCount();
 		
-		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters(), this));
+		int[][] preCacheArray = new int[characterNum*2][2];
+		while (charCursor.moveToNext())
+		{
+			int position = charCursor.getPosition();
+			
+			preCacheArray[position][0] = charCursor.getInt(2);
+			preCacheArray[position][1] = ImageService.CHAR;
+			preCacheArray[position + characterNum][0] = charCursor.getInt(4);
+			preCacheArray[position + characterNum][1] = ImageService.CORP;
+		}
+		charCursor.close();
+		imageService.preCache(preCacheArray);
+		
+		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
 
 		return main;
 	}
@@ -80,50 +107,58 @@ public class CharacterTabFragment extends Fragment {
 
 	private class GetCharacters extends	AsyncTask<Account, Integer, ArrayList<EveCharacter>> 
 	{	
-		protected ArrayList<EveCharacter> doInBackground(Account... accounts) { return accounts[0].characters(); }
+		private APICredentials credentials;
+		
+		protected ArrayList<EveCharacter> doInBackground(Account... accounts) { this.credentials = accounts[0].getCredentials(); return accounts[0].characters(); }
 
 		protected void onPostExecute(ArrayList<EveCharacter> characters) 
 		{
-			for (EveCharacter character : characters) charDB.addCharacter(character);
+			for (EveCharacter character : characters) charDB.addCharacter(character, credentials);
 		}
 	}
 	
 	private class SetTrainingTime extends AsyncTask<APICharacter, Integer, ArrayList<QueuedSkill>> 
 	{	
 		private TextView trainingTimeView;
+		private int characterID;
 		
 		public SetTrainingTime(TextView trainingTimeView) { this.trainingTimeView = trainingTimeView; }
 		
-		protected ArrayList<QueuedSkill> doInBackground(APICharacter... characters) { return characters[0].skillQueue(); }
+		protected ArrayList<QueuedSkill> doInBackground(APICharacter... characters) { characterID = characters[0].id(); return characters[0].skillQueue(); }
 
-		protected void onPostExecute(ArrayList<QueuedSkill> skillQueue) 
+		protected void onPostExecute(final ArrayList<QueuedSkill> skillQueue) 
 		{
-			if (skillQueue.isEmpty()) trainingTimeView.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
-			else 
+			long timeUntilQueueEmpty = -1;
+			
+			if (skillQueue.isEmpty()) timeUntilQueueEmpty = 0;
+			else
 			{
-				trainingTimeView.setText(Html.fromHtml("<FONT COLOR='#669900'>" + skillQueue.get(0).skillID + " " + skillQueue.get(0).skillLevel + "</FONT>"));
+				try {
+					timeUntilQueueEmpty = Tools.timeUntilUTCTime(skillQueue.get(skillQueue.size() - 1).endTime);
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
 			}
+			
+			QueueTimeRemainingCountdown timer = new QueueTimeRemainingCountdown(timeUntilQueueEmpty, 1000, trainingTimeView, characterID);
+			cachedTrainingTime.put(characterID, timer);
+			timer.start();
 		}
 	}
 
 	private class CharacterCursorAdapater extends CursorAdapter 
-	{
-		Fragment fragment;
-		
-		public CharacterCursorAdapater(Context context, Cursor c, Fragment fragment) 
+	{		
+		public CharacterCursorAdapater(Context context, Cursor c) 
 		{
 			super(context, c, false);
-			this.fragment = fragment;
 			// TODO Auto-generated constructor stub
 		}
 
 		@Override
 		public void bindView(View view, final Context context, Cursor cursor) 
-		{			
-			APICharacter character;
-			
-			if (fragment.getArguments().getInt("tab") == 1) character = new APICharacter(slick50zd1.getCredentials(), cursor.getInt(0), context);
-			else character = new APICharacter(mercenoid22.getCredentials(), cursor.getInt(2), context);
+		{		
+			APICredentials credentials = new APICredentials(cursor.getInt(5), cursor.getString(6));
+			APICharacter character = new APICharacter(credentials, cursor.getInt(2), context);
 			
 			int calculatedWidth = calculatedColumnWidths[cursor.getPosition() % columns];
 			view.setLayoutParams(new AbsListView.LayoutParams(calculatedWidth, calculatedColumnWidths[0]));
@@ -140,8 +175,12 @@ public class CharacterTabFragment extends Fragment {
 			TextView charName = (TextView) view.findViewById(R.id.char_tile_name);
 			charName.setText(cursor.getString(1));
 			
-			TextView corpName = (TextView) view.findViewById(R.id.char_tile_training);
-			new SetTrainingTime(corpName).execute(character);
+			TextView corpName = (TextView) view.findViewById(R.id.char_tile_training);			
+			if (cachedTrainingTime.containsKey(character.id()))
+			{
+				cachedTrainingTime.get(character.id()).updateTextView(corpName);
+			} 
+			else new SetTrainingTime(corpName).execute(character);			
 			
 			view.setOnClickListener(new View.OnClickListener() {
 				
@@ -204,5 +243,43 @@ public class CharacterTabFragment extends Fragment {
 		return columns;
 	}
 	
-	
+	private class QueueTimeRemainingCountdown extends CountDownTimer
+	{
+		private TextView view;
+		private int charID;
+		private boolean finished = false;
+		
+		public QueueTimeRemainingCountdown(long millisInFuture, long countDownInterval, TextView view, int charID) {
+			super(millisInFuture, countDownInterval);
+			this.view = view;
+			this.charID = charID;
+		}
+		
+		public void updateTextView(TextView view)
+		{
+			if (finished) 
+			{
+				view.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
+			}
+			this.view = view;
+		}
+
+		@Override
+		public void onFinish() {
+			view.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
+			finished = true;
+		}
+
+		@Override
+		public void onTick(long millisUntilFinished) 
+		{
+			if (millisUntilFinished < 24 * 60 * 60 * 1000 && millisUntilFinished > 0) 
+			{
+				cachedTrainingTime.put(charID, this);
+				view.setText(Html.fromHtml("<FONT COLOR='#FFBB33'>" + Tools.millisToEveFormatString(millisUntilFinished) + "</FONT>"));
+			}
+			else view.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + Tools.millisToEveFormatString(millisUntilFinished) + "</FONT>"));
+		}
+		
+	}
 }

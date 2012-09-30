@@ -32,32 +32,29 @@ import android.util.Log;
  */
 public class ResourceManager {
 
+	private static ResourceManager instance;
+	
 	private Context context;
 	
 	private CacheDatabase cacheDatabase;
 	
 	private APICredentials credentials;
-	
-	private Document xmlDoc = null;
-
-	private DocumentBuilderFactory factory;
-
-	private DocumentBuilder domBuilder;
 
 	private boolean needsCredentials = true;
 	
-	public ResourceManager(Context context)	
-	{
-		this(context, null);
-		needsCredentials = false;
-	}
-	
-	public ResourceManager(Context context, APICredentials credentials)	
+	private ResourceManager(Context context)	
 	{
 		this.context = context;
-		this.credentials = credentials;
-		
 		cacheDatabase = new CacheDatabase(context);
+	}
+	
+	public static ResourceManager getInstance(Context context)
+	{
+		if (instance == null)
+		{
+			instance = new ResourceManager(context);
+		}
+		return instance;
 	}
 	
 	/**
@@ -67,7 +64,7 @@ public class ResourceManager {
 	 * @param uniqueIDs 
 	 * @return
 	 */
-	public Document getResource(String resourceURL, boolean refresh, NameValuePair ...uniqueIDs)
+	public Document getResource(APICredentials credentials, String resourceURL, boolean refresh, NameValuePair ...uniqueIDs)
 	{
 		String cachedResource = "";
 		
@@ -80,7 +77,7 @@ public class ResourceManager {
 			ArrayList<NameValuePair> assembledPOSTData = new ArrayList<NameValuePair>();
 			for (NameValuePair nvp : uniqueIDs) assembledPOSTData.add(nvp);
 			
-			if (needsCredentials)
+			if (credentials != null)
 			{
 				assembledPOSTData.add(new BasicNameValuePair("keyID", String.valueOf(credentials.keyID)));
 				assembledPOSTData.add(new BasicNameValuePair("vCode", credentials.verificationCode));
@@ -90,12 +87,15 @@ public class ResourceManager {
 			
 			if (cachedResource != null)
 			{
-				Log.d("TESTEST", "--" + resourceURL + "--");
-				Log.d("TESTTEST", cachedResource);
+				if (uniqueIDs.length == 0 && credentials != null) 
+				{
+					uniqueIDs = new BasicNameValuePair[] { new BasicNameValuePair("keyID", String.valueOf(credentials.keyID))};
+				}
 				cacheDatabase.updateCache(resourceURL, uniqueIDs, cachedResource);
 			}
 		}
 		
+		Log.d("RESOURCE", cachedResource);
 		return buildDocument(cachedResource);
 	}
 	
@@ -105,11 +105,7 @@ public class ResourceManager {
 	 * @return a String representation of the served resource
 	 */
 	protected String queryResource(String resourceURL, List<NameValuePair> postData) 
-	{
-		Log.d("URL", "--**" + resourceURL + "**--");
-		for (NameValuePair n : postData) Log.d("POST", n.getName() + " " + n.getValue());
-		
-		
+	{	
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost(resourceURL);
 
@@ -136,8 +132,12 @@ public class ResourceManager {
 	 * @param xmlString a string that contains valid xml document markup
 	 * @return a {@link Document} assembled from the xmlString
 	 */
-	protected Document buildDocument(String xmlString) 
+	public static Document buildDocument(String xmlString) 
 	{
+		Document xmlDoc = null;
+		DocumentBuilderFactory factory;
+		DocumentBuilder domBuilder;
+		
 		factory = DocumentBuilderFactory.newInstance();
 
 		try 

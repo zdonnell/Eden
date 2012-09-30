@@ -73,7 +73,10 @@ public class MainStripActivity extends FragmentActivity {
         @Override
         public Fragment getItem(int i) 
         {
-        	Fragment fragment = new CharacterTabFragment();
+        	Fragment fragment;
+        	if (i == 0) fragment = new CharacterTabFragment();
+        	else fragment = new CorporationTabFragment();
+        	
         	Bundle savedInstanceState = new Bundle();
         	savedInstanceState.putInt("tab", i);
         	

@@ -2,6 +2,7 @@ package com.zdonnell.eve.api.account;
 
 import java.util.ArrayList;
 
+import org.apache.http.message.BasicNameValuePair;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -21,7 +22,7 @@ public class Account extends APIObject {
 	public Account(int keyID, String verificationCode, Context context) 
 	{	
 		super.setCredentials(new APICredentials(keyID, verificationCode));	
-		resourceManager = new ResourceManager(context, credentials);
+		resourceManager = ResourceManager.getInstance(context);
 	}
 
 	/**
@@ -34,7 +35,7 @@ public class Account extends APIObject {
 		final String resourceSpecificURL = "account/Characters.xml.aspx";
 		String fullURL = BaseRequest.baseURL + resourceSpecificURL;
 		
-		Document resourceDoc = resourceManager.getResource(fullURL, true);		
+		Document resourceDoc = resourceManager.getResource(credentials, fullURL, true);		
 		NodeList characterNodes = resourceDoc.getElementsByTagName("row");
 		
 		ArrayList<EveCharacter> characters = new ArrayList<EveCharacter>();

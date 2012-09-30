@@ -26,9 +26,11 @@ public class APICharacter extends APIObject {
 	{	
 		this.characterID = characterID;
 		super.setCredentials(credentials);	
-		resourceManager = new ResourceManager(context, credentials);
+		resourceManager = ResourceManager.getInstance(context);
 	}
 
+	public int id() { return characterID; }
+	
 	/**
 	 * 
 	 */
@@ -37,7 +39,7 @@ public class APICharacter extends APIObject {
 		final String resourceSpecificURL = "char/SkillQueue.xml.aspx";
 		String fullURL = BaseRequest.baseURL + resourceSpecificURL;
 		
-		Document resourceDoc = resourceManager.getResource(fullURL, true, new BasicNameValuePair("characterID", String.valueOf(characterID)));		
+		Document resourceDoc = resourceManager.getResource(credentials, fullURL, true, new BasicNameValuePair("characterID", String.valueOf(characterID)));		
 		NodeList skillNodes = resourceDoc.getElementsByTagName("row");
 
 		ArrayList<QueuedSkill> skillQueue = new ArrayList<QueuedSkill>();

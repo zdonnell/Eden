@@ -8,6 +8,7 @@ import java.util.TimeZone;
 
 import org.apache.http.NameValuePair;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -58,9 +59,13 @@ public class CacheDatabase {
 		
 		for (NameValuePair ID : actorIDs) uniqueIDString += ID.getValue();
 		
+		String[] insertValues = new String[] { URL, uniqueIDString };
 		String query = "SELECT " + TABLE_EXPIRE + " FROM cache_status WHERE " + TABLE_RESULT_URL + "=? AND " + TABLE_ACTOR_ID + "=?";
-		Cursor c = db.rawQuery(query, new String[] { URL, uniqueIDString });
+		Cursor c = db.rawQuery(query, insertValues);
 
+		Log.d("TEST IS", query);
+		Log.d("TEST IS", insertValues[0] + " -- " + insertValues[1]);
+		
 		/*
 		 * Check to see if there is even an entry, if there is, parse and
 		 * compare
@@ -83,6 +88,7 @@ public class CacheDatabase {
 				 * In error, it will be assumed that the request should query
 				 * the server
 				 */
+				Log.d("TEST IS", "ERROR");
 				isCached = false;
 				e.printStackTrace();
 			}
@@ -90,10 +96,12 @@ public class CacheDatabase {
 			Date now = Calendar.getInstance().getTime();
 
 			if (now.before(cachedUntil)) {
+				Log.d("TEST IS", "CACHED");
 				isCached = true;
 			}
 			else if (!refreshCache)
 			{
+				Log.d("TEST IS", "FORCED REFRESH");
 				isCached = true;
 			}
 		}
@@ -138,15 +146,21 @@ public class CacheDatabase {
 		
 		for (NameValuePair ID : uniqueIDs) actorIDString += ID.getValue();
 		
-		String cachedUntil = "";
+		String cachedUntil = ResourceManager.buildDocument(rawResponse).getElementsByTagName("cachedUntil").item(0).getTextContent();
 		
-		String query = "INSERT OR REPLACE INTO " + TABLE_NAME + " ("
-				+ TABLE_RESULT_URL + ", " 
-				+ TABLE_ACTOR_ID + ", "
-				+ TABLE_RAW_RESPONSE + ", "
-				+ TABLE_EXPIRE + ") VALUES (?, ?, ?, ?)";
-
-		db.rawQuery(query, new String[] { URL, actorIDString, rawResponse, cachedUntil });
+		ContentValues values = new ContentValues();
+		values.put(TABLE_RESULT_URL, URL);
+		values.put(TABLE_ACTOR_ID, actorIDString);
+		values.put(TABLE_EXPIRE, cachedUntil);
+		values.put(TABLE_RAW_RESPONSE, rawResponse);
+ 
+		// ask the database object to insert the new data 
+		try{ db.insert(TABLE_NAME, null, values); }
+		catch(Exception e)
+		{
+			Log.e("DB ERROR", e.toString());
+			e.printStackTrace();
+		}
 	}
 
 	private class CustomSQLiteOpenHelper extends SQLiteOpenHelper 

@@ -1,9 +1,5 @@
 package com.zdonnell.eve;
 
-import java.util.ArrayList;
-
-import com.zdonnell.eve.api.account.EveCharacter;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -11,6 +7,9 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.zdonnell.eve.api.APICredentials;
+import com.zdonnell.eve.api.account.EveCharacter;
 
 public class CharacterDB {
 	// the Activity or Application that is creating an object from this class.
@@ -34,6 +33,8 @@ public class CharacterDB {
 	public final static String CHAR_TABLE_EVEID = "char_eveid";
 	public final static String CHAR_TABLE_CORPID = "char_corpid";
 	public final static String CHAR_TABLE_CORPNAME = "char_corpname";
+	public final static String CHAR_TABLE_KEYID = "char_keyid";
+	public final static String CHAR_TABLE_VCODE = "char_vcode";
 
 	public CharacterDB(Context context) {
 		this.context = context;
@@ -56,13 +57,15 @@ public class CharacterDB {
 	 * @param rowStringTwo
 	 *            the value for the row's second column
 	 */
-	public void addCharacter(EveCharacter character) {
+	public void addCharacter(EveCharacter character, APICredentials credentials) {
 		// this is a key value pair holder used by android's SQLite functions
 		ContentValues values = new ContentValues();
 		values.put(CHAR_TABLE_NAME, character.name);
 		values.put(CHAR_TABLE_EVEID, character.charID);
 		values.put(CHAR_TABLE_CORPNAME, character.corpName);
 		values.put(CHAR_TABLE_CORPID, character.corpID);
+		values.put(CHAR_TABLE_KEYID, credentials.keyID);
+		values.put(CHAR_TABLE_VCODE, credentials.verificationCode);
 
 		// ask the database object to insert the new data
 		try {
@@ -93,7 +96,7 @@ public class CharacterDB {
 
 		try {
 			// ask the database object to create the cursor.
-			cursor = db.query(CHAR_TABLE_NAME, new String[] { CHAR_TABLE_ID, CHAR_TABLE_NAME, CHAR_TABLE_EVEID, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID },
+			cursor = db.query(CHAR_TABLE_NAME, new String[] { CHAR_TABLE_ID, CHAR_TABLE_NAME, CHAR_TABLE_EVEID, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE },
 					null, null, null, null, null);
 
 		} catch (SQLException e) {
@@ -131,7 +134,9 @@ public class CharacterDB {
 					+ " integer primary key autoincrement not null,"
 					+ CHAR_TABLE_NAME + " string," + CHAR_TABLE_EVEID
 					+ " integer," + CHAR_TABLE_CORPNAME + " string,"
-					+ CHAR_TABLE_CORPID + " integer" + ");";
+					+ CHAR_TABLE_CORPID + " integer,"
+					+ CHAR_TABLE_KEYID + " integer,"
+					+ CHAR_TABLE_VCODE + " text" + ");";
 			// execute the query string to the database.
 			db.execSQL(newTableQueryString);
 		}

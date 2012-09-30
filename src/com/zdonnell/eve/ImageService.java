@@ -2,17 +2,18 @@ package com.zdonnell.eve;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.ImageView;
 
 /**
@@ -28,6 +29,13 @@ public class ImageService {
 	
 	public final static int CHAR = 0;
 	public final static int CORP = 1;
+	
+	/**
+	 * if preCache has been called, this queue will 
+	 */
+	private Queue<Integer> preCacheQueue = new LinkedList<Integer>();
+	
+	private HashMap<Integer, ArrayList<ImageView>> viewsToUpdate = new HashMap<Integer, ArrayList<ImageView>>();
 	
 	/**
 	 * Dimensions to save the the portraits / corp logos at
@@ -68,6 +76,26 @@ public class ImageService {
 		this.context = context;
 	}
 	
+	/** 
+	 * @param actorsToPreCache actorsToPreCache[x][0] = actorID, actorsToPreCache[x][1] = actorType.
+	 */
+	public void preCache(int[][] actorsToPreCache)
+	{
+		for (int[] actor : actorsToPreCache)
+		{
+			preCacheQueue.add(actor[0]);
+			viewsToUpdate.put(actor[0], new ArrayList<ImageView>());
+			try 
+			{
+				setImageFromStorage(actor[0], null);
+			} 
+			catch (IOException e) 
+			{
+				setImageFromHTTP(actor[0], actor[1], null);
+			}
+		}
+	}
+	
 	/**
 	 * Takes an ImageView and Character or Corporation ID and sets the appropriate
 	 * image
@@ -79,6 +107,7 @@ public class ImageService {
 	public void setPortrait(ImageView view, int actorID, int actorType) 
 	{
 		if (memoryImageCache.containsKey(actorID)) view.setImageBitmap(memoryImageCache.get(actorID));
+		else if (preCacheQueue.contains(actorID)) viewsToUpdate.get(actorID).add(view);
 		else 
 		{		
 			try 
@@ -127,9 +156,9 @@ public class ImageService {
 		buf.read(bitmapBytes);
 
 		Bitmap bitmapFromSD = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
-		view.setImageBitmap(bitmapFromSD);
+		if (view != null) view.setImageBitmap(bitmapFromSD);
 		
-		memoryImageCache.put(actorID, bitmapFromSD);
+		imageDownloaded(actorID, bitmapFromSD, false);
 		
 		if (fis != null) fis.close();
 		if (buf != null) buf.close();
@@ -198,10 +227,37 @@ public class ImageService {
 		{
 			if (imageServed != null)
 			{
-				view.setImageBitmap(imageServed);
-				memoryImageCache.put(actorID, imageServed);
-				saveBitmap(imageServed, actorID);
+				if (view != null) view.setImageBitmap(imageServed);
+				imageDownloaded(actorID, imageServed, true);
 			}		
 		}
+	}
+	
+	/**
+	 * Handles cleanup after an image has been downloaded
+	 * 
+	 * @param actorID
+	 * @param imageServed
+	 */
+	private void imageDownloaded(int actorID, Bitmap imageServed, boolean save)
+	{
+		memoryImageCache.put(actorID, imageServed);
+		if (save) saveBitmap(imageServed, actorID);
+		
+		preCacheQueue.remove(actorID);
+		
+		if (viewsToUpdate != null)
+		{
+			ArrayList<ImageView> viewsForID = viewsToUpdate.get(actorID);
+			
+			if (viewsForID != null)
+			{
+				for (ImageView view : viewsForID) 
+				{
+					if (view != null) view.setImageBitmap(imageServed);
+				}
+			}
+			viewsToUpdate.remove(actorID);
+		}		
 	}
 }

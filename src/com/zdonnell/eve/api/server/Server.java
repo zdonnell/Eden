@@ -16,7 +16,7 @@ public class Server extends APIObject {
 	public Server(Context context)
 	{
 		super.setCredentials(credentials);
-		resourceManager = new ResourceManager(context);
+		resourceManager = ResourceManager.getInstance(context);
 	}
 	
 	/**
@@ -30,7 +30,7 @@ public class Server extends APIObject {
 		final String resourceSpecificURL = "server/ServerStatus.xml.aspx";
 		String fullURL = BaseRequest.baseURL + resourceSpecificURL;
 		
-		Document responseDoc = resourceManager.getResource(fullURL, true);
+		Document responseDoc = resourceManager.getResource(null, fullURL, true);
 
 		String[] status = new String[2];
 		
