@@ -6,22 +6,25 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import com.zdonnell.eve.api.account.EveCharacter;
+
 public class SheetItemListActivity extends FragmentActivity
         implements SheetItemListFragment.Callbacks {
 
     private boolean mTwoPane;
-
+        
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sheetitem_list);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        if (findViewById(R.id.sheetitem_detail_container) != null) {
+        ((SheetItemListFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(getIntent().getExtras().getInt("charID"));
+        
+        if (findViewById(R.id.sheetitem_detail_container) != null) 
+        {
             mTwoPane = true;
-            ((SheetItemListFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.sheetitem_list))
-                    .setActivateOnItemClick(true);
+            ((SheetItemListFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setActivateOnItemClick(true);
         }
     }
 

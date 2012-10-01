@@ -35,6 +35,8 @@ import com.zdonnell.eve.api.character.QueuedSkill;
 public class CharacterTabFragment extends Fragment {
 
 	private int columns;
+
+	boolean loadChars = false;
 	
 	private CharacterDB charDB;
 	
@@ -56,20 +58,8 @@ public class CharacterTabFragment extends Fragment {
 		charDB = new CharacterDB(context);
 		imageService = new ImageService(context);
 		
-		slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", context);
-		mercenoid22 = new Account(1171729, "4QsVKhpkQcM20jU1AahjcGzYFCSJljYFXld5X0wgLV8pYPJMeQRvQAUdDnSGhKvK", context);
-		slpeterson = new Account(339772, "4hlNY5h45OhfTgT6lo9RyXO4jEysiTDRYTXsEPenRBIuAheea3TBNn5LxnatkFjU", context);
-		//new GetCharacters().execute(slpeterson);
-		//new GetCharacters().execute(mercenoid22);
-		
-		if (this.getArguments().getInt("tab") == 1) 
-		{
-			//new GetCharacters().execute(slick50zd1);
-		} 
-		else 
-		{
-			//new GetCharacters().execute(mercenoid22);
-		}
+		setupImagePreCache();
+		if (false) loadCharacters();
 		
 		View main = (View) inflater.inflate(R.layout.character_fragment, container, false);
 		GridView charGrid = (GridView) main.findViewById(R.id.charGrid);
@@ -77,22 +67,6 @@ public class CharacterTabFragment extends Fragment {
 		columns = calcColumns((Activity) context);
 		
 		charGrid.setNumColumns(columns);
-
-		Cursor charCursor = charDB.allCharacters();
-		int characterNum = charCursor.getCount();
-		
-		int[][] preCacheArray = new int[characterNum*2][2];
-		while (charCursor.moveToNext())
-		{
-			int position = charCursor.getPosition();
-			
-			preCacheArray[position][0] = charCursor.getInt(2);
-			preCacheArray[position][1] = ImageService.CHAR;
-			preCacheArray[position + characterNum][0] = charCursor.getInt(4);
-			preCacheArray[position + characterNum][1] = ImageService.CORP;
-		}
-		charCursor.close();
-		imageService.preCache(preCacheArray);
 		
 		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
 
@@ -157,6 +131,8 @@ public class CharacterTabFragment extends Fragment {
 		@Override
 		public void bindView(View view, final Context context, Cursor cursor) 
 		{		
+			final int characterID = cursor.getInt(2);
+			
 			APICredentials credentials = new APICredentials(cursor.getInt(5), cursor.getString(6));
 			APICharacter character = new APICharacter(credentials, cursor.getInt(2), context);
 			
@@ -187,6 +163,7 @@ public class CharacterTabFragment extends Fragment {
 				@Override
 				public void onClick(View v) {
 					Intent intent = new Intent(context, SheetItemListActivity.class);
+					intent.putExtra("charID", characterID);
 	            	 startActivity(intent);
 				}
 			});
@@ -243,6 +220,42 @@ public class CharacterTabFragment extends Fragment {
 		return columns;
 	}
 	
+	/**
+	 * Compiles information to be sent to the ImageService to pre cache
+	 * portraits and corp logos.
+	 */
+	private void setupImagePreCache()
+	{
+		Cursor charCursor = charDB.allCharacters();
+		int characterNum = charCursor.getCount();
+		
+		int[][] preCacheArray = new int[characterNum*2][2];
+		while (charCursor.moveToNext())
+		{
+			int position = charCursor.getPosition();
+			
+			preCacheArray[position][0] = charCursor.getInt(2);
+			preCacheArray[position][1] = ImageService.CHAR;
+			preCacheArray[position + characterNum][0] = charCursor.getInt(4);
+			preCacheArray[position + characterNum][1] = ImageService.CORP;
+		}
+		charCursor.close();
+		imageService.preCache(preCacheArray);
+	}
+	
+	/**
+	 * Testing function
+	 */
+	private void loadCharacters()
+	{
+		slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", context);
+		mercenoid22 = new Account(1171729, "4QsVKhpkQcM20jU1AahjcGzYFCSJljYFXld5X0wgLV8pYPJMeQRvQAUdDnSGhKvK", context);
+		slpeterson = new Account(339772, "4hlNY5h45OhfTgT6lo9RyXO4jEysiTDRYTXsEPenRBIuAheea3TBNn5LxnatkFjU", context);
+		new GetCharacters().execute(slpeterson);
+		new GetCharacters().execute(slick50zd1);
+		new GetCharacters().execute(mercenoid22);
+	}
+	
 	private class QueueTimeRemainingCountdown extends CountDownTimer
 	{
 		private TextView view;
@@ -257,10 +270,7 @@ public class CharacterTabFragment extends Fragment {
 		
 		public void updateTextView(TextView view)
 		{
-			if (finished) 
-			{
-				view.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
-			}
+			if (finished) view.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
 			this.view = view;
 		}
 

@@ -19,18 +19,21 @@ public class SheetItemDetailFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) 
+    {
         super.onCreate(savedInstanceState);
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
+        if (getArguments().containsKey(ARG_ITEM_ID)) 
+        {
             mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
+    {
         View rootView = inflater.inflate(R.layout.fragment_sheetitem_detail, container, false);
-        if (mItem != null) {
+        if (mItem != null) 
+        {
             ((TextView) rootView.findViewById(R.id.sheetitem_detail)).setText(mItem.content);
         }
         return rootView;

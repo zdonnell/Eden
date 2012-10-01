@@ -1,21 +1,31 @@
 package com.zdonnell.eve;
 
-import com.zdonnell.eve.dummy.DummyContent;
-
-import android.R;
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 
-public class SheetItemListFragment extends ListFragment {
+import com.zdonnell.eve.api.account.EveCharacter;
+import com.zdonnell.eve.dummy.DummyContent;
+
+public class SheetItemListFragment extends Fragment {
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
     private Callbacks mCallbacks = sDummyCallbacks;
     private int mActivatedPosition = ListView.INVALID_POSITION;
+    
+    private View rootView;
+    
+    private ImageService imageService;
+     //private EveCharacter character;
+    
+    private ListView listView;
 
     public interface Callbacks {
 
@@ -28,16 +38,24 @@ public class SheetItemListFragment extends ListFragment {
         }
     };
 
-    public SheetItemListFragment() {
+    public SheetItemListFragment() 
+    {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-                R.layout.simple_list_item_activated_1,
-                R.id.text1,
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
+    	imageService = new ImageService(inflater.getContext());
+    	
+    	rootView = inflater.inflate(R.layout.character_sheet, container, false);
+    	listView = (ListView) rootView.findViewById(R.id.char_sheet_list);
+    	
+    	listView.setAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
+                android.R.layout.simple_list_item_activated_1,
+                android.R.id.text1,
                 DummyContent.ITEMS));
+    	
+    	return rootView;
     }
 
     @Override
@@ -65,11 +83,11 @@ public class SheetItemListFragment extends ListFragment {
         mCallbacks = sDummyCallbacks;
     }
 
-    @Override
+    /*@Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
         mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
-    }
+    }*/
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -80,18 +98,23 @@ public class SheetItemListFragment extends ListFragment {
     }
 
     public void setActivateOnItemClick(boolean activateOnItemClick) {
-        getListView().setChoiceMode(activateOnItemClick
+    	listView.setChoiceMode(activateOnItemClick
                 ? ListView.CHOICE_MODE_SINGLE
                 : ListView.CHOICE_MODE_NONE);
     }
 
     public void setActivatedPosition(int position) {
         if (position == ListView.INVALID_POSITION) {
-            getListView().setItemChecked(mActivatedPosition, false);
+        	listView.setItemChecked(mActivatedPosition, false);
         } else {
-            getListView().setItemChecked(position, true);
+        	listView.setItemChecked(position, true);
         }
 
         mActivatedPosition = position;
     }
+
+	public void setCharacter(int characterID) {
+		ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
+    	imageService.setPortrait(portrait, characterID, ImageService.CHAR);
+	}
 }
