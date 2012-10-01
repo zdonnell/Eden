@@ -14,9 +14,10 @@
 	    android:layout_height="2dp"
 	    android:background="#242424"
 	    />
-    <ListView 
+
+    <ListView
         android:id="@+id/char_sheet_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />t
+        android:headerDividersEnabled="true" />
 </LinearLayout>

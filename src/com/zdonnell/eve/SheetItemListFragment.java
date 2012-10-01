@@ -1,6 +1,7 @@
 package com.zdonnell.eve;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.zdonnell.eve.api.account.EveCharacter;
 import com.zdonnell.eve.dummy.DummyContent;
@@ -49,6 +51,12 @@ public class SheetItemListFragment extends Fragment {
     	
     	rootView = inflater.inflate(R.layout.character_sheet, container, false);
     	listView = (ListView) rootView.findViewById(R.id.char_sheet_list);
+    	
+    	TextView headerText = new TextView(inflater.getContext());
+    	headerText.setText("CHARACTER SHEET");
+    	headerText.setTextColor(Color.DKGRAY);
+    	
+    	listView.addHeaderView(headerText, new Object(), false);
     	
     	listView.setAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
                 android.R.layout.simple_list_item_activated_1,
@@ -113,6 +121,10 @@ public class SheetItemListFragment extends Fragment {
         mActivatedPosition = position;
     }
 
+    /**
+     * A call made to load up character information.  Should be called immediately after the fragment has been inflated.
+     * @param characterID
+     */
 	public void setCharacter(int characterID) {
 		ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
     	imageService.setPortrait(portrait, characterID, ImageService.CHAR);
