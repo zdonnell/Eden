@@ -63,13 +63,11 @@ public class CharacterTabFragment extends Fragment {
 		
 		View main = (View) inflater.inflate(R.layout.character_fragment, container, false);
 		GridView charGrid = (GridView) main.findViewById(R.id.charGrid);
+		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
 		
 		columns = calcColumns((Activity) context);
-		
 		charGrid.setNumColumns(columns);
 		
-		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
-
 		return main;
 	}
 

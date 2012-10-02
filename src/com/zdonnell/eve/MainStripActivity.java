@@ -101,10 +101,15 @@ public class MainStripActivity extends FragmentActivity {
         }
     }
     
+    /**
+     * {@link AsyncTask} to query for the Eve Online TQ Server Status
+     * 
+     * @author Zach
+     *
+     */
     private class SyncStatus extends AsyncTask<TextView, Integer, String[]> 
 	{	
 		TextView serverStatus;
-		
 		Context context;
 		
 		public SyncStatus(Context context)
