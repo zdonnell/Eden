@@ -6,7 +6,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
-import com.zdonnell.eve.api.account.EveCharacter;
+import com.zdonnell.eve.api.APICredentials;
+import com.zdonnell.eve.api.character.APICharacter;
 
 public class SheetItemListActivity extends FragmentActivity
         implements SheetItemListFragment.Callbacks {
@@ -19,7 +20,10 @@ public class SheetItemListActivity extends FragmentActivity
         setContentView(R.layout.activity_sheetitem_list);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ((SheetItemListFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(getIntent().getExtras().getInt("charID"));
+        String[] characterInfo = getIntent().getExtras().getStringArray("character");
+        APICharacter assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
+        
+        ((SheetItemListFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar);
         
         if (findViewById(R.id.sheetitem_detail_container) != null) 
         {

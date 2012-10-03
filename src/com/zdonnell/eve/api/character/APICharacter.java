@@ -14,7 +14,6 @@ import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.BaseRequest;
 import com.zdonnell.eve.api.ResourceManager;
-import com.zdonnell.eve.api.account.EveCharacter;
 
 public class APICharacter extends APIObject {
 	
@@ -32,32 +31,40 @@ public class APICharacter extends APIObject {
 	public int id() { return characterID; }
 	
 	/**
+	 * @param apiCallback 
 	 * 
 	 */
-	public ArrayList<QueuedSkill> skillQueue() 
+	public void getSkillQueue(APICallback<ArrayList<QueuedSkill>> apiCallback) 
 	{	
 		final String resourceSpecificURL = "char/SkillQueue.xml.aspx";
 		String fullURL = BaseRequest.baseURL + resourceSpecificURL;
 		
-		Document resourceDoc = resourceManager.getResource(credentials, fullURL, true, new BasicNameValuePair("characterID", String.valueOf(characterID)));		
-		NodeList skillNodes = resourceDoc.getElementsByTagName("row");
+		resourceManager.getResource(apiCallback, new SkillQueueParser(), credentials, fullURL, true, new BasicNameValuePair("characterID", String.valueOf(characterID)));		
+	}
+	
+	private class SkillQueueParser extends APIParser<ArrayList<QueuedSkill>>
+	{
+		@Override
+		public ArrayList<QueuedSkill> parse(Document document) {
+			
+			NodeList skillNodes = document.getElementsByTagName("row");
+			ArrayList<QueuedSkill> skillQueue = new ArrayList<QueuedSkill>();
 
-		ArrayList<QueuedSkill> skillQueue = new ArrayList<QueuedSkill>();
+			for (int x = 0; x < skillNodes.getLength(); x++) {
+				Node skillNode = skillNodes.item(x);
+				NamedNodeMap skillAttributes = skillNode.getAttributes();
 
-		for (int x = 0; x < skillNodes.getLength(); x++) {
-			Node skillNode = skillNodes.item(x);
-			NamedNodeMap skillAttributes = skillNode.getAttributes();
+				int skillID = Integer.parseInt(skillAttributes.getNamedItem("typeID").getTextContent());
+				int skillLevel = Integer.parseInt(skillAttributes.getNamedItem("level").getTextContent());
+				int startSP = Integer.parseInt(skillAttributes.getNamedItem("startSP").getTextContent());
+				int endSP = Integer.parseInt(skillAttributes.getNamedItem("endSP").getTextContent());
+				String startTime = skillAttributes.getNamedItem("startTime").getTextContent();
+				String endTime = skillAttributes.getNamedItem("endTime").getTextContent();
 
-			int skillID = Integer.parseInt(skillAttributes.getNamedItem("typeID").getTextContent());
-			int skillLevel = Integer.parseInt(skillAttributes.getNamedItem("level").getTextContent());
-			int startSP = Integer.parseInt(skillAttributes.getNamedItem("startSP").getTextContent());
-			int endSP = Integer.parseInt(skillAttributes.getNamedItem("endSP").getTextContent());
-			String startTime = skillAttributes.getNamedItem("startTime").getTextContent();
-			String endTime = skillAttributes.getNamedItem("endTime").getTextContent();
-
-			skillQueue.add(new QueuedSkill(skillID, skillLevel, startSP, endSP, startTime, endTime));
+				skillQueue.add(new QueuedSkill(skillID, skillLevel, startSP, endSP, startTime, endTime));
+			}
+			
+			return skillQueue;
 		}
-		
-		return skillQueue;
 	}
 }

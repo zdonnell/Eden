@@ -1,8 +1,13 @@
 package com.zdonnell.eve;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +15,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.zdonnell.eve.api.APIObject;
+import com.zdonnell.eve.api.character.APICharacter;
+import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.dummy.DummyContent;
 
 public class SheetItemListFragment extends Fragment {
@@ -23,7 +32,10 @@ public class SheetItemListFragment extends Fragment {
     private View rootView;
     
     private ImageService imageService;
-     //private EveCharacter character;
+    private APICharacter character;
+    private ArrayList<QueuedSkill> skillQueue;
+    
+    private TextView skillTimeRemaining, skillInTraining;
     
     private ListView listView;
 
@@ -51,6 +63,8 @@ public class SheetItemListFragment extends Fragment {
     	listView = (ListView) rootView.findViewById(R.id.char_sheet_list);
     	
     	LinearLayout headerText = (LinearLayout) inflater.inflate(R.layout.char_sheet_header_text, container, false);
+    	skillTimeRemaining = (TextView) rootView.findViewById(R.id.current_skill_time);
+    	skillInTraining = (TextView) rootView.findViewById(R.id.current_skill);
     	
     	listView.addHeaderView(headerText, null, false);
     	
@@ -121,8 +135,75 @@ public class SheetItemListFragment extends Fragment {
      * A call made to load up character information.  Should be called immediately after the fragment has been inflated.
      * @param characterID
      */
-	public void setCharacter(int characterID) {
+	public void setCharacter(APICharacter character) {
 		ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
-    	imageService.setPortrait(portrait, characterID, ImageService.CHAR);
+    	imageService.setPortrait(portrait, character.id(), ImageService.CHAR);
+    	
+    	character.getSkillQueue(new APIObject.APICallback<ArrayList<QueuedSkill>>() {
+			@Override
+			public void onUpdate(ArrayList<QueuedSkill> updatedData) {
+				// TODO Auto-generated method stub
+				
+			}
+    	});
+    	
+    	long timeUntilSkillFinish = 0;
+		try {
+			timeUntilSkillFinish = Tools.timeUntilUTCTime(skillQueue.get(0).endTime);
+	    	new SkillTimeRemainingCountdown(timeUntilSkillFinish, 1000, skillTimeRemaining).start();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		} catch (IndexOutOfBoundsException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private class SkillTimeRemainingCountdown extends CountDownTimer
+	{
+		private TextView view;
+		
+		public SkillTimeRemainingCountdown(long millisInFuture, long countDownInterval, TextView view) {
+			super(millisInFuture, countDownInterval);
+			this.view = view;
+		}
+
+		@Override
+		public void onFinish() {
+			view.setText(Html.fromHtml("<FONT COLOR='#AAA'>Skill Training Completed</FONT>"));
+			
+			//skillQueue = character.skillQueue(); /* try to refresh resource */
+			boolean foundSkill = false;
+			
+			/*
+			 * When a skill completes we need to check the Queue for the next skill that is to start training.
+			 * 
+			 * It is possible that the cached skillQueue resource has skills that have already finished, so we
+			 * need to iterate through the queue until we find the next skill that has yet to finish.
+			 */
+			for (int x = 0; x < skillQueue.size(); x++)
+			{
+				long timeUntilSkillCompletion = 0;
+				try { timeUntilSkillCompletion = Tools.timeUntilUTCTime(skillQueue.get(x).endTime); } catch (ParseException e) { e.printStackTrace(); }
+				
+				if (timeUntilSkillCompletion > 0) 
+				{
+					new SkillTimeRemainingCountdown(timeUntilSkillCompletion, 1000, view).start();
+					foundSkill = true;
+					break;
+				}
+			}
+			if (!foundSkill) view.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
+		}
+
+		@Override
+		public void onTick(long millisUntilFinished) 
+		{
+			
+			if (millisUntilFinished < 24 * 60 * 60 * 1000) /* 1 Day in millis */
+			{
+				view.setText(Html.fromHtml("<FONT COLOR='#FFBB33'>" + Tools.millisToEveFormatString(millisUntilFinished) + "</FONT>"));
+			}
+			else view.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + Tools.millisToEveFormatString(millisUntilFinished) + "</FONT>"));
+		}
 	}
 }

@@ -46,7 +46,7 @@ public class CharacterTabFragment extends Fragment {
 	
 	private int[] calculatedColumnWidths;
 		
-	private HashMap<Integer, QueueTimeRemainingCountdown> cachedTrainingTime = new HashMap<Integer, QueueTimeRemainingCountdown>();
+	private HashMap<Integer, TimeRemainingCountdown> cachedTrainingTime = new HashMap<Integer, TimeRemainingCountdown>();
 	
 	Account slick50zd1, mercenoid22, slpeterson;
 
@@ -112,7 +112,7 @@ public class CharacterTabFragment extends Fragment {
 				}
 			}
 			
-			QueueTimeRemainingCountdown timer = new QueueTimeRemainingCountdown(timeUntilQueueEmpty, 1000, trainingTimeView, characterID);
+			TimeRemainingCountdown timer = new TimeRemainingCountdown(timeUntilQueueEmpty, 1000, trainingTimeView);
 			cachedTrainingTime.put(characterID, timer);
 			timer.start();
 		}
@@ -131,7 +131,7 @@ public class CharacterTabFragment extends Fragment {
 		{		
 			final int characterID = cursor.getInt(2);
 			
-			APICredentials credentials = new APICredentials(cursor.getInt(5), cursor.getString(6));
+			final APICredentials credentials = new APICredentials(cursor.getInt(5), cursor.getString(6));
 			APICharacter character = new APICharacter(credentials, cursor.getInt(2), context);
 			
 			int calculatedWidth = calculatedColumnWidths[cursor.getPosition() % columns];
@@ -161,7 +161,13 @@ public class CharacterTabFragment extends Fragment {
 				@Override
 				public void onClick(View v) {
 					Intent intent = new Intent(context, SheetItemListActivity.class);
-					intent.putExtra("charID", characterID);
+					
+					String[] CharacterInfo = new String[3];
+					CharacterInfo[0] = String.valueOf(characterID);
+					CharacterInfo[1] = String.valueOf(credentials.keyID);
+					CharacterInfo[2] = credentials.verificationCode;
+					
+					intent.putExtra("character", CharacterInfo);
 	            	 startActivity(intent);
 				}
 			});
@@ -252,42 +258,5 @@ public class CharacterTabFragment extends Fragment {
 		new GetCharacters().execute(slpeterson);
 		new GetCharacters().execute(slick50zd1);
 		new GetCharacters().execute(mercenoid22);
-	}
-	
-	private class QueueTimeRemainingCountdown extends CountDownTimer
-	{
-		private TextView view;
-		private int charID;
-		private boolean finished = false;
-		
-		public QueueTimeRemainingCountdown(long millisInFuture, long countDownInterval, TextView view, int charID) {
-			super(millisInFuture, countDownInterval);
-			this.view = view;
-			this.charID = charID;
-		}
-		
-		public void updateTextView(TextView view)
-		{
-			if (finished) view.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
-			this.view = view;
-		}
-
-		@Override
-		public void onFinish() {
-			view.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
-			finished = true;
-		}
-
-		@Override
-		public void onTick(long millisUntilFinished) 
-		{
-			if (millisUntilFinished < 24 * 60 * 60 * 1000 && millisUntilFinished > 0) 
-			{
-				cachedTrainingTime.put(charID, this);
-				view.setText(Html.fromHtml("<FONT COLOR='#FFBB33'>" + Tools.millisToEveFormatString(millisUntilFinished) + "</FONT>"));
-			}
-			else view.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + Tools.millisToEveFormatString(millisUntilFinished) + "</FONT>"));
-		}
-		
 	}
 }

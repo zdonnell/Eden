@@ -32,71 +32,73 @@ import android.util.Log;
  */
 public class ResourceManager {
 
+	/* Singleton instance of the Resource Manager */
 	private static ResourceManager instance;
 	
-	private Context context;
-	
+	/* SQLite database to stored cached API resources */
 	private CacheDatabase cacheDatabase;
 	
-	private APICredentials credentials;
-
-	private boolean needsCredentials = true;
-	
-	private ResourceManager(Context context)	
-	{
-		this.context = context;
-		cacheDatabase = new CacheDatabase(context);
-	}
-	
+	/**
+	 * Singleton access method
+	 * 
+	 * @param context
+	 * @return
+	 */
 	public static ResourceManager getInstance(Context context)
 	{
 		if (instance == null)
 		{
-			instance = new ResourceManager(context);
+			instance = new ResourceManager();
+			instance.cacheDatabase = new CacheDatabase(context);
 		}
 		return instance;
 	}
 	
 	/**
-	 * Obtains the raw API resource specified by resourceURL and actorID
+	 * Gets a specified API Resource and sends it to the provided Callback class
 	 * 
+	 * @param apiCallback See {@link APICallback} for more information
+	 * @param parser 
+	 * @param credentials
 	 * @param resourceURL
-	 * @param uniqueIDs 
-	 * @return
+	 * @param refresh
+	 * @param uniqueIDs
 	 */
-	public Document getResource(APICredentials credentials, String resourceURL, boolean refresh, NameValuePair ...uniqueIDs)
-	{
-		String cachedResource = "";
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void getResource(APIObject.APICallback apiCallback, APIObject.APIParser parser, APICredentials credentials, String resourceURL, boolean refresh, NameValuePair ...uniqueIDs)
+	{		
+		ArrayList<NameValuePair> assembledPOSTData = new ArrayList<NameValuePair>();
+		for (NameValuePair nvp : uniqueIDs) assembledPOSTData.add(nvp);
 		
-		if (cacheDatabase.isCached(resourceURL, uniqueIDs, refresh))
+		if (credentials != null)
 		{
-			cachedResource = cacheDatabase.getCachedResource(resourceURL, uniqueIDs);
-		}
-		else
-		{
-			ArrayList<NameValuePair> assembledPOSTData = new ArrayList<NameValuePair>();
-			for (NameValuePair nvp : uniqueIDs) assembledPOSTData.add(nvp);
-			
-			if (credentials != null)
-			{
-				assembledPOSTData.add(new BasicNameValuePair("keyID", String.valueOf(credentials.keyID)));
-				assembledPOSTData.add(new BasicNameValuePair("vCode", credentials.verificationCode));
-			}
-			
-			cachedResource = queryResource(resourceURL, assembledPOSTData);
-			
-			if (cachedResource != null)
-			{
-				if (uniqueIDs.length == 0 && credentials != null) 
-				{
-					uniqueIDs = new BasicNameValuePair[] { new BasicNameValuePair("keyID", String.valueOf(credentials.keyID))};
-				}
-				cacheDatabase.updateCache(resourceURL, uniqueIDs, cachedResource);
-			}
+			assembledPOSTData.add(new BasicNameValuePair("keyID", String.valueOf(credentials.keyID)));
+			assembledPOSTData.add(new BasicNameValuePair("vCode", credentials.verificationCode));
 		}
 		
-		Log.d("RESOURCE", cachedResource);
-		return buildDocument(cachedResource);
+		String queriedResource = "";
+		if (cacheDatabase.cacheExists(resourceURL, uniqueIDs))
+		{
+			String cachedResource = cacheDatabase.getCachedResource(resourceURL, uniqueIDs);
+			apiCallback.onUpdate(parser.parse(buildDocument(cachedResource)));
+			
+			if (cacheDatabase.cacheExpired(resourceURL, uniqueIDs)) queriedResource = queryResource(resourceURL, assembledPOSTData);
+		}
+		else queriedResource = queryResource(resourceURL, assembledPOSTData);
+		
+		/*
+		 *  If a response was generated, update the callback and cache it 
+		 */
+		if (!queriedResource.isEmpty())
+		{
+			apiCallback.onUpdate(parser.parse(buildDocument(queriedResource)));
+
+			if (uniqueIDs.length == 0 && credentials != null) 
+			{
+				uniqueIDs = new BasicNameValuePair[] { new BasicNameValuePair("keyID", String.valueOf(credentials.keyID))};
+			}
+			cacheDatabase.updateCache(resourceURL, uniqueIDs, queriedResource);
+		}
 	}
 	
 	/**

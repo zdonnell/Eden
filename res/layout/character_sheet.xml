@@ -20,6 +20,13 @@
 	        android:layout_height="50dp"
 	        android:layout_alignParentBottom="true"
 	        />
+	    <View
+		    android:layout_width="match_parent"
+		    android:layout_height="1dp"
+		    android:background="#999"
+		   	android:layout_alignParentBottom="true"
+		    android:layout_marginBottom="50dp"
+		    />
 
 	    <LinearLayout 
 	        android:padding="7dp"
@@ -36,7 +43,8 @@
 		            android:id="@+id/current_skill"
 		            android:layout_width="match_parent"
 		            android:layout_height="wrap_content"
-		            android:textColor="#CCC"
+		            android:textColor="#B0B0B0"
+		            android:textStyle="bold"
 		            android:text="Weapon Upgrades V" />
 		        <TextView 
 		            android:id="@+id/current_skill_time"
@@ -56,7 +64,8 @@
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
 		            android:layout_gravity="right"
-		            android:textColor="#CCC"
+		            android:textStyle="bold"
+		            android:textColor="#B0B0B0"
 		            android:text="68,382,424" />
 		        <TextView 
 		            android:id="@+id/current_clone"
