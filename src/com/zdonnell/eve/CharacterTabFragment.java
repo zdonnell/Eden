@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.account.Account;
 import com.zdonnell.eve.api.account.EveCharacter;
@@ -77,47 +78,6 @@ public class CharacterTabFragment extends Fragment {
 		setUserVisibleHint(true);
 	}
 
-	private class GetCharacters extends	AsyncTask<Account, Integer, ArrayList<EveCharacter>> 
-	{	
-		private APICredentials credentials;
-		
-		protected ArrayList<EveCharacter> doInBackground(Account... accounts) { this.credentials = accounts[0].getCredentials(); return accounts[0].characters(); }
-
-		protected void onPostExecute(ArrayList<EveCharacter> characters) 
-		{
-			for (EveCharacter character : characters) charDB.addCharacter(character, credentials);
-		}
-	}
-	
-	private class SetTrainingTime extends AsyncTask<APICharacter, Integer, ArrayList<QueuedSkill>> 
-	{	
-		private TextView trainingTimeView;
-		private int characterID;
-		
-		public SetTrainingTime(TextView trainingTimeView) { this.trainingTimeView = trainingTimeView; }
-		
-		protected ArrayList<QueuedSkill> doInBackground(APICharacter... characters) { characterID = characters[0].id(); return characters[0].skillQueue(); }
-
-		protected void onPostExecute(final ArrayList<QueuedSkill> skillQueue) 
-		{
-			long timeUntilQueueEmpty = -1;
-			
-			if (skillQueue.isEmpty()) timeUntilQueueEmpty = 0;
-			else
-			{
-				try {
-					timeUntilQueueEmpty = Tools.timeUntilUTCTime(skillQueue.get(skillQueue.size() - 1).endTime);
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			TimeRemainingCountdown timer = new TimeRemainingCountdown(timeUntilQueueEmpty, 1000, trainingTimeView);
-			cachedTrainingTime.put(characterID, timer);
-			timer.start();
-		}
-	}
-
 	private class CharacterCursorAdapater extends CursorAdapter 
 	{		
 		public CharacterCursorAdapater(Context context, Cursor c) 
@@ -149,12 +109,37 @@ public class CharacterTabFragment extends Fragment {
 			TextView charName = (TextView) view.findViewById(R.id.char_tile_name);
 			charName.setText(cursor.getString(1));
 			
-			TextView corpName = (TextView) view.findViewById(R.id.char_tile_training);			
+			final TextView corpName = (TextView) view.findViewById(R.id.char_tile_training);			
+			
 			if (cachedTrainingTime.containsKey(character.id()))
 			{
 				cachedTrainingTime.get(character.id()).updateTextView(corpName);
 			} 
-			else new SetTrainingTime(corpName).execute(character);			
+			else character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
+			{
+				@Override
+				public void onUpdate(ArrayList<QueuedSkill> updatedData) {
+					long timeUntilQueueEmpty = -1;
+					
+					if (updatedData.isEmpty()) timeUntilQueueEmpty = 0;
+					else
+					{
+						try {
+							timeUntilQueueEmpty = Tools.timeUntilUTCTime(updatedData.get(updatedData.size() - 1).endTime);
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+					}
+					
+					TimeRemainingCountdown timer = new TimeRemainingCountdown(timeUntilQueueEmpty, 1000, corpName);					
+					if (cachedTrainingTime.containsKey(characterID))
+					{
+						cachedTrainingTime.remove(characterID).cancel();
+					} 
+					cachedTrainingTime.put(characterID, timer);
+					timer.start();
+				}
+			});	
 			
 			view.setOnClickListener(new View.OnClickListener() {
 				
@@ -255,8 +240,24 @@ public class CharacterTabFragment extends Fragment {
 		slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", context);
 		mercenoid22 = new Account(1171729, "4QsVKhpkQcM20jU1AahjcGzYFCSJljYFXld5X0wgLV8pYPJMeQRvQAUdDnSGhKvK", context);
 		slpeterson = new Account(339772, "4hlNY5h45OhfTgT6lo9RyXO4jEysiTDRYTXsEPenRBIuAheea3TBNn5LxnatkFjU", context);
-		new GetCharacters().execute(slpeterson);
-		new GetCharacters().execute(slick50zd1);
-		new GetCharacters().execute(mercenoid22);
+				
+		slick50zd1.characters(new APICallback<ArrayList<EveCharacter>>() {
+			@Override
+			public void onUpdate(ArrayList<EveCharacter> updatedData) {
+				for (EveCharacter character : updatedData) charDB.addCharacter(character, slick50zd1.getCredentials());				
+			}
+		});
+		mercenoid22.characters(new APICallback<ArrayList<EveCharacter>>() {
+			@Override
+			public void onUpdate(ArrayList<EveCharacter> updatedData) {
+				for (EveCharacter character : updatedData) charDB.addCharacter(character, mercenoid22.getCredentials());				
+			}
+		});
+		slpeterson.characters(new APICallback<ArrayList<EveCharacter>>() {
+			@Override
+			public void onUpdate(ArrayList<EveCharacter> updatedData) {
+				for (EveCharacter character : updatedData) charDB.addCharacter(character, slpeterson.getCredentials());				
+			}
+		});
 	}
 }

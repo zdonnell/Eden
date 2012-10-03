@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.QueuedSkill;
@@ -137,25 +138,22 @@ public class SheetItemListFragment extends Fragment {
      */
 	public void setCharacter(APICharacter character) {
 		ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
-    	imageService.setPortrait(portrait, character.id(), ImageService.CHAR);
+		imageService.setPortrait(portrait, character.id(), ImageService.CHAR);
     	
-    	character.getSkillQueue(new APIObject.APICallback<ArrayList<QueuedSkill>>() {
+    	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() {
 			@Override
-			public void onUpdate(ArrayList<QueuedSkill> updatedData) {
-				// TODO Auto-generated method stub
-				
+			public void onUpdate(ArrayList<QueuedSkill> skillQueue) 
+			{
+				long timeUntilSkillFinish = 0;
+				try 
+				{
+					timeUntilSkillFinish = Tools.timeUntilUTCTime(skillQueue.get(0).endTime);
+			    	new SkillTimeRemainingCountdown(timeUntilSkillFinish, 1000, skillTimeRemaining).start();
+				} 
+				catch (ParseException e) { e.printStackTrace();	}
+				catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
 			}
-    	});
-    	
-    	long timeUntilSkillFinish = 0;
-		try {
-			timeUntilSkillFinish = Tools.timeUntilUTCTime(skillQueue.get(0).endTime);
-	    	new SkillTimeRemainingCountdown(timeUntilSkillFinish, 1000, skillTimeRemaining).start();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		} catch (IndexOutOfBoundsException e) {
-			e.printStackTrace();
-		}
+    	});	
 	}
 	
 	private class SkillTimeRemainingCountdown extends CountDownTimer

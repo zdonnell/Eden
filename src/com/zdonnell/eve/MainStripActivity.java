@@ -15,6 +15,8 @@ import android.text.Html;
 import android.view.Menu;
 import android.widget.TextView;
 
+import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.server.Server;
 
 public class MainStripActivity extends FragmentActivity {
@@ -47,13 +49,11 @@ public class MainStripActivity extends FragmentActivity {
        
         /* Load in the TQ status info to the actionBar */
         aBar.setCustomView(R.layout.tq_status);
-        TextView ServerStatus = (TextView) findViewById(R.id.server_status);
-        new SyncStatus(getBaseContext()).execute(ServerStatus);
+        setServerStatus();
         
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
     }
 
     @Override
@@ -101,42 +101,23 @@ public class MainStripActivity extends FragmentActivity {
         }
     }
     
-    /**
-     * {@link AsyncTask} to query for the Eve Online TQ Server Status
-     * 
-     * @author Zach
-     *
-     */
-    private class SyncStatus extends AsyncTask<TextView, Integer, String[]> 
-	{	
-		TextView serverStatus;
-		Context context;
-		
-		public SyncStatus(Context context)
-		{
-			this.context = context;
-		}
-		
-		protected String[] doInBackground(TextView... views) 
-		{ 			
-			serverStatus = views[0];
-			Server server = new Server(context);
-			
-			return server.status(); 
-		}
-
-		protected void onPostExecute(String[] status) 
-		{			
-			if (status[0].equals("True")) 
-			{
-				NumberFormat nf = NumberFormat.getInstance();
-				serverStatus.setText(Html.fromHtml("<B><FONT COLOR='#669900'>ONLINE</FONT></B> " + nf.format(Integer.parseInt(status[1]))));
+    private void setServerStatus()
+    {
+    	Server server = new Server(getBaseContext());
+        final TextView serverStatus = (TextView) findViewById(R.id.server_status);
+		server.status(new APICallback<String[]>() {
+			@Override
+			public void onUpdate(String[] updatedData) {
+				if (updatedData[0].equals("True")) 
+				{
+					NumberFormat nf = NumberFormat.getInstance();
+					serverStatus.setText(Html.fromHtml("<B><FONT COLOR='#669900'>ONLINE</FONT></B> " + nf.format(Integer.parseInt(updatedData[1]))));
+				}
+				else
+				{
+					serverStatus.setText(Html.fromHtml("<B><FONT COLOR='#CC0000'>OFFLINE</FONT></B>"));
+				}
 			}
-			else
-			{
-				serverStatus.setText(Html.fromHtml("<B><FONT COLOR='#CC0000'>OFFLINE</FONT></B>"));
-			}
-			
-		}
-	}
+		}); 
+    }
 }

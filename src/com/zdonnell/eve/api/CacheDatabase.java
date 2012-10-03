@@ -52,9 +52,26 @@ public class CacheDatabase {
 	 * @param actorID the relevant ID, could be accountID, charID, corpID, etc.
 	 * @return
 	 */
-	public boolean isCached(String URL, NameValuePair[] actorIDs, boolean refreshCache)
+	public boolean cacheExists(String URL, NameValuePair[] actorIDs)
 	{
-		boolean isCached = false;
+		boolean cacheExists = false;
+		String uniqueIDString = "";
+		
+		for (NameValuePair ID : actorIDs) uniqueIDString += ID.getValue();
+		
+		String[] insertValues = new String[] { URL, uniqueIDString };
+		String query = "SELECT " + TABLE_EXPIRE + " FROM cache_status WHERE " + TABLE_RESULT_URL + "=? AND " + TABLE_ACTOR_ID + "=?";
+		Cursor c = db.rawQuery(query, insertValues);
+		
+		if (c.moveToFirst()) cacheExists = true;
+		c.close();
+		
+		return cacheExists;
+	}
+	
+	public boolean cacheExpired(String URL, NameValuePair[] actorIDs)
+	{
+		boolean cacheExpired = true;
 		String uniqueIDString = "";
 		
 		for (NameValuePair ID : actorIDs) uniqueIDString += ID.getValue();
@@ -81,11 +98,6 @@ public class CacheDatabase {
 			}
 			catch (ParseException e) 
 			{
-				/*
-				 * In error, it will be assumed that the request should query
-				 * the server
-				 */
-				isCached = false;
 				e.printStackTrace();
 			}
 
@@ -93,15 +105,11 @@ public class CacheDatabase {
 
 			if (now.before(cachedUntil)) 
 			{
-				isCached = true;
-			}
-			else if (!refreshCache)
-			{
-				isCached = true;
+				cacheExpired = false;
 			}
 		}
 
-		return isCached;
+		return cacheExpired;
 	}
 
 	/**

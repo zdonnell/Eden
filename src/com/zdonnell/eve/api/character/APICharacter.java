@@ -10,10 +10,12 @@ import org.w3c.dom.NodeList;
 
 import android.content.Context;
 
+import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.BaseRequest;
 import com.zdonnell.eve.api.ResourceManager;
+import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
 
 public class APICharacter extends APIObject {
 	
@@ -39,7 +41,7 @@ public class APICharacter extends APIObject {
 		final String resourceSpecificURL = "char/SkillQueue.xml.aspx";
 		String fullURL = BaseRequest.baseURL + resourceSpecificURL;
 		
-		resourceManager.getResource(apiCallback, new SkillQueueParser(), credentials, fullURL, true, new BasicNameValuePair("characterID", String.valueOf(characterID)));		
+		resourceManager.requestResource(new APIRequestWrapper(apiCallback, new SkillQueueParser(), credentials, fullURL, true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
 	}
 	
 	private class SkillQueueParser extends APIParser<ArrayList<QueuedSkill>>

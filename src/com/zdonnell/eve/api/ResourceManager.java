@@ -22,6 +22,7 @@ import org.apache.http.util.EntityUtils;
 import org.w3c.dom.Document;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 /**
@@ -55,50 +56,30 @@ public class ResourceManager {
 	}
 	
 	/**
-	 * Gets a specified API Resource and sends it to the provided Callback class
+	 * Call to request an API resource.  Using the {@link APICallback} provided in the
+	 * {@link APIRequestWrapper} this will first check the database for an existing cached
+	 * copy of the resource.<br><br>
 	 * 
-	 * @param apiCallback See {@link APICallback} for more information
-	 * @param parser 
-	 * @param credentials
-	 * @param resourceURL
-	 * @param refresh
-	 * @param uniqueIDs
+	 * If a cache of the resource exists, the UI {@link APICallback} will be provided the cached
+	 * copy.<br><br>
+	 * 
+	 * If there is no cache of the resource, or the cache is expired, the API server will then be
+	 * queried, and if the resource is successfully obtained, the UI {@link APICallback} will
+	 * once again be supplied with the now current resource.
+	 * 
+	 * @param rw a {@link APIRequestWrapper} to bundle the request arguments
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void getResource(APIObject.APICallback apiCallback, APIObject.APIParser parser, APICredentials credentials, String resourceURL, boolean refresh, NameValuePair ...uniqueIDs)
+	@SuppressWarnings("unchecked")	
+	public void requestResource(APIRequestWrapper rw)
 	{		
-		ArrayList<NameValuePair> assembledPOSTData = new ArrayList<NameValuePair>();
-		for (NameValuePair nvp : uniqueIDs) assembledPOSTData.add(nvp);
-		
-		if (credentials != null)
+		if (cacheDatabase.cacheExists(rw.resourceURL, rw.uniqueIDs))
 		{
-			assembledPOSTData.add(new BasicNameValuePair("keyID", String.valueOf(credentials.keyID)));
-			assembledPOSTData.add(new BasicNameValuePair("vCode", credentials.verificationCode));
-		}
-		
-		String queriedResource = "";
-		if (cacheDatabase.cacheExists(resourceURL, uniqueIDs))
-		{
-			String cachedResource = cacheDatabase.getCachedResource(resourceURL, uniqueIDs);
-			apiCallback.onUpdate(parser.parse(buildDocument(cachedResource)));
+			String cachedResource = cacheDatabase.getCachedResource(rw.resourceURL, rw.uniqueIDs);
+			rw.apiCallback.onUpdate(rw.parser.parse(buildDocument(cachedResource)));
 			
-			if (cacheDatabase.cacheExpired(resourceURL, uniqueIDs)) queriedResource = queryResource(resourceURL, assembledPOSTData);
+			if (cacheDatabase.cacheExpired(rw.resourceURL, rw.uniqueIDs)) new APIServerQuery(rw).execute();
 		}
-		else queriedResource = queryResource(resourceURL, assembledPOSTData);
-		
-		/*
-		 *  If a response was generated, update the callback and cache it 
-		 */
-		if (!queriedResource.isEmpty())
-		{
-			apiCallback.onUpdate(parser.parse(buildDocument(queriedResource)));
-
-			if (uniqueIDs.length == 0 && credentials != null) 
-			{
-				uniqueIDs = new BasicNameValuePair[] { new BasicNameValuePair("keyID", String.valueOf(credentials.keyID))};
-			}
-			cacheDatabase.updateCache(resourceURL, uniqueIDs, queriedResource);
-		}
+		else new APIServerQuery(rw).execute();
 	}
 	
 	/**
@@ -121,12 +102,10 @@ public class ResourceManager {
 
 			if (returnEntity != null) rawResponse = EntityUtils.toString(returnEntity);
 
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-		}
-
+		} 
+		catch (ClientProtocolException e) { e.printStackTrace(); }
+		catch (IOException e) { e.printStackTrace(); }
+		
 		return rawResponse;
 	}
 	
@@ -155,5 +134,78 @@ public class ResourceManager {
 		}
 
 		return xmlDoc;
+	}
+	
+	/**
+	 * Class to Asynchronously query the API Server for resource requests
+	 * 
+	 * @author Zach
+	 *
+	 */
+	private class APIServerQuery extends AsyncTask<String, Integer, String> {
+
+		APIRequestWrapper rw;
+		
+		public APIServerQuery(APIRequestWrapper rw) { this.rw = rw; }
+		
+		@Override
+		protected String doInBackground(String... params) 
+		{
+			ArrayList<NameValuePair> assembledPOSTData = new ArrayList<NameValuePair>();
+			for (NameValuePair nvp : rw.uniqueIDs) assembledPOSTData.add(nvp);
+			
+			if (rw.credentials != null)
+			{
+				assembledPOSTData.add(new BasicNameValuePair("keyID", String.valueOf(rw.credentials.keyID)));
+				assembledPOSTData.add(new BasicNameValuePair("vCode", rw.credentials.verificationCode));
+			}
+			
+			return queryResource(rw.resourceURL, assembledPOSTData);
+		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		protected void onPostExecute(String queriedResource)
+		{
+			if (!queriedResource.isEmpty()) 
+			{
+				rw.apiCallback.onUpdate(rw.parser.parse(buildDocument(queriedResource)));
+
+				NameValuePair[] newUniqueIDs = rw.uniqueIDs;
+				if (rw.uniqueIDs.length == 0 && rw.credentials != null) 
+				{
+					newUniqueIDs = new BasicNameValuePair[] { new BasicNameValuePair("keyID", String.valueOf(rw.credentials.keyID))};
+				}
+				cacheDatabase.updateCache(rw.resourceURL, newUniqueIDs, queriedResource);
+			}
+		}
+	}
+	
+	/**
+	 * A Static Helper class to bundle arguments needed for resource requests.
+	 * 
+	 * @author Zach
+	 *
+	 */
+	public static class APIRequestWrapper
+	{
+		@SuppressWarnings("rawtypes")
+		final APICallback apiCallback; 
+		@SuppressWarnings("rawtypes")
+		final APIObject.APIParser parser;
+		final APICredentials credentials;
+		final String resourceURL;
+		final boolean refresh;
+		final NameValuePair[] uniqueIDs;
+		
+		public APIRequestWrapper(@SuppressWarnings("rawtypes") APICallback apiCallback, @SuppressWarnings("rawtypes") APIObject.APIParser parser, APICredentials credentials, String resourceURL, boolean refresh, NameValuePair ...uniqueIDs)
+		{
+			this.apiCallback = apiCallback;
+			this.parser = parser;
+			this.credentials = credentials;
+			this.resourceURL = resourceURL;
+			this.refresh = refresh;
+			this.uniqueIDs = uniqueIDs;
+		}
 	}
 }
