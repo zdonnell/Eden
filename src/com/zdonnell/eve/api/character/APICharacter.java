@@ -44,6 +44,14 @@ public class APICharacter extends APIObject {
 		resourceManager.requestResource(new APIRequestWrapper(apiCallback, new SkillQueueParser(), credentials, fullURL, true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
 	}
 	
+	public void getCharacterSheet(APICallback<CharacterSheet> apiCallback)
+	{
+		final String resourceSpecificURL = "eve/CharacterInfo.xml.aspx";
+		String fullURL = BaseRequest.baseURL + resourceSpecificURL;
+
+		resourceManager.requestResource(new APIRequestWrapper(apiCallback, new CharacterSheetParser(), credentials, fullURL, true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
+	}
+	
 	private class SkillQueueParser extends APIParser<ArrayList<QueuedSkill>>
 	{
 		@Override
@@ -67,6 +75,54 @@ public class APICharacter extends APIObject {
 			}
 			
 			return skillQueue;
+		}
+	}
+	
+	/**
+	 * TODO Implement other character sheet fields
+	 * 
+	 * @author Zach
+	 *
+	 */
+	private class CharacterSheetParser extends APIParser<CharacterSheet>
+	{
+		@Override
+		public CharacterSheet parse(Document document) {
+			
+			CharacterSheet characterSheet = new CharacterSheet(characterID);
+			
+			String cloneName = document.getElementsByTagName("cloneName").item(0).getTextContent();
+			int cloneSkillPoints = Integer.parseInt(document.getElementsByTagName("cloneSkillPoints").item(0).getTextContent());
+			characterSheet.setCloneInfo(cloneName, cloneSkillPoints);
+			
+			double walletBalance = Double.parseDouble(document.getElementsByTagName("balance").item(0).getTextContent());
+			characterSheet.setWalletBalance(walletBalance);
+			
+			return characterSheet;
+		}
+	}
+	
+	/**
+	 * TODO Implement other character info fields
+	 * 
+	 * @author Zach
+	 *
+	 */
+	private class CharacterInfoParser extends APIParser<CharacterInfo>
+	{
+		@Override
+		public CharacterInfo parse(Document document) {
+			
+			CharacterInfo characterInfo = new CharacterInfo(characterID);
+			
+			String cloneName = document.getElementsByTagName("cloneName").item(0).getTextContent();
+			int cloneSkillPoints = Integer.parseInt(document.getElementsByTagName("cloneSkillPoints").item(0).getTextContent());
+			characterInfo.setCloneInfo(cloneName, cloneSkillPoints);
+			
+			double walletBalance = Double.parseDouble(document.getElementsByTagName("balance").item(0).getTextContent());
+			characterInfo.setWalletBalance(walletBalance);
+			
+			return characterInfo;
 		}
 	}
 }

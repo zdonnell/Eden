@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.character.APICharacter;
+import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.dummy.DummyContent;
 
@@ -35,6 +36,7 @@ public class SheetItemListFragment extends Fragment {
     private ImageService imageService;
     private APICharacter character;
     private ArrayList<QueuedSkill> skillQueue;
+    private CharacterSheet characterSheet;
     
     private TextView skillTimeRemaining, skillInTraining;
     
@@ -153,7 +155,22 @@ public class SheetItemListFragment extends Fragment {
 				catch (ParseException e) { e.printStackTrace();	}
 				catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
 			}
-    	});	
+    	});
+    	
+    	character.getCharacterSheet(new APICallback<CharacterSheet>() {
+			@Override
+			public void onUpdate(CharacterSheet rCharacterSheet) 
+			{
+				characterSheet = rCharacterSheet;
+				obtainedCharacterSheet();
+			}
+    	});
+	}
+	
+	private void obtainedCharacterSheet()
+	{
+		TextView cloneNameView = (TextView) rootView.findViewById(R.id.current_clone);		
+		cloneNameView.setText(characterSheet.getCloneName());
 	}
 	
 	private class SkillTimeRemainingCountdown extends CountDownTimer

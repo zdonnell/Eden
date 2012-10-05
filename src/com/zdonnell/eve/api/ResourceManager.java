@@ -75,6 +75,7 @@ public class ResourceManager {
 		if (cacheDatabase.cacheExists(rw.resourceURL, rw.uniqueIDs))
 		{
 			String cachedResource = cacheDatabase.getCachedResource(rw.resourceURL, rw.uniqueIDs);
+			Log.d("CACHED RESOURCE", cachedResource);
 			rw.apiCallback.onUpdate(rw.parser.parse(buildDocument(cachedResource)));
 			
 			if (cacheDatabase.cacheExpired(rw.resourceURL, rw.uniqueIDs)) new APIServerQuery(rw).execute();
@@ -106,6 +107,7 @@ public class ResourceManager {
 		catch (ClientProtocolException e) { e.printStackTrace(); }
 		catch (IOException e) { e.printStackTrace(); }
 		
+		Log.d("HTTP RESOURCE", rawResponse);
 		return rawResponse;
 	}
 	
