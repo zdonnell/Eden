@@ -2,6 +2,7 @@ package com.zdonnell.eve;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +15,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.ImageView;
 
 /**
@@ -85,14 +87,8 @@ public class ImageService {
 		{
 			preCacheQueue.add(actor[0]);
 			viewsToUpdate.put(actor[0], new ArrayList<ImageView>());
-			try 
-			{
-				setImageFromStorage(actor[0], null);
-			} 
-			catch (IOException e) 
-			{
-				setImageFromHTTP(actor[0], actor[1], null);
-			}
+
+			new LoadImageTask(actor[0], actor[1], null).execute();
 		}
 	}
 	
@@ -109,15 +105,8 @@ public class ImageService {
 		if (memoryImageCache.containsKey(actorID)) view.setImageBitmap(memoryImageCache.get(actorID));
 		else if (preCacheQueue.contains(actorID)) viewsToUpdate.get(actorID).add(view);
 		else 
-		{		
-			try 
-			{
-				setImageFromStorage(actorID, view);
-			} 
-			catch (IOException e) 
-			{
-				setImageFromHTTP(actorID, actorType, view);
-			}
+		{	
+			new LoadImageTask(actorID, actorType, view).execute();
 		}
 	}
 
@@ -144,29 +133,6 @@ public class ImageService {
 	/**
 	 * 
 	 * @param actorID
-	 * @param view
-	 * @throws IOException
-	 */
-	private void setImageFromStorage(int actorID, ImageView view) throws IOException 
-	{	
-		FileInputStream fis = context.openFileInput(actorID + ".png");
-		BufferedInputStream buf = new BufferedInputStream(fis);
-
-		byte[] bitmapBytes = new byte[buf.available()];
-		buf.read(bitmapBytes);
-
-		Bitmap bitmapFromSD = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
-		if (view != null) view.setImageBitmap(bitmapFromSD);
-		
-		imageDownloaded(actorID, bitmapFromSD, false);
-		
-		if (fis != null) fis.close();
-		if (buf != null) buf.close();
-	}
-	
-	/**
-	 * 
-	 * @param actorID
 	 * @param actorType
 	 * @param view
 	 */
@@ -181,6 +147,79 @@ public class ImageService {
 		/* Execute the AsyncTask */
 		DownloadImageTask getImage = new DownloadImageTask(actorID, view);
 		getImage.execute(assembledImageURL);
+	}
+	
+	/**
+	 * Class to manage the loading of images from cache Asynchronously.
+	 * 
+	 * @author Zach
+	 *
+	 */
+	private class LoadImageTask extends AsyncTask<String, Void, Bitmap> 
+	{
+		private int actorID, actorType;
+		private ImageView view;
+
+		/**
+		 * @param actorID
+		 * @param view the ImageView to update once the image is acquired
+		 */
+		public LoadImageTask(int actorID, int actorType, ImageView view) 
+		{
+			this.actorID = actorID;
+			this.actorType = actorType;
+			this.view = view;
+		}
+
+		protected Bitmap doInBackground(String... urls) 
+		{
+			FileInputStream fis = null;
+			BufferedInputStream buf = null;
+			Bitmap bitmapFromSD = null;
+			
+			try 
+			{
+				fis = context.openFileInput(actorID + ".png");
+				buf = new BufferedInputStream(fis);
+				
+				byte[] bitmapBytes = new byte[buf.available()];
+				buf.read(bitmapBytes);
+				
+				bitmapFromSD = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
+				
+				if (fis != null) fis.close();
+				if (buf != null) buf.close();
+			} 
+			catch (FileNotFoundException e) 
+			{
+				e.printStackTrace();
+				return null;
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+				return null;
+			}
+			
+			return bitmapFromSD;
+		}
+
+		protected void onPostExecute(Bitmap imageServed) 
+		{
+			if (imageServed != null)
+			{
+				if (view != null) 
+				{
+					view.setImageBitmap(imageServed);
+					view = null;
+				}
+				imageDownloaded(actorID, imageServed, false);
+			}
+			else
+			{
+				setImageFromHTTP(actorID, actorType, view);
+			}
+		}
 	}
 
 	/**
@@ -227,7 +266,11 @@ public class ImageService {
 		{
 			if (imageServed != null)
 			{
-				if (view != null) view.setImageBitmap(imageServed);
+				if (view != null) 
+				{ 
+					view.setImageBitmap(imageServed);
+					view = null;
+				}
 				imageDownloaded(actorID, imageServed, true);
 			}		
 		}
@@ -254,7 +297,11 @@ public class ImageService {
 			{
 				for (ImageView view : viewsForID) 
 				{
-					if (view != null) view.setImageBitmap(imageServed);
+					if (view != null) 
+					{
+						view.setImageBitmap(imageServed);
+						view = null;
+					}
 				}
 			}
 			viewsToUpdate.remove(actorID);

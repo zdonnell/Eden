@@ -53,7 +53,8 @@ public class CharacterTabFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+		Log.d("TIMINGS", "-- START: ONCREATEVIEW");
+		
 		context = inflater.getContext();
 		
 		charDB = new CharacterDB(context);
@@ -69,6 +70,7 @@ public class CharacterTabFragment extends Fragment {
 		columns = calcColumns((Activity) context);
 		charGrid.setNumColumns(columns);
 		
+		Log.d("TIMINGS", "-- END: ONCREATEVIEW");
 		return main;
 	}
 
