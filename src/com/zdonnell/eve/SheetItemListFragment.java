@@ -1,9 +1,12 @@
 package com.zdonnell.eve;
 
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
@@ -18,11 +21,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zdonnell.eve.api.APICallback;
-import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.character.APICharacter;
+import com.zdonnell.eve.api.character.CharacterInfo;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.dummy.DummyContent;
+import com.zdonnell.eve.eve.Eve;
 
 public class SheetItemListFragment extends Fragment {
 
@@ -33,10 +37,25 @@ public class SheetItemListFragment extends Fragment {
     
     private View rootView;
     
+    private Context context;
+    
+    private boolean updatedView;
+    
     private ImageService imageService;
     private APICharacter character;
     private ArrayList<QueuedSkill> skillQueue;
     private CharacterSheet characterSheet;
+    private CharacterInfo characterInfo;
+    
+    private static HashMap<Integer, String> skillLevelMap = new HashMap<Integer, String>();
+    
+    static {
+    	skillLevelMap.put(1, "I");
+    	skillLevelMap.put(2, "II");
+    	skillLevelMap.put(3, "III");
+    	skillLevelMap.put(4, "IV");
+    	skillLevelMap.put(5, "V");
+    }
     
     private TextView skillTimeRemaining, skillInTraining;
     
@@ -60,7 +79,8 @@ public class SheetItemListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-    	imageService = new ImageService(inflater.getContext());
+    	context = inflater.getContext();
+    	imageService = new ImageService(context);
     	
     	rootView = inflater.inflate(R.layout.character_sheet, container, false);
     	listView = (ListView) rootView.findViewById(R.id.char_sheet_list);
@@ -141,11 +161,15 @@ public class SheetItemListFragment extends Fragment {
 	public void setCharacter(APICharacter character) {
 		ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
 		imageService.setPortrait(portrait, character.id(), ImageService.CHAR);
+		
+		final TextView currentSkillView = (TextView) rootView.findViewById(R.id.current_skill);
     	
     	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() {
 			@Override
-			public void onUpdate(ArrayList<QueuedSkill> skillQueue) 
+			public void onUpdate(ArrayList<QueuedSkill> pSkillQueue) 
 			{
+				skillQueue = pSkillQueue;
+				
 				long timeUntilSkillFinish = 0;
 				try 
 				{
@@ -154,6 +178,16 @@ public class SheetItemListFragment extends Fragment {
 				} 
 				catch (ParseException e) { e.printStackTrace();	}
 				catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
+				
+				final int skillLevel = skillQueue.get(0).skillLevel;
+				new Eve(context).getTypeName(new APICallback<String[]>() 
+				{
+					@Override
+					public void onUpdate(String[] typeName) {
+						currentSkillView.setText(typeName[0] + " " + skillLevelMap.get(skillLevel));						
+					}
+					
+				}, new int[] { skillQueue.get(0).skillID });
 			}
     	});
     	
@@ -162,15 +196,41 @@ public class SheetItemListFragment extends Fragment {
 			public void onUpdate(CharacterSheet rCharacterSheet) 
 			{
 				characterSheet = rCharacterSheet;
-				obtainedCharacterSheet();
+				obtainedCharacterInfoSheet();
+			}
+    	});
+    	
+    	character.getCharacterInfo(new APICallback<CharacterInfo>() {
+			@Override
+			public void onUpdate(CharacterInfo pCharacterInfo) 
+			{
+				characterInfo = pCharacterInfo;
+				obtainedCharacterInfoSheet();
 			}
     	});
 	}
 	
-	private void obtainedCharacterSheet()
+	/**
+	 * Method handles most of the dynamic data display.  Due to information
+	 * needing to be obtained from the {@link CharacterSheet} and {@link CharacterInfo}
+	 * resources, no action will be taken until both are displayed.
+	 */
+	private void obtainedCharacterInfoSheet()
 	{
-		TextView cloneNameView = (TextView) rootView.findViewById(R.id.current_clone);		
-		cloneNameView.setText(characterSheet.getCloneName());
+		if (characterInfo != null && characterSheet != null)
+		{
+			NumberFormat formatter = NumberFormat.getInstance();
+			
+			TextView characterSPView = (TextView) rootView.findViewById(R.id.current_sp);
+			characterSPView.setText(formatter.format(characterInfo.getSP()) + " SP");
+			
+			TextView cloneNameView = (TextView) rootView.findViewById(R.id.current_clone);
+			if (characterInfo.getSP() > characterSheet.getCloneSkillPoints())
+			{
+				cloneNameView.setText(Html.fromHtml("<FONT COLOR='#FF4444'>" + characterSheet.getCloneName() + "</FONT>"));
+			}
+			else cloneNameView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + characterSheet.getCloneName() + "</FONT>"));
+		}
 	}
 	
 	private class SkillTimeRemainingCountdown extends CountDownTimer

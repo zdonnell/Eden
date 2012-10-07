@@ -9,13 +9,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import android.content.Context;
+import android.net.ParseException;
 
+import com.zdonnell.eve.Tools;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.BaseRequest;
 import com.zdonnell.eve.api.ResourceManager;
 import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
+import com.zdonnell.eve.api.character.CharacterInfo.CurrentShipInfo;
 
 public class APICharacter extends APIObject {
 	
@@ -33,8 +36,9 @@ public class APICharacter extends APIObject {
 	public int id() { return characterID; }
 	
 	/**
-	 * @param apiCallback 
 	 * 
+	 * 
+	 * @param apiCallback
 	 */
 	public void getSkillQueue(APICallback<ArrayList<QueuedSkill>> apiCallback) 
 	{	
@@ -46,10 +50,18 @@ public class APICharacter extends APIObject {
 	
 	public void getCharacterSheet(APICallback<CharacterSheet> apiCallback)
 	{
-		final String resourceSpecificURL = "eve/CharacterInfo.xml.aspx";
+		final String resourceSpecificURL = "char/CharacterSheet.xml.aspx";
 		String fullURL = BaseRequest.baseURL + resourceSpecificURL;
 
 		resourceManager.requestResource(new APIRequestWrapper(apiCallback, new CharacterSheetParser(), credentials, fullURL, true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
+	}
+	
+	public void getCharacterInfo(APICallback<CharacterInfo> apiCallback)
+	{
+		final String resourceSpecificURL = "eve/CharacterInfo.xml.aspx";
+		String fullURL = BaseRequest.baseURL + resourceSpecificURL;
+
+		resourceManager.requestResource(new APIRequestWrapper(apiCallback, new CharacterInfoParser(), credentials, fullURL, true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
 	}
 	
 	private class SkillQueueParser extends APIParser<ArrayList<QueuedSkill>>
@@ -71,7 +83,12 @@ public class APICharacter extends APIObject {
 				String startTime = skillAttributes.getNamedItem("startTime").getTextContent();
 				String endTime = skillAttributes.getNamedItem("endTime").getTextContent();
 
-				skillQueue.add(new QueuedSkill(skillID, skillLevel, startSP, endSP, startTime, endTime));
+				long millisUntilCompletion = 0;
+				
+				try { millisUntilCompletion = Tools.timeUntilUTCTime(endTime); }
+				catch (java.text.ParseException e) { }
+				
+				if (millisUntilCompletion > 0) skillQueue.add(new QueuedSkill(skillID, skillLevel, startSP, endSP, startTime, endTime));
 			}
 			
 			return skillQueue;
@@ -115,12 +132,16 @@ public class APICharacter extends APIObject {
 			
 			CharacterInfo characterInfo = new CharacterInfo(characterID);
 			
-			String cloneName = document.getElementsByTagName("cloneName").item(0).getTextContent();
-			int cloneSkillPoints = Integer.parseInt(document.getElementsByTagName("cloneSkillPoints").item(0).getTextContent());
-			characterInfo.setCloneInfo(cloneName, cloneSkillPoints);
+			double secStatus = Double.parseDouble(document.getElementsByTagName("securityStatus").item(0).getTextContent());
+			characterInfo.setSecStatus(secStatus);
 			
-			double walletBalance = Double.parseDouble(document.getElementsByTagName("balance").item(0).getTextContent());
-			characterInfo.setWalletBalance(walletBalance);
+			int SP = Integer.parseInt(document.getElementsByTagName("skillPoints").item(0).getTextContent());
+			characterInfo.setSP(SP);
+			
+			String shipName = document.getElementsByTagName("shipName").item(0).getTextContent(); 
+			String shipTypeName = document.getElementsByTagName("shipTypeName").item(0).getTextContent();
+			int shipTypeID = Integer.parseInt(document.getElementsByTagName("shipTypeID").item(0).getTextContent());
+			characterInfo.setCurShipInfo(new CurrentShipInfo(shipName, shipTypeName, shipTypeID));			
 			
 			return characterInfo;
 		}

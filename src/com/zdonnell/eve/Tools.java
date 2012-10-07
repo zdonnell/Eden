@@ -6,6 +6,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import android.content.Context;
+
+import com.zdonnell.eve.api.ResourceManager;
+
 public class Tools {
 	
 	private static long D_MILLIS = 24 * 60 * 60 * 1000;
