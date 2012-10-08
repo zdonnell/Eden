@@ -33,7 +33,8 @@ public class ImageService {
 	public final static int CORP = 1;
 	
 	/**
-	 * if preCache has been called, this queue will 
+	 * if preCache has been called, this queue will hold the images queued to
+	 * be loaded
 	 */
 	private Queue<Integer> preCacheQueue = new LinkedList<Integer>();
 	

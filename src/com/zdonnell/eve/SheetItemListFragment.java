@@ -31,6 +31,60 @@ import com.zdonnell.eve.eve.Eve;
 public class SheetItemListFragment extends Fragment {
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
+    
+    private final static int SKILLS = 0;
+    private final static int SKILL_QUEUE = 1;
+    private final static int ATTRIBUTES = 2;
+    private final static int WALLET = 3;
+    private final static int ASSETS = 4;
+    
+    /**
+     * Static array of text strings for the character sheet list
+     */
+    private final static String[] sheetItems = new String[5];
+    static 
+    {
+    	sheetItems[SKILLS] = "Skills";
+    	sheetItems[SKILL_QUEUE] = "Skill Queue";
+    	sheetItems[ATTRIBUTES] = "Attributes";
+    	sheetItems[WALLET] = "Wallet";
+    	sheetItems[ASSETS] = "Assets";
+    }
+    
+    /**
+     * Static array to hold drawable id's for the sheet item images
+     */
+    private final static int[] sheetItemImageIDs = new int[5];
+    static
+    {
+    	sheetItemImageIDs[SKILLS] = R.drawable.skills;
+    	sheetItemImageIDs[SKILL_QUEUE] = R.drawable.skillqueue;
+    	sheetItemImageIDs[ATTRIBUTES] = R.drawable.attributes;
+    	sheetItemImageIDs[WALLET] = R.drawable.wallet;
+    	sheetItemImageIDs[ASSETS] = R.drawable.assets;
+    }
+    
+    /**
+     * Static array of the fragment classes to jump to when a sheet item is pressed
+     */
+    private final static Class<?>[] detailClass = new Class<?>[5];
+    static 
+    {
+    	detailClass[SKILLS] = CorporationTabFragment.class;
+    	detailClass[SKILL_QUEUE] = CorporationTabFragment.class;
+    	detailClass[ATTRIBUTES] = CorporationTabFragment.class;
+    	detailClass[WALLET] = CorporationTabFragment.class;
+    	detailClass[ASSETS] = CorporationTabFragment.class;
+    }
+    
+    private final static SheetItem[] items = new SheetItem[5];
+    static
+    {
+    	for (int x = 0; x < 5; x++)
+    	{
+    		items[x] = new SheetItem(sheetItems[x], sheetItemImageIDs[x], detailClass[x]);
+    	}
+    }
 
     private Callbacks mCallbacks = sDummyCallbacks;
     private int mActivatedPosition = ListView.INVALID_POSITION;
@@ -91,10 +145,9 @@ public class SheetItemListFragment extends Fragment {
     	
     	listView.addHeaderView(headerText, null, false);
     	
-    	listView.setAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                DummyContent.ITEMS));
+    	listView.setAdapter(new CharacterSheetAdapater(context, R.layout.character_sheet_item, items));
+    	listView.setDivider(context.getResources().getDrawable(R.drawable.divider_grey));
+    	listView.setDividerHeight(1);
     	
     	return rootView;
     }
@@ -164,7 +217,8 @@ public class SheetItemListFragment extends Fragment {
 		
 		final TextView currentSkillView = (TextView) rootView.findViewById(R.id.current_skill);
     	
-    	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() {
+    	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
+    	{
 			@Override
 			public void onUpdate(ArrayList<QueuedSkill> pSkillQueue) 
 			{
@@ -191,7 +245,8 @@ public class SheetItemListFragment extends Fragment {
 			}
     	});
     	
-    	character.getCharacterSheet(new APICallback<CharacterSheet>() {
+    	character.getCharacterSheet(new APICallback<CharacterSheet>() 
+    	{
 			@Override
 			public void onUpdate(CharacterSheet rCharacterSheet) 
 			{
@@ -200,7 +255,8 @@ public class SheetItemListFragment extends Fragment {
 			}
     	});
     	
-    	character.getCharacterInfo(new APICallback<CharacterInfo>() {
+    	character.getCharacterInfo(new APICallback<CharacterInfo>() 
+    	{
 			@Override
 			public void onUpdate(CharacterInfo pCharacterInfo) 
 			{
@@ -208,6 +264,39 @@ public class SheetItemListFragment extends Fragment {
 				obtainedCharacterInfoSheet();
 			}
     	});
+	}
+	
+	private class CharacterSheetAdapater extends ArrayAdapter<SheetItem>
+	{
+		SheetItem[] items;
+		int resourceID;
+		
+		public CharacterSheetAdapater(Context context, int viewResourceID, SheetItem[] items) 
+		{
+			super(context, viewResourceID, items);
+			this.items = items;
+			this.resourceID = viewResourceID;
+			// TODO Auto-generated constructor stub
+		}
+		
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent)
+		{
+			LinearLayout preparedView; 
+			LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+			
+			if (convertView != null) preparedView = (LinearLayout) convertView;
+			else preparedView = (LinearLayout) inflater.inflate(resourceID, parent, false);
+			
+			TextView text = (TextView) preparedView.findViewById(R.id.character_sheet_item_text);
+			text.setText(items[position].text);
+			
+			ImageView image = (ImageView) preparedView.findViewById(R.id.character_sheet_item_image);
+			image.setImageResource(items[position].imageID);
+			
+			return preparedView;
+		}
+		
 	}
 	
 	/**
@@ -279,6 +368,20 @@ public class SheetItemListFragment extends Fragment {
 				view.setText(Html.fromHtml("<FONT COLOR='#FFBB33'>" + Tools.millisToEveFormatString(millisUntilFinished) + "</FONT>"));
 			}
 			else view.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + Tools.millisToEveFormatString(millisUntilFinished) + "</FONT>"));
+		}
+	}
+	
+	public static class SheetItem
+	{
+		String text;
+		int imageID;
+		Class<?> fragmentClass;
+		
+		public SheetItem(String text, int imageID, Class<?> fragmentClass)
+		{
+			this.text = text;
+			this.imageID = imageID;
+			this.fragmentClass = fragmentClass;
 		}
 	}
 }
