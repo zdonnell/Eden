@@ -3,18 +3,39 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal" 
-   	android:padding="5dp">
-    
+    android:padding="10dp"
+   	>
 	<ImageView
 	    android:id="@+id/character_sheet_item_image"
-	    android:layout_width="50dp"
-	    android:layout_height="50dp"
-	    android:layout_marginRight="10dp"/>
-	<TextView 
-	    android:id="@+id/character_sheet_item_text"
-	    android:layout_width="wrap_content"
+	    android:layout_width="36dp"
+	    android:layout_height="36dp"
+	    android:layout_marginRight="10dp">
+	    <!--android:background="#222"--></ImageView>
+	<View
+	    android:layout_width="1px"
 	    android:layout_height="match_parent"
-	    android:gravity="center_vertical"
-	    android:textSize="16sp"
-	    android:textColor="#000"/>
+	    android:background="#999"
+	    />
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:layout_width="wrap_content"
+    	android:layout_height="match_parent"
+    	android:layout_marginLeft="10dp"
+    	android:orientation="vertical"
+    	android:gravity="center_vertical"
+    	 >
+		<TextView 
+		    android:id="@+id/character_sheet_item_text"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:textSize="16sp"
+		    android:textColor="#000"/>
+		<TextView 
+		    android:id="@+id/character_sheet_item_subtext"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_marginTop="-4dp"
+		    android:textSize="12sp"
+		    android:text="Sub Text here"
+		    android:textColor="#424242"/>
+	</LinearLayout>	
 </LinearLayout>

@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#BBB" >
+    android:background="#999" >
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:layout_width="match_parent"
 	    android:layout_height="200dp"
@@ -85,6 +85,7 @@
 	    />
 
     <ListView
+        android:background="#BBB"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:id="@+id/char_sheet_list"

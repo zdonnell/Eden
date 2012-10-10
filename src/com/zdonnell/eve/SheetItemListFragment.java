@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -148,7 +149,7 @@ public class SheetItemListFragment extends Fragment {
     	listView.setAdapter(new CharacterSheetAdapater(context, R.layout.character_sheet_item, items));
     	listView.setDivider(context.getResources().getDrawable(R.drawable.divider_grey));
     	listView.setDividerHeight(1);
-    	
+    	    	
     	return rootView;
     }
 
@@ -280,7 +281,7 @@ public class SheetItemListFragment extends Fragment {
 		}
 		
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent)
+		public View getView(final int position, View convertView, ViewGroup parent)
 		{
 			LinearLayout preparedView; 
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
@@ -290,9 +291,18 @@ public class SheetItemListFragment extends Fragment {
 			
 			TextView text = (TextView) preparedView.findViewById(R.id.character_sheet_item_text);
 			text.setText(items[position].text);
-			
+						
 			ImageView image = (ImageView) preparedView.findViewById(R.id.character_sheet_item_image);
 			image.setImageResource(items[position].imageID);
+			
+			preparedView.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					 mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+					
+				}
+			});
 			
 			return preparedView;
 		}
