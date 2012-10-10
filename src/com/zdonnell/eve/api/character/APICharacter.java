@@ -84,10 +84,7 @@ public class APICharacter extends APIObject {
 				String startTime = skillAttributes.getNamedItem("startTime").getTextContent();
 				String endTime = skillAttributes.getNamedItem("endTime").getTextContent();
 
-				long millisUntilCompletion = 0;
-				
-				try { millisUntilCompletion = Tools.timeUntilUTCTime(endTime); }
-				catch (java.text.ParseException e) { }
+				long millisUntilCompletion = Tools.timeUntilUTCTime(endTime);
 				
 				if (millisUntilCompletion > 0) skillQueue.add(new QueuedSkill(skillID, skillLevel, startSP, endSP, startTime, endTime));
 			}

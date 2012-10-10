@@ -33,11 +33,11 @@ public class SheetItemListFragment extends Fragment {
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     
-    private final static int SKILLS = 0;
-    private final static int SKILL_QUEUE = 1;
-    private final static int ATTRIBUTES = 2;
-    private final static int WALLET = 3;
-    private final static int ASSETS = 4;
+    public final static int SKILLS = 0;
+    public final static int SKILL_QUEUE = 1;
+    public final static int ATTRIBUTES = 2;
+    public final static int WALLET = 3;
+    public final static int ASSETS = 4;
     
     /**
      * Static array of text strings for the character sheet list
@@ -294,11 +294,9 @@ public class SheetItemListFragment extends Fragment {
 			image.setImageResource(items[position].imageID);
 			
 			preparedView.setOnClickListener(new OnClickListener() {
-				
 				@Override
 				public void onClick(View v) {
 					 mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
-					
 				}
 			});
 			
@@ -354,8 +352,7 @@ public class SheetItemListFragment extends Fragment {
 			 */
 			for (int x = 0; x < skillQueue.size(); x++)
 			{
-				long timeUntilSkillCompletion = 0;
-				try { timeUntilSkillCompletion = Tools.timeUntilUTCTime(skillQueue.get(x).endTime); } catch (ParseException e) { e.printStackTrace(); }
+				long timeUntilSkillCompletion = Tools.timeUntilUTCTime(skillQueue.get(x).endTime); 
 				
 				if (timeUntilSkillCompletion > 0) 
 				{

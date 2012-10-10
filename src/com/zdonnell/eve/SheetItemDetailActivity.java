@@ -1,26 +1,52 @@
 package com.zdonnell.eve;
 
+import com.zdonnell.eve.api.APICredentials;
+import com.zdonnell.eve.api.character.APICharacter;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 public class SheetItemDetailActivity extends FragmentActivity {
 
-    @Override
+    private APICharacter assembledChar;
+	
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sheetitem_detail);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        if (savedInstanceState == null) {
-            Bundle arguments = new Bundle();
-            arguments.putString(SheetItemDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(SheetItemDetailFragment.ARG_ITEM_ID));
-            SheetItemDetailFragment fragment = new SheetItemDetailFragment();
-            fragment.setArguments(arguments);
+        if (savedInstanceState == null) 
+        {
+            Fragment fragment = null;
+            String id = getIntent().getStringExtra(SkillQueueDetailFragment.ARG_ITEM_ID); 
+            String[] characterInfo = getIntent().getStringArrayExtra("character"); 
+            
+            assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
+            
+            switch (Integer.valueOf(id))
+            {
+            case SheetItemListFragment.ASSETS:
+            	break;
+            case SheetItemListFragment.ATTRIBUTES:
+            	break;
+            case SheetItemListFragment.SKILL_QUEUE:
+            	fragment = new SkillQueueDetailFragment(assembledChar);
+            	break;
+            case SheetItemListFragment.SKILLS:
+            	break;
+            case SheetItemListFragment.WALLET:
+            	break;
+            default:
+            	fragment = new SkillQueueDetailFragment(assembledChar);
+            	break;
+            }
+            
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.sheetitem_detail_container, fragment)
                     .commit();
