@@ -70,7 +70,7 @@ public class ResourceManager {
 	 * @param rw a {@link APIRequestWrapper} to bundle the request arguments
 	 */
 	@SuppressWarnings("unchecked")	
-	public void requestResource(APIRequestWrapper rw)
+	public void get(APIRequestWrapper rw)
 	{		
 		if (cacheDatabase.cacheExists(rw.resourceURL, rw.uniqueIDs))
 		{

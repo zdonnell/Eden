@@ -23,7 +23,7 @@ public class Tools {
 	 * @return the time until the UTC Time specified in milliseconds
 	 * @throws ParseException
 	 */
-	public static long timeUntilUTCTime(String UTCString) throws ParseException
+	public static long timeUntilUTCTime(String UTCString)
 	{
 		Calendar now = Calendar.getInstance();
 		
@@ -31,7 +31,11 @@ public class Tools {
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Date thenDate = new Date();
 		
-		thenDate = formatter.parse(UTCString);
+		try {
+			thenDate = formatter.parse(UTCString);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	
 		Calendar then =  Calendar.getInstance();
 		then.setTime(thenDate);

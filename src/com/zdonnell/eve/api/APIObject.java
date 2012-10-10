@@ -11,6 +11,8 @@ import org.w3c.dom.Document;
 public class APIObject {
 
 	protected APICredentials credentials;
+	
+	protected static String baseURL = "https://api.eveonline.com/";
 
 	protected void setCredentials(APICredentials credentials) {
 		this.credentials = credentials;

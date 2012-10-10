@@ -110,31 +110,18 @@ public class CharacterTabFragment extends Fragment {
 			
 			final TextView corpName = (TextView) view.findViewById(R.id.char_tile_training);			
 			
-			if (cachedTrainingTime.containsKey(character.id()))
-			{
-				cachedTrainingTime.get(character.id()).updateTextView(corpName);
-			} 
+			if (cachedTrainingTime.containsKey(character.id()))	cachedTrainingTime.get(character.id()).updateTextView(corpName);
 			else character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
 			{
 				@Override
 				public void onUpdate(ArrayList<QueuedSkill> updatedData) {
-					long timeUntilQueueEmpty = -1;
+					QueuedSkill lastSkill = updatedData.get(updatedData.size() - 1);
 					
-					if (updatedData.isEmpty()) timeUntilQueueEmpty = 0;
-					else
-					{
-						try {
-							timeUntilQueueEmpty = Tools.timeUntilUTCTime(updatedData.get(updatedData.size() - 1).endTime);
-						} catch (ParseException e) {
-							e.printStackTrace();
-						}
-					}
+					long timeUntilQueueEmpty = updatedData.isEmpty() ? 0 : Tools.timeUntilUTCTime(lastSkill.endTime);
 					
 					TimeRemainingCountdown timer = new TimeRemainingCountdown(timeUntilQueueEmpty, 1000, corpName);					
-					if (cachedTrainingTime.containsKey(characterID))
-					{
-						cachedTrainingTime.remove(characterID).cancel();
-					} 
+					if (cachedTrainingTime.containsKey(characterID)) cachedTrainingTime.remove(characterID).cancel();
+					
 					cachedTrainingTime.put(characterID, timer);
 					timer.start();
 				}
@@ -170,6 +157,12 @@ public class CharacterTabFragment extends Fragment {
 		}
 	}
 	
+	/**
+	 * Determines how many columns to display in the main gridView based on screen density and pixel count
+	 * 
+	 * @param context
+	 * @return number of columns
+	 */
 	private int calcColumns(Activity context) 
 	{	
 		Point screenDimensions = new Point(0, 0);
@@ -199,10 +192,7 @@ public class CharacterTabFragment extends Fragment {
 			
 			totalColumnWidthUsed += roundedColumnWidth;
 			
-			if (x == columns - 1 && totalColumnWidthUsed != widthForColumns)
-			{
-				calculatedColumnWidths[x] += 1;
-			}
+			if (x == columns - 1 && totalColumnWidthUsed != widthForColumns) calculatedColumnWidths[x] += 1;
 		}
 		
 		return columns;

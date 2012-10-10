@@ -225,13 +225,11 @@ public class SheetItemListFragment extends Fragment {
 			{
 				skillQueue = pSkillQueue;
 				
-				long timeUntilSkillFinish = 0;
+				long timeUntilSkillFinish = Tools.timeUntilUTCTime(skillQueue.get(0).endTime);;
 				try 
 				{
-					timeUntilSkillFinish = Tools.timeUntilUTCTime(skillQueue.get(0).endTime);
 			    	new SkillTimeRemainingCountdown(timeUntilSkillFinish, 1000, skillTimeRemaining).start();
 				} 
-				catch (ParseException e) { e.printStackTrace();	}
 				catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
 				
 				final int skillLevel = skillQueue.get(0).skillLevel;

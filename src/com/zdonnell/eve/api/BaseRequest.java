@@ -21,8 +21,6 @@ import org.w3c.dom.Document;
 
 public abstract class BaseRequest {
 
-	public final static String baseURL = "https://api.eveonline.com/";
-
 	protected APICredentials credentials;
 
 	protected int actorID;
@@ -40,8 +38,7 @@ public abstract class BaseRequest {
 	private DocumentBuilder domBuilder;
 
 	/**
-	 * @param xmlString
-	 *            a string that contains valid xml document markup
+	 * @param xmlString a string that contains valid xml document markup
 	 * @return a {@link Document} assembled from the xmlString
 	 */
 	protected Document buildDocument(String xmlString) 

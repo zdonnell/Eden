@@ -13,6 +13,14 @@ import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
 
 public class Server extends APIObject {
 	
+	public static final int STATUS = 0;
+
+	public static final String[] xmlURLs = new String[1];
+	static
+	{
+		xmlURLs[STATUS] = baseURL + "server/ServerStatus.xml.aspx";
+	}
+	
 	private ResourceManager resourceManager;
 	
 	public Server(Context context)
@@ -28,11 +36,8 @@ public class Server extends APIObject {
 	 * and index 1 = Online Players
 	 */
 	public void status(APICallback<String[]> apiCallback) 
-	{
-		final String resourceSpecificURL = "server/ServerStatus.xml.aspx";
-		String fullURL = BaseRequest.baseURL + resourceSpecificURL;
-		
-		resourceManager.requestResource(new APIRequestWrapper(apiCallback, new StatusParser(), null, fullURL, true));
+	{		
+		resourceManager.get(new APIRequestWrapper(apiCallback, new StatusParser(), null, xmlURLs[STATUS], true));
 	}
 	
 	private class StatusParser extends APIParser<String[]>

@@ -18,6 +18,14 @@ import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
 
 public class Account extends APIObject {
 	
+	public static final int CHARS = 0;
+
+	public static final String[] xmlURLs = new String[1];
+	static
+	{
+		xmlURLs[CHARS] = baseURL + "account/Characters.xml.aspx";
+	}
+	
 	private ResourceManager resourceManager;
 
 	public Account(int keyID, String verificationCode, Context context) 
@@ -32,11 +40,8 @@ public class Account extends APIObject {
 	 * @return An Array list of {@link EveCharacter} objects
 	 */
 	public void characters(APICallback<ArrayList<EveCharacter>> apiCallback) 
-	{	
-		final String resourceSpecificURL = "account/Characters.xml.aspx";
-		String fullURL = BaseRequest.baseURL + resourceSpecificURL;
-		
-		resourceManager.requestResource(new APIRequestWrapper(apiCallback, new CharactersParser(), credentials, fullURL, true));		
+	{			
+		resourceManager.get(new APIRequestWrapper(apiCallback, new CharactersParser(), credentials, xmlURLs[CHARS], true));		
 	}
 	
 	private class CharactersParser extends APIParser<ArrayList<EveCharacter>>
