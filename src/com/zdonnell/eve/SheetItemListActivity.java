@@ -9,6 +9,7 @@ import android.view.MenuItem;
 
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
+import com.zdonnell.eve.characterdetail.SkillQueueFragment;
 
 public class SheetItemListActivity extends FragmentActivity
         implements SheetItemListFragment.Callbacks {
@@ -60,14 +61,14 @@ public class SheetItemListActivity extends FragmentActivity
             case SheetItemListFragment.ATTRIBUTES:
             	break;
             case SheetItemListFragment.SKILL_QUEUE:
-            	fragment = new SkillQueueDetailFragment(assembledChar);
+            	fragment = new SkillQueueFragment(assembledChar);
             	break;
             case SheetItemListFragment.SKILLS:
             	break;
             case SheetItemListFragment.WALLET:
             	break;
             default:
-            	fragment = new SkillQueueDetailFragment(assembledChar);
+            	fragment = new SkillQueueFragment(assembledChar);
             	break;
             }
             
@@ -77,7 +78,7 @@ public class SheetItemListActivity extends FragmentActivity
 
         } else {
             Intent detailIntent = new Intent(this, SheetItemDetailActivity.class);
-            detailIntent.putExtra(SkillQueueDetailFragment.ARG_ITEM_ID, id);
+            detailIntent.putExtra(SkillQueueFragment.ARG_ITEM_ID, id);
             detailIntent.putExtra("character", characterInfo);
             startActivity(detailIntent);
         }

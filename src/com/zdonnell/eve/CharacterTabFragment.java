@@ -114,10 +114,9 @@ public class CharacterTabFragment extends Fragment {
 			else character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
 			{
 				@Override
-				public void onUpdate(ArrayList<QueuedSkill> updatedData) {
-					QueuedSkill lastSkill = updatedData.get(updatedData.size() - 1);
-					
-					long timeUntilQueueEmpty = updatedData.isEmpty() ? 0 : Tools.timeUntilUTCTime(lastSkill.endTime);
+				public void onUpdate(ArrayList<QueuedSkill> updatedData) 
+				{	
+					long timeUntilQueueEmpty = updatedData.isEmpty() ? 0 : Tools.timeUntilUTCTime(updatedData.get(updatedData.size() - 1).endTime);
 					
 					TimeRemainingCountdown timer = new TimeRemainingCountdown(timeUntilQueueEmpty, 1000, corpName);					
 					if (cachedTrainingTime.containsKey(characterID)) cachedTrainingTime.remove(characterID).cancel();

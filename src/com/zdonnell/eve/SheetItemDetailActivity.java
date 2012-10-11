@@ -2,12 +2,14 @@ package com.zdonnell.eve;
 
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
+import com.zdonnell.eve.characterdetail.SkillQueueFragment;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.MenuItem;
 
 public class SheetItemDetailActivity extends FragmentActivity {
@@ -24,26 +26,26 @@ public class SheetItemDetailActivity extends FragmentActivity {
         if (savedInstanceState == null) 
         {
             Fragment fragment = null;
-            String id = getIntent().getStringExtra(SkillQueueDetailFragment.ARG_ITEM_ID); 
+            String id = getIntent().getStringExtra(SkillQueueFragment.ARG_ITEM_ID); 
             String[] characterInfo = getIntent().getStringArrayExtra("character"); 
             
             assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
             
-            switch (Integer.valueOf(id))
+            switch (Integer.valueOf(id) - 1)
             {
             case SheetItemListFragment.ASSETS:
             	break;
             case SheetItemListFragment.ATTRIBUTES:
             	break;
             case SheetItemListFragment.SKILL_QUEUE:
-            	fragment = new SkillQueueDetailFragment(assembledChar);
+            	fragment = new SkillQueueFragment(assembledChar);
             	break;
             case SheetItemListFragment.SKILLS:
             	break;
             case SheetItemListFragment.WALLET:
             	break;
             default:
-            	fragment = new SkillQueueDetailFragment(assembledChar);
+            	fragment = new SkillQueueFragment(assembledChar);
             	break;
             }
             

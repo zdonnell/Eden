@@ -65,4 +65,16 @@ public class Tools {
 		
 		return formattedString;
 	}
+	
+	/**
+	 * Returns a pixel value in dips
+	 * 
+	 * @param px the value in pixels to be converted
+	 * @param context required to get Display Density
+	 * @return
+	 */
+	public static int dp2px(float dp, Context context) 
+	{	
+		return (int) (dp * context.getResources().getDisplayMetrics().density);
+	}
 }
