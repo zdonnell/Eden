@@ -1,17 +1,22 @@
 package com.zdonnell.eve;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
 
@@ -66,27 +71,26 @@ public class MainStripActivity extends FragmentActivity {
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary
      * sections of the app.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
+    	
+    	private static final int COUNT = 2;
+    	    	
         public SectionsPagerAdapter(FragmentManager fm) { super(fm); }
 
         @Override
         public Fragment getItem(int i) 
         {
         	Fragment fragment;
+        	
         	if (i == 0) fragment = new CharacterTabFragment();
         	else fragment = new CorporationTabFragment();
-        	
-        	Bundle savedInstanceState = new Bundle();
-        	savedInstanceState.putInt("tab", i);
-        	
-        	fragment.setArguments(savedInstanceState);
+        	        	
 			return fragment;
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return COUNT;
         }
 
         @Override

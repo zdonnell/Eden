@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -45,6 +46,8 @@ public class CharacterTabFragment extends Fragment {
 	
 	private Context context;
 	
+	View main;
+	
 	private int[] calculatedColumnWidths;
 		
 	private HashMap<Integer, TimeRemainingCountdown> cachedTrainingTime = new HashMap<Integer, TimeRemainingCountdown>();
@@ -53,6 +56,8 @@ public class CharacterTabFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
+		setRetainInstance(true);
+		
 		context = inflater.getContext();
 		
 		charDB = new CharacterDB(context);
@@ -61,7 +66,7 @@ public class CharacterTabFragment extends Fragment {
 		setupImagePreCache();
 		if (false) loadCharacters();
 		
-		View main = (View) inflater.inflate(R.layout.character_fragment, container, false);
+		main = (View) inflater.inflate(R.layout.character_fragment, container, false);
 		GridView charGrid = (GridView) main.findViewById(R.id.charGrid);
 		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
 		

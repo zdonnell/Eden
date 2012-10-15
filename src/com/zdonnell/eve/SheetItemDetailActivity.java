@@ -2,7 +2,7 @@ package com.zdonnell.eve;
 
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.characterdetail.SkillQueueFragment;
+import com.zdonnell.eve.detail.skillqueue.SkillQueueFragment;
 
 import android.content.Intent;
 import android.os.Bundle;

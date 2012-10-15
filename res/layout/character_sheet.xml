@@ -85,8 +85,7 @@
 	    />
 
     <ListView
-        android:background="#BBB"
-        
+        android:background="#BBB"   
         android:id="@+id/char_sheet_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -15,7 +14,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.Log;
+import android.util.SparseArray;
 import android.widget.ImageView;
 
 /**
@@ -32,13 +31,15 @@ public class ImageService {
 	public final static int CHAR = 0;
 	public final static int CORP = 1;
 	
+	private final static float LOW_RES_FACTOR = 0.25f;
+	
 	/**
 	 * if preCache has been called, this queue will hold the images queued to
 	 * be loaded
 	 */
 	private Queue<Integer> preCacheQueue = new LinkedList<Integer>();
 	
-	private HashMap<Integer, ArrayList<ImageView>> viewsToUpdate = new HashMap<Integer, ArrayList<ImageView>>();
+	private SparseArray<ArrayList<ImageView>> viewsToUpdate = new SparseArray<ArrayList<ImageView>>();
 	
 	/**
 	 * Dimensions to save the the portraits / corp logos at
@@ -70,7 +71,7 @@ public class ImageService {
 	/**
 	 * Hashmap to store loaded images in memory
 	 */
-	private HashMap<Integer, Bitmap> memoryImageCache = new HashMap<Integer, Bitmap>();;
+	private SparseArray<Bitmap> memoryImageCache = new SparseArray<Bitmap>();;
 	
 	private Context context;
 
@@ -93,6 +94,15 @@ public class ImageService {
 		}
 	}
 	
+	public void clearCache()
+	{
+		for (int x = 0; x < memoryImageCache.size(); x++)
+		{
+			if (memoryImageCache.get(x) != null) memoryImageCache.get(x).recycle();
+		}
+		memoryImageCache.clear();
+	}
+	
 	/**
 	 * Takes an ImageView and Character or Corporation ID and sets the appropriate
 	 * image
@@ -103,7 +113,7 @@ public class ImageService {
 	 */
 	public void setPortrait(ImageView view, int actorID, int actorType) 
 	{
-		if (memoryImageCache.containsKey(actorID)) view.setImageBitmap(memoryImageCache.get(actorID));
+		if (memoryImageCache.get(actorID, null) != null) view.setImageBitmap(memoryImageCache.get(actorID));
 		else if (preCacheQueue.contains(actorID)) viewsToUpdate.get(actorID).add(view);
 		else 
 		{	
@@ -114,16 +124,22 @@ public class ImageService {
 	/**
 	 * Saves the specified bitmap to local storage
 	 * 
-	 * @param result The Bitmap to save
+	 * @param image The Bitmap to save
 	 * @param actorID The Char or Corp ID
 	 */
-	private void saveBitmap(Bitmap result, int actorID) 
+	private void saveBitmap(Bitmap image, int actorID) 
 	{		
 		try 
 		{
 			FileOutputStream out = context.openFileOutput(actorID + ".png", 0);
-			result.compress(Bitmap.CompressFormat.PNG, 75, out);
+			image.compress(Bitmap.CompressFormat.PNG, 100, out);
 			out.close();
+			
+			Bitmap scaledImage = Bitmap.createScaledBitmap(image, (int) (image.getWidth() * LOW_RES_FACTOR),  (int) (image.getHeight() * LOW_RES_FACTOR), true);
+			
+			FileOutputStream scaledOut = context.openFileOutput(actorID + "_low.png", 0);
+			scaledImage.compress(Bitmap.CompressFormat.PNG, 60, scaledOut);
+			scaledOut.close();
 		} 
 		catch (Exception e) 
 		{
@@ -214,7 +230,7 @@ public class ImageService {
 					view.setImageBitmap(imageServed);
 					view = null;
 				}
-				imageDownloaded(actorID, imageServed, false);
+				imageDownloaded(actorID, imageServed);
 			}
 			else
 			{
@@ -260,6 +276,8 @@ public class ImageService {
 				e.printStackTrace();
 			}
 			
+			saveBitmap(imageServed, actorID);
+			
 			return imageServed;
 		}
 
@@ -272,7 +290,7 @@ public class ImageService {
 					view.setImageBitmap(imageServed);
 					view = null;
 				}
-				imageDownloaded(actorID, imageServed, true);
+				imageDownloaded(actorID, imageServed);
 			}		
 		}
 	}
@@ -283,11 +301,9 @@ public class ImageService {
 	 * @param actorID
 	 * @param imageServed
 	 */
-	private void imageDownloaded(int actorID, Bitmap imageServed, boolean save)
+	private void imageDownloaded(int actorID, Bitmap imageServed)
 	{
-		memoryImageCache.put(actorID, imageServed);
-		if (save) saveBitmap(imageServed, actorID);
-		
+		memoryImageCache.put(actorID, imageServed);		
 		preCacheQueue.remove(actorID);
 		
 		if (viewsToUpdate != null)

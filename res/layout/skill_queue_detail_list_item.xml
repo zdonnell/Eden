@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:paddingLeft="8dp"
+	    android:paddingTop="8dp"
+	    android:paddingRight="8dp"
+	    android:paddingBottom="5dp" >
+	    
+	    <ImageView
+	       	android:layout_width="40dp"
+	       	android:layout_height="40dp"
+	       	android:paddingRight="8dp"
+	       	android:src="@drawable/skills"/>
+	    <View
+		    android:layout_width="1px"
+		    android:layout_height="match_parent"
+		    android:background="#999"
+	    />
+		<TextView
+		    android:id="@+id/skillqueue_detail_list_item_skillname"
+		    android:layout_weight="1"
+		    android:layout_width="0dp"
+		    android:layout_height="wrap_content"
+		    android:padding="8dp"
+		    android:text="Skill Name"
+		    android:textColor="#424242"
+		    android:textSize="14sp"
+		     />
+	</LinearLayout>
+</LinearLayout>

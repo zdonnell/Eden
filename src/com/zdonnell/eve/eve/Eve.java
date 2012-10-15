@@ -33,9 +33,7 @@ public class Eve extends APIObject {
 		resourceManager = ResourceManager.getInstance(context);
 	}
 	
-	/**
-	 * @deprecated Should use a static database for this info
-	 * 
+	/** 
 	 * @param apiCallback
 	 * @param typeIDs
 	 */

@@ -9,7 +9,7 @@ import android.view.MenuItem;
 
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.characterdetail.SkillQueueFragment;
+import com.zdonnell.eve.detail.skillqueue.SkillQueueFragment;
 
 public class SheetItemListActivity extends FragmentActivity
         implements SheetItemListFragment.Callbacks {

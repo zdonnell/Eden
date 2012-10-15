@@ -1,4 +1,4 @@
-package com.zdonnell.eve.characterdetail;
+package com.zdonnell.eve.detail.skillqueue;
 
 import java.util.ArrayList;
 
@@ -87,12 +87,11 @@ public class SkillQueueBar extends View
 		{			
 			for (QueuedSkill skill : skillQueue)
 			{
-				long startAdvanceValue = (queuePosition == 0) ? 0 
-						                                      : Tools.timeUntilUTCTime(skill.startTime);
+				long startAdvanceValue = (queuePosition == 0) ? 0 : Tools.timeUntilUTCTime(skill.startTime);
 								
 				double percentOfBar = (double) (Tools.timeUntilUTCTime(skill.endTime) - startAdvanceValue) / (double) DAY_IN_MILLIS;
 				int secLength = (int) (percentOfBar * width);
-								
+				
 				int start = currentBarPosition;
 				int end = start + secLength;
 				
@@ -169,6 +168,6 @@ public class SkillQueueBar extends View
     public void onSizeChanged (int w, int h, int oldw, int oldh){
         super.onSizeChanged(w, h, oldw, oldh);
         width = w - (manual_padding * 2);
-        height = h;
+        height = (int) (h * 1.1f);
     }
 }

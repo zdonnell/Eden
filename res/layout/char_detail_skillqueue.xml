@@ -30,4 +30,14 @@
 	        android:layout_weight="0"
 	        android:layout_height="wrap_content"/>		
 	</LinearLayout>
+	<View
+	    android:layout_width="match_parent"
+	    android:layout_height="2dp"
+	    android:background="#242424"
+	    />
+	 <ListView
+        android:background="#BBB"   
+        android:id="@+id/char_detail_queue_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </LinearLayout>
