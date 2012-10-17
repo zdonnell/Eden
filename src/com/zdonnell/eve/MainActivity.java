@@ -24,7 +24,7 @@ import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.server.Server;
 
-public class MainStripActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the

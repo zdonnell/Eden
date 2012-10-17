@@ -31,6 +31,9 @@ public class ImageService {
 	public final static int CHAR = 0;
 	public final static int CORP = 1;
 	
+	public final static int ID = 0;
+	public final static int TYPE = 1;
+	
 	private final static float LOW_RES_FACTOR = 0.25f;
 	
 	/**
@@ -87,11 +90,11 @@ public class ImageService {
 	{
 		for (int[] actor : actorsToPreCache)
 		{
-			preCacheQueue.add(actor[0]);
-			viewsToUpdate.put(actor[0], new ArrayList<ImageView>());
-
-			new LoadImageTask(actor[0], actor[1], null).execute();
+			preCacheQueue.add(actor[ID]);
+			viewsToUpdate.put(actor[ID], new ArrayList<ImageView>());
 		}
+		
+		new LoadImageTask(actorsToPreCache, null).execute();
 	}
 	
 	public void clearCache()
@@ -117,7 +120,11 @@ public class ImageService {
 		else if (preCacheQueue.contains(actorID)) viewsToUpdate.get(actorID).add(view);
 		else 
 		{	
-			new LoadImageTask(actorID, actorType, view).execute();
+			int[][] actorSet = new int[1][2];
+			actorSet[0][0] = actorID;
+			actorSet[0][1] = actorType;
+			
+			new LoadImageTask(actorSet , view).execute();
 		}
 	}
 
@@ -172,70 +179,69 @@ public class ImageService {
 	 * @author Zach
 	 *
 	 */
-	private class LoadImageTask extends AsyncTask<String, Void, Bitmap> 
+	private class LoadImageTask extends AsyncTask<String, Void, SparseArray<Bitmap>> 
 	{
-		private int actorID, actorType;
+		int[][] actors;
+		
 		private ImageView view;
 
 		/**
-		 * @param actorID
+		 * @param actors, a 2d array, see {@link preCache} for more information
 		 * @param view the ImageView to update once the image is acquired
 		 */
-		public LoadImageTask(int actorID, int actorType, ImageView view) 
+		public LoadImageTask(int[][] actors, ImageView view) 
 		{
-			this.actorID = actorID;
-			this.actorType = actorType;
+			this.actors = actors;
 			this.view = view;
 		}
 
-		protected Bitmap doInBackground(String... urls) 
+		protected SparseArray<Bitmap> doInBackground(String... urls) 
 		{
 			FileInputStream fis = null;
 			BufferedInputStream buf = null;
-			Bitmap bitmapFromSD = null;
+			Bitmap bitmapFromSD;
+			byte[] ByteBuffer;
 			
-			try 
+			SparseArray<Bitmap> loadedBitmaps = new SparseArray<Bitmap>();
+			
+			for (int[] actor : actors)
 			{
-				fis = context.openFileInput(actorID + ".png");
-				buf = new BufferedInputStream(fis);
-				
-				byte[] bitmapBytes = new byte[buf.available()];
-				buf.read(bitmapBytes);
-				
-				bitmapFromSD = BitmapFactory.decodeByteArray(bitmapBytes, 0, bitmapBytes.length);
-				
-				if (fis != null) fis.close();
-				if (buf != null) buf.close();
-			} 
-			catch (FileNotFoundException e) 
-			{
-				e.printStackTrace();
-				return null;
-			} 
-			catch (IOException e) 
-			{
-				e.printStackTrace();
-				return null;
+				try 
+				{
+					fis = context.openFileInput(actor[ID] + "_low.png");
+					buf = new BufferedInputStream(fis);
+					
+					ByteBuffer = new byte[buf.available()];
+					buf.read(ByteBuffer);
+					
+					bitmapFromSD = BitmapFactory.decodeByteArray(ByteBuffer, 0, ByteBuffer.length);
+					loadedBitmaps.put(actor[ID], bitmapFromSD);
+					
+					if (fis != null) fis.close();
+					if (buf != null) buf.close();
+				} 
+				catch (FileNotFoundException e) { } 
+				catch (IOException e) { }
 			}
 			
-			return bitmapFromSD;
+			return loadedBitmaps;
 		}
 
-		protected void onPostExecute(Bitmap imageServed) 
+		protected void onPostExecute(SparseArray<Bitmap> imagesServed) 
 		{
-			if (imageServed != null)
+			for (int[] actor : actors)
 			{
-				if (view != null) 
+				if (imagesServed.get(actor[ID]) != null)
 				{
-					view.setImageBitmap(imageServed);
-					view = null;
+					if (view != null) view.setImageBitmap(imagesServed.get(actor[ID]));
+					imageDownloaded(actor[ID], imagesServed.get(actor[ID]));
 				}
-				imageDownloaded(actorID, imageServed);
-			}
-			else
-			{
-				setImageFromHTTP(actorID, actorType, view);
-			}
+				/* If the bitmap is null, it was not successfully loaded.  Aquire from the Image Server. */
+				else
+				{
+					setImageFromHTTP(actor[ID], actor[TYPE], view);
+				}
+			}			
 		}
 	}
 

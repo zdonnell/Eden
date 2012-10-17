@@ -31,6 +31,9 @@ public class SkillQueueFragment extends Fragment {
     private static final int LIGHT = 0;
 	private static final int DARK = 1;
 	
+	/**
+	 * The ListView that stores the queue listing
+	 */
 	private ListView skillQueueList;
 	
 	private static int[] colors = new int[2];
@@ -72,8 +75,8 @@ public class SkillQueueFragment extends Fragment {
     	skillQueueBar.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Tools.dp2px(80, inflater.getContext())));
     	
     	skillQueueList = (ListView) inflatedView.findViewById(R.id.char_detail_queue_list);
-    	skillQueueList.setDivider(context.getResources().getDrawable(R.drawable.divider_grey));
-    	skillQueueList.setDividerHeight(1);
+    	//skillQueueList.setDivider(context.getResources().getDrawable(R.drawable.divider_grey));
+    	//skillQueueList.setDividerHeight(1);
     	
     	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
     	{
@@ -91,6 +94,12 @@ public class SkillQueueFragment extends Fragment {
     	return inflatedView;
     }
     
+    /**
+     * Takes a skillQueue and provides it to the  {@link ListView} responsible for displaying
+     * the queued skills.
+     * 
+     * @param skillQueue an {@link ArrayList} of {@link QueuedSkill} objects to build the listview from
+     */
     private void updateQueueList(ArrayList<QueuedSkill> skillQueue)
     {
     	this.skillQueue = skillQueue;
@@ -121,16 +130,19 @@ public class SkillQueueFragment extends Fragment {
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent)
 		{
+			final ArrayList<QueuedSkill> currentSkillQueue = SkillQueueFragment.this.skillQueue;
+			
 			LinearLayout preparedView; 
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				
 			SkillQueueSegment skillQueueSegment;
+			
 			if (convertView != null) 
 			{
 				preparedView = (LinearLayout) convertView;
 				
 				skillQueueSegment = (SkillQueueSegment) preparedView.getChildAt(1);
-				skillQueueSegment.setQueue(SkillQueueFragment.this.skillQueue, position);
+				skillQueueSegment.setQueue(currentSkillQueue, position);				
 			}
 			else 
 			{
@@ -138,11 +150,16 @@ public class SkillQueueFragment extends Fragment {
 				
 				skillQueueSegment = new SkillQueueSegment(context, colors);
 				
-				skillQueueSegment.setQueue(SkillQueueFragment.this.skillQueue, position);
+				skillQueueSegment.setQueue(currentSkillQueue, position);
 				preparedView.addView(skillQueueSegment);
 				skillQueueSegment.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Tools.dp2px(3, inflater.getContext())));
 			}
 			
+			/* Configure Skill Level Indicator View */
+			SkillLevelIndicator skillLevelIndicator = (SkillLevelIndicator) preparedView.findViewById(R.id.skill_level_indicator);
+			skillLevelIndicator.provideSkillInfo(currentSkillQueue.get(position), position == 0, colors[0]);
+			
+			/* Alternate Skill Queue Row Background Color */
 			preparedView.setBackgroundColor((position % 2 == 1) ? Color.parseColor("#CCCCCC") : Color.parseColor("#BBBBBB")); 
 			
 			final TextView skillName = (TextView) preparedView.findViewById(R.id.skillqueue_detail_list_item_skillname);			

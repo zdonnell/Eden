@@ -12,7 +12,7 @@
     <string name="title_section3">Section 3</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section1">Section 1</string>
-    <string name="title_activity_main_strip">MainActivity</string>
+    <string name="title_activity_main_strip">Eden</string>
     <string name="title_sheetitem_detail">SheetItem Detail</string>
     <string name="title_sheetitem_list">SheetItems</string>
     <string name="title_activity_apitest">APITestActivity</string>

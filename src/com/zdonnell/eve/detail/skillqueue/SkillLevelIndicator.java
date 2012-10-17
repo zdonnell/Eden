@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.zdonnell.eve.Tools;
@@ -25,63 +27,81 @@ public class SkillLevelIndicator extends View {
 		
 	private int currentLevel = -1;
 	
-	private boolean nextLevelTraining;
+	private boolean isTraining;
 	
 	private int borderWidth, boxPadding, boxWidth;
 	
 	private Paint paint;
-		
-	public SkillLevelIndicator(Context context, Color activeSkillColor) 
-	{
+	
+	public SkillLevelIndicator (Context context) 
+	{ 
 		super(context);
-		
-		this.context = context;
-		this.activeSkillColor = activeSkillColor.hashCode();
-		
-		paint = new Paint();
+        this.context = context;
+        
+        paint = new Paint();
 		paint.setColor(BASE_COLOR);
 	}
 
-	
-	public void provideSkillInfo(QueuedSkill skill)
+    public SkillLevelIndicator (Context context, AttributeSet attrs) 
+    {
+        super(context, attrs);
+        this.context = context;
+        
+        paint = new Paint();
+		paint.setColor(BASE_COLOR);
+    }
+
+    public SkillLevelIndicator (Context context, AttributeSet attrs, int style) 
+    {
+        super(context, attrs, style); 
+        this.context = context;
+        
+        paint = new Paint();
+		paint.setColor(BASE_COLOR);
+    }
+
+	public void provideSkillInfo(QueuedSkill skill, boolean isTraining, int activeSkillColor)
 	{
-		currentLevel = skill.skillLevel - 1;
+		this.isTraining = isTraining;
+		currentLevel = skill.skillLevel;
 		
-		
-		this.currentLevel = nextLevelTraining ? currentLevel + 1 : currentLevel;
-		this.nextLevelTraining = nextLevelTraining;
+		this.activeSkillColor = activeSkillColor;
+		skillInfoObtained = true;
 	}
 	
 	@Override
 	protected void onDraw(Canvas canvas)
 	{
+		paint.setColor(BASE_COLOR);
 		paint.setStyle(Style.STROKE);
 		paint.setStrokeWidth(borderWidth);
+		paint.setAlpha(255);
 		
 		canvas.drawRect(0, 0, width, height, paint);
 		
 		if (skillInfoObtained) drawSkillBoxes(canvas);
+		
+		if (isTraining) invalidate();
 	}
 	
-	
 	private void drawSkillBoxes(Canvas canvas)
-	{
+	{		
 		paint.setStyle(Style.FILL);
-		
-		paint.setColor(BASE_COLOR);
-		paint.setAlpha(255);
-		
-		for (int boxNum = 0; boxNum < currentLevel; boxNum++)
-		{			
-			if (nextLevelTraining && boxNum == currentLevel - 1) 
-			{
-				int alphaValue = (int) (205 + Math.sin(System.currentTimeMillis() / 200.0) * 50.0);
 				
+		for (int boxNum = 0; boxNum < currentLevel; boxNum++)
+		{					
+			if (boxNum == currentLevel - 1) 
+			{
 				paint.setColor(activeSkillColor);
-				paint.setAlpha(alphaValue);
+			
+				if (isTraining)
+				{
+					int alphaValue = (int) (155 + Math.sin(System.currentTimeMillis() / 350.0) * 100.0);
+					paint.setAlpha(alphaValue);
+				}
 			}
 			
-			float left = borderWidth + boxPadding + (boxNum * boxWidth);
+			float left = borderWidth + ((boxNum + 1) * boxPadding) + (boxNum * boxWidth);
 			float top = borderWidth + boxPadding;
 			float right = left + boxWidth;
 			float bottom = height - (borderWidth + boxPadding);
@@ -93,7 +113,7 @@ public class SkillLevelIndicator extends View {
 			if (right > width - (borderWidth + boxPadding)) right = width - (borderWidth + boxPadding);
 			
 			canvas.drawRect(left, top, right, bottom, paint);
-		}
+		}		
 	}
 	
 	@Override
@@ -104,7 +124,7 @@ public class SkillLevelIndicator extends View {
         height = h;
         
         borderWidth = Tools.dp2px(2, context);
-        boxPadding = Tools.dp2px(2, context);
+        boxPadding = Tools.dp2px(1, context);
         
         float totalBoxSpace = width - (borderWidth * 2) - (boxPadding * (SKILL_LEVEL_MAX + 1));
         boxWidth = (int) (totalBoxSpace / SKILL_LEVEL_MAX);

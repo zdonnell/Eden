@@ -77,19 +77,20 @@ public final class R {
         public static final int current_sp=0x7f09000e;
         public static final int header_text=0x7f090009;
         public static final int imageView1=0x7f090008;
-        public static final int logo=0x7f09001c;
-        public static final int menu_addaccount=0x7f09001f;
-        public static final int menu_settings=0x7f09001e;
+        public static final int logo=0x7f09001d;
+        public static final int menu_addaccount=0x7f090020;
+        public static final int menu_settings=0x7f09001f;
         public static final int pager=0x7f090001;
         public static final int pager_title_strip=0x7f090002;
         public static final int queue_time_remaining_text=0x7f090006;
-        public static final int server_status=0x7f09001d;
+        public static final int server_status=0x7f09001e;
         public static final int sheetitem_detail=0x7f090019;
         public static final int sheetitem_detail_container=0x7f090003;
         public static final int sheetitem_list=0x7f090004;
+        public static final int skill_level_indicator=0x7f09001b;
         public static final int skillqueue_detail_list_item_skillname=0x7f09001a;
         public static final int tile_text_bg=0x7f090015;
-        public static final int tq_status_root=0x7f09001b;
+        public static final int tq_status_root=0x7f09001c;
     }
     public static final class layout {
         public static final int activity_add_account=0x7f030000;
