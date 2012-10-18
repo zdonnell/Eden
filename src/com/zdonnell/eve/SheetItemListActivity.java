@@ -29,6 +29,8 @@ public class SheetItemListActivity extends FragmentActivity
         characterInfo = getIntent().getExtras().getStringArray("character");
         assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
         
+        getActionBar().setTitle(new CharacterDB(this).getCharacterName(assembledChar.id()));
+        
         ((SheetItemListFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar);
         
         if (findViewById(R.id.sheetitem_detail_container) != null) 

@@ -44,19 +44,7 @@ public class CharacterDB {
 		this.db = helper.getWritableDatabase();
 	}
 
-	/**********************************************************************
-	 * ADDING A ROW TO THE DATABASE TABLE
-	 * 
-	 * This is an example of how to add a row to a database table using this
-	 * class. You should edit this method to suit your needs.
-	 * 
-	 * the key is automatically assigned by the database
-	 * 
-	 * @param rowStringOne
-	 *            the value for the row's first column
-	 * @param rowStringTwo
-	 *            the value for the row's second column
-	 */
+	
 	public void addCharacter(EveCharacter character, APICredentials credentials) {
 		// this is a key value pair holder used by android's SQLite functions
 		ContentValues values = new ContentValues();
@@ -70,7 +58,7 @@ public class CharacterDB {
 		// ask the database object to insert the new data
 		try {
 
-			db.insert(CHAR_TABLE_NAME, null, values);
+			db.insert(CHAR_TABLE, null, values);
 		} catch (Exception e) {
 
 			Log.e("DB ERROR", e.toString());
@@ -78,16 +66,8 @@ public class CharacterDB {
 		}
 	}
 
-	/**********************************************************************
-	 * RETRIEVING ALL ROWS FROM THE DATABASE TABLE
-	 * 
-	 * This is an example of how to retrieve all data from a database table
-	 * using this class. You should edit this method to suit your needs.
-	 * 
-	 * the key is automatically assigned by the database
-	 */
-
-	public Cursor allCharacters() {
+	public Cursor allCharacters() 
+	{
 
 		// this is a database call that creates a "cursor" object.
 		// the cursor object store the information collected from the
@@ -96,7 +76,7 @@ public class CharacterDB {
 
 		try {
 			// ask the database object to create the cursor.
-			cursor = db.query(CHAR_TABLE_NAME, new String[] { CHAR_TABLE_ID, CHAR_TABLE_NAME, CHAR_TABLE_EVEID, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE },
+			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_ID, CHAR_TABLE_NAME, CHAR_TABLE_EVEID, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE },
 					null, null, null, null, null);
 
 		} catch (SQLException e) {
@@ -107,6 +87,21 @@ public class CharacterDB {
 		// return the ArrayList that holds the data collected from
 		// the database.
 		return cursor;
+	}
+	
+	public String getCharacterName(int characterID)
+	{
+		String query = "SELECT " + CHAR_TABLE_NAME + " FROM " + CHAR_TABLE + " WHERE " + CHAR_TABLE_EVEID + "=?";
+		
+		Log.d("TEST VALUE", "IS: " + String.valueOf(characterID));
+		
+		Cursor c = db.rawQuery(query, new String[]{ String.valueOf(characterID) });
+		
+		String name = "";
+		if (c.moveToFirst()) name = c.getString(0);
+		c.close();
+		
+		return name;
 	}
 
 	/**
@@ -129,7 +124,7 @@ public class CharacterDB {
 		public void onCreate(SQLiteDatabase db) {
 			// This string is used to create the database. It should
 			// be changed to suit your needs.
-			String newTableQueryString = "create table " + CHAR_TABLE_NAME
+			String newTableQueryString = "create table " + CHAR_TABLE
 					+ " (" + CHAR_TABLE_ID
 					+ " integer primary key autoincrement not null,"
 					+ CHAR_TABLE_NAME + " string," + CHAR_TABLE_EVEID

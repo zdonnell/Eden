@@ -22,6 +22,8 @@ public class SheetItemDetailActivity extends FragmentActivity {
         setContentView(R.layout.activity_sheetitem_detail);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setLogo(R.drawable.zach);
+        getActionBar().setDisplayUseLogoEnabled(true);
 
         if (savedInstanceState == null) 
         {

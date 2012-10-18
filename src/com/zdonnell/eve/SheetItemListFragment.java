@@ -87,6 +87,8 @@ public class SheetItemListFragment extends Fragment {
     	}
     }
 
+    private TextView[] subTexts = new TextView[5];
+    
     private Callbacks mCallbacks = sDummyCallbacks;
     private int mActivatedPosition = ListView.INVALID_POSITION;
     
@@ -177,12 +179,6 @@ public class SheetItemListFragment extends Fragment {
         super.onDetach();
         mCallbacks = sDummyCallbacks;
     }
-
-    /*@Override
-    public void onListItemClick(ListView listView, View view, int position, long id) {
-        super.onListItemClick(listView, view, position, id);
-        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
-    }*/
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -275,21 +271,24 @@ public class SheetItemListFragment extends Fragment {
 			super(context, viewResourceID, items);
 			this.items = items;
 			this.resourceID = viewResourceID;
-			// TODO Auto-generated constructor stub
 		}
 		
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent)
 		{
 			LinearLayout preparedView; 
-			LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			
 			if (convertView != null) preparedView = (LinearLayout) convertView;
 			else preparedView = (LinearLayout) inflater.inflate(resourceID, parent, false);
 			
+			subTexts[position] = (TextView) preparedView.findViewById(R.id.character_sheet_item_subtext);
+			
 			TextView text = (TextView) preparedView.findViewById(R.id.character_sheet_item_text);
 			text.setText(items[position].text);
 						
+			setSubTexts();
+			
 			ImageView image = (ImageView) preparedView.findViewById(R.id.character_sheet_item_image);
 			image.setImageResource(items[position].imageID);
 			
@@ -318,14 +317,53 @@ public class SheetItemListFragment extends Fragment {
 			
 			TextView characterSPView = (TextView) rootView.findViewById(R.id.current_sp);
 			characterSPView.setText(formatter.format(characterInfo.getSP()) + " SP");
-			
+						
 			TextView cloneNameView = (TextView) rootView.findViewById(R.id.current_clone);
 			if (characterInfo.getSP() > characterSheet.getCloneSkillPoints())
 			{
 				cloneNameView.setText(Html.fromHtml("<FONT COLOR='#FF4444'>" + characterSheet.getCloneName() + "</FONT>"));
 			}
 			else cloneNameView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + characterSheet.getCloneName() + "</FONT>"));
+		
+			setSubTexts();
 		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void setSubTexts()
+	{
+		NumberFormat formatter = NumberFormat.getInstance();
+		
+		/* Skills */
+		
+		
+		/* SkillQueue */
+		if (subTexts[SKILL_QUEUE] != null && skillQueue != null) 
+		{
+			if (skillQueue.isEmpty()) subTexts[SKILL_QUEUE].setText("Skill Queue Empty");
+			else
+			{
+				QueuedSkill lastSkill = skillQueue.get(skillQueue.size() - 1);
+				long timeUntilQueueFinished = Tools.timeUntilUTCTime(lastSkill.endTime);
+				String formattedTimeRemaining = Tools.millisToEveFormatString(timeUntilQueueFinished);
+				
+				subTexts[SKILL_QUEUE].setText(skillQueue.size() + " Skill(s) in Queue (" + formattedTimeRemaining + ")");
+			}
+		}
+		
+		/* Attributes */
+		
+		
+		/* Wallet */
+		if (subTexts[WALLET] != null && characterSheet != null) 
+		{
+			subTexts[WALLET].setText("Balance: " + formatter.format(characterSheet.getWalletBalance()) + " ISK");
+		}
+
+		/* Assets */
+		
 	}
 	
 	private class SkillTimeRemainingCountdown extends CountDownTimer

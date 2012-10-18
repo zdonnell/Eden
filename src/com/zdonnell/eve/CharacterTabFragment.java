@@ -143,7 +143,7 @@ public class CharacterTabFragment extends Fragment {
 					CharacterInfo[2] = credentials.verificationCode;
 					
 					intent.putExtra("character", CharacterInfo);
-	            	 startActivity(intent);
+	            	startActivity(intent);
 				}
 			});
 		}
