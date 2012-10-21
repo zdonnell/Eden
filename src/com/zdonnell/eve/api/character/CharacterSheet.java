@@ -7,6 +7,12 @@ package com.zdonnell.eve.api.character;
  *
  */
 public class CharacterSheet {
+		
+	public final static int INTELLIGENCE = 0;
+	public final static int PERCEPTION = 1;
+	public final static int CHARISMA = 2;
+	public final static int WILLPOWER = 3;
+	public final static int MEMORY = 4;
 	
 	private int characterID;
 	
@@ -58,13 +64,7 @@ public class CharacterSheet {
 	 *
 	 */
 	public static class AttributeEnhancer
-	{
-		public final static int MEMORY = 0;
-		public final static int PERCEPTION = 1;
-		public final static int WILLPOWERY = 2;
-		public final static int INTELLIGENCE = 3;
-		public final static int CHARISMA = 4;
-		
+	{		
 		public final String augmentatorName;
 		public final int augmentatorValue;
 		

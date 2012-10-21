@@ -16,5 +16,6 @@
     <string name="title_sheetitem_detail">SheetItem Detail</string>
     <string name="title_sheetitem_list">SheetItems</string>
     <string name="title_activity_apitest">APITestActivity</string>
+    <string name="title_activity_test">TestActivity</string>
 
 </resources>

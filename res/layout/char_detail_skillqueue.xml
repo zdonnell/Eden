@@ -10,7 +10,7 @@
 	    xmlns:tools="http://schemas.android.com/tools"
 	    android:layout_width="match_parent"
 	    android:layout_height="42dp"
-	    android:background="#242424"
+	    android:background="#333"
 	    android:padding="10dp"
 	    android:orientation="horizontal" >
 	    <TextView 
@@ -25,7 +25,8 @@
 	        android:id="@+id/queue_time_remaining_text"
 	        android:text="10d 20h 30m 40s"
 	        android:textColor="#999"
-	        android:textSize="14sp"
+	        android:textSize="16sp"
+	        android:textStyle="bold"
 	        android:layout_width="wrap_content"
 	        android:layout_weight="0"
 	        android:layout_height="wrap_content"/>		

@@ -75,8 +75,8 @@ public class SkillQueueFragment extends Fragment {
     	skillQueueBar.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Tools.dp2px(80, inflater.getContext())));
     	
     	skillQueueList = (ListView) inflatedView.findViewById(R.id.char_detail_queue_list);
-    	//skillQueueList.setDivider(context.getResources().getDrawable(R.drawable.divider_grey));
-    	//skillQueueList.setDividerHeight(1);
+    	skillQueueList.setDivider(context.getResources().getDrawable(R.drawable.divider_grey));
+    	skillQueueList.setDividerHeight(1);
     	
     	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
     	{

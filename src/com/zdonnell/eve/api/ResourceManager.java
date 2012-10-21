@@ -76,7 +76,7 @@ public class ResourceManager {
 		{
 			String cachedResource = cacheDatabase.getCachedResource(rw.resourceURL, rw.uniqueIDs);
 			rw.apiCallback.onUpdate(rw.parser.parse(buildDocument(cachedResource)));
-			
+
 			if (cacheDatabase.cacheExpired(rw.resourceURL, rw.uniqueIDs)) new APIServerQuery(rw).execute();
 		}
 		else new APIServerQuery(rw).execute();
@@ -106,7 +106,6 @@ public class ResourceManager {
 		catch (ClientProtocolException e) { e.printStackTrace(); }
 		catch (IOException e) { e.printStackTrace(); }
 		
-		Log.d("HTTP RESOURCE", rawResponse);
 		return rawResponse;
 	}
 	
@@ -120,12 +119,15 @@ public class ResourceManager {
 		DocumentBuilderFactory factory;
 		DocumentBuilder domBuilder;
 		
+		/* remove whitespace inbetween nodes */
+		xmlString = xmlString.replaceAll(">\\s*<", "><");
+		
 		factory = DocumentBuilderFactory.newInstance();
-
+		
 		try 
 		{
 			domBuilder = factory.newDocumentBuilder();
-
+			
 			InputStream responseStream = new ByteArrayInputStream(xmlString.getBytes());
 			xmlDoc = domBuilder.parse(responseStream);	
 		} 

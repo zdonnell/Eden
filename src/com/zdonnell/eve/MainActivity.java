@@ -14,9 +14,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.widget.TextView;
 
@@ -59,6 +61,8 @@ public class MainActivity extends FragmentActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        
+        customizePagerStrip((PagerTitleStrip) findViewById(R.id.pager_title_strip));
     }
 
     @Override
@@ -103,6 +107,11 @@ public class MainActivity extends FragmentActivity {
             }
             return null;
         }
+    }
+    
+    private void customizePagerStrip(PagerTitleStrip titleStrip)
+    {
+    	//titleStrip.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24);
     }
     
     private void setServerStatus()

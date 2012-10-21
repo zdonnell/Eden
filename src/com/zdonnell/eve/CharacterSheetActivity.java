@@ -9,10 +9,11 @@ import android.view.MenuItem;
 
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
+import com.zdonnell.eve.detail.attributes.AttributesFragment;
 import com.zdonnell.eve.detail.skillqueue.SkillQueueFragment;
 
-public class SheetItemListActivity extends FragmentActivity
-        implements SheetItemListFragment.Callbacks {
+public class CharacterSheetActivity extends FragmentActivity
+        implements CharacterSheetFragment.Callbacks {
 
     private boolean mTwoPane;
     
@@ -31,12 +32,12 @@ public class SheetItemListActivity extends FragmentActivity
         
         getActionBar().setTitle(new CharacterDB(this).getCharacterName(assembledChar.id()));
         
-        ((SheetItemListFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar);
+        ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar);
         
         if (findViewById(R.id.sheetitem_detail_container) != null) 
         {
             mTwoPane = true;
-            ((SheetItemListFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setActivateOnItemClick(true);
+            ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setActivateOnItemClick(true);
         }
     }
 
@@ -51,23 +52,24 @@ public class SheetItemListActivity extends FragmentActivity
     }
 
     @Override
-    public void onItemSelected(String id) {
+    public void onItemSelected(int id) {
         if (mTwoPane) {
             
             Fragment fragment = null;
             
-            switch (Integer.valueOf(id))
+            switch (id)
             {
-            case SheetItemListFragment.ASSETS:
+            case CharacterSheetFragment.ASSETS:
             	break;
-            case SheetItemListFragment.ATTRIBUTES:
+            case CharacterSheetFragment.ATTRIBUTES:
+            	fragment = new AttributesFragment(assembledChar);
             	break;
-            case SheetItemListFragment.SKILL_QUEUE:
+            case CharacterSheetFragment.SKILL_QUEUE:
             	fragment = new SkillQueueFragment(assembledChar);
             	break;
-            case SheetItemListFragment.SKILLS:
+            case CharacterSheetFragment.SKILLS:
             	break;
-            case SheetItemListFragment.WALLET:
+            case CharacterSheetFragment.WALLET:
             	break;
             default:
             	fragment = new SkillQueueFragment(assembledChar);
@@ -79,8 +81,8 @@ public class SheetItemListActivity extends FragmentActivity
                     .commit();
 
         } else {
-            Intent detailIntent = new Intent(this, SheetItemDetailActivity.class);
-            detailIntent.putExtra(SkillQueueFragment.ARG_ITEM_ID, id);
+            Intent detailIntent = new Intent(this, CharacterDetailActivity.class);
+            detailIntent.putExtra("position", id);
             detailIntent.putExtra("character", characterInfo);
             startActivity(detailIntent);
         }

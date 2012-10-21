@@ -33,14 +33,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SheetItemListActivity"
+            android:name=".CharacterSheetActivity"
             android:label="@string/title_sheetitem_list" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zdonnell.eve.MainStripActivity" />
         </activity>
         <activity
-            android:name=".SheetItemDetailActivity"
+            android:name=".CharacterDetailActivity"
             android:label="@string/title_sheetitem_detail" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -52,6 +52,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zdonnell.eve.MainStripActivity" />
+        </activity>
+        <activity
+            android:name=".TestActivity"
+            android:label="@string/title_activity_test" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

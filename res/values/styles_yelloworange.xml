@@ -24,6 +24,7 @@
         <item name="android:popupMenuStyle">@style/yelloworange_PopupMenu</item>
         <item name="android:dropDownListViewStyle">@style/yelloworange_DropDownListView</item>
         <item name="android:actionBarTabStyle">@style/yelloworange_ActionBarTabStyle</item>
+        <item name="android:actionBarTabBarStyle">@style/yelloworange_ActionBarTabBarStyle</item>
         <item name="android:actionDropDownStyle">@style/yelloworange_DropDownNav</item>
         <item name="android:actionBarStyle">@style/yelloworange_transparent_ActionBar</item>
         <item name="android:panelBackground">@drawable/menu_hardkey_panel_yelloworange</item>
@@ -53,6 +54,12 @@
     <style name="yelloworange_ActionBarTabStyle" parent="@android:style/Widget.Holo.ActionBar.TabView">
         <item name="android:background">@drawable/tab_indicator_ab_yelloworange</item>
     </style>
+    
+    <style name="yelloworange_ActionBarTabBarStyle" parent="@android:style/Widget.Holo.ActionBar.TabBar">
+    	<item name="android:showDividers">middle</item>
+    	<item name="android:dividerPadding">10dp</item>
+    	<item name="android:background">@drawable/tab_unselected</item>
+	</style>
 
     <style name="yelloworange_DropDownNav" parent="@android:style/Widget.Holo.Spinner">
         <item name="android:background">@drawable/spinner_background_ab_yelloworange</item>

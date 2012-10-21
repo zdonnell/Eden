@@ -135,7 +135,7 @@ public class CharacterTabFragment extends Fragment {
 				
 				@Override
 				public void onClick(View v) {
-					Intent intent = new Intent(context, SheetItemListActivity.class);
+					Intent intent = new Intent(context, CharacterSheetActivity.class);
 					
 					String[] CharacterInfo = new String[3];
 					CharacterInfo[0] = String.valueOf(characterID);

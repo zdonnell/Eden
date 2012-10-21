@@ -29,7 +29,7 @@ import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.dummy.DummyContent;
 import com.zdonnell.eve.eve.Eve;
 
-public class SheetItemListFragment extends Fragment {
+public class CharacterSheetFragment extends Fragment {
 
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     
@@ -42,7 +42,7 @@ public class SheetItemListFragment extends Fragment {
     /**
      * Static array of text strings for the character sheet list
      */
-    private final static String[] sheetItems = new String[5];
+    public final static String[] sheetItems = new String[5];
     static 
     {
     	sheetItems[SKILLS] = "Skills";
@@ -55,7 +55,7 @@ public class SheetItemListFragment extends Fragment {
     /**
      * Static array to hold drawable id's for the sheet item images
      */
-    private final static int[] sheetItemImageIDs = new int[5];
+    public final static int[] sheetItemImageIDs = new int[5];
     static
     {
     	sheetItemImageIDs[SKILLS] = R.drawable.skills;
@@ -120,16 +120,16 @@ public class SheetItemListFragment extends Fragment {
 
     public interface Callbacks {
 
-        public void onItemSelected(String id);
+        public void onItemSelected(int id);
     }
 
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(String id) {
+        public void onItemSelected(int id) {
         }
     };
 
-    public SheetItemListFragment() 
+    public CharacterSheetFragment() 
     {
     }
 
@@ -295,7 +295,7 @@ public class SheetItemListFragment extends Fragment {
 			preparedView.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					 mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+					 mCallbacks.onItemSelected(position);
 				}
 			});
 			

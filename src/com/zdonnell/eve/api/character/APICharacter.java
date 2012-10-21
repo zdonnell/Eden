@@ -9,6 +9,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.zdonnell.eve.Tools;
 import com.zdonnell.eve.api.APICallback;
@@ -17,6 +18,7 @@ import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.ResourceManager;
 import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
 import com.zdonnell.eve.api.character.CharacterInfo.CurrentShipInfo;
+import com.zdonnell.eve.api.character.CharacterSheet.AttributeEnhancer;
 
 public class APICharacter extends APIObject {
 	
@@ -112,6 +114,26 @@ public class APICharacter extends APIObject {
 			
 			double walletBalance = Double.parseDouble(document.getElementsByTagName("balance").item(0).getTextContent());
 			characterSheet.setWalletBalance(walletBalance);
+			
+			NodeList attributeValuesList = document.getElementsByTagName("attributes").item(0).getChildNodes();
+			int[] attributeValues = new int[5];				
+			for (int x = 0; x < attributeValuesList.getLength(); x++)
+			{
+				Node attributeNode = attributeValuesList.item(x);
+				attributeValues[x] = Integer.parseInt(attributeNode.getTextContent());
+			}
+			
+			NodeList attributeEnhancersList = document.getElementsByTagName("attributeEnhancers").item(0).getChildNodes();
+			AttributeEnhancer[] attributeEnhancers = new AttributeEnhancer[5];			
+			for (int x = 0; x < attributeEnhancersList.getLength(); x++)
+			{
+				Node augmentatorNameNode = attributeEnhancersList.item(x).getFirstChild();
+				Node augmentatorValueNode = attributeEnhancersList.item(x).getLastChild();
+				
+				attributeEnhancers[x] = new AttributeEnhancer(augmentatorNameNode.getTextContent(), Integer.parseInt(augmentatorValueNode.getTextContent()));
+			}
+			
+			characterSheet.setAttributeInfo(attributeEnhancers, attributeValues);
 			
 			return characterSheet;
 		}

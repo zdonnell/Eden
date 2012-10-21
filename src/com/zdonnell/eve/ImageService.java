@@ -208,7 +208,7 @@ public class ImageService {
 			{
 				try 
 				{
-					fis = context.openFileInput(actor[ID] + "_low.png");
+					fis = context.openFileInput(actor[ID] + ".png");
 					buf = new BufferedInputStream(fis);
 					
 					ByteBuffer = new byte[buf.available()];
