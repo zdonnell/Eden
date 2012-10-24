@@ -325,6 +325,12 @@ public class CharacterSheetFragment extends Fragment {
 			}
 			else cloneNameView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + characterSheet.getCloneName() + "</FONT>"));
 		
+			TextView currentShipName = (TextView) rootView.findViewById(R.id.character_sheet_ship_name);
+			TextView currentLocation = (TextView) rootView.findViewById(R.id.character_sheet_location);
+
+			currentShipName.setText(characterInfo.getCurShipInfo().getName() + " (" + characterInfo.getCurShipInfo().getTypeName() + ")");
+			currentLocation.setText(characterInfo.getLocation());
+			
 			setSubTexts();
 		}
 	}

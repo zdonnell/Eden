@@ -16,6 +16,8 @@ public class CharacterInfo {
 	
 	private double securityStatus;
 	
+	private String location;
+	
 	public CharacterInfo(int characterID)
 	{
 		this.characterID = characterID;
@@ -25,11 +27,13 @@ public class CharacterInfo {
 	public void setCurShipInfo(CurrentShipInfo curShip) { this.curShip = curShip; }
 	public void setSP(int skillPoints) { this.skillPoints = skillPoints; }
 	public void setSecStatus(double secStatus) { this.securityStatus = secStatus; }
+	public void setLocation(String location) { this.location = location; }
 	
 	// Getters
 	public CurrentShipInfo getCurShipInfo() { return curShip; }
 	public int getSP() { return skillPoints; }
 	public double getSecStatus() { return securityStatus; }
+	public String getLocation() { return location; }
 	
 	/**
 	 * Wrapper class for curernt ship info

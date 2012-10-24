@@ -3,9 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#999" >
+    android:background="#DDD" >
     <ListView
-        android:background="#BBB"   
+        android:background="#DDD"   
         android:id="@+id/char_detail_attributes_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

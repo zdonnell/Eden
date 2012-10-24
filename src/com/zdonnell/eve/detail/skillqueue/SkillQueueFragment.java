@@ -39,8 +39,8 @@ public class SkillQueueFragment extends Fragment {
 	private static int[] colors = new int[2];
 	static
 	{
-		colors[LIGHT] = Color.parseColor("#FFBB33");
-		colors[DARK] = Color.parseColor("#FF8800");
+		colors[LIGHT] = Color.parseColor("#33B5E5");
+		colors[DARK] = Color.parseColor("#0099CC");
 	}
 
     DummyContent.DummyItem mItem;
@@ -160,7 +160,7 @@ public class SkillQueueFragment extends Fragment {
 			skillLevelIndicator.provideSkillInfo(currentSkillQueue.get(position), position == 0, colors[0]);
 			
 			/* Alternate Skill Queue Row Background Color */
-			preparedView.setBackgroundColor((position % 2 == 1) ? Color.parseColor("#CCCCCC") : Color.parseColor("#BBBBBB")); 
+			preparedView.setBackgroundColor((position % 2 == 1) ? Color.parseColor("#DDDDDD") : Color.parseColor("#CCCCCC")); 
 			
 			final TextView skillName = (TextView) preparedView.findViewById(R.id.skillqueue_detail_list_item_skillname);			
 			

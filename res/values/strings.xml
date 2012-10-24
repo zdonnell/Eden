@@ -17,5 +17,6 @@
     <string name="title_sheetitem_list">SheetItems</string>
     <string name="title_activity_apitest">APITestActivity</string>
     <string name="title_activity_test">TestActivity</string>
-
+    <string name="title_bar_slide">Sliding Content Only</string>
+    
 </resources>

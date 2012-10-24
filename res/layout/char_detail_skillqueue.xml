@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#BBB"
+    android:background="#DDD"
     android:layout_marginLeft="0dp"
     android:layout_marginRight="0dp"
     android:orientation="vertical" >
@@ -16,7 +16,7 @@
 	    <TextView 
 	        android:id="@+id/completes_on_text"
 	        android:text="Completes Jan 31"
-	        android:textColor="#999"
+	        android:textColor="#DDD"
 	        android:textSize="14sp"
 	        android:layout_width="0dp"
 	        android:layout_weight="1"
@@ -24,7 +24,7 @@
 	    <TextView 
 	        android:id="@+id/queue_time_remaining_text"
 	        android:text="10d 20h 30m 40s"
-	        android:textColor="#999"
+	        android:textColor="#DDD"
 	        android:textSize="16sp"
 	        android:textStyle="bold"
 	        android:layout_width="wrap_content"
@@ -37,7 +37,7 @@
 	    android:background="#242424"
 	    />
 	 <ListView
-        android:background="#BBB"   
+        android:background="#DDD"   
         android:id="@+id/char_detail_queue_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

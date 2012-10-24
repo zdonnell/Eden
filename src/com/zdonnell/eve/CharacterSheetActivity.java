@@ -7,15 +7,26 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import com.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.detail.attributes.AttributesFragment;
 import com.zdonnell.eve.detail.skillqueue.SkillQueueFragment;
 
-public class CharacterSheetActivity extends FragmentActivity
+public class CharacterSheetActivity extends BaseActivity
         implements CharacterSheetFragment.Callbacks {
 
-    private boolean mTwoPane;
+	public CharacterSheetActivity(int titleRes) {
+		super(titleRes);
+		// TODO Auto-generated constructor stub
+	}
+	
+	public CharacterSheetActivity() {
+		super(R.string.app_name);
+
+	}
+
+	private boolean mTwoPane;
     
     private APICharacter assembledChar;
     
@@ -25,12 +36,13 @@ public class CharacterSheetActivity extends FragmentActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sheetitem_list);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        
+		setSlidingActionBarEnabled(true);
 
         characterInfo = getIntent().getExtras().getStringArray("character");
         assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
         
-        getActionBar().setTitle(new CharacterDB(this).getCharacterName(assembledChar.id()));
+        //getActionBar().setTitle(new CharacterDB(this).getCharacterName(assembledChar.id()));
         
         ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar);
         
@@ -39,16 +51,6 @@ public class CharacterSheetActivity extends FragmentActivity
             mTwoPane = true;
             ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setActivateOnItemClick(true);
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

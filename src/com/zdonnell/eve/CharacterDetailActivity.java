@@ -18,15 +18,25 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.zdonnell.eve.MainActivity.SectionsPagerAdapter;
+import com.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.detail.attributes.AttributesFragment;
 import com.zdonnell.eve.detail.skillqueue.SkillQueueFragment;
 
-public class CharacterDetailActivity extends FragmentActivity implements ActionBar.TabListener {
+public class CharacterDetailActivity extends BaseActivity implements ActionBar.TabListener {
 
-    private APICharacter assembledChar;
+    public CharacterDetailActivity(int titleRes) {
+		super(titleRes);
+		// TODO Auto-generated constructor stub
+	}
+    
+    public CharacterDetailActivity() {
+		super(R.string.app_name);
+		// TODO Auto-generated constructor stub
+	}
+
+	private APICharacter assembledChar;
 	
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -44,16 +54,20 @@ public class CharacterDetailActivity extends FragmentActivity implements ActionB
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
+    	  super.onCreate(savedInstanceState);
+          setContentView(R.layout.character_detail);
+          
+  		setSlidingActionBarEnabled(true);
+    	
     	String[] characterInfo = getIntent().getExtras().getStringArray("character");
     	assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
-    	
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.character_detail);
+    
+        
+        
         
         final ActionBar actionBar = getActionBar();
         
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle(new CharacterDB(getBaseContext()).getCharacterName(Integer.valueOf(characterInfo[0])));
                 
         // Create the adapter that will return a fragment for each of the three primary sections
@@ -159,15 +173,5 @@ public class CharacterDetailActivity extends FragmentActivity implements ActionB
         {
             return CharacterSheetFragment.sheetItems[position].toUpperCase();
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            NavUtils.navigateUpTo(this, new Intent(this, CharacterSheetActivity.class));
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

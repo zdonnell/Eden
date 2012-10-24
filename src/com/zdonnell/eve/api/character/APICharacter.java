@@ -158,6 +158,9 @@ public class APICharacter extends APIObject {
 			int SP = Integer.parseInt(document.getElementsByTagName("skillPoints").item(0).getTextContent());
 			characterInfo.setSP(SP);
 			
+			String location = document.getElementsByTagName("lastKnownLocation").item(0).getTextContent();
+			characterInfo.setLocation(location);
+			
 			String shipName = document.getElementsByTagName("shipName").item(0).getTextContent(); 
 			String shipTypeName = document.getElementsByTagName("shipTypeName").item(0).getTextContent();
 			int shipTypeID = Integer.parseInt(document.getElementsByTagName("shipTypeID").item(0).getTextContent());
