@@ -33,6 +33,7 @@ import com.zdonnell.eve.api.account.Account;
 import com.zdonnell.eve.api.account.EveCharacter;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.QueuedSkill;
+import com.zdonnell.eve.helper.GridViewScrollPullListener;
 
 public class CharacterTabFragment extends Fragment {
 
@@ -62,13 +63,17 @@ public class CharacterTabFragment extends Fragment {
 		
 		charDB = new CharacterDB(context);
 		imageService = new ImageService(context);
-		
+				
 		setupImagePreCache();
 		if (false) loadCharacters();
 		
 		main = (View) inflater.inflate(R.layout.character_fragment, container, false);
 		GridView charGrid = (GridView) main.findViewById(R.id.charGrid);
 		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
+		
+		GridViewScrollPullListener scrollPullHelper = new GridViewScrollPullListener();
+		
+		charGrid.setOnTouchListener(scrollPullHelper);
 		
 		columns = calcColumns((Activity) context);
 		charGrid.setNumColumns(columns);

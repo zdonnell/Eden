@@ -42,7 +42,7 @@ public class CharacterSheetActivity extends BaseActivity
         characterInfo = getIntent().getExtras().getStringArray("character");
         assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
         
-        //getActionBar().setTitle(new CharacterDB(this).getCharacterName(assembledChar.id()));
+        getActionBar().setTitle(new CharacterDB(this).getCharacterName(assembledChar.id()));
         
         ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar);
         

@@ -23,6 +23,7 @@
         <item name="android:actionBarItemBackground">@drawable/selectable_background_yelloworange</item>
         <item name="android:popupMenuStyle">@style/yelloworange_PopupMenu</item>
         <item name="android:dropDownListViewStyle">@style/yelloworange_DropDownListView</item>
+        <item name="android:windowAnimationStyle">@style/custom_animation</item>
         <item name="android:actionBarTabStyle">@style/yelloworange_ActionBarTabStyle</item>
         <item name="android:actionBarTabBarStyle">@style/yelloworange_ActionBarTabBarStyle</item>
         <item name="android:actionDropDownStyle">@style/yelloworange_DropDownNav</item>

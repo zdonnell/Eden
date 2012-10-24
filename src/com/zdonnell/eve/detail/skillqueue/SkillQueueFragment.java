@@ -39,8 +39,8 @@ public class SkillQueueFragment extends Fragment {
 	private static int[] colors = new int[2];
 	static
 	{
-		colors[LIGHT] = Color.parseColor("#33B5E5");
-		colors[DARK] = Color.parseColor("#0099CC");
+		colors[LIGHT] = Color.parseColor("#FFBB33");
+		colors[DARK] = Color.parseColor("#FF8800");
 	}
 
     DummyContent.DummyItem mItem;
@@ -70,6 +70,7 @@ public class SkillQueueFragment extends Fragment {
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_skillqueue, container, false);
     	final SkillQueueBar skillQueueBar = new SkillQueueBar(inflater.getContext(), colors);
     	final TextView queueTimeRemaining = (TextView) inflatedView.findViewById(R.id.queue_time_remaining_text);
+    	final TextView queueLength = (TextView) inflatedView.findViewById(R.id.skill_queue_size_text);
     	
     	inflatedView.addView(skillQueueBar, 1);
     	skillQueueBar.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Tools.dp2px(80, inflater.getContext())));
@@ -86,6 +87,8 @@ public class SkillQueueFragment extends Fragment {
 				skillQueueBar.setQueue(skillQueue);
 				long timeRemainingInQueue = Tools.timeUntilUTCTime(skillQueue.get(skillQueue.size() - 1).endTime);
 				new TimeRemainingCountdown(timeRemainingInQueue, 1000, queueTimeRemaining).start();
+				
+				queueLength.setText(skillQueue.size() + " Skill(s) in Queue");
 				
 				updateQueueList(skillQueue);
 			}
@@ -160,9 +163,11 @@ public class SkillQueueFragment extends Fragment {
 			skillLevelIndicator.provideSkillInfo(currentSkillQueue.get(position), position == 0, colors[0]);
 			
 			/* Alternate Skill Queue Row Background Color */
-			preparedView.setBackgroundColor((position % 2 == 1) ? Color.parseColor("#DDDDDD") : Color.parseColor("#CCCCCC")); 
+			preparedView.setBackgroundColor((position % 2 == 1) ? Color.parseColor("#CCCCCC") : Color.parseColor("#DDDDDD")); 
 			
-			final TextView skillName = (TextView) preparedView.findViewById(R.id.skillqueue_detail_list_item_skillname);			
+			final TextView skillName = (TextView) preparedView.findViewById(R.id.skillqueue_detail_list_item_skillname);
+			TextView skillLevel = (TextView) preparedView.findViewById(R.id.skill_level_text);			
+			skillLevel.setText("Level " + currentSkillQueue.get(position).skillLevel);
 			
 			new Eve(context).getTypeName(new APICallback<String[]>() 
 			{

@@ -22,16 +22,22 @@
 		    android:layout_height="match_parent"
 		    android:background="#999"
 	    />
-		<TextView
-		    android:id="@+id/skillqueue_detail_list_item_skillname"
+		
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		    android:layout_weight="1"
 		    android:layout_width="0dp"
 		    android:layout_height="wrap_content"
-		    android:padding="8dp"
-		    android:text="Skill Name"
-		    android:textColor="#424242"
-		    android:textSize="14sp"
-		     />
+		    android:orientation="vertical" >
+		    <TextView
+			    android:id="@+id/skillqueue_detail_list_item_skillname"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:padding="8dp"
+			    android:text="Skill Name"
+			    android:textColor="#424242"
+			    android:textSize="14sp"
+			     />
+		</LinearLayout>
 		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
@@ -40,6 +46,15 @@
 		        android:id="@+id/skill_level_indicator"
 		    	android:layout_width="60dp"
 		    	android:layout_height="16dp"/>
+		    <TextView
+		        android:id="@+id/skill_level_text"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_gravity="right"
+		        android:paddingTop="2dp"
+		        android:text="Level"
+		        android:textColor="#424242"
+		     	android:textSize="14sp"/>
 		</LinearLayout>
 	</LinearLayout>
 </LinearLayout>

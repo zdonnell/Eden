@@ -43,6 +43,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 		sm.setShadowWidthRes(R.dimen.shadow_width);
 		sm.setShadowDrawable(R.drawable.shadow);
 		sm.setBehindOffsetRes(R.dimen.actionbar_home_width);
+		sm.setFadeDegree(0.75f);
 
 		// customize the ActionBar
 		if (Build.VERSION.SDK_INT >= 11) {

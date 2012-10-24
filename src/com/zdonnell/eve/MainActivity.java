@@ -6,7 +6,7 @@ import android.os.Bundle;
 public class MainActivity extends BaseActivity {
 
 	public MainActivity() {
-		super(R.string.title_bar_slide);
+		super(R.string.character_grid_activity_title);
 	}
 	
 	@Override

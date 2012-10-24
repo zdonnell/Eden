@@ -1,3 +1,8 @@
 <resources>
-
+ 	<style name="custom_animation">
+        <item name="android:activityOpenEnterAnimation">@anim/fade_in</item> When opening a new activity, this is the animation that is run on the next activity
+        <item name="android:activityOpenExitAnimation">@anim/fade_out</item> When opening a new activity, this is the animation that is run on the previous activity (which is exiting the screen)
+        <item name="android:activityCloseEnterAnimation">@anim/static_animation</item> When closing the current activity, this is the animation that is run on the next activity (which is entering the screen). 
+        <item name="android:activityCloseExitAnimation">@anim/fade_out</item> When closing the current activity, this is the animation that is run on the current activity (which is exiting the screen). 
+    </style>
 </resources>
