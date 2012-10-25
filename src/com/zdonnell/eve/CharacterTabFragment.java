@@ -72,9 +72,7 @@ public class CharacterTabFragment extends Fragment {
 		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
 		
 		GridViewScrollPullListener scrollPullHelper = new GridViewScrollPullListener();
-		
-		charGrid.setOnTouchListener(scrollPullHelper);
-		
+				
 		columns = calcColumns((Activity) context);
 		charGrid.setNumColumns(columns);
 		
