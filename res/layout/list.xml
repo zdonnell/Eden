@@ -1,8 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/list"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="@dimen/list_padding"
-    android:paddingRight="@dimen/list_padding"
-    android:background="#242424" />
+    android:background="#242424">
+    <ImageView
+        android:src="@drawable/eden_text"
+        android:id="@+id/eden_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0" />
+	<ListView
+	    android:id="@android:id/list"
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:layout_weight="1"
+	    android:paddingLeft="@dimen/list_padding"
+	    android:paddingRight="@dimen/list_padding" />
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/tq_status_root"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:background="#191919"
+	    android:padding="15dp">
+	
+	    <TextView
+	        android:id="@+id/server_status"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_weight="1"
+	        android:gravity="center"
+	        android:text="Server Status"
+	        android:textColor="#AAAAAA"
+	        android:textSize="14sp" />
+
+	</LinearLayout>
+</LinearLayout>

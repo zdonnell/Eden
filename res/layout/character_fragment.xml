@@ -16,4 +16,12 @@
         android:verticalSpacing="1px" >
     </GridView>
 
+    <ImageView
+        android:id="@+id/splash_image"
+        android:src="@drawable/splash_portrait"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop">
+    </ImageView>
+    
 </RelativeLayout>

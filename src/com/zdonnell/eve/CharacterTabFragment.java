@@ -1,6 +1,5 @@
 package com.zdonnell.eve;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -9,19 +8,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Point;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
-import android.text.Html;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -33,7 +32,7 @@ import com.zdonnell.eve.api.account.Account;
 import com.zdonnell.eve.api.account.EveCharacter;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.QueuedSkill;
-import com.zdonnell.eve.helper.GridViewScrollPullListener;
+import com.zdonnell.eve.helpers.BaseCallback;
 
 public class CharacterTabFragment extends Fragment {
 
@@ -70,9 +69,7 @@ public class CharacterTabFragment extends Fragment {
 		main = (View) inflater.inflate(R.layout.character_fragment, container, false);
 		GridView charGrid = (GridView) main.findViewById(R.id.charGrid);
 		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
-		
-		GridViewScrollPullListener scrollPullHelper = new GridViewScrollPullListener();
-				
+						
 		columns = calcColumns((Activity) context);
 		charGrid.setNumColumns(columns);
 		
@@ -208,13 +205,15 @@ public class CharacterTabFragment extends Fragment {
 	/**
 	 * Compiles information to be sent to the ImageService to pre cache
 	 * portraits and corp logos.
+	 * 
+	 * Provides a callback for when the preCaching is completed.
 	 */
 	private void setupImagePreCache()
 	{
 		Cursor charCursor = charDB.allCharacters();
 		int characterNum = charCursor.getCount();
 		
-		int[][] preCacheArray = new int[characterNum*2][2];
+		int[][] preCacheArray = new int[characterNum * 2][2];
 		while (charCursor.moveToNext())
 		{
 			int position = charCursor.getPosition();
@@ -225,7 +224,45 @@ public class CharacterTabFragment extends Fragment {
 			preCacheArray[position + characterNum][1] = ImageService.CORP;
 		}
 		charCursor.close();
-		imageService.preCache(preCacheArray);
+		
+		imageService.preCache(preCacheArray, new BaseCallback(){
+			@Override
+			public void callBack() 
+			{
+				imagesLoaded();
+			}
+		});
+	}
+	
+	/**
+	 * Called when the ImageService alerts us the preCache queue has been emptied (the images are loaded)
+	 * 
+	 * @see ImageService#preCache(int[][], BaseCallback)
+	 * @see #setupImagePreCache()
+	 */
+	private void imagesLoaded()
+	{
+		final ImageView splash = (ImageView) main.findViewById(R.id.splash_image);
+		
+		Animation fadeOut = new AlphaAnimation(1, 0);
+		fadeOut.setFillAfter(true);
+		fadeOut.setInterpolator(new LinearInterpolator()); //add this
+		fadeOut.setDuration(500);
+		fadeOut.setAnimationListener(new AnimationListener(){
+			@Override
+			public void onAnimationEnd(Animation arg0) 
+			{
+				((ViewGroup) main).removeView(splash);
+			}
+
+			@Override
+			public void onAnimationRepeat(Animation arg0) { }
+
+			@Override
+			public void onAnimationStart(Animation arg0) { }
+		});
+		
+		splash.setAnimation(fadeOut);
 	}
 	
 	/**

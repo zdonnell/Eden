@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.zdonnell.eve.helpers.BaseCallback;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -71,6 +73,8 @@ public class ImageService {
 		subURLs[CORP] = "Corporation/";
 	}
 	
+	private BaseCallback preCacheCallback = null;
+	
 	/**
 	 * Hashmap to store loaded images in memory
 	 */
@@ -86,7 +90,7 @@ public class ImageService {
 	/** 
 	 * @param actorsToPreCache actorsToPreCache[x][0] = actorID, actorsToPreCache[x][1] = actorType.
 	 */
-	public void preCache(int[][] actorsToPreCache)
+	public void preCache(int[][] actorsToPreCache, BaseCallback callback)
 	{
 		for (int[] actor : actorsToPreCache)
 		{
@@ -94,6 +98,7 @@ public class ImageService {
 			viewsToUpdate.put(actor[ID], new ArrayList<ImageView>());
 		}
 		
+		preCacheCallback = callback;
 		new LoadImageTask(actorsToPreCache, null).execute();
 	}
 	
@@ -311,6 +316,16 @@ public class ImageService {
 	{
 		memoryImageCache.put(actorID, imageServed);		
 		preCacheQueue.remove(actorID);
+		
+		/**
+		 * If preCache() was called, this checks if it is the last image to be loaded
+		 * if so, fire off the callback
+		 */
+		if (preCacheCallback != null && preCacheQueue.isEmpty())
+		{
+			preCacheCallback.callBack();
+			preCacheCallback = null;
+		}
 		
 		if (viewsToUpdate != null)
 		{

@@ -221,22 +221,31 @@ public class CharacterSheetFragment extends Fragment {
 			{
 				skillQueue = pSkillQueue;
 				
-				long timeUntilSkillFinish = Tools.timeUntilUTCTime(skillQueue.get(0).endTime);;
-				try 
+				if (!skillQueue.isEmpty()) 
 				{
-			    	new SkillTimeRemainingCountdown(timeUntilSkillFinish, 1000, skillTimeRemaining).start();
-				} 
-				catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
-				
-				final int skillLevel = skillQueue.get(0).skillLevel;
-				new Eve(context).getTypeName(new APICallback<String[]>() 
-				{
-					@Override
-					public void onUpdate(String[] typeName) {
-						currentSkillView.setText(typeName[0] + " " + skillLevelMap.get(skillLevel));						
-					}
+					long timeUntilSkillFinish = 0;
+					try 
+					{
+						timeUntilSkillFinish = Tools.timeUntilUTCTime(skillQueue.get(0).endTime);
+						new SkillTimeRemainingCountdown(timeUntilSkillFinish, 1000, skillTimeRemaining).start();
+					} 
+					catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
 					
-				}, new int[] { skillQueue.get(0).skillID });
+					final int skillLevel = skillQueue.get(0).skillLevel;
+					new Eve(context).getTypeName(new APICallback<String[]>() 
+					{
+						@Override
+						public void onUpdate(String[] typeName) {
+							currentSkillView.setText(typeName[0] + " " + skillLevelMap.get(skillLevel));						
+						}
+						
+					}, new int[] { skillQueue.get(0).skillID });
+				}
+				else
+				{
+					currentSkillView.setText(Html.fromHtml("<FONT COLOR=#FF4444>No Skill in Training</FONT>"));
+					skillTimeRemaining.setVisibility(View.INVISIBLE);
+				}
 			}
     	});
     	
