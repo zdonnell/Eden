@@ -22,12 +22,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterInfo;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.QueuedSkill;
-import com.zdonnell.eve.dummy.DummyContent;
 import com.zdonnell.eve.eve.Eve;
+import com.zdonnell.eve.helpers.Tools;
 
 public class CharacterSheetFragment extends Fragment {
 
@@ -71,11 +72,11 @@ public class CharacterSheetFragment extends Fragment {
     private final static Class<?>[] detailClass = new Class<?>[5];
     static 
     {
-    	detailClass[SKILLS] = CorporationTabFragment.class;
-    	detailClass[SKILL_QUEUE] = CorporationTabFragment.class;
-    	detailClass[ATTRIBUTES] = CorporationTabFragment.class;
-    	detailClass[WALLET] = CorporationTabFragment.class;
-    	detailClass[ASSETS] = CorporationTabFragment.class;
+    	detailClass[SKILLS] = CorporationsFragment.class;
+    	detailClass[SKILL_QUEUE] = CorporationsFragment.class;
+    	detailClass[ATTRIBUTES] = CorporationsFragment.class;
+    	detailClass[WALLET] = CorporationsFragment.class;
+    	detailClass[ASSETS] = CorporationsFragment.class;
     }
     
     private final static SheetItem[] items = new SheetItem[5];

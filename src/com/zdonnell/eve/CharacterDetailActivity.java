@@ -3,26 +3,22 @@ package com.zdonnell.eve;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.detail.attributes.AttributesFragment;
-import com.zdonnell.eve.detail.skillqueue.SkillQueueFragment;
+import com.zdonnell.eve.character.detail.AttributesFragment;
+import com.zdonnell.eve.character.detail.SkillQueueFragment;
+import com.zdonnell.eve.character.detail.WalletFragment;
 
 public class CharacterDetailActivity extends BaseActivity implements ActionBar.TabListener {
 
@@ -150,7 +146,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         		fragment = new AttributesFragment(assembledChar);
         		break;
         	case CharacterSheetFragment.WALLET:
-        		fragment = new AttributesFragment(assembledChar);
+            	fragment = new WalletFragment(assembledChar);
         		break;
         	case CharacterSheetFragment.ASSETS:
         		fragment = new AttributesFragment(assembledChar);

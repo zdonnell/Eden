@@ -34,7 +34,7 @@ public class BaseActivity extends SlidingFragmentActivity {
 		// set the Behind View
 		setBehindContentView(R.layout.menu_frame);
 		FragmentTransaction t = this.getSupportFragmentManager().beginTransaction();
-		mFrag = new SampleListFragment();
+		mFrag = new SlideMenuFragment();
 		t.replace(R.id.menu_frame, mFrag);
 		t.commit();
 

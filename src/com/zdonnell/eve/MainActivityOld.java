@@ -86,8 +86,8 @@ public class MainActivityOld extends FragmentActivity {
         {
         	Fragment fragment;
         	
-        	if (i == 0) fragment = new CharacterTabFragment();
-        	else fragment = new CorporationTabFragment();
+        	if (i == 0) fragment = new CharactersFragment();
+        	else fragment = new CorporationsFragment();
         	        	
 			return fragment;
         }

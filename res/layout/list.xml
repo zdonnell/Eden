@@ -3,13 +3,19 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#242424">
-    <ImageView
+    android:background="#191919">
+    <!-- <ImageView
         android:src="@drawable/eden_text"
         android:id="@+id/eden_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0" />
+    <View
+        android:layout_height="2dp"
+        android:layout_width="match_parent"
+        android:background="#888"
+        android:layout_marginLeft="@dimen/list_padding"
+        android:layout_marginRight="@dimen/list_padding"/> -->
 	<ListView
 	    android:id="@android:id/list"
 	    android:layout_width="match_parent"
@@ -22,7 +28,7 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:orientation="horizontal"
-	    android:background="#191919"
+	    android:background="#111"
 	    android:padding="15dp">
 	
 	    <TextView

@@ -11,7 +11,6 @@ import org.w3c.dom.NodeList;
 import android.content.Context;
 import android.util.Log;
 
-import com.zdonnell.eve.Tools;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.APIObject;
@@ -19,12 +18,15 @@ import com.zdonnell.eve.api.ResourceManager;
 import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
 import com.zdonnell.eve.api.character.CharacterInfo.CurrentShipInfo;
 import com.zdonnell.eve.api.character.CharacterSheet.AttributeEnhancer;
+import com.zdonnell.eve.helpers.Tools;
 
 public class APICharacter extends APIObject {
 	
 	public static final int SKILL_QUEUE = 0;
 	public static final int CHAR_SHEET = 1;
 	public static final int CHAR_INFO = 2;
+	public static final int WALLET_JOURN = 3;
+	public static final int WALLET_TRANS = 4;
 
 	public static final String[] xmlURLs = new String[3];
 	static
@@ -32,6 +34,8 @@ public class APICharacter extends APIObject {
 		xmlURLs[SKILL_QUEUE] = baseURL + "char/SkillQueue.xml.aspx";
 		xmlURLs[CHAR_SHEET] = baseURL + "char/CharacterSheet.xml.aspx";
 		xmlURLs[CHAR_INFO] = baseURL + "eve/CharacterInfo.xml.aspx";
+		xmlURLs[WALLET_JOURN] = baseURL + "eve/CharacterInfo.xml.aspx";
+		xmlURLs[WALLET_TRANS] = baseURL + "eve/CharacterInfo.xml.aspx";
 	}
 	
 	private ResourceManager resourceManager;
@@ -65,6 +69,16 @@ public class APICharacter extends APIObject {
 	public void getCharacterInfo(APICallback<CharacterInfo> apiCallback)
 	{
 		resourceManager.get(new APIRequestWrapper(apiCallback, new CharacterInfoParser(), credentials, xmlURLs[CHAR_INFO], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
+	}
+	
+	public void getWalletJournal(APICallback<ArrayList<JournalEntry>> apiCallback)
+	{
+		resourceManager.get(new APIRequestWrapper(apiCallback, new WalletJournalParser(), credentials, xmlURLs[CHAR_INFO], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
+	}
+	
+	public void getWalletTransactions(APICallback<Transaction> apiCallback)
+	{
+		resourceManager.get(new APIRequestWrapper(apiCallback, new WalletTransactionsParser(), credentials, xmlURLs[CHAR_INFO], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
 	}
 	
 	private class SkillQueueParser extends APIParser<ArrayList<QueuedSkill>>

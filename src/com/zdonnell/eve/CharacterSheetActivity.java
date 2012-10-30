@@ -10,8 +10,9 @@ import android.view.MenuItem;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.detail.attributes.AttributesFragment;
-import com.zdonnell.eve.detail.skillqueue.SkillQueueFragment;
+import com.zdonnell.eve.character.detail.AttributesFragment;
+import com.zdonnell.eve.character.detail.SkillQueueFragment;
+import com.zdonnell.eve.character.detail.WalletFragment;
 
 public class CharacterSheetActivity extends BaseActivity
         implements CharacterSheetFragment.Callbacks {
@@ -72,6 +73,7 @@ public class CharacterSheetActivity extends BaseActivity
             case CharacterSheetFragment.SKILLS:
             	break;
             case CharacterSheetFragment.WALLET:
+            	fragment = new WalletFragment(assembledChar);
             	break;
             default:
             	fragment = new SkillQueueFragment(assembledChar);

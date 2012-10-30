@@ -25,7 +25,7 @@ public class Eve extends APIObject {
 		xmlURLs[TYPE_NAME] = baseURL + "eve/TypeName.xml.aspx";
 	}
 	
-	private ResourceManager resourceManager;
+	private ResourceManager resourceManager ;
 	
 	public Eve(Context context)
 	{
@@ -51,6 +51,9 @@ public class Eve extends APIObject {
 		resourceManager.get(new APIRequestWrapper(apiCallback, new TypeNameParser(), null, xmlURLs[TYPE_NAME], true, new BasicNameValuePair("ids", typeIDString)));
 	}
 	
+	/**
+	 * @deprecated use static database for type name lookup
+	 */
 	private class TypeNameParser extends APIParser<String[]>
 	{
 		@Override
