@@ -71,15 +71,15 @@ public class APICharacter extends APIObject {
 		resourceManager.get(new APIRequestWrapper(apiCallback, new CharacterInfoParser(), credentials, xmlURLs[CHAR_INFO], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
 	}
 	
-	public void getWalletJournal(APICallback<ArrayList<JournalEntry>> apiCallback)
+	public void getWalletJournal(APICallback<ArrayList<WalletEntry.Journal>> apiCallback)
 	{
 		resourceManager.get(new APIRequestWrapper(apiCallback, new WalletJournalParser(), credentials, xmlURLs[CHAR_INFO], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
 	}
 	
-	public void getWalletTransactions(APICallback<Transaction> apiCallback)
+	/*public void getWalletTransactions(APICallback<WalletEntry.Transaction> apiCallback)
 	{
 		resourceManager.get(new APIRequestWrapper(apiCallback, new WalletTransactionsParser(), credentials, xmlURLs[CHAR_INFO], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
-	}
+	}*/
 	
 	private class SkillQueueParser extends APIParser<ArrayList<QueuedSkill>>
 	{
@@ -181,6 +181,20 @@ public class APICharacter extends APIObject {
 			characterInfo.setCurShipInfo(new CurrentShipInfo(shipName, shipTypeName, shipTypeID));			
 			
 			return characterInfo;
+		}
+	}
+	
+	/**
+	 * 
+	 * @author Zach
+	 *
+	 */
+	private class WalletJournalParser extends APIParser<WalletEntry.Journal>
+	{
+		@Override
+		public WalletEntry.Journal parse(Document document) {
+			
+			return null;
 		}
 	}
 }
