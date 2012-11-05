@@ -1,16 +1,17 @@
 package com.zdonnell.eve;
 
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,7 +23,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.api.IconServer;
 import com.zdonnell.eve.api.ImageService;
+import com.zdonnell.eve.api.Images;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterInfo;
 import com.zdonnell.eve.api.character.CharacterSheet;
@@ -100,6 +103,7 @@ public class CharacterSheetFragment extends Fragment {
     private boolean updatedView;
     
     private ImageService imageService;
+    private Images iconServer;
     private APICharacter character;
     private ArrayList<QueuedSkill> skillQueue;
     private CharacterSheet characterSheet;
@@ -139,6 +143,8 @@ public class CharacterSheetFragment extends Fragment {
     {
     	context = inflater.getContext();
     	imageService = new ImageService(context);
+    	iconServer = new Images(context);
+
     	
     	rootView = inflater.inflate(R.layout.character_sheet, container, false);
     	listView = (ListView) rootView.findViewById(R.id.char_sheet_list);
@@ -337,9 +343,20 @@ public class CharacterSheetFragment extends Fragment {
 		
 			TextView currentShipName = (TextView) rootView.findViewById(R.id.character_sheet_ship_name);
 			TextView currentLocation = (TextView) rootView.findViewById(R.id.character_sheet_location);
+			final ImageView currentShipIcon = (ImageView) rootView.findViewById(R.id.current_ship_icon);
 
 			currentShipName.setText(characterInfo.getCurShipInfo().getName() + " (" + characterInfo.getCurShipInfo().getTypeName() + ")");
 			currentLocation.setText(characterInfo.getLocation());
+		
+			final int shipTypeID = characterInfo.getCurShipInfo().getTypeID();
+			iconServer.getTypes( new Images.IconObtainedCallback() {
+				
+				@Override
+				public void iconsObtained(SparseArray<Bitmap> bitmaps) {
+					currentShipIcon.setImageBitmap(bitmaps.get(shipTypeID));
+					
+				}
+			}, shipTypeID);
 			
 			setSubTexts();
 		}

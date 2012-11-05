@@ -11,8 +11,6 @@ import android.graphics.Paint.Style;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +21,7 @@ import android.widget.TextView;
 
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.api.StaticTypeDatabase;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.eve.Eve;
@@ -52,6 +51,8 @@ public class SkillQueueFragment extends Fragment {
     
     private Context context;
     
+    private StaticTypeDatabase typeDatabase;
+    
     public SkillQueueFragment(APICharacter character) 
     {
     	this.character = character;
@@ -67,6 +68,7 @@ public class SkillQueueFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
     {
     	context = inflater.getContext();
+    	typeDatabase = new StaticTypeDatabase(context);
     	
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_skillqueue, container, false);
     	final SkillQueueBar skillQueueBar = new SkillQueueBar(inflater.getContext(), colors);
@@ -169,6 +171,8 @@ public class SkillQueueFragment extends Fragment {
 			final TextView skillName = (TextView) preparedView.findViewById(R.id.skillqueue_detail_list_item_skillname);
 			TextView skillLevel = (TextView) preparedView.findViewById(R.id.skill_level_text);			
 			skillLevel.setText("Level " + currentSkillQueue.get(position).skillLevel);
+			
+			//skillName.setText(typeDatabase.getTypeName(skillQueue[position].skillID));
 			
 			new Eve(context).getTypeName(new APICallback<String[]>() 
 			{

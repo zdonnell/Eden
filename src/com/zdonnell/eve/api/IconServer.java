@@ -1,7 +1,12 @@
 package com.zdonnell.eve.api;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 import android.content.Context;
@@ -10,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
+import android.util.Log;
 import android.util.SparseArray;
 
 /**
@@ -88,10 +94,10 @@ public class IconServer
 	 * of {@link Bitmap} icons.
 	 * @see {@link IconObtainedCallback}
 	 */
-	public void getIcons(ArrayList<Integer> iconIDs, final IconObtainedCallback callback)
+	public void getIcons(int[] iconIDs, final IconObtainedCallback callback)
 	{
-		SparseArray<Bitmap> cachedIcons = new SparseArray<Bitmap>(iconIDs.size());
-		ArrayList<Integer> iconsToLoad = new ArrayList<Integer>(iconIDs.size());
+		SparseArray<Bitmap> cachedIcons = new SparseArray<Bitmap>(iconIDs.length);
+		ArrayList<Integer> iconsToLoad = new ArrayList<Integer>(iconIDs.length);
 		
 		/* check for already cached icons */
 		for (int iconID : iconIDs)
@@ -103,7 +109,7 @@ public class IconServer
 		}
 		
 		/* Finalize objects for direct reference in the callback */
-		final ArrayList<Integer> cachedIconsIDList = iconIDs;
+		final int[] cachedIconsIDList = iconIDs;
 		final SparseArray<Bitmap> cachedIconsFinal = cachedIcons;
 		
 		/**
@@ -112,6 +118,9 @@ public class IconServer
 		 * the previously obtained cached icons, and return the complete {@link SparseArray} to the provided
 		 * {@link IconObtainedCallback}
 		 */
+		Integer[] staticIconsToLoad = new Integer[iconsToLoad.size()];
+		iconsToLoad.toArray(staticIconsToLoad);
+		
 		if (!iconsToLoad.isEmpty())
 		{
 			new IconLoader(context, bitmapCache, new IconObtainedCallback()
@@ -122,12 +131,12 @@ public class IconServer
 					/* Merge in the SparseArray of already cached icons */
 					for (int cachedIconID : cachedIconsIDList)
 					{
-						bitmaps.put(cachedIconID, cachedIconsFinal.get(cachedIconID));				
+						bitmaps.put(cachedIconID, bitmaps.get(cachedIconID));				
 					}
 					
 					callback.iconsObtained(bitmaps);
 				}
-			}).execute((Integer[]) iconsToLoad.toArray());
+			}).execute(staticIconsToLoad);
 		}
 	}
 	
@@ -187,28 +196,82 @@ public class IconServer
 		
 		@Override
 		protected SparseArray<Bitmap> doInBackground(Integer... iconIDs) 
-		{
-			AssetManager assets = context.getAssets();
-			
+		{			
 			SparseArray<Bitmap> bitmapsLoaded = new SparseArray<Bitmap>(iconIDs.length);
+			
+			FileInputStream fis = null;
+			BufferedInputStream buf = null;
+			byte[] ByteBuffer;
 			
 			for (int iconID : iconIDs)
 			{
-				InputStream bitmapInputStream;
 				Bitmap bitmapLoaded = null;
+				Log.d("ICON ID", "is " + iconID);
 				
 				try 
 				{
-					bitmapInputStream = assets.open(baseIconPath + iconID + "_64.png");
-					bitmapLoaded = BitmapFactory.decodeStream(bitmapInputStream);
+					fis = context.openFileInput("type_" + iconID + ".png");
+					buf = new BufferedInputStream(fis);
+					
+					ByteBuffer = new byte[buf.available()];
+					buf.read(ByteBuffer);
+					
+					bitmapLoaded = BitmapFactory.decodeByteArray(ByteBuffer, 0, ByteBuffer.length);	
+					
+					if (fis != null) fis.close();
+					if (buf != null) buf.close();
 				} 
+				catch (FileNotFoundException e) { } 
 				catch (IOException e) { }
+				
+				if (bitmapLoaded == null)
+				{
+					Log.d("Image", "getting from server");
+					
+					String imageURL = "http://image.eveonline.com/Type/" + iconID + "_64.png";
+
+					InputStream in;
+					try 
+					{
+						in = new java.net.URL(imageURL).openStream();
+						bitmapLoaded = BitmapFactory.decodeStream(in);
+					} 
+					catch (MalformedURLException e) { e.printStackTrace(); } 
+					catch (IOException e) { e.printStackTrace(); }
+					
+					
+					if (bitmapLoaded != null) 
+					{
+						Log.d("Image", "not null");
+						saveBitmap(bitmapLoaded, iconID);
+					}
+				}
 				
 				if (bitmapLoaded != null) bitmapCache.put(iconID, bitmapLoaded);
 				bitmapsLoaded.put(iconID, bitmapLoaded);
 			}
 			
 			return bitmapsLoaded;
+		}
+		
+		/**
+		 * Saves the specified bitmap to local storage
+		 * 
+		 * @param image The Bitmap to save
+		 * @param actorID The Char or Corp ID
+		 */
+		private void saveBitmap(Bitmap image, int actorID) 
+		{		
+			try 
+			{
+				FileOutputStream out = context.openFileOutput("type_" + actorID + ".png", 0);
+				image.compress(Bitmap.CompressFormat.PNG, 100, out);
+				out.close();
+			} 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
 		}
 		
 		@Override
@@ -218,7 +281,7 @@ public class IconServer
 		}
 	}
 	
-	public abstract class IconObtainedCallback
+	public static abstract class IconObtainedCallback
 	{
 		abstract public void iconsObtained(SparseArray<Bitmap> bitmaps);
 	}

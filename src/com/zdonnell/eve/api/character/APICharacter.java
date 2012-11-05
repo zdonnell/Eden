@@ -28,7 +28,7 @@ public class APICharacter extends APIObject {
 	public static final int WALLET_JOURN = 3;
 	public static final int WALLET_TRANS = 4;
 
-	public static final String[] xmlURLs = new String[3];
+	public static final String[] xmlURLs = new String[5];
 	static
 	{
 		xmlURLs[SKILL_QUEUE] = baseURL + "char/SkillQueue.xml.aspx";
