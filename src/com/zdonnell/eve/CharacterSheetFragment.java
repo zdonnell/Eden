@@ -23,9 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zdonnell.eve.api.APICallback;
-import com.zdonnell.eve.api.IconServer;
 import com.zdonnell.eve.api.ImageService;
-import com.zdonnell.eve.api.Images;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterInfo;
 import com.zdonnell.eve.api.character.CharacterSheet;
@@ -103,7 +101,6 @@ public class CharacterSheetFragment extends Fragment {
     private boolean updatedView;
     
     private ImageService imageService;
-    private Images iconServer;
     private APICharacter character;
     private ArrayList<QueuedSkill> skillQueue;
     private CharacterSheet characterSheet;
@@ -134,17 +131,13 @@ public class CharacterSheetFragment extends Fragment {
         }
     };
 
-    public CharacterSheetFragment() 
-    {
-    }
+    public CharacterSheetFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
     	context = inflater.getContext();
-    	imageService = new ImageService(context);
-    	iconServer = new Images(context);
-
+    	imageService = ImageService.getInstance(context);
     	
     	rootView = inflater.inflate(R.layout.character_sheet, container, false);
     	listView = (ListView) rootView.findViewById(R.id.char_sheet_list);
@@ -216,8 +209,15 @@ public class CharacterSheetFragment extends Fragment {
      * @param characterID
      */
 	public void setCharacter(APICharacter character) {
-		ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
-		imageService.setPortrait(portrait, character.id(), ImageService.CHAR);
+		final ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
+		imageService.getPortraits(new ImageService.IconObtainedCallback() 
+		{
+			@Override
+			public void iconsObtained(SparseArray<Bitmap> bitmaps) 
+			{
+				portrait.setImageBitmap(bitmaps.valueAt(0));
+			}
+		}, character.id());
 		
 		final TextView currentSkillView = (TextView) rootView.findViewById(R.id.current_skill);
     	
@@ -349,7 +349,7 @@ public class CharacterSheetFragment extends Fragment {
 			currentLocation.setText(characterInfo.getLocation());
 		
 			final int shipTypeID = characterInfo.getCurShipInfo().getTypeID();
-			iconServer.getTypes( new Images.IconObtainedCallback() {
+			imageService.getTypes( new ImageService.IconObtainedCallback() {
 				
 				@Override
 				public void iconsObtained(SparseArray<Bitmap> bitmaps) {

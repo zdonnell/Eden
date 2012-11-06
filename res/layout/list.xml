@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#191919">
+    android:background="#090909">
     <!-- <ImageView
         android:src="@drawable/eden_text"
         android:id="@+id/eden_text"
@@ -28,7 +28,7 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:orientation="horizontal"
-	    android:background="#111"
+	    android:background="#191919"
 	    android:padding="15dp">
 	
 	    <TextView

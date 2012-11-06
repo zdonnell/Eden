@@ -7,18 +7,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.util.DisplayMetrics;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
-import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.AbsListView;
 import android.widget.GridView;
@@ -44,10 +45,10 @@ public class CharactersFragment extends Fragment {
 	boolean loadChars = false;
 	
 	private CharacterDB charDB;
+		
+	private Context context;
 	
 	private ImageService imageService;
-	
-	private Context context;
 	
 	View main;
 	
@@ -62,11 +63,10 @@ public class CharactersFragment extends Fragment {
 		setRetainInstance(true);
 		
 		context = inflater.getContext();
+		imageService = ImageService.getInstance(context);
 		
 		charDB = new CharacterDB(context);
-		imageService = new ImageService(context);
 				
-		setupImagePreCache();
 		if (false) loadCharacters();
 		
 		main = (View) inflater.inflate(R.layout.characters_fragment, container, false);
@@ -94,25 +94,42 @@ public class CharactersFragment extends Fragment {
 		}
 
 		@Override
-		public void bindView(View view, final Context context, Cursor cursor) 
+		public void bindView(final View view, final Context context, Cursor cursor) 
 		{		
 			final int characterID = cursor.getInt(2);
-			
+			final int corpID = cursor.getInt(4);
+						
 			final APICredentials credentials = new APICredentials(cursor.getInt(5), cursor.getString(6));
 			APICharacter character = new APICharacter(credentials, cursor.getInt(2), context);
 			
 			int calculatedWidth = calculatedColumnWidths[cursor.getPosition() % columns];
 			view.setLayoutParams(new AbsListView.LayoutParams(calculatedWidth, calculatedColumnWidths[0]));
 			
-			ImageView portrait = (ImageView) view.findViewById(R.id.char_image);
-			imageService.setPortrait(portrait, cursor.getInt(2), ImageService.CHAR);
+			final ImageView portrait = (ImageView) view.findViewById(R.id.char_image);
+			imageService.getPortraits(new ImageService.IconObtainedCallback() 
+			{	
+				@Override
+				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
+				{
+					portrait.setImageBitmap(bitmaps.valueAt(0));
+					if (view.getAlpha() == 0) view.setAlpha(1);
+				}
+			}, characterID);
+			
 			int width = view.getLayoutParams().width;
 			int height = view.getLayoutParams().height;
 			portrait.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
 			
-			ImageView corpLogo = (ImageView) view.findViewById(R.id.corp_image);
-			imageService.setPortrait(corpLogo, cursor.getInt(4), ImageService.CORP);
-			
+			final ImageView corpLogo = (ImageView) view.findViewById(R.id.corp_image);
+			imageService.getCorpLogos(new ImageService.IconObtainedCallback() 
+			{	
+				@Override
+				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
+				{
+					corpLogo.setImageBitmap(bitmaps.valueAt(0));
+				}
+			}, corpID);
+									
 			TextView charName = (TextView) view.findViewById(R.id.char_tile_name);
 			charName.setText(cursor.getString(1));
 			
@@ -158,7 +175,8 @@ public class CharactersFragment extends Fragment {
 			View v = inflater.inflate(R.layout.character_tile, parent, false);
 
 			v.setLayoutParams(new AbsListView.LayoutParams(parent.getWidth()/columns, parent.getWidth()/columns));
-
+			v.setAlpha(0);
+			
 			bindView(v, context, cursor);
 			return v;
 		}
@@ -205,68 +223,7 @@ public class CharactersFragment extends Fragment {
 		return columns;
 	}
 	
-	/**
-	 * Compiles information to be sent to the ImageService to pre cache
-	 * portraits and corp logos.
-	 * 
-	 * Provides a callback for when the preCaching is completed.
-	 */
-	private void setupImagePreCache()
-	{
-		Cursor charCursor = charDB.allCharacters();
-		int characterNum = charCursor.getCount();
-		
-		int[][] preCacheArray = new int[characterNum * 2][2];
-		while (charCursor.moveToNext())
-		{
-			int position = charCursor.getPosition();
-			
-			preCacheArray[position][0] = charCursor.getInt(2);
-			preCacheArray[position][1] = ImageService.CHAR;
-			preCacheArray[position + characterNum][0] = charCursor.getInt(4);
-			preCacheArray[position + characterNum][1] = ImageService.CORP;
-		}
-		charCursor.close();
-		
-		imageService.preCache(preCacheArray, new BaseCallback(){
-			@Override
-			public void callBack() 
-			{
-				imagesLoaded();
-			}
-		});
-	}
 	
-	/**
-	 * Called when the ImageService alerts us the preCache queue has been emptied (the images are loaded)
-	 * 
-	 * @see ImageService#preCache(int[][], BaseCallback)
-	 * @see #setupImagePreCache()
-	 */
-	private void imagesLoaded()
-	{
-		final ImageView splash = (ImageView) main.findViewById(R.id.splash_image);
-		
-		Animation fadeOut = new AlphaAnimation(1, 0);
-		fadeOut.setFillAfter(true);
-		fadeOut.setInterpolator(new LinearInterpolator()); //add this
-		fadeOut.setDuration(500);
-		fadeOut.setAnimationListener(new AnimationListener(){
-			@Override
-			public void onAnimationEnd(Animation arg0) 
-			{
-				((ViewGroup) main).removeView(splash);
-			}
-
-			@Override
-			public void onAnimationRepeat(Animation arg0) { }
-
-			@Override
-			public void onAnimationStart(Animation arg0) { }
-		});
-		
-		splash.setAnimation(fadeOut);
-	}
 	
 	/**
 	 * Testing function

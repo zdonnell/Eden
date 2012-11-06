@@ -6,344 +6,376 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-
-import com.zdonnell.eve.helpers.BaseCallback;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.support.v4.util.LruCache;
+import android.util.Log;
 import android.util.SparseArray;
-import android.widget.ImageView;
 
-/**
- * Class to manage downloading and storage / caching of Eve Online
- * Character and Corporation Images
- * 
- * @author Zach
- *
- */
 public class ImageService {
 
-	final static String baseImageURL = "https://image.eveonline.com/";
+	/* Singleton instance of the Resource Manager */
+	private static ImageService instance;
 	
-	public final static int CHAR = 0;
-	public final static int CORP = 1;
+	private final static int CHAR = 0;
+	private final static int CORP = 1;
+	private final static int ICON = 2;
 	
-	public final static int ID = 0;
-	public final static int TYPE = 1;
+	private final static String serverUrl = "http://image.eveonline.com/";
 	
-	private final static float LOW_RES_FACTOR = 0.25f;
-	
-	/**
-	 * if preCache has been called, this queue will hold the images queued to
-	 * be loaded
-	 */
-	private Queue<Integer> preCacheQueue = new LinkedList<Integer>();
-	
-	private SparseArray<ArrayList<ImageView>> viewsToUpdate = new SparseArray<ArrayList<ImageView>>();
-	
-	/**
-	 * Dimensions to save the the portraits / corp logos at
-	 */
-	public static int[] dimensions = new int[2];
-	
-	/**
-	 * Extension for the images provided by the Eve Online Image server
-	 */
-	public static String[] imageExtensions = new String[2];
-	
-	/**
-	 * subURL of the image path
-	 */
-	public static String[] subURLs = new String[2];
-	
-	static {
-		/* Static initialization of type specific value arrays */
-		dimensions[CHAR] = 512;
-		dimensions[CORP] = 128;
-		
-		imageExtensions[CHAR] = ".jpg";
-		imageExtensions[CORP] = ".png";
-		
-		subURLs[CHAR] = "Character/";
-		subURLs[CORP] = "Corporation/";
-	}
-	
-	private BaseCallback preCacheCallback = null;
-	
-	/**
-	 * Hashmap to store loaded images in memory
-	 */
-	private SparseArray<Bitmap> memoryImageCache = new SparseArray<Bitmap>();;
-	
-	private Context context;
+	private static String[] url = new String[3];
+	private static String[] localImagePrefix = new String[3];
+	private static int imageSize[] = new int[3];
+	private static String imageExtension[] = new String[3];
 
+	static
+	{
+		url[CHAR] = serverUrl + "Character/";
+		url[CORP] = serverUrl + "Corporation/";
+		url[ICON] = serverUrl + "Type/";
+		
+		localImagePrefix[CHAR] = "char_";
+		localImagePrefix[CORP] = "corp_";
+		localImagePrefix[ICON] = "type_";
+		
+		imageSize[CHAR] = 512;
+		imageSize[CORP] = 256;
+		imageSize[ICON] = 64;
+		
+		imageExtension[CHAR] = ".jpg";
+		imageExtension[CORP] = ".png";
+		imageExtension[ICON] = ".png";
+	}
+ 	
+	/**
+	 * Array of cache sizes
+	 */
+	private int cacheSizes[] = new int[3];
+	
+	/**
+	 * array of in memory caches
+	 */
+	@SuppressWarnings("unchecked")
+	private LruCache<Integer, Bitmap> bitmapCaches[] = new LruCache[3];
+	
+	/**
+	 * Context of the app for file access etc.
+	 */
+	private Context context; 
+	
+	/**
+	 * Singleton access method
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static ImageService getInstance(Context context)
+	{
+		if (instance == null)
+		{
+			instance = new ImageService(context);
+		}
+		return instance;
+	}	
+	
+	/**
+	 * Constructor that uses the default sized {@link LruCache}
+	 * 
+	 * @param context
+	 * @see #bitmapCaches
+	 * @see #cacheSizes
+	 * 
+	 */
 	public ImageService(Context context)
 	{
 		this.context = context;
-	}
+		initializeCaches(null);
+   	}
 	
-	/** 
-	 * @param actorsToPreCache actorsToPreCache[x][0] = actorID, actorsToPreCache[x][1] = actorType.
-	 * @param callback {@link BaseCallback} to call when the precaching is completed
+	/**
+	 * Constructor that uses the default sized {@link LruCache}
+	 * 
+	 * @param context
+	 * @param cacheSizes array of values that specify the in-memory cache size. 
+	 * Use {@link #CHAR}, {@link #CORP}, and {@link #ICON} for array indices.
+	 * @see #bitmapCaches
+	 * @see #cacheSizes
+	 * 
 	 */
-	public void preCache(int[][] actorsToPreCache, BaseCallback callback)
+	public ImageService(Context context, int[] cacheSizes)
 	{
-		for (int[] actor : actorsToPreCache)
-		{
-			preCacheQueue.add(actor[ID]);
-			viewsToUpdate.put(actor[ID], new ArrayList<ImageView>());
-		}
-		
-		preCacheCallback = callback;
-		new LoadImageTask(actorsToPreCache, null).execute();
-	}
-	
-	public void clearCache()
-	{
-		for (int x = 0; x < memoryImageCache.size(); x++)
-		{
-			if (memoryImageCache.get(x) != null) memoryImageCache.get(x).recycle();
-		}
-		memoryImageCache.clear();
+		this.context = context;
+		initializeCaches(cacheSizes);
 	}
 	
 	/**
-	 * Takes an ImageView and Character or Corporation ID and sets the appropriate
-	 * image
+	 * Gets bitmaps for the specified typeIDs.  Upon loading they will be passed
+	 * to the provided callback.
 	 * 
-	 * @param view The ImageView to update with the acquired bitmap
-	 * @param actorID The Corporation or Character ID
-	 * @param actorType {@link CHAR} or {@link CORP}
+	 * To cache bitmaps for future use, this can be called with a null callback.
+	 * Alternatively the callback can be used as a notification for when the images
+	 * are cached.
+	 * 
+	 * @see {@link IconObtainedCallback}
+	 * 
+	 * @param callback {@link IconObtainedCallback} to be notified when the loading is complete
+	 * @param typeIDs 
 	 */
-	public void setPortrait(ImageView view, int actorID, int actorType) 
+	public void getTypes(IconObtainedCallback callback, int... typeIDs)
 	{
-		if (memoryImageCache.get(actorID, null) != null) view.setImageBitmap(memoryImageCache.get(actorID));
-		else if (preCacheQueue.contains(actorID)) viewsToUpdate.get(actorID).add(view);
-		else 
-		{	
-			int[][] actorSet = new int[1][2];
-			actorSet[0][0] = actorID;
-			actorSet[0][1] = actorType;
+		getImages(callback, typeIDs, ICON);
+	}
+	
+	/**
+	 * Gets bitmaps for the specified character IDs.  Upon loading they will be passed
+	 * to the provided callback.
+	 * 
+	 * To cache bitmaps for future use, this can be called with a null callback.
+	 * Alternatively the callback can be used as a notification for when the images
+	 * are cached.
+	 * 
+	 * @see {@link IconObtainedCallback}
+	 * 
+	 * @param callback {@link IconObtainedCallback} to be notified when the loading is complete
+	 * @param charIDs 
+	 */
+	public void getPortraits(IconObtainedCallback callback, int... charIDs)
+	{
+		getImages(callback, charIDs, CHAR);
+	}
+	
+	/**
+	 * Gets bitmaps for the specified corporation IDs.  Upon loading they will be passed
+	 * to the provided callback.
+	 * 
+	 * To cache bitmaps for future use, this can be called with a null callback.
+	 * Alternatively the callback can be used as a notification for when the images
+	 * are cached.
+	 * 
+	 * @see {@link IconObtainedCallback}
+	 * 
+	 * @param callback {@link IconObtainedCallback} to be notified when the loading is complete
+	 * @param charIDs 
+	 */
+	public void getCorpLogos(IconObtainedCallback callback, int... corpIDs)
+	{
+		getImages(callback, corpIDs, CORP);
+	}
+	
+	/**
+	 * If a low memory warning is received, this can be used to empty a specific cache
+	 * 
+	 * @param cacheType the cache to clear
+	 */
+	public void clearCache(int cacheType) { bitmapCaches[cacheType].evictAll(); }
+		
+	/**
+	 * 
+	 * @param callback
+	 * @param ids
+	 * @param type
+	 */
+	private void getImages(final IconObtainedCallback callback, int[] ids, int type)
+	{
+		final SparseArray<Bitmap> cachedIDs = new SparseArray<Bitmap>(ids.length);
+		final ArrayList<Integer> idsToLoad = new ArrayList<Integer>(ids.length);
+		final ArrayList<Integer> idsCached = new ArrayList<Integer>(ids.length);
+		
+		/* check for already cached images */
+		for (int id : ids)
+		{
+			Bitmap cachedIcon = bitmapCaches[type].get(id);
 			
-			new LoadImageTask(actorSet , view).execute();
+			if (cachedIcon != null) 
+			{
+				cachedIDs.put(id, cachedIcon); 
+				idsCached.add(id);
+			}
+			else idsToLoad.add(id);
+		}
+			
+		/** 
+		 * If there are IDs requested that are not cached, we need to load them up
+		 * We will request that they be loaded with an {@link IconLoader}, and upon completion will combine
+		 * the previously obtained cached icons, and return the complete {@link SparseArray} to the provided
+		 * {@link IconObtainedCallback}
+		 */
+		Integer[] staticIconsToLoad = new Integer[idsToLoad.size()];
+		idsToLoad.toArray(staticIconsToLoad);
+		
+		if (!idsToLoad.isEmpty())
+		{			
+			new IconLoader(context, bitmapCaches[type], type, new IconObtainedCallback()
+			{
+				@Override
+				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
+				{				
+					/* Merge in the SparseArray of already cached images */
+					for (int cachedID : idsCached) bitmaps.put(cachedID, cachedIDs.get(cachedID));				
+					
+					if (callback != null) callback.iconsObtained(bitmaps);
+				}
+			}).execute(staticIconsToLoad);
+		}
+		else callback.iconsObtained(cachedIDs);
+	}
+	
+	private class IconLoader extends AsyncTask<Integer, Void, SparseArray<Bitmap>>
+	{
+		private Context context;
+		private LruCache<Integer, Bitmap> bitmapCache;
+		private IconObtainedCallback callback = null;
+		private int type;
+		
+		public IconLoader(Context context, LruCache<Integer, Bitmap> bitmapCache, int type)
+		{
+			this.context = context;
+			this.bitmapCache = bitmapCache;
+			this.type = type;
+		}
+		
+		public IconLoader(Context context, LruCache<Integer, Bitmap> bitmapCache, int type, IconObtainedCallback callback)
+		{
+			this(context, bitmapCache, type);
+			this.callback = callback;
+		}
+		
+		@Override
+		protected SparseArray<Bitmap> doInBackground(Integer... ids) 
+		{			
+			SparseArray<Bitmap> bitmapsLoaded = new SparseArray<Bitmap>(ids.length);
+						
+			for (int id : ids)
+			{
+				Bitmap bitmapLoaded = null;
+				
+				try { bitmapLoaded = loadBitmapFromStorage(id, type); }
+				catch (Exception e) { e.printStackTrace(); } 
+				
+				/* There was nothing loaded locally, try to download the image */
+				if (bitmapLoaded == null)
+				{					
+					try { bitmapLoaded = retrieveBitmapFromServer(id, type); }
+					catch (Exception e) { e.printStackTrace(); }
+				}
+				
+				if (bitmapLoaded != null) bitmapCache.put(id, bitmapLoaded);
+				bitmapsLoaded.put(id, bitmapLoaded);
+			}
+			return bitmapsLoaded;
+		}
+		
+		@Override
+		protected void onPostExecute(SparseArray<Bitmap> bitmaps)
+		{
+			if (callback != null) callback.iconsObtained(bitmaps);
 		}
 	}
-
+	
+	public static abstract class IconObtainedCallback
+	{
+		abstract public void iconsObtained(SparseArray<Bitmap> bitmaps);
+	}
+	
+	/**
+	 * Attempts to load the specified image from storage.
+	 * 
+	 * @param id the id of the image to load
+	 * @param type {@link ImageService#CHAR}, {@link ImageService#CORP}, or {@link ImageService#ICON}
+	 * @return the {@link Bitmap} loaded from storage
+	 * @throws IOException if the image does not exist
+	 */
+	private Bitmap loadBitmapFromStorage(int id, int type) throws IOException
+	{
+		FileInputStream fis = context.openFileInput(localImagePrefix[type] + id + ".png");
+		BufferedInputStream buf = new BufferedInputStream(fis);
+		
+		byte[] ByteBuffer = new byte[buf.available()];
+		buf.read(ByteBuffer);
+		
+		Bitmap bitmapLoaded = BitmapFactory.decodeByteArray(ByteBuffer, 0, ByteBuffer.length);	
+		
+		if (fis != null) fis.close();
+		if (buf != null) buf.close();
+		
+		return bitmapLoaded;
+	}
+	
+	/**
+	 * Attempts to retrieve the specified image from the Eve Online Image Server.
+	 * 
+	 * @param id the id of the image to load
+	 * @param type {@link ImageService#CHAR}, {@link ImageService#CORP}, or {@link ImageService#ICON}
+	 * @return the {@link Bitmap} obtained from the server
+	 * @throws IOException if the image does not exist
+	 */
+	private Bitmap retrieveBitmapFromServer(int id, int type) throws MalformedURLException, IOException
+	{
+		Bitmap bitmapLoaded = null;
+		
+		String imageURL = url[type] + id + "_" + imageSize[type] + imageExtension[type];
+	
+		InputStream in = new java.net.URL(imageURL).openStream();
+		bitmapLoaded = BitmapFactory.decodeStream(in);
+			
+		if (bitmapLoaded != null) saveBitmap(bitmapLoaded, id, type);
+		
+		return bitmapLoaded;
+	}
+	
 	/**
 	 * Saves the specified bitmap to local storage
 	 * 
 	 * @param image The Bitmap to save
-	 * @param actorID The Char or Corp ID
+	 * @param id the id of the Bitmap to save
+	 * @param type {@link ImageService#CHAR}, {@link ImageService#CORP}, or {@link ImageService#ICON}
 	 */
-	private void saveBitmap(Bitmap image, int actorID) 
+	private void saveBitmap(Bitmap image, int id, int type) 
 	{		
 		try 
 		{
-			FileOutputStream out = context.openFileOutput(actorID + ".png", 0);
+			FileOutputStream out = context.openFileOutput(localImagePrefix[type] + id + ".png", 0);
 			image.compress(Bitmap.CompressFormat.PNG, 100, out);
 			out.close();
-			
-			Bitmap scaledImage = Bitmap.createScaledBitmap(image, (int) (image.getWidth() * LOW_RES_FACTOR),  (int) (image.getHeight() * LOW_RES_FACTOR), true);
-			
-			FileOutputStream scaledOut = context.openFileOutput(actorID + "_low.png", 0);
-			scaledImage.compress(Bitmap.CompressFormat.PNG, 60, scaledOut);
-			scaledOut.close();
 		} 
-		catch (Exception e) 
-		{
-			e.printStackTrace();
-		}
+		catch (Exception e) { e.printStackTrace(); }
 	}
 	
 	/**
+	 * Initializes the {@link #bitmapCaches} according to provided cacheSizes.  If
+	 * no values are provided, defaults are used.
 	 * 
-	 * @param actorID
-	 * @param actorType
-	 * @param view
-	 */
-	private void setImageFromHTTP(int actorID, int actorType, ImageView view) 
-	{
-		String assembledImageURL = baseImageURL;
-		assembledImageURL += subURLs[actorType];
-		assembledImageURL += actorID;
-		assembledImageURL += "_" + dimensions[actorType];
-		assembledImageURL += imageExtensions[actorType];
-		
-		/* Execute the AsyncTask */
-		DownloadImageTask getImage = new DownloadImageTask(actorID, view);
-		getImage.execute(assembledImageURL);
-	}
-	
-	/**
-	 * Class to manage the loading of images from cache Asynchronously.
+	 * @param cacheSizes the sizes to be used for each cache.  if 0 is provided the cache
+	 * will not be used.
 	 * 
-	 * @author Zach
-	 *
+	 * @see #Images(Context)
+	 * @see #Images(Context, int[])
 	 */
-	private class LoadImageTask extends AsyncTask<String, Void, SparseArray<Bitmap>> 
+	private void initializeCaches(int[] cacheSizes)
 	{
-		int[][] actors;
+		if (cacheSizes == null) 
+		{
+			this.cacheSizes[CHAR] = 4 * 1024 * 1024; // 4 MB
+			this.cacheSizes[CORP] = 2 * 1024 * 1024; // 2 MB
+			this.cacheSizes[ICON] = 4 * 1024 * 1024; // 4 MB
+		} 
+		else for (int i = 0; i < 3; i++) this.cacheSizes[i] = cacheSizes[i];
 		
-		private ImageView view;
-
-		/**
-		 * @param actors, a 2d array, see {@link preCache} for more information
-		 * @param view the ImageView to update once the image is acquired
-		 */
-		public LoadImageTask(int[][] actors, ImageView view) 
+		for (int i = 0; i < 3; i++)
 		{
-			this.actors = actors;
-			this.view = view;
-		}
-
-		protected SparseArray<Bitmap> doInBackground(String... urls) 
-		{
-			FileInputStream fis = null;
-			BufferedInputStream buf = null;
-			Bitmap bitmapFromSD;
-			byte[] ByteBuffer;
-			
-			SparseArray<Bitmap> loadedBitmaps = new SparseArray<Bitmap>();
-			
-			for (int[] actor : actors)
-			{
-				try 
+			bitmapCaches[i] = new LruCache<Integer, Bitmap>(this.cacheSizes[i]) 
+		    {
+				@Override
+				protected int sizeOf(Integer key, Bitmap value) 
 				{
-					fis = context.openFileInput(actor[ID] + ".png");
-					buf = new BufferedInputStream(fis);
-					
-					ByteBuffer = new byte[buf.available()];
-					buf.read(ByteBuffer);
-					
-					bitmapFromSD = BitmapFactory.decodeByteArray(ByteBuffer, 0, ByteBuffer.length);
-					loadedBitmaps.put(actor[ID], bitmapFromSD);
-					
-					if (fis != null) fis.close();
-					if (buf != null) buf.close();
-				} 
-				catch (FileNotFoundException e) { } 
-				catch (IOException e) { }
-			}
-			
-			return loadedBitmaps;
-		}
-
-		protected void onPostExecute(SparseArray<Bitmap> imagesServed) 
-		{
-			for (int[] actor : actors)
-			{
-				if (imagesServed.get(actor[ID]) != null)
-				{
-					if (view != null) view.setImageBitmap(imagesServed.get(actor[ID]));
-					imageDownloaded(actor[ID], imagesServed.get(actor[ID]));
+					return value.getByteCount();
 				}
-				/* If the bitmap is null, it was not successfully loaded.  Aquire from the Image Server. */
-				else
-				{
-					setImageFromHTTP(actor[ID], actor[TYPE], view);
-				}
-			}			
+		    };
 		}
-	}
-
-	/**
-	 * Class to manage the downloading of images from the Eve Online
-	 * Image Server Asynchronously.
-	 * 
-	 * @author Zach
-	 *
-	 */
-	private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> 
-	{
-		private int actorID;
-		private ImageView view;
-
-		/**
-		 * @param actorID
-		 * @param view the ImageView to update once the image is acquired
-		 */
-		public DownloadImageTask(int actorID, ImageView view) 
-		{
-			this.actorID = actorID;
-			this.view = view;
-		}
-
-		protected Bitmap doInBackground(String... urls) 
-		{
-			String imageURL = urls[0];
-			Bitmap imageServed = null;
-						
-			try 
-			{
-				InputStream in = new java.net.URL(imageURL).openStream();
-				imageServed = BitmapFactory.decodeStream(in);
-			} 
-			catch (Exception e) 
-			{
-				e.printStackTrace();
-			}
-			
-			saveBitmap(imageServed, actorID);
-			
-			return imageServed;
-		}
-
-		protected void onPostExecute(Bitmap imageServed) 
-		{
-			if (imageServed != null)
-			{
-				if (view != null) 
-				{ 
-					view.setImageBitmap(imageServed);
-					view = null;
-				}
-				imageDownloaded(actorID, imageServed);
-			}		
-		}
-	}
-	
-	/**
-	 * Handles cleanup after an image has been downloaded
-	 * 
-	 * @param actorID
-	 * @param imageServed
-	 */
-	private void imageDownloaded(int actorID, Bitmap imageServed)
-	{
-		memoryImageCache.put(actorID, imageServed);		
-		preCacheQueue.remove(actorID);
-		
-		/**
-		 * If preCache() was called, this checks if it is the last image to be loaded
-		 * if so, fire off the callback
-		 */
-		if (preCacheCallback != null && preCacheQueue.isEmpty())
-		{
-			preCacheCallback.callBack();
-			preCacheCallback = null;
-		}
-		
-		if (viewsToUpdate != null)
-		{
-			ArrayList<ImageView> viewsForID = viewsToUpdate.get(actorID);
-			
-			if (viewsForID != null)
-			{
-				for (ImageView view : viewsForID) 
-				{
-					if (view != null) 
-					{
-						view.setImageBitmap(imageServed);
-						view = null;
-					}
-				}
-			}
-			viewsToUpdate.remove(actorID);
-		}		
 	}
 }
