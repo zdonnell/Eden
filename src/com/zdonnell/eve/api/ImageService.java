@@ -210,7 +210,7 @@ public class ImageService {
 		
 		if (!idsToLoad.isEmpty())
 		{			
-			new IconLoader(context, bitmapCaches[type], type, new IconObtainedCallback()
+			new IconLoader(type, new IconObtainedCallback()
 			{
 				@Override
 				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
@@ -227,21 +227,17 @@ public class ImageService {
 	
 	private class IconLoader extends AsyncTask<Integer, Void, SparseArray<Bitmap>>
 	{
-		private Context context;
-		private LruCache<Integer, Bitmap> bitmapCache;
 		private IconObtainedCallback callback = null;
 		private int type;
 		
-		public IconLoader(Context context, LruCache<Integer, Bitmap> bitmapCache, int type)
+		public IconLoader(int type)
 		{
-			this.context = context;
-			this.bitmapCache = bitmapCache;
 			this.type = type;
 		}
 		
-		public IconLoader(Context context, LruCache<Integer, Bitmap> bitmapCache, int type, IconObtainedCallback callback)
+		public IconLoader(int type, IconObtainedCallback callback)
 		{
-			this(context, bitmapCache, type);
+			this(type);
 			this.callback = callback;
 		}
 		
@@ -264,7 +260,7 @@ public class ImageService {
 					catch (Exception e) { e.printStackTrace(); }
 				}
 				
-				if (bitmapLoaded != null) bitmapCache.put(id, bitmapLoaded);
+				if (bitmapLoaded != null) bitmapCaches[type].put(id, bitmapLoaded);
 				bitmapsLoaded.put(id, bitmapLoaded);
 			}
 			return bitmapsLoaded;
@@ -311,7 +307,7 @@ public class ImageService {
 	 * 
 	 * @param id the id of the image to load
 	 * @param type {@link ImageService#CHAR}, {@link ImageService#CORP}, or {@link ImageService#ICON}
-	 * @return the {@link Bitmap} obtained from the server
+	 * @return the {@link Bitmap} obtained from the server, or null if it could not be retrieved.
 	 * @throws IOException if the image does not exist
 	 */
 	private Bitmap retrieveBitmapFromServer(int id, int type) throws MalformedURLException, IOException

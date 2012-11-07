@@ -27,6 +27,7 @@ public class APICharacter extends APIObject {
 	public static final int CHAR_INFO = 2;
 	public static final int WALLET_JOURN = 3;
 	public static final int WALLET_TRANS = 4;
+	public static final int ASSET_LIST = 5;
 
 	public static final String[] xmlURLs = new String[5];
 	static
@@ -34,8 +35,9 @@ public class APICharacter extends APIObject {
 		xmlURLs[SKILL_QUEUE] = baseURL + "char/SkillQueue.xml.aspx";
 		xmlURLs[CHAR_SHEET] = baseURL + "char/CharacterSheet.xml.aspx";
 		xmlURLs[CHAR_INFO] = baseURL + "eve/CharacterInfo.xml.aspx";
-		xmlURLs[WALLET_JOURN] = baseURL + "eve/CharacterInfo.xml.aspx";
-		xmlURLs[WALLET_TRANS] = baseURL + "eve/CharacterInfo.xml.aspx";
+		xmlURLs[WALLET_JOURN] = baseURL + "char/WalletJournal.xml.aspx";
+		xmlURLs[WALLET_TRANS] = baseURL + "char/WalletTransactions.xml.aspx";
+		xmlURLs[ASSET_LIST] = baseURL + "char/AssetList.xml.aspx";
 	}
 	
 	private ResourceManager resourceManager;
@@ -80,6 +82,11 @@ public class APICharacter extends APIObject {
 	{
 		resourceManager.get(new APIRequestWrapper(apiCallback, new WalletTransactionsParser(), credentials, xmlURLs[CHAR_INFO], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
 	}*/
+	
+	public void getAssetsList(APICallback<ArrayList<AssetsEntity>> apiCallback)
+	{
+		resourceManager.get(new APIRequestWrapper(apiCallback, new AssetListParser(), credentials, xmlURLs[ASSET_LIST], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));
+	}
 	
 	private class SkillQueueParser extends APIParser<ArrayList<QueuedSkill>>
 	{
@@ -195,6 +202,55 @@ public class APICharacter extends APIObject {
 		public WalletEntry.Journal parse(Document document) {
 			
 			return null;
+		}
+	}
+	
+	/**
+	 * 
+	 * @author Zach
+	 *
+	 */
+	private class AssetListParser extends APIParser<ArrayList<AssetsEntity>>
+	{
+		@Override
+		public ArrayList<AssetsEntity> parse(Document document) 
+		{
+			Node rootResultNode = document.getElementsByTagName("result").item(0);						
+			return parseAssets(rootResultNode);
+		}
+		
+		private ArrayList<AssetsEntity> parseAssets(Node rowNode)
+		{			
+			if (rowNode.hasChildNodes())
+			{
+				NodeList containedAssets = rowNode.getFirstChild().getChildNodes();
+				
+				ArrayList<AssetsEntity> assetsList = new ArrayList<AssetsEntity>(containedAssets.getLength());
+				
+				for (int i = 0; i < containedAssets.getLength(); i++)
+				{
+					Node assetNode = containedAssets.item(i);
+					
+					AssetsEntity.AssetAttributes attributes = parseAttributes(assetNode);
+					AssetsEntity asset = new AssetsEntity(attributes, parseAssets(assetNode));
+					
+					assetsList.add(asset);
+				}
+				
+				return assetsList;
+			}
+			
+			return null;
+		}
+		
+		private AssetsEntity.AssetAttributes parseAttributes(Node assetNode)
+		{
+			AssetsEntity.AssetAttributes attributes = new AssetsEntity.AssetAttributes();
+			
+			NamedNodeMap attributesNodeMap = assetNode.getAttributes();
+			attributesNodeMap.getNamedItem("typeID").getTextContent();
+			
+			return attributes;
 		}
 	}
 }
