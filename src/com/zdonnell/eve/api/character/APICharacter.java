@@ -219,8 +219,16 @@ public class APICharacter extends APIObject {
 			return parseAssets(rootResultNode);
 		}
 		
+		/**
+		 * Recursively parses a set of assets
+		 * 
+		 * @param rowNode the root node to start at, assumes that the assets are contained below this root node
+		 * but the root node is not an asset itself
+		 * @return an {@link ArrayList} of {@link AssetsEntity} objects or null if there are no assets to parse.
+		 * @see <a href="http://wiki.eve-id.net/APIv2_Char_AssetList_XML">Character Assets API Documentation</a>
+		 */
 		private ArrayList<AssetsEntity> parseAssets(Node rowNode)
-		{			
+		{	
 			if (rowNode.hasChildNodes())
 			{
 				NodeList containedAssets = rowNode.getFirstChild().getChildNodes();
