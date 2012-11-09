@@ -28,7 +28,7 @@ public class AssetsEntity {
 	{
 		this.attributes = attributes;
 		
-		if (containedAssets != null) { 
+		if (containedAssets != null && containedAssets.size() != 0) { 
 			this.isContainer = true;
 			this.nestedAssets = containedAssets;
 		}
@@ -46,6 +46,25 @@ public class AssetsEntity {
 	
 	
 	public static class AssetAttributes {
+		public int typeID;
+		public int flag;
+		public int quantity;
+		public int locationID = -1;
+	}
+	
+	public static class AssetLocation {
+		private int locationID;
+		private ArrayList<AssetsEntity> containedAssets;
 		
+		public AssetLocation(int locationID, ArrayList<AssetsEntity> containedAssets)
+		{
+			this.locationID = locationID;
+			this.containedAssets = containedAssets;
+		}
+		
+		public int getLocationID() { return locationID; }
+		public ArrayList<AssetsEntity> getContainedAssets() { return containedAssets; }
+		
+		public void setContainedAssets(ArrayList<AssetsEntity> assetsList) { this.containedAssets = assetsList; }
 	}
 }

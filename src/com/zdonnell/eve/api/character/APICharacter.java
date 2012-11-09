@@ -10,12 +10,14 @@ import org.w3c.dom.NodeList;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.ResourceManager;
 import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
+import com.zdonnell.eve.api.character.AssetsEntity.AssetLocation;
 import com.zdonnell.eve.api.character.CharacterInfo.CurrentShipInfo;
 import com.zdonnell.eve.api.character.CharacterSheet.AttributeEnhancer;
 import com.zdonnell.eve.helpers.Tools;
@@ -29,7 +31,7 @@ public class APICharacter extends APIObject {
 	public static final int WALLET_TRANS = 4;
 	public static final int ASSET_LIST = 5;
 
-	public static final String[] xmlURLs = new String[5];
+	public static final String[] xmlURLs = new String[6];
 	static
 	{
 		xmlURLs[SKILL_QUEUE] = baseURL + "char/SkillQueue.xml.aspx";
@@ -83,7 +85,7 @@ public class APICharacter extends APIObject {
 		resourceManager.get(new APIRequestWrapper(apiCallback, new WalletTransactionsParser(), credentials, xmlURLs[CHAR_INFO], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
 	}*/
 	
-	public void getAssetsList(APICallback<ArrayList<AssetsEntity>> apiCallback)
+	public void getAssetsList(APICallback<AssetLocation[]> apiCallback)
 	{
 		resourceManager.get(new APIRequestWrapper(apiCallback, new AssetListParser(), credentials, xmlURLs[ASSET_LIST], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));
 	}
@@ -210,13 +212,13 @@ public class APICharacter extends APIObject {
 	 * @author Zach
 	 *
 	 */
-	private class AssetListParser extends APIParser<ArrayList<AssetsEntity>>
+	private class AssetListParser extends APIParser<AssetsEntity.AssetLocation[]>
 	{
 		@Override
-		public ArrayList<AssetsEntity> parse(Document document) 
+		public AssetsEntity.AssetLocation[] parse(Document document) 
 		{
 			Node rootResultNode = document.getElementsByTagName("result").item(0);						
-			return parseAssets(rootResultNode);
+			return splitIntoLocations(parseAssets(rootResultNode));
 		}
 		
 		/**
@@ -229,10 +231,11 @@ public class APICharacter extends APIObject {
 		 */
 		private ArrayList<AssetsEntity> parseAssets(Node rowNode)
 		{	
+			/* if the node has children, this means it contains at least one asset */
 			if (rowNode.hasChildNodes())
 			{
+				/* The list of actual assets as nodes */
 				NodeList containedAssets = rowNode.getFirstChild().getChildNodes();
-				
 				ArrayList<AssetsEntity> assetsList = new ArrayList<AssetsEntity>(containedAssets.getLength());
 				
 				for (int i = 0; i < containedAssets.getLength(); i++)
@@ -247,16 +250,66 @@ public class APICharacter extends APIObject {
 				
 				return assetsList;
 			}
-			
+			/* There are no assets to return, return empty assets */
 			return null;
 		}
 		
+		/**
+		 * Takes the list of root assets, and parses them by location ID
+		 * 
+		 * @param assets the root {@link ArrayList} of {@link AssetsEntity} objects
+		 * @return an {@link AssetsEntity.AssetLocation} Array to be used in an ArrayAdapter for listViews.
+		 */
+		private AssetsEntity.AssetLocation[] splitIntoLocations(ArrayList<AssetsEntity> assets)
+		{			
+			SparseArray<AssetsEntity.AssetLocation> assetsByLocation = new SparseArray<AssetsEntity.AssetLocation>();
+			
+			for (AssetsEntity rootAsset : assets)
+			{
+				int locationID = rootAsset.attributes().locationID;
+				
+				/* If this is the first time we have seen this location, set up the AssetLocation */
+				if (assetsByLocation.get(locationID) == null)
+				{	
+					Log.d("HELELELELE", "NEW STATION ID: " + locationID);
+					
+					AssetsEntity.AssetLocation newLocation = new AssetsEntity.AssetLocation(rootAsset.attributes().locationID, new ArrayList<AssetsEntity>());
+					assetsByLocation.put(locationID, newLocation);
+				}
+				
+				/* get the appropriate location, grab it's assets list and add the current asset to it */
+				assetsByLocation.get(locationID).getContainedAssets().add(rootAsset);			
+			}
+			
+			Log.d("NUMBER OF STATIONS", "" + assetsByLocation.size());
+			
+			AssetsEntity.AssetLocation[] assetsArray = new AssetsEntity.AssetLocation[assetsByLocation.size()];
+			for (int x = 0; x < assetsByLocation.size(); x++) assetsArray[x] = assetsByLocation.valueAt(x);
+			
+			return assetsArray;
+		}
+		
+		/**
+		 * Grabs the asset attributes (i.e. locationID, typeID) from a given DOM Node
+		 * 
+		 * @param assetNode
+		 * @return an {@link AssetsEntity.AssetAttributes}
+		 */
 		private AssetsEntity.AssetAttributes parseAttributes(Node assetNode)
 		{
 			AssetsEntity.AssetAttributes attributes = new AssetsEntity.AssetAttributes();
 			
 			NamedNodeMap attributesNodeMap = assetNode.getAttributes();
-			attributesNodeMap.getNamedItem("typeID").getTextContent();
+			
+			attributes.typeID = Integer.parseInt(attributesNodeMap.getNamedItem("typeID").getTextContent());
+			attributes.quantity = Integer.parseInt(attributesNodeMap.getNamedItem("quantity").getTextContent());
+			attributes.flag = Integer.parseInt(attributesNodeMap.getNamedItem("flag").getTextContent());
+			
+			/* If it's a root asset, locationID will be there */
+			if (attributesNodeMap.getNamedItem("locationID") != null)
+			{
+				attributes.locationID = Integer.parseInt(attributesNodeMap.getNamedItem("locationID").getTextContent());
+			}
 			
 			return attributes;
 		}

@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
+import com.zdonnell.eve.character.detail.AssetsListFragment;
 import com.zdonnell.eve.character.detail.AttributesFragment;
 import com.zdonnell.eve.character.detail.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.WalletFragment;
@@ -58,9 +59,6 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	String[] characterInfo = getIntent().getExtras().getStringArray("character");
     	assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
     
-        
-        
-        
         final ActionBar actionBar = getActionBar();
         
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -149,7 +147,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
             	fragment = new WalletFragment(assembledChar);
         		break;
         	case CharacterSheetFragment.ASSETS:
-        		fragment = new AttributesFragment(assembledChar);
+            	fragment = new AssetsListFragment(assembledChar);
         		break;
         	default:
         		fragment = new AttributesFragment(assembledChar);
