@@ -17,7 +17,6 @@ import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.ResourceManager;
 import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
-import com.zdonnell.eve.api.character.AssetsEntity.AssetLocation;
 import com.zdonnell.eve.api.character.CharacterInfo.CurrentShipInfo;
 import com.zdonnell.eve.api.character.CharacterSheet.AttributeEnhancer;
 import com.zdonnell.eve.helpers.Tools;
@@ -85,7 +84,7 @@ public class APICharacter extends APIObject {
 		resourceManager.get(new APIRequestWrapper(apiCallback, new WalletTransactionsParser(), credentials, xmlURLs[CHAR_INFO], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
 	}*/
 	
-	public void getAssetsList(APICallback<AssetLocation[]> apiCallback)
+	public void getAssetsList(APICallback<AssetsEntity[]> apiCallback)
 	{
 		resourceManager.get(new APIRequestWrapper(apiCallback, new AssetListParser(), credentials, xmlURLs[ASSET_LIST], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));
 	}
@@ -212,10 +211,10 @@ public class APICharacter extends APIObject {
 	 * @author Zach
 	 *
 	 */
-	private class AssetListParser extends APIParser<AssetsEntity.AssetLocation[]>
+	private class AssetListParser extends APIParser<AssetsEntity[]>
 	{
 		@Override
-		public AssetsEntity.AssetLocation[] parse(Document document) 
+		public AssetsEntity[] parse(Document document) 
 		{
 			Node rootResultNode = document.getElementsByTagName("result").item(0);						
 			return splitIntoLocations(parseAssets(rootResultNode));
@@ -241,10 +240,8 @@ public class APICharacter extends APIObject {
 				for (int i = 0; i < containedAssets.getLength(); i++)
 				{
 					Node assetNode = containedAssets.item(i);
-					
-					AssetsEntity.AssetAttributes attributes = parseAttributes(assetNode);
-					AssetsEntity asset = new AssetsEntity(attributes, parseAssets(assetNode));
-					
+					AssetsEntity asset = new AssetsEntity.Item(parseAssets(assetNode), parseAttributes(assetNode));
+	
 					assetsList.add(asset);
 				}
 				
@@ -260,9 +257,9 @@ public class APICharacter extends APIObject {
 		 * @param assets the root {@link ArrayList} of {@link AssetsEntity} objects
 		 * @return an {@link AssetsEntity.AssetLocation} Array to be used in an ArrayAdapter for listViews.
 		 */
-		private AssetsEntity.AssetLocation[] splitIntoLocations(ArrayList<AssetsEntity> assets)
+		private AssetsEntity[] splitIntoLocations(ArrayList<AssetsEntity> assets)
 		{			
-			SparseArray<AssetsEntity.AssetLocation> assetsByLocation = new SparseArray<AssetsEntity.AssetLocation>();
+			SparseArray<AssetsEntity> assetsByLocation = new SparseArray<AssetsEntity>();
 			
 			for (AssetsEntity rootAsset : assets)
 			{
@@ -270,20 +267,16 @@ public class APICharacter extends APIObject {
 				
 				/* If this is the first time we have seen this location, set up the AssetLocation */
 				if (assetsByLocation.get(locationID) == null)
-				{	
-					Log.d("HELELELELE", "NEW STATION ID: " + locationID);
-					
-					AssetsEntity.AssetLocation newLocation = new AssetsEntity.AssetLocation(rootAsset.attributes().locationID, new ArrayList<AssetsEntity>());
+				{						
+					AssetsEntity.Station newLocation = new AssetsEntity.Station(new ArrayList<AssetsEntity>(), locationID);
 					assetsByLocation.put(locationID, newLocation);
 				}
 				
 				/* get the appropriate location, grab it's assets list and add the current asset to it */
 				assetsByLocation.get(locationID).getContainedAssets().add(rootAsset);			
 			}
-			
-			Log.d("NUMBER OF STATIONS", "" + assetsByLocation.size());
-			
-			AssetsEntity.AssetLocation[] assetsArray = new AssetsEntity.AssetLocation[assetsByLocation.size()];
+						
+			AssetsEntity[] assetsArray = new AssetsEntity[assetsByLocation.size()];
 			for (int x = 0; x < assetsByLocation.size(); x++) assetsArray[x] = assetsByLocation.valueAt(x);
 			
 			return assetsArray;
@@ -310,6 +303,9 @@ public class APICharacter extends APIObject {
 			{
 				attributes.locationID = Integer.parseInt(attributesNodeMap.getNamedItem("locationID").getTextContent());
 			}
+			
+			if (Integer.parseInt(attributesNodeMap.getNamedItem("singleton").getTextContent()) == 0) attributes.singleton = false;
+			else attributes.singleton = true;
 			
 			return attributes;
 		}

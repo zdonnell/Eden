@@ -1,28 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal" 
-    android:padding="10dp"
-   	>
-   	<ImageView
-	    android:id="@+id/char_detail_assets_list_item_image"
-	    android:layout_width="36dp"
-	    android:layout_height="36dp"
-	    android:layout_marginRight="10dp">
-	    <!--android:background="#222"--></ImageView>
-	<View
-	    android:layout_width="1px"
-	    android:layout_height="match_parent"
-	    android:background="#999"
-	    />
-	<TextView
-	    android:id="@+id/char_detail_assets_list_item_text"
-	    android:layout_width="wrap_content"
-	    android:layout_height="30dp"
-	    android:layout_marginLeft="10dp"
-	    android:textSize="14sp"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="5dp" >
+    
+	<RelativeLayout
+	    android:layout_width="match_parent"
+	   	android:layout_height="match_parent">
+	   	<LinearLayout
+	   	    android:padding="1dp"
+	   	    android:background="#aaa"
+	   	    android:layout_width="match_parent"
+	   		android:layout_height="match_parent">
+	   	    <ImageView 
+		        android:id="@+id/char_detail_assets_list_item_typeIcon"
+		        android:layout_width="match_parent"
+		        android:scaleType="fitXY"
+		        android:layout_height="wrap_content"
+		        android:background="#ccc"/>
+	   	</LinearLayout>
+	    <TextView 
+		    android:id="@+id/char_detail_assets_list_item_count"
+		    android:layout_width="40dp"
+		    android:layout_height="wrap_content"
+		    android:text="1000"
+		    android:layout_alignParentBottom="true"
+		    android:layout_alignParentRight="true"
+		    android:layout_marginBottom="10dp"
+		    android:textColor="#ddd"
+		    android:background="#212121"
+		    android:textSize="9sp"
+		    android:paddingTop="1dp"
+		    android:paddingBottom="1dp"
+		    android:paddingLeft="3dp"
+		    android:gravity="left"
+		    android:maxLines="2"
+	    	/>
+	</RelativeLayout>
+	<TextView 
+	    android:id="@+id/char_detail_assets_list_item_name"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:textColor="#424242"
 	    android:gravity="center"
-	    android:textColor="#666">
-	    <!--android:background="#222"--></TextView>
+	    android:maxLines="2"
+	    />
 </LinearLayout>

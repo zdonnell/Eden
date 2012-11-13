@@ -4,10 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#DDD" >
-    <ListView
+    <GridView
+        android:padding="5dp"
         android:background="#DDD"   
         android:id="@+id/char_detail_assets_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:headerDividersEnabled="true" />
+        android:headerDividersEnabled="true"
+        android:numColumns="4" />
 </LinearLayout>
