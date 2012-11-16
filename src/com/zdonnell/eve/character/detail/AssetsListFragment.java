@@ -2,15 +2,19 @@ package com.zdonnell.eve.character.detail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.SparseArray;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
@@ -23,6 +27,7 @@ import android.widget.TextView;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.ImageService;
+import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.eve.Eve;
@@ -36,6 +41,8 @@ public class AssetsListFragment extends Fragment {
     GridView assetsGridView;
     
     private ImageService imageService;
+        
+    private Stack<AssetsEntity[]> parentStack = new Stack<AssetsEntity[]>();
         
     /**
      * Constructor
@@ -71,8 +78,8 @@ public class AssetsListFragment extends Fragment {
 				AssetsStationsListAdapter adapter = new AssetsStationsListAdapter(context, R.layout.char_detail_assets_list_item, locationArray);
 				assetsGridView.setAdapter(adapter);
 			}
-    	});
-    	    	
+    	});   	
+    	
     	return inflatedView;
     }    
     
@@ -80,32 +87,49 @@ public class AssetsListFragment extends Fragment {
     {
     	int resourceID;
     	
+    	private AssetsEntity[] entities;
+    	
     	SparseArray<String> typeNames;
+    	SparseArray<Bitmap> typeIcons;
     	
     	HashMap<TextView, Integer> typeNameMappings = new HashMap<TextView, Integer>();
+    	HashMap<ImageView, Integer> typeImageMappings = new HashMap<ImageView, Integer>();
     	
     	boolean typeNamesLoaded = false;
     	    	    	
     	public AssetsStationsListAdapter(Context context, int textViewResourceID, AssetsEntity[] assetLocations) {
 			super(context, textViewResourceID, assetLocations);
+			
+			this.entities = assetLocations;
 			this.resourceID = textViewResourceID;
 			
 			typeNames = new SparseArray<String>(assetLocations.length);
+			typeIcons = new SparseArray<Bitmap>(assetLocations.length);
 			
+			/* If these are assets not stations, get the type names */
 			if (assetLocations[0] instanceof AssetsEntity.Item)
 			{
+				/* Pull the typeIDs from the array of assets into their own array */
 				final int[] typeIDs = new int[assetLocations.length];
 				for (int x = 0; x < assetLocations.length; x++) typeIDs[x] = assetLocations[x].attributes().typeID;
 				
+				/* get type names */
 				new Eve(context).getTypeName(new APICallback<String[]>()
 				{
 					@Override
 					public void onUpdate(String[] retTypeNames) 
 					{
+						/* 
+						 * The returned String array matches the order provided by the input typeID array.
+						 * This will pair them up in a SparseArray so the type name strings can be accessed by typeID
+						 */
 						for (int i = 0; i < typeIDs.length; i++) typeNames.put(typeIDs[i], retTypeNames[i]);
-						updateDisplayedViews();
+						obtainedTypeNames();
 					}
 				}, typeIDs);
+				
+				/* "cache" type icons */
+				ImageService.getInstance(context).getTypes(null, typeIDs);
 			}
 		}
 		
@@ -141,6 +165,8 @@ public class AssetsListFragment extends Fragment {
 						AssetsEntity[] assetsAsArray = new AssetsEntity[containedAssets.size()];
 						containedAssets.toArray(assetsAsArray);
 						
+						parentStack.push(entities);
+						
 						AssetsStationsListAdapter assetsAdapter = new AssetsStationsListAdapter(context, R.layout.char_detail_assets_list_item, assetsAsArray);
 						assetsGridView.setAdapter(assetsAdapter);
 					}
@@ -150,7 +176,7 @@ public class AssetsListFragment extends Fragment {
 			return itemView;
 		}
 		
-		private void updateDisplayedViews()
+		private void obtainedTypeNames()
 		{
 			typeNamesLoaded = true;
 			
@@ -176,7 +202,7 @@ public class AssetsListFragment extends Fragment {
 		private void setupAsset(LinearLayout rootView, AssetsEntity.Item item)
 		{
 			boolean isPackaged = !item.attributes().singleton;
-			int typeID = item.attributes().typeID;
+			final int typeID = item.attributes().typeID;
 			int count = item.attributes().quantity;
 			
 			/* Grab references to the views needing update */
@@ -190,15 +216,15 @@ public class AssetsListFragment extends Fragment {
 			
 			icon.setTag(typeID);
 			
-			ImageService.getInstance(context).getTypes(new ImageService.IconObtainedCallback() 
-			{	
+			ImageService.getInstance(context).getTypes(new IconObtainedCallback() 
+			{
 				@Override
 				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
 				{
-					if (bitmaps.get((Integer) icon.getTag()) != null);
+					if ((Integer) icon.getTag() == typeID)
 					{
+						icon.setImageBitmap(bitmaps.get(typeID));
 						icon.setLayoutParams(new LinearLayout.LayoutParams(icon.getWidth(), icon.getWidth()));
-						icon.setImageBitmap(bitmaps.valueAt(0));
 					}
 				}
 			}, typeID);
@@ -209,4 +235,16 @@ public class AssetsListFragment extends Fragment {
 			if (isPackaged) quantity.setText(String.valueOf(count));
 		}
     }
+
+	public boolean backKeyPressed() {
+		
+		if (!parentStack.empty()) 
+    	{
+    		AssetsStationsListAdapter assetsAdapter = new AssetsStationsListAdapter(context, R.layout.char_detail_assets_list_item, parentStack.pop());
+			assetsGridView.setAdapter(assetsAdapter);
+    		return true;
+    	}
+		
+		return false;
+	}
 }

@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -124,6 +125,10 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
     	
     	private static final int COUNT = 5;
+    	
+    	private AssetsListFragment assetsFragment;
+    	
+    	public AssetsListFragment assetsFragment() { return assetsFragment; }
     	    	
         public SectionsPagerAdapter(FragmentManager fm) { super(fm); }
 
@@ -147,7 +152,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
             	fragment = new WalletFragment(assembledChar);
         		break;
         	case CharacterSheetFragment.ASSETS:
-            	fragment = new AssetsListFragment(assembledChar);
+            	fragment = assetsFragment = new AssetsListFragment(assembledChar);
         		break;
         	default:
         		fragment = new AttributesFragment(assembledChar);
@@ -167,5 +172,22 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         {
             return CharacterSheetFragment.sheetItems[position].toUpperCase();
         }
+    }
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+    	boolean keyPressSwallowed = false;
+    	
+    	if (keyCode == KeyEvent.KEYCODE_BACK)
+        {
+    		if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
+    		{
+    			keyPressSwallowed = mSectionsPagerAdapter.assetsFragment().backKeyPressed();
+    		}
+        }
+    	
+    	if (!keyPressSwallowed) return super.onKeyDown(keyCode, event);
+		else return true;
     }
 }

@@ -64,6 +64,14 @@ public class ImageService {
 	private LruCache<Integer, Bitmap> bitmapCaches[] = new LruCache[3];
 	
 	/**
+	 * If a request is made for a image while it is already in a load queue, save the request callbacks in this
+	 * SparseArray so they can be notified when the image is loaded.
+	 */
+	private SparseArray<SparseArray<ArrayList<IconObtainedCallback>>> pendingRequests = new SparseArray<SparseArray<ArrayList<IconObtainedCallback>>>();
+	
+	private SparseArray<ArrayList<Integer>> typesBeingLoaded = new SparseArray<ArrayList<Integer>>();
+	
+	/**
 	 * Context of the app for file access etc.
 	 */
 	private Context context; 
@@ -95,6 +103,13 @@ public class ImageService {
 	{
 		this.context = context;
 		initializeCaches(null);
+		
+		/* setup the pending request holders, and the in loading list */
+		for (int x = 0; x < 3; x++)
+		{			
+			typesBeingLoaded.put(x, new ArrayList<Integer>());
+			pendingRequests.put(x, new SparseArray<ArrayList<IconObtainedCallback>>());
+		}
    	}
 	
 	/**
@@ -128,7 +143,16 @@ public class ImageService {
 	 */
 	public void getTypes(IconObtainedCallback callback, int... typeIDs)
 	{
-		getImages(callback, typeIDs, ICON);
+		if (typeIDs.length > 1) getImages(callback, typeIDs, ICON);
+		else
+		{
+			if (typesBeingLoaded.get(ICON) != null && typesBeingLoaded.get(ICON).contains(typeIDs[0]))
+			{
+				if (pendingRequests.get(ICON).get(typeIDs[0]) == null) pendingRequests.get(ICON).put(typeIDs[0], new ArrayList<IconObtainedCallback>());
+				pendingRequests.get(ICON).get(typeIDs[0]).add(callback);
+			}
+			else getImages(callback, typeIDs, ICON);
+		}
 	}
 	
 	/**
@@ -146,7 +170,16 @@ public class ImageService {
 	 */
 	public void getPortraits(IconObtainedCallback callback, int... charIDs)
 	{
-		getImages(callback, charIDs, CHAR);
+		if (charIDs.length > 1) getImages(callback, charIDs, CHAR);
+		else
+		{
+			if (typesBeingLoaded.get(CHAR) != null && typesBeingLoaded.get(CHAR).contains(charIDs[0]))
+			{
+				if (pendingRequests.get(CHAR).get(charIDs[0]) == null) pendingRequests.get(CHAR).put(charIDs[0], new ArrayList<IconObtainedCallback>());
+				pendingRequests.get(CHAR).get(charIDs[0]).add(callback);
+			}
+			else getImages(callback, charIDs, CHAR);
+		}
 	}
 	
 	/**
@@ -164,7 +197,16 @@ public class ImageService {
 	 */
 	public void getCorpLogos(IconObtainedCallback callback, int... corpIDs)
 	{
-		getImages(callback, corpIDs, CORP);
+		if (corpIDs.length > 1) getImages(callback, corpIDs, CORP);
+		else
+		{
+			if (typesBeingLoaded.get(CORP) != null && typesBeingLoaded.get(CORP).contains(corpIDs[0]))
+			{
+				if (pendingRequests.get(CORP).get(corpIDs[0]) == null) pendingRequests.get(CORP).put(corpIDs[0], new ArrayList<IconObtainedCallback>());
+				pendingRequests.get(CORP).get(corpIDs[0]).add(callback);
+			}
+			else getImages(callback, corpIDs, CORP);
+		}
 	}
 	
 	/**
@@ -172,7 +214,7 @@ public class ImageService {
 	 * 
 	 * @param cacheType the cache to clear
 	 */
-	public void clearCache(int cacheType) { bitmapCaches[cacheType].evictAll(); }
+	public void clearMemoryCache(int cacheType) { bitmapCaches[cacheType].evictAll(); }
 		
 	/**
 	 * 
@@ -180,8 +222,14 @@ public class ImageService {
 	 * @param ids
 	 * @param type
 	 */
-	private void getImages(final IconObtainedCallback callback, int[] ids, int type)
-	{
+	private void getImages(final IconObtainedCallback callback, int[] ids, final int type)
+	{		
+		/* add bitmap ids to the list of bitmaps being loaded */
+		for (int id : ids) 
+		{
+			if (!typesBeingLoaded.get(type).contains(id)) typesBeingLoaded.get(type).add(id);
+		}
+		
 		final SparseArray<Bitmap> cachedIDs = new SparseArray<Bitmap>(ids.length);
 		final ArrayList<Integer> idsToLoad = new ArrayList<Integer>(ids.length);
 		final ArrayList<Integer> idsCached = new ArrayList<Integer>(ids.length);
@@ -216,13 +264,58 @@ public class ImageService {
 				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
 				{				
 					/* Merge in the SparseArray of already cached images */
-					for (int cachedID : idsCached) bitmaps.put(cachedID, cachedIDs.get(cachedID));				
+					for (int cachedID : idsCached) 
+					{
+						bitmaps.put(cachedID, cachedIDs.get(cachedID));				
+					}
 					
 					if (callback != null) callback.iconsObtained(bitmaps);
+					
+					checkPendingRequests(bitmaps, type);
 				}
 			}).execute(staticIconsToLoad);
 		}
-		else callback.iconsObtained(cachedIDs);
+		else if (callback != null) callback.iconsObtained(cachedIDs);
+	}
+	
+	/**
+	 * Checks all pending requests to see if any of the bitmaps provided
+	 * have callback requests waiting for them.  If there are the bitmap is provided
+	 * to the callback(s), and the callback(s) are removed from the pending request list.
+	 * 
+	 * @param bitmaps
+	 * @param type
+	 */
+	private void checkPendingRequests(SparseArray<Bitmap> bitmaps, int type)
+	{
+		SparseArray<Bitmap> tempSparseArray = new SparseArray<Bitmap>();
+		
+		/* Cycle through all Bitmaps provided */
+		for (int i = 0; i < bitmaps.size(); i++)
+		{
+			/* Get the key of the Bitmap (id) and try to acquire the pending request list for that type + id */
+			int bitmapID = bitmaps.keyAt(i);
+			ArrayList<IconObtainedCallback> callbacksForID = pendingRequests.get(type).get(bitmapID);
+			
+			/* check if there are actually pending requests */
+			if (callbacksForID != null && !callbacksForID.isEmpty())
+			{
+				/* Create a sparse array containing just the Bitmap, and pass it to each callback */
+				tempSparseArray.put(bitmapID, bitmaps.get(bitmapID));
+				
+				for (IconObtainedCallback callback : callbacksForID)
+				{
+					/* It shouldn't be null, but we'll check anyway */
+					if (callback != null) callback.iconsObtained(tempSparseArray);
+				}
+				
+				tempSparseArray.clear();
+			}
+			
+			/* remove the id from the pending requests, and from the "being loaded" list */
+			pendingRequests.get(type).remove(bitmapID);
+			typesBeingLoaded.get(type).remove(Integer.valueOf(bitmapID));
+		}
 	}
 	
 	private class IconLoader extends AsyncTask<Integer, Void, SparseArray<Bitmap>>
