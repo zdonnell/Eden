@@ -215,14 +215,15 @@ public class AssetsListFragment extends Fragment {
 			if (typeNamesLoaded) text.setText(typeNames.get(typeID));
 			
 			icon.setTag(typeID);
+			icon.setImageBitmap(null);
 			
 			ImageService.getInstance(context).getTypes(new IconObtainedCallback() 
 			{
 				@Override
 				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
 				{
-					if ((Integer) icon.getTag() == typeID)
-					{
+					if (((Integer) icon.getTag()).intValue() == typeID)
+					{											
 						icon.setImageBitmap(bitmaps.get(typeID));
 						icon.setLayoutParams(new LinearLayout.LayoutParams(icon.getWidth(), icon.getWidth()));
 					}

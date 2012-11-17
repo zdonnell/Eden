@@ -270,12 +270,15 @@ public class ImageService {
 					}
 					
 					if (callback != null) callback.iconsObtained(bitmaps);
-					
 					checkPendingRequests(bitmaps, type);
 				}
 			}).execute(staticIconsToLoad);
 		}
-		else if (callback != null) callback.iconsObtained(cachedIDs);
+		else
+		{
+			if (callback != null) callback.iconsObtained(cachedIDs);
+			checkPendingRequests(cachedIDs, type);
+		}
 	}
 	
 	/**
