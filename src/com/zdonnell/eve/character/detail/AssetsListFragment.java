@@ -9,19 +9,17 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zdonnell.eve.R;
@@ -39,6 +37,8 @@ public class AssetsListFragment extends Fragment {
     private Context context;
     
     GridView assetsGridView;
+    
+    private float viewWidth;
     
     private ImageService imageService;
         
@@ -66,9 +66,20 @@ public class AssetsListFragment extends Fragment {
     	context = inflater.getContext();
     	imageService = ImageService.getInstance(context);
     	
-    	
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets, container, false);
     	assetsGridView = (GridView) inflatedView.findViewById(R.id.char_detail_assets_list);
+    	
+    	float columnCount = assetsGridView.getNumColumns();
+    	float paddingSize = assetsGridView.getListPaddingLeft();
+    	float listPaddingSizeLeft = assetsGridView.getPaddingLeft();
+    	float listPaddingSizeRight = assetsGridView.getPaddingRight();
+    	
+    	Log.d("Values", columnCount + ", " + paddingSize + ", " + listPaddingSizeLeft + ", " + listPaddingSizeRight);
+    	WindowManager windowManager = (WindowManager) context.getSystemService("window");
+    	DisplayMetrics metrics = new DisplayMetrics();
+    	windowManager.getDefaultDisplay().getMetrics(metrics);
+    	
+    	viewWidth = (metrics.widthPixels - (columnCount * paddingSize) - listPaddingSizeLeft - listPaddingSizeRight) / columnCount;
     	
     	character.getAssetsList(new APICallback<AssetsEntity[]>()
     	{
@@ -199,7 +210,7 @@ public class AssetsListFragment extends Fragment {
 			quantity.setText(String.valueOf(station.getContainedAssets().size()));
 		}
 		
-		private void setupAsset(LinearLayout rootView, AssetsEntity.Item item)
+		private void setupAsset(final LinearLayout rootView, AssetsEntity.Item item)
 		{
 			boolean isPackaged = !item.attributes().singleton;
 			final int typeID = item.attributes().typeID;
@@ -224,8 +235,8 @@ public class AssetsListFragment extends Fragment {
 				{
 					if (((Integer) icon.getTag()).intValue() == typeID)
 					{											
-						icon.setImageBitmap(bitmaps.get(typeID));
-						icon.setLayoutParams(new LinearLayout.LayoutParams(icon.getWidth(), icon.getWidth()));
+						//icon.setLayoutParams(new LinearLayout.LayoutParams((int) viewWidth,(int) viewWidth));
+						icon.setImageBitmap(bitmaps.get(typeID));						
 					}
 				}
 			}, typeID);

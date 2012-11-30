@@ -146,11 +146,7 @@ public class ImageService {
 		if (typeIDs.length > 1) getImages(callback, typeIDs, ICON);
 		else
 		{
-			if (typesBeingLoaded.get(ICON) != null && typesBeingLoaded.get(ICON).contains(typeIDs[0]))
-			{
-				if (pendingRequests.get(ICON).get(typeIDs[0]) == null) pendingRequests.get(ICON).put(typeIDs[0], new ArrayList<IconObtainedCallback>());
-				pendingRequests.get(ICON).get(typeIDs[0]).add(callback);
-			}
+			if (idIsBeingLoaded(typeIDs[0], ICON)) queueRequest(typeIDs[0], ICON, callback);
 			else getImages(callback, typeIDs, ICON);
 		}
 	}
@@ -173,11 +169,7 @@ public class ImageService {
 		if (charIDs.length > 1) getImages(callback, charIDs, CHAR);
 		else
 		{
-			if (typesBeingLoaded.get(CHAR) != null && typesBeingLoaded.get(CHAR).contains(charIDs[0]))
-			{
-				if (pendingRequests.get(CHAR).get(charIDs[0]) == null) pendingRequests.get(CHAR).put(charIDs[0], new ArrayList<IconObtainedCallback>());
-				pendingRequests.get(CHAR).get(charIDs[0]).add(callback);
-			}
+			if (idIsBeingLoaded(charIDs[0], CHAR)) queueRequest(charIDs[0], CHAR, callback);
 			else getImages(callback, charIDs, CHAR);
 		}
 	}
@@ -200,13 +192,35 @@ public class ImageService {
 		if (corpIDs.length > 1) getImages(callback, corpIDs, CORP);
 		else
 		{
-			if (typesBeingLoaded.get(CORP) != null && typesBeingLoaded.get(CORP).contains(corpIDs[0]))
-			{
-				if (pendingRequests.get(CORP).get(corpIDs[0]) == null) pendingRequests.get(CORP).put(corpIDs[0], new ArrayList<IconObtainedCallback>());
-				pendingRequests.get(CORP).get(corpIDs[0]).add(callback);
-			}
+			if (idIsBeingLoaded(corpIDs[0], CORP)) queueRequest(corpIDs[0], CORP, callback);
 			else getImages(callback, corpIDs, CORP);
 		}
+	}
+	
+	/**
+	 * Checks to see if the current id for a specific type has already had a load request outstanding for it
+	 * 
+	 * @param id the character, corp, or type ID 
+	 * @param type {@link #CHAR}, {@link #CORP}, or {@link #ICON}
+	 * @return true if the type is already being loaded
+	 */
+	private boolean idIsBeingLoaded(int id, int type)
+	{
+		return typesBeingLoaded.get(type) != null && typesBeingLoaded.get(type).contains(id);
+	}
+	
+	/** 
+	 * This will create the list for the specified id/type combination if it does not already exist, and then add the provided
+	 * callback to the list.
+	 * 
+	 * @param id the character, corp, or type ID 
+	 * @param type {@link #CHAR}, {@link #CORP}, or {@link #ICON}
+	 * @param callback the callback request to add to the list
+	 */
+	private void queueRequest(int id, int type, IconObtainedCallback callback)
+	{
+		if (pendingRequests.get(type).get(id) == null) pendingRequests.get(type).put(id, new ArrayList<IconObtainedCallback>());
+		pendingRequests.get(type).get(id).add(callback);
 	}
 	
 	/**
@@ -275,7 +289,7 @@ public class ImageService {
 			}).execute(staticIconsToLoad);
 		}
 		else
-		{
+		{				
 			if (callback != null) callback.iconsObtained(cachedIDs);
 			checkPendingRequests(cachedIDs, type);
 		}
