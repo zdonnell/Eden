@@ -6,7 +6,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.Point;
+import android.util.DisplayMetrics;
 
 import com.zdonnell.eve.api.ResourceManager;
 
@@ -76,5 +79,39 @@ public class Tools {
 	public static int dp2px(float dp, Context context) 
 	{	
 		return (int) (dp * context.getResources().getDisplayMetrics().density);
+	}
+	
+	public static int columnCountBySize(Activity context, float intendedColumnWidth, float viewWidth) 
+	{	
+		Point screenDimensions = new Point(0, 0);
+		context.getWindowManager().getDefaultDisplay().getSize(screenDimensions);
+		
+		DisplayMetrics metrics = new DisplayMetrics();
+		context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		
+		float logicalDensity = metrics.density;
+		
+		float dp = (float) viewWidth / logicalDensity;
+		
+		int columns = (int) Math.round(dp / intendedColumnWidth);
+		if (columns < 2) columns = 2;
+		
+		int[] calculatedColumnWidths = new int[columns];
+		
+		int widthForSeperation = columns - 1;
+		double widthForColumns = screenDimensions.x - widthForSeperation;
+		
+		int totalColumnWidthUsed = 0, roundedColumnWidth = 0;
+		
+		for (int x = 0; x < columns; x++) {
+			roundedColumnWidth = (int) Math.floor(widthForColumns / (double) columns);
+			calculatedColumnWidths[x] = roundedColumnWidth;
+			
+			totalColumnWidthUsed += roundedColumnWidth;
+			
+			if (x == columns - 1 && totalColumnWidthUsed != widthForColumns) calculatedColumnWidths[x] += 1;
+		}
+		
+		return columns;
 	}
 }

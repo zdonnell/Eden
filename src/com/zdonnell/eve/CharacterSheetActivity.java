@@ -59,28 +59,30 @@ public class CharacterSheetActivity extends BaseActivity
     public void onItemSelected(int id) {
         if (mTwoPane) {
             
-            Fragment fragment = null;
-            
-            switch (id)
-            {
-            case CharacterSheetFragment.ASSETS:
-            	break;
-            case CharacterSheetFragment.ATTRIBUTES:
-            	fragment = new AttributesFragment(assembledChar);
-            	break;
-            case CharacterSheetFragment.SKILL_QUEUE:
-            	fragment = new SkillQueueFragment(assembledChar);
-            	break;
-            case CharacterSheetFragment.SKILLS:
-            	break;
-            case CharacterSheetFragment.WALLET:
+        	Fragment fragment;
+        	
+        	switch (id)
+        	{
+        	case CharacterSheetFragment.SKILLS:
+        		fragment = new AttributesFragment(assembledChar);
+        		break;
+        	case CharacterSheetFragment.SKILL_QUEUE:
+        		fragment = new SkillQueueFragment(assembledChar);
+        		break;
+        	case CharacterSheetFragment.ATTRIBUTES:
+        		fragment = new AttributesFragment(assembledChar);
+        		break;
+        	case CharacterSheetFragment.WALLET:
+            	fragment = new WalletFragment(assembledChar);
+        		break;
+        	case CharacterSheetFragment.ASSETS:
             	fragment = new AssetsListFragment(assembledChar);
-            	break;
-            default:
-            	fragment = new SkillQueueFragment(assembledChar);
-            	break;
-            }
-            
+        		break;
+        	default:
+        		fragment = new AttributesFragment(assembledChar);
+        		break;
+        	}
+        	        	            
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.sheetitem_detail_container, fragment)
                     .commit();

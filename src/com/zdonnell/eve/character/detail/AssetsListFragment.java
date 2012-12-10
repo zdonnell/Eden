@@ -69,7 +69,7 @@ public class AssetsListFragment extends Fragment {
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets, container, false);
     	assetsGridView = (GridView) inflatedView.findViewById(R.id.char_detail_assets_list);
     	
-    	float columnCount = assetsGridView.getNumColumns();
+    	/*float columnCount = assetsGridView.getNumColumns();
     	float paddingSize = assetsGridView.getListPaddingLeft();
     	float listPaddingSizeLeft = assetsGridView.getPaddingLeft();
     	float listPaddingSizeRight = assetsGridView.getPaddingRight();
@@ -79,7 +79,7 @@ public class AssetsListFragment extends Fragment {
     	DisplayMetrics metrics = new DisplayMetrics();
     	windowManager.getDefaultDisplay().getMetrics(metrics);
     	
-    	viewWidth = (metrics.widthPixels - (columnCount * paddingSize) - listPaddingSizeLeft - listPaddingSizeRight) / columnCount;
+    	viewWidth = (metrics.widthPixels - (columnCount * paddingSize) - listPaddingSizeLeft - listPaddingSizeRight) / columnCount; */
     	
     	character.getAssetsList(new APICallback<AssetsEntity[]>()
     	{
