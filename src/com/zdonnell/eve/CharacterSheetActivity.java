@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.character.detail.AssetsListFragment;
+import com.zdonnell.eve.character.detail.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.AttributesFragment;
 import com.zdonnell.eve.character.detail.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.WalletFragment;
@@ -76,7 +76,7 @@ public class CharacterSheetActivity extends BaseActivity
             	fragment = new WalletFragment(assembledChar);
         		break;
         	case CharacterSheetFragment.ASSETS:
-            	fragment = new AssetsListFragment(assembledChar);
+            	fragment = new ParentAssetsFragment(assembledChar);
         		break;
         	default:
         		fragment = new AttributesFragment(assembledChar);

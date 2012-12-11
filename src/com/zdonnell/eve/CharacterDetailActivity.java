@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.character.detail.AssetsListFragment;
+import com.zdonnell.eve.character.detail.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.AttributesFragment;
 import com.zdonnell.eve.character.detail.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.WalletFragment;
@@ -126,9 +126,9 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	
     	private static final int COUNT = 5;
     	
-    	private AssetsListFragment assetsFragment;
+    	private ParentAssetsFragment assetsFragment;
     	
-    	public AssetsListFragment assetsFragment() { return assetsFragment; }
+    	public ParentAssetsFragment assetsFragment() { return assetsFragment; }
     	    	
         public SectionsPagerAdapter(FragmentManager fm) { super(fm); }
 
@@ -152,7 +152,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
             	fragment = new WalletFragment(assembledChar);
         		break;
         	case CharacterSheetFragment.ASSETS:
-            	fragment = assetsFragment = new AssetsListFragment(assembledChar);
+            	fragment = assetsFragment = new ParentAssetsFragment(assembledChar);
         		break;
         	default:
         		fragment = new AttributesFragment(assembledChar);
