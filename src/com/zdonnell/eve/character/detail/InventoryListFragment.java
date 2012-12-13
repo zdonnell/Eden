@@ -48,7 +48,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	/**
 	 * The main list view for the station list layout
 	 */
-	private GridView itemGrdiView;
+	private GridView itemGridView;
 	
 	private boolean isFragmentCreated = false;
 	
@@ -75,7 +75,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
     	context = inflater.getContext();
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets, container, false);
     	
-    	itemGrdiView = (GridView) inflatedView.findViewById(R.id.char_detail_assets_list);
+    	itemGridView = (GridView) inflatedView.findViewById(R.id.char_detail_assets_list);
     	
     	if (!initialLoadComplete && currentItemList != null) updateGridView();
     	
@@ -85,7 +85,8 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	
 	private void updateGridView()
 	{
-		itemGridView
+		itemGridView.setAdapter(new InventoryArrayAdapter(context, stationRowResourceID, currentItemList));
+		initialLoadComplete = true;
 	}
 	
 	private class InventoryArrayAdapter extends ArrayAdapter<AssetsEntity>
@@ -159,9 +160,12 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 				{
 					if (assetItem.containsAssets()) 
 					{
-						ArrayList<AssetsEntity> containedAssets = assetItem.getContainedAssets();
-						AssetsEntity[] assetsAsArray = new AssetsEntity[containedAssets.size()];
-						containedAssets.toArray(assetsAsArray);
+						ArrayList<AssetsEntity> listAssets = assetItem.getContainedAssets();
+						AssetsEntity[] subAssets = new AssetsEntity[listAssets.size()];
+						
+						listAssets.toArray(subAssets);
+						
+						parentFragment.updateChild(subAssets, 1);
 					}
 				}
 			});
@@ -206,7 +210,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 				{
 					if (((Integer) icon.getTag()).intValue() == typeID)
 					{											
-						//icon.setLayoutParams(new LinearLayout.LayoutParams((int) viewWidth,(int) viewWidth));
+						icon.setLayoutParams(new LinearLayout.LayoutParams(text.getWidth(), text.getWidth()));
 						icon.setImageBitmap(bitmaps.get(typeID));						
 					}
 				}
