@@ -122,16 +122,16 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			for (int x = 0; x < items.length; x++) typeIDs[x] = items[x].attributes().typeID;
 			
 			/* get type names */
-			new Eve(context).getTypeName(new APICallback<String[]>()
+			new Eve(context).getTypeName(new APICallback<SparseArray<String>>()
 			{
 				@Override
-				public void onUpdate(String[] retTypeNames) 
+				public void onUpdate(SparseArray<String> retTypeNames) 
 				{
 					/* 
 					 * The returned String array matches the order provided by the input typeID array.
 					 * This will pair them up in a SparseArray so the type name strings can be accessed by typeID
 					 */
-					for (int i = 0; i < typeIDs.length; i++) typeNames.put(typeIDs[i], retTypeNames[i]);
+					for (int i = 0; i < typeIDs.length; i++) typeNames.put(typeIDs[i], retTypeNames.get(typeIDs[i]));
 					obtainedTypeNames();
 				}
 			}, typeIDs);

@@ -239,11 +239,11 @@ public class CharacterSheetFragment extends Fragment {
 					catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
 					
 					final int skillLevel = skillQueue.get(0).skillLevel;
-					new Eve(context).getTypeName(new APICallback<String[]>() 
+					new Eve(context).getTypeName(new APICallback<SparseArray<String>>() 
 					{
 						@Override
-						public void onUpdate(String[] typeName) {
-							currentSkillView.setText(typeName[0] + " " + skillLevelMap.get(skillLevel));						
+						public void onUpdate(SparseArray<String> typeName) {
+							currentSkillView.setText(typeName.valueAt(0) + " " + skillLevelMap.get(skillLevel));						
 						}
 						
 					}, new int[] { skillQueue.get(0).skillID });

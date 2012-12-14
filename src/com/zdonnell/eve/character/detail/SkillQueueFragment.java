@@ -11,6 +11,7 @@ import android.graphics.Paint.Style;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -174,12 +175,12 @@ public class SkillQueueFragment extends Fragment {
 			
 			//skillName.setText(typeDatabase.getTypeName(skillQueue[position].skillID));
 			
-			new Eve(context).getTypeName(new APICallback<String[]>() 
+			new Eve(context).getTypeName(new APICallback<SparseArray<String>>() 
 			{
 				@Override
-				public void onUpdate(String[] typeNames) 
+				public void onUpdate(SparseArray<String> typeNames) 
 				{
-					skillName.setText(typeNames[0]);
+					skillName.setText(typeNames.valueAt(0));
 				}
 			}, new int[] { skillQueue[position].skillID });
 									
