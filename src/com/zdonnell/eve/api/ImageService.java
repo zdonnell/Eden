@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 
+import com.zdonnell.eve.api.ResourceRequestMonitor.RequestNotActiveException;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -335,10 +337,12 @@ public class ImageService {
 		}
 	}
 	
-	private class IconLoader extends AsyncTask<Integer, Void, SparseArray<Bitmap>>
+	private class IconLoader extends AsyncTask<Integer, Integer, SparseArray<Bitmap>>
 	{
 		private IconObtainedCallback callback = null;
 		private int type;
+		
+		ResourceRequestMonitor.Request request;
 		
 		public IconLoader(int type)
 		{
@@ -354,8 +358,12 @@ public class ImageService {
 		@Override
 		protected SparseArray<Bitmap> doInBackground(Integer... ids) 
 		{			
+			request = new ResourceRequestMonitor.Request(ids.length, this);
+			ResourceRequestMonitor.getInstance(context).registerRequest(request);
+			
 			SparseArray<Bitmap> bitmapsLoaded = new SparseArray<Bitmap>(ids.length);
-						
+			
+			int count = 0;
 			for (int id : ids)
 			{
 				Bitmap bitmapLoaded = null;
@@ -372,8 +380,18 @@ public class ImageService {
 				
 				if (bitmapLoaded != null) bitmapCaches[type].put(id, bitmapLoaded);
 				bitmapsLoaded.put(id, bitmapLoaded);
+				
+				publishProgress(count);
+				++count;
 			}
 			return bitmapsLoaded;
+		}
+		
+		@Override
+		protected void onProgressUpdate(Integer... progress)
+		{
+			try { ResourceRequestMonitor.getInstance(context).giveProgressUpdate(request, progress[0]); } 
+			catch (RequestNotActiveException e) { e.printStackTrace(); }
 		}
 		
 		@Override

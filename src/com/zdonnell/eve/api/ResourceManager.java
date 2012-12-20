@@ -21,6 +21,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.w3c.dom.Document;
 
+import com.zdonnell.eve.api.ResourceRequestMonitor.RequestNotActiveException;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -39,18 +41,22 @@ public class ResourceManager {
 	/* SQLite database to stored cached API resources */
 	private CacheDatabase cacheDatabase;
 	
+	private static Context context;
+	
 	/**
 	 * Singleton access method
 	 * 
-	 * @param context
+	 * @param newContext
 	 * @return
 	 */
-	public static ResourceManager getInstance(Context context)
+	public static ResourceManager getInstance(Context newContext)
 	{
 		if (instance == null)
 		{
 			instance = new ResourceManager();
-			instance.cacheDatabase = new CacheDatabase(context);
+			instance.cacheDatabase = new CacheDatabase(newContext);
+			
+			context = newContext;
 		}
 		return instance;
 	}
@@ -150,7 +156,15 @@ public class ResourceManager {
 
 		APIRequestWrapper rw;
 		
-		public APIServerQuery(APIRequestWrapper rw) { this.rw = rw; }
+		ResourceRequestMonitor.Request request;
+		
+		public APIServerQuery(APIRequestWrapper rw) 
+		{ 
+			request = new ResourceRequestMonitor.Request(0, this);
+			ResourceRequestMonitor.getInstance(context).registerRequest(request);
+						
+			this.rw = rw;
+		}
 		
 		@Override
 		protected String doInBackground(String... params) 
@@ -171,6 +185,9 @@ public class ResourceManager {
 		@Override
 		protected void onPostExecute(String queriedResource)
 		{
+			try { ResourceRequestMonitor.getInstance(context).requestCompleted(request); } 
+			catch (RequestNotActiveException e) { e.printStackTrace(); }
+			
 			if (!queriedResource.isEmpty()) 
 			{
 				rw.apiCallback.onUpdate(rw.parser.parse(buildDocument(queriedResource)));
