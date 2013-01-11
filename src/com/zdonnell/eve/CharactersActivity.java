@@ -5,15 +5,19 @@ import android.os.Bundle;
 
 public class CharactersActivity extends BaseActivity {
 
-	public CharactersActivity() {
+	public CharactersActivity() 
+	{
 		super(R.string.character_grid_activity_title);
 	}
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 
-		// set the Above View
+		/**
+		 * Load the fragment into the activity
+		 */
 		setContentView(R.layout.content_frame);
 		getSupportFragmentManager()
 		.beginTransaction()

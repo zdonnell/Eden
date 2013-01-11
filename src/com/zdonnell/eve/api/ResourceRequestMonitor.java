@@ -52,7 +52,7 @@ public class ResourceRequestMonitor {
 		if (activeRequests.contains(requestToUpdate))
 		{
 			requestToUpdate.updateProgress(curProgress);
-			currentlyBoundActivity.requestsUpdated(activeRequests);
+			if (currentlyBoundActivity != null) currentlyBoundActivity.requestsUpdated(activeRequests);
 		}
 		else throw new RequestNotActiveException();
 	}
@@ -62,7 +62,7 @@ public class ResourceRequestMonitor {
 		if (activeRequests.contains(completedRequest))
 		{
 			activeRequests.remove(completedRequest);
-			currentlyBoundActivity.requestsUpdated(activeRequests);
+			if (currentlyBoundActivity != null) currentlyBoundActivity.requestsUpdated(activeRequests);
 		}
 		else throw new RequestNotActiveException();
 	}

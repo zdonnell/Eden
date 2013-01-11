@@ -81,13 +81,24 @@ public class Tools {
 		return (int) (dp * context.getResources().getDisplayMetrics().density);
 	}
 	
-	public static int columnCountBySize(Activity context, float intendedColumnWidth, float viewWidth) 
+
+	/**
+	 * Calculates the number of columns that should be displayed given an intended width (in dp) and
+	 * the width of the encompassing area.
+	 * 
+	 * @param context
+	 * @param intendedColumnWidth
+	 * @param viewWidth
+	 * @param columnMin
+	 * @return
+	 */
+	public static int columnCountBySize(Context context, float intendedColumnWidth, float viewWidth, int columnMin) 
 	{	
 		Point screenDimensions = new Point(0, 0);
-		context.getWindowManager().getDefaultDisplay().getSize(screenDimensions);
+		((Activity) context).getWindowManager().getDefaultDisplay().getSize(screenDimensions);
 		
 		DisplayMetrics metrics = new DisplayMetrics();
-		context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(metrics);
 		
 		float logicalDensity = metrics.density;
 		

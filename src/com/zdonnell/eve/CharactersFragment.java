@@ -13,14 +13,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.LinearInterpolator;
 import android.widget.AbsListView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -34,129 +31,129 @@ import com.zdonnell.eve.api.account.Account;
 import com.zdonnell.eve.api.account.EveCharacter;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.QueuedSkill;
-import com.zdonnell.eve.helpers.BaseCallback;
 import com.zdonnell.eve.helpers.TimeRemainingCountdown;
 import com.zdonnell.eve.helpers.Tools;
 
 public class CharactersFragment extends Fragment {
 
+	/**
+	 * Global value to store the number of columns the GridView is displaying
+	 */
 	private int columns;
-
-	boolean loadChars = false;
 	
+	/**
+	 * As with {@link #columns} this value stores the size (in pixels) of each column in the main GridView once calculated.
+	 */
+	private int[] calculatedColumnWidths;
+	
+	/**
+	 * Reference to the database of characters and character info.
+	 */
 	private CharacterDB charDB;
-		
+	
+	/**
+	 * Reference to the current context
+	 */
 	private Context context;
 	
+	/**
+	 * Reference to the ImageService singleton, handles acquisition of character portraits and corp logos.
+	 */
 	private ImageService imageService;
 	
-	View main;
-	
-	private int[] calculatedColumnWidths;
+	/**
+	 * This SparseArray keeps track of what TextView a given characterID is currently using for the queue timer.
+	 * This is needed because the CountdownTimer may continue to update a view that is now being reused for a different character.
+	 */
+	private SparseArray<TimeRemainingCountdown> cachedTrainingTime = new SparseArray<TimeRemainingCountdown>(10);
 		
-	private HashMap<Integer, TimeRemainingCountdown> cachedTrainingTime = new HashMap<Integer, TimeRemainingCountdown>();
-	
-	Account slick50zd1, mercenoid22, slpeterson;
+	/**
+	 * Accounts used for testing purposes
+	 * 
+	 * TODO remove these once account management has been implemented
+	 */
+	private Account slick50zd1, mercenoid22, slpeterson;
 
+	
+	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
+	{		
 		setRetainInstance(true);
 		
+		/* setup some Fragment wide objects */
 		context = inflater.getContext();
 		imageService = ImageService.getInstance(context);
-		
 		charDB = new CharacterDB(context);
-				
+		
+		/* test function to load characters from API keys */
 		if (false) loadCharacters();
 		
-		main = (View) inflater.inflate(R.layout.characters_fragment, container, false);
-		GridView charGrid = (GridView) main.findViewById(R.id.charGrid);
+		/* Setup the GridView properties and link with the CursorAdapater */
+		View mainView = (View) inflater.inflate(R.layout.characters_fragment, container, false);
+		GridView charGrid = (GridView) mainView.findViewById(R.id.charGrid);
 		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
 						
 		columns = calcColumns((Activity) context);
 		charGrid.setNumColumns(columns);
 		
-		return main;
+		return mainView;
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
+	public void onSaveInstanceState(Bundle outState) 
+	{
 		super.onSaveInstanceState(outState);
 		setUserVisibleHint(true);
 	}
 
+	/**
+	 * CursorAdapter that handles the population of the character list
+	 * 
+	 * @author zachd
+	 *
+	 */
 	private class CharacterCursorAdapater extends CursorAdapter 
 	{		
 		public CharacterCursorAdapater(Context context, Cursor c) 
 		{
 			super(context, c, false);
-			// TODO Auto-generated constructor stub
 		}
-
+		
+		/**
+		 * configures the view provided, with info from the cursor, for use in the main {@link GridView}
+		 * 
+		 * @param view
+		 * @param context
+		 * @param cursor
+		 */
 		@Override
 		public void bindView(final View view, final Context context, Cursor cursor) 
 		{		
+			/* Establish some basic values / info for use later */
 			final int characterID = cursor.getInt(2);
-			final int corpID = cursor.getInt(4);
-						
+			final int corpID = cursor.getInt(4);	
 			final APICredentials credentials = new APICredentials(cursor.getInt(5), cursor.getString(6));
 			APICharacter character = new APICharacter(credentials, cursor.getInt(2), context);
 			
+			/* handle view configuration */
 			int calculatedWidth = calculatedColumnWidths[cursor.getPosition() % columns];
 			view.setLayoutParams(new AbsListView.LayoutParams(calculatedWidth, calculatedColumnWidths[0]));
 			
-			final ImageView portrait = (ImageView) view.findViewById(R.id.char_image);
-			imageService.getPortraits(new ImageService.IconObtainedCallback() 
-			{	
-				@Override
-				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
-				{
-					portrait.setImageBitmap(bitmaps.valueAt(0));
-					if (view.getAlpha() == 0) view.setAlpha(1);
-				}
-			}, characterID);
-			
-			int width = view.getLayoutParams().width;
-			int height = view.getLayoutParams().height;
-			portrait.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
-			
-			final ImageView corpLogo = (ImageView) view.findViewById(R.id.corp_image);
-			imageService.getCorpLogos(new ImageService.IconObtainedCallback() 
-			{	
-				@Override
-				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
-				{
-					corpLogo.setImageBitmap(bitmaps.valueAt(0));
-				}
-			}, corpID);
-									
 			TextView charName = (TextView) view.findViewById(R.id.char_tile_name);
 			charName.setText(cursor.getString(1));
 			
-			final TextView corpName = (TextView) view.findViewById(R.id.char_tile_training);			
+			loadPortrait(view, characterID);
+			loadCorpLogo(view, corpID);				
+			setupQueueTimeRemaining(character, view);				
 			
-			if (cachedTrainingTime.containsKey(character.id()))	cachedTrainingTime.get(character.id()).updateTextView(corpName);
-			else character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
-			{
+			/* configure the onClick action */
+			view.setOnClickListener(new View.OnClickListener() 
+			{	
 				@Override
-				public void onUpdate(ArrayList<QueuedSkill> updatedData) 
-				{	
-					long timeUntilQueueEmpty = updatedData.isEmpty() ? 0 : Tools.timeUntilUTCTime(updatedData.get(updatedData.size() - 1).endTime);
-					
-					TimeRemainingCountdown timer = new TimeRemainingCountdown(timeUntilQueueEmpty, 1000, corpName);					
-					if (cachedTrainingTime.containsKey(characterID)) cachedTrainingTime.remove(characterID).cancel();
-					
-					cachedTrainingTime.put(characterID, timer);
-					timer.start();
-				}
-			});	
-			
-			view.setOnClickListener(new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
+				public void onClick(View v) 
+				{
 					Intent intent = new Intent(context, CharacterSheetActivity.class);
-					
 					String[] CharacterInfo = new String[3];
 					CharacterInfo[0] = String.valueOf(characterID);
 					CharacterInfo[1] = String.valueOf(credentials.keyID);
@@ -168,6 +165,13 @@ public class CharactersFragment extends Fragment {
 			});
 		}
 
+		/**
+		 * if there is not a view to reuse, inflate a new one for use in the main {@link GridView}
+		 * 
+		 * @param view
+		 * @param context
+		 * @param cursor
+		 */
 		@Override
 		public View newView(Context context, Cursor cursor, ViewGroup parent) 
 		{
@@ -175,10 +179,92 @@ public class CharactersFragment extends Fragment {
 			View v = inflater.inflate(R.layout.character_tile, parent, false);
 
 			v.setLayoutParams(new AbsListView.LayoutParams(parent.getWidth()/columns, parent.getWidth()/columns));
-			v.setAlpha(0);
+			//v.setAlpha(0);
 			
 			bindView(v, context, cursor);
 			return v;
+		}
+		
+		/**
+		 * Handles the acquisition of the character portrait from the local instance of the {@link ImageService}
+		 * 
+		 * @param mainView
+		 * @param characterID
+		 */
+		private void loadPortrait(final View mainView, int characterID)
+		{
+			final ImageView portrait = (ImageView) mainView.findViewById(R.id.char_image);
+			
+			imageService.getPortraits(new ImageService.IconObtainedCallback() 
+			{	
+				@Override
+				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
+				{
+					portrait.setImageBitmap(bitmaps.valueAt(0));
+					if (mainView.getAlpha() == 0) mainView.setAlpha(1);
+				}
+			}, characterID);
+			
+			/* Set the correct size for the ImageView */
+			int width = mainView.getLayoutParams().width;
+			int height = mainView.getLayoutParams().height;
+			portrait.setLayoutParams(new RelativeLayout.LayoutParams(width, height));
+		}
+		
+		/**
+		 * Handles the acquisition of the characters corporation logo from the local instance of the {@link ImageService}
+		 * 
+		 * @param mainView
+		 * @param corpID
+		 */
+		private void loadCorpLogo(final View mainView, int corpID)
+		{
+			final ImageView corpLogo = (ImageView) mainView.findViewById(R.id.corp_image);
+			imageService.getCorpLogos(new ImageService.IconObtainedCallback() 
+			{	
+				@Override
+				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
+				{
+					corpLogo.setImageBitmap(bitmaps.valueAt(0));
+				}
+			}, corpID);
+		}
+		
+		/**
+		 * Handles getting the time remaining in the queue, and linking the correct timer to the TextView
+		 * 
+		 * TODO explain more about the link involving {@link CharactersFragment#cachedTrainingTime}
+		 * 
+		 * @param character
+		 * @param mainView
+		 */
+		private void setupQueueTimeRemaining(APICharacter character, View mainView)
+		{
+			final int characterID = character.id();
+			final TextView timeRemainingTextView = (TextView) mainView.findViewById(R.id.char_tile_training);			
+			
+			/* if the character already has an established timer, tell it to update the new TextView */
+			if (cachedTrainingTime.get(characterID) != null) cachedTrainingTime.get(characterID).updateTextView(timeRemainingTextView);
+			
+			/* else get the time remaining in the queue and setup a CountdownTimer for it */
+			else character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
+			{
+				@Override
+				public void onUpdate(ArrayList<QueuedSkill> updatedData) 
+				{	
+					long timeUntilQueueEmpty = updatedData.isEmpty() ? 0 : Tools.timeUntilUTCTime(updatedData.get(updatedData.size() - 1).endTime);
+					
+					TimeRemainingCountdown timer = new TimeRemainingCountdown(timeUntilQueueEmpty, 1000, timeRemainingTextView);					
+					if (cachedTrainingTime.get(characterID) != null) 
+					{
+						cachedTrainingTime.get(characterID).cancel();
+						cachedTrainingTime.remove(characterID);
+					}
+					
+					cachedTrainingTime.put(characterID, timer);
+					timer.start();
+				}
+			});
 		}
 	}
 	
@@ -226,6 +312,8 @@ public class CharactersFragment extends Fragment {
 	
 	
 	/**
+	 * TODO Remove function once account loading finished
+	 * 
 	 * Testing function
 	 */
 	private void loadCharacters()

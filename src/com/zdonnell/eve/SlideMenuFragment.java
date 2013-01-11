@@ -48,27 +48,31 @@ public class SlideMenuFragment extends ListFragment {
 	}
 	
 	
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
+	{
 		View root = inflater.inflate(R.layout.list, null);
 		setServerStatus(root);
 		return root;
 	}
 
-	public void onActivityCreated(Bundle savedInstanceState) {
+	public void onActivityCreated(Bundle savedInstanceState) 
+	{
 		super.onActivityCreated(savedInstanceState);
 		SampleAdapter adapter = new SampleAdapter(getActivity(), mainMenuItems);
 		setListAdapter(adapter);
 	}
 
-	public class SampleAdapter extends ArrayAdapter<String> {
-
-		public SampleAdapter(Context context, String[] items) {
+	public class SampleAdapter extends ArrayAdapter<String> 
+	{
+		public SampleAdapter(Context context, String[] items) 
+		{
 			super(context, 0, items);
 		}
 
-		public View getView(int position, View convertView, ViewGroup parent) {
-			
-			if (convertView == null) {
+		public View getView(int position, View convertView, ViewGroup parent) 
+		{
+			if (convertView == null) 
+			{
 				convertView = LayoutInflater.from(getContext()).inflate(R.layout.row, null);
 			}
 			
@@ -86,7 +90,8 @@ public class SlideMenuFragment extends ListFragment {
     	Server server = new Server(getActivity());
         final TextView serverStatus = (TextView) root.findViewById(R.id.server_status);
 		
-        server.status(new APICallback<String[]>() {
+        server.status(new APICallback<String[]>() 
+        {
 			@Override
 			public void onUpdate(String[] updatedData) {
 				if (updatedData[0].equals("True")) 

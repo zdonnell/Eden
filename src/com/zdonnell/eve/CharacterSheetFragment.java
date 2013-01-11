@@ -156,18 +156,21 @@ public class CharacterSheetFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) 
+    {
         super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState != null && savedInstanceState
-                .containsKey(STATE_ACTIVATED_POSITION)) {
+        if (savedInstanceState != null && savedInstanceState .containsKey(STATE_ACTIVATED_POSITION)) 
+        {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(Activity activity) 
+    {
         super.onAttach(activity);
-        if (!(activity instanceof Callbacks)) {
+        if (!(activity instanceof Callbacks)) 
+        {
             throw new IllegalStateException("Activity must implement fragment's callbacks.");
         }
 
@@ -175,29 +178,37 @@ public class CharacterSheetFragment extends Fragment {
     }
 
     @Override
-    public void onDetach() {
+    public void onDetach() 
+    {
         super.onDetach();
         mCallbacks = sDummyCallbacks;
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) 
+    {
         super.onSaveInstanceState(outState);
-        if (mActivatedPosition != ListView.INVALID_POSITION) {
+        if (mActivatedPosition != ListView.INVALID_POSITION) 
+        {
             outState.putInt(STATE_ACTIVATED_POSITION, mActivatedPosition);
         }
     }
 
-    public void setActivateOnItemClick(boolean activateOnItemClick) {
+    public void setActivateOnItemClick(boolean activateOnItemClick) 
+    {
     	listView.setChoiceMode(activateOnItemClick
                 ? ListView.CHOICE_MODE_SINGLE
                 : ListView.CHOICE_MODE_NONE);
     }
 
-    public void setActivatedPosition(int position) {
-        if (position == ListView.INVALID_POSITION) {
+    public void setActivatedPosition(int position) 
+    {
+        if (position == ListView.INVALID_POSITION) 
+        {
         	listView.setItemChecked(mActivatedPosition, false);
-        } else {
+        } 
+        else 
+        {
         	listView.setItemChecked(position, true);
         }
 
@@ -208,8 +219,10 @@ public class CharacterSheetFragment extends Fragment {
      * A call made to load up character information.  Should be called immediately after the fragment has been inflated.
      * @param characterID
      */
-	public void setCharacter(APICharacter character) {
+	public void setCharacter(APICharacter character) 
+	{
 		final ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
+		
 		imageService.getPortraits(new ImageService.IconObtainedCallback() 
 		{
 			@Override
@@ -218,41 +231,14 @@ public class CharacterSheetFragment extends Fragment {
 				portrait.setImageBitmap(bitmaps.valueAt(0));
 			}
 		}, character.id());
-		
-		final TextView currentSkillView = (TextView) rootView.findViewById(R.id.current_skill);
-    	
+		    	
     	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
     	{
 			@Override
 			public void onUpdate(ArrayList<QueuedSkill> pSkillQueue) 
 			{
 				skillQueue = pSkillQueue;
-				
-				if (!skillQueue.isEmpty()) 
-				{
-					long timeUntilSkillFinish = 0;
-					try 
-					{
-						timeUntilSkillFinish = Tools.timeUntilUTCTime(skillQueue.get(0).endTime);
-						new SkillTimeRemainingCountdown(timeUntilSkillFinish, 1000, skillTimeRemaining).start();
-					} 
-					catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
-					
-					final int skillLevel = skillQueue.get(0).skillLevel;
-					new Eve(context).getTypeName(new APICallback<SparseArray<String>>() 
-					{
-						@Override
-						public void onUpdate(SparseArray<String> typeName) {
-							currentSkillView.setText(typeName.valueAt(0) + " " + skillLevelMap.get(skillLevel));						
-						}
-						
-					}, new int[] { skillQueue.get(0).skillID });
-				}
-				else
-				{
-					currentSkillView.setText(Html.fromHtml("<FONT COLOR=#FF4444>No Skill in Training</FONT>"));
-					skillTimeRemaining.setVisibility(View.INVISIBLE);
-				}
+				configureSkillQueueTimer();
 			}
     	});
     	
@@ -275,6 +261,37 @@ public class CharacterSheetFragment extends Fragment {
 				obtainedCharacterInfoSheet();
 			}
     	});
+	}
+	
+	private void configureSkillQueueTimer()
+	{
+		final TextView currentSkillView = (TextView) rootView.findViewById(R.id.current_skill);
+		
+		if (!skillQueue.isEmpty()) 
+		{
+			long timeUntilSkillFinish = 0;
+			try 
+			{
+				timeUntilSkillFinish = Tools.timeUntilUTCTime(skillQueue.get(0).endTime);
+				new SkillTimeRemainingCountdown(timeUntilSkillFinish, 1000, skillTimeRemaining).start();
+			} 
+			catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
+			
+			final int skillLevel = skillQueue.get(0).skillLevel;
+			new Eve(context).getTypeName(new APICallback<SparseArray<String>>() 
+			{
+				@Override
+				public void onUpdate(SparseArray<String> typeName) {
+					currentSkillView.setText(typeName.valueAt(0) + " " + skillLevelMap.get(skillLevel));						
+				}
+				
+			}, new int[] { skillQueue.get(0).skillID });
+		}
+		else
+		{
+			currentSkillView.setText(Html.fromHtml("<FONT COLOR=#FF4444>No Skill in Training</FONT>"));
+			skillTimeRemaining.setVisibility(View.INVISIBLE);
+		}
 	}
 	
 	private class CharacterSheetAdapater extends ArrayAdapter<SheetItem>
