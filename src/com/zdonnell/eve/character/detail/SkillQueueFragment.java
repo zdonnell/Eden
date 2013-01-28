@@ -88,13 +88,22 @@ public class SkillQueueFragment extends Fragment {
 			@Override
 			public void onUpdate(ArrayList<QueuedSkill> skillQueue) 
 			{
-				skillQueueBar.setQueue(skillQueue);
-				long timeRemainingInQueue = Tools.timeUntilUTCTime(skillQueue.get(skillQueue.size() - 1).endTime);
-				new TimeRemainingCountdown(timeRemainingInQueue, 1000, queueTimeRemaining).start();
-				
-				queueLength.setText(skillQueue.size() + " Skill(s) in Queue");
-				
-				updateQueueList(skillQueue);
+				if (!skillQueue.isEmpty())
+				{
+					queueTimeRemaining.setVisibility(View.VISIBLE);
+					
+					skillQueueBar.setQueue(skillQueue);
+					long timeRemainingInQueue = Tools.timeUntilUTCTime(skillQueue.get(skillQueue.size() - 1).endTime);
+					new TimeRemainingCountdown(timeRemainingInQueue, 1000, queueTimeRemaining).start();
+					
+					queueLength.setText(skillQueue.size() + " Skill(s) in Queue");
+					
+					updateQueueList(skillQueue);
+				}
+				else
+				{
+					queueTimeRemaining.setVisibility(View.INVISIBLE);
+				}
 			}
     	});
     	    	

@@ -147,15 +147,56 @@ public class APICharacter extends APIObject {
 			
 			NodeList attributeEnhancersList = document.getElementsByTagName("attributeEnhancers").item(0).getChildNodes();
 			AttributeEnhancer[] attributeEnhancers = new AttributeEnhancer[5];			
-			for (int x = 0; x < attributeEnhancersList.getLength(); x++)
+			
+			for (int i = 0; i < attributeEnhancersList.getLength(); i++)
 			{
-				Node augmentatorNameNode = attributeEnhancersList.item(x).getFirstChild();
-				Node augmentatorValueNode = attributeEnhancersList.item(x).getLastChild();
+				Node augmentatorNameNode = attributeEnhancersList.item(i).getFirstChild();
+				Node augmentatorValueNode = attributeEnhancersList.item(i).getLastChild();
 				
-				attributeEnhancers[x] = new AttributeEnhancer(augmentatorNameNode.getTextContent(), Integer.parseInt(augmentatorValueNode.getTextContent()));
+				int slot = 0;
+				
+				/* The attribute enhancer order does not equal that of the attributeValues in the raw API response, correct that */
+				if (attributeEnhancersList.item(i).getNodeName().equals("memoryBonus")) slot = 1;
+				else if (attributeEnhancersList.item(i).getNodeName().equals("perceptionBonus")) slot = 3;
+				else if (attributeEnhancersList.item(i).getNodeName().equals("willpowerBonus")) slot = 4;
+				else if (attributeEnhancersList.item(i).getNodeName().equals("intelligenceBonus")) slot = 0;
+				else if (attributeEnhancersList.item(i).getNodeName().equals("charismaBonus")) slot = 2;
+				
+				attributeEnhancers[slot] = new AttributeEnhancer(augmentatorNameNode.getTextContent(), Integer.parseInt(augmentatorValueNode.getTextContent()));
 			}
 			
 			characterSheet.setAttributeInfo(attributeEnhancers, attributeValues);
+			
+			NodeList skillNodeList = null;
+			
+			/* Grab the generic rowsets */
+			NodeList rowsets = document.getElementsByTagName("rowset");
+			for (int i = 0; i < rowsets.getLength(); i++)
+			{
+				if (rowsets.item(i).getAttributes().item(0).getNodeValue().equals("skills"))
+				{
+					skillNodeList = rowsets.item(i).getChildNodes();
+				}
+			}
+			
+			if (skillNodeList != null)
+			{
+				ArrayList<Skill> skillList = new ArrayList<Skill>(skillNodeList.getLength());
+				
+				for (int i = 0; i < skillNodeList.getLength(); i++)
+				{
+					Node skill = skillNodeList.item(i);
+					
+					int typeID = Integer.parseInt(skill.getAttributes().getNamedItem("typeID").getNodeValue());
+					int skillPoints = Integer.parseInt(skill.getAttributes().getNamedItem("skillpoints").getNodeValue());
+					int level = Integer.parseInt(skill.getAttributes().getNamedItem("level").getNodeValue());
+					boolean published = skill.getAttributes().getNamedItem("typeID").getNodeValue().equals("1") ? true : false;
+					
+					skillList.add(new Skill(typeID, skillPoints, level, published));
+				}
+			
+				characterSheet.setSkills(skillList);
+			}
 			
 			return characterSheet;
 		}

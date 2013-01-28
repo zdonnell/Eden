@@ -124,6 +124,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 						
 						listAssets.toArray(subAssets);
 						
+						parentFragment.setCurrentParentName("Station: " + curStation.getLocationID());
 						parentFragment.updateChild(subAssets, 1);
 					}
 				}

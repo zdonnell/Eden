@@ -28,6 +28,7 @@ import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterInfo;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.QueuedSkill;
+import com.zdonnell.eve.api.character.Skill;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.helpers.Tools;
 
@@ -387,7 +388,15 @@ public class CharacterSheetFragment extends Fragment {
 		NumberFormat formatter = NumberFormat.getInstance();
 		
 		/* Skills */
-		
+		if (subTexts[SKILLS] != null && characterSheet != null)
+		{
+			ArrayList<Skill> skills = characterSheet.getSkills();
+			
+			int level5count = 0;
+			for (Skill skill : skills) if (skill.getLevel() == 5) level5count++;
+			
+			subTexts[SKILLS].setText(characterSheet.getSkills().size() + " Skills Trained (" + level5count + " at Level V)");
+		}
 		
 		/* SkillQueue */
 		if (subTexts[SKILL_QUEUE] != null && skillQueue != null) 

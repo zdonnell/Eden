@@ -1,5 +1,7 @@
 package com.zdonnell.eve.api.character;
 
+import java.util.ArrayList;
+
 /**
  * TODO Implement other character sheet fields
  * 
@@ -9,10 +11,10 @@ package com.zdonnell.eve.api.character;
 public class CharacterSheet {
 		
 	public final static int INTELLIGENCE = 0;
-	public final static int PERCEPTION = 1;
+	public final static int MEMORY = 1;
 	public final static int CHARISMA = 2;
-	public final static int WILLPOWER = 3;
-	public final static int MEMORY = 4;
+	public final static int PERCEPTION = 3;
+	public final static int WILLPOWER = 4;
 	
 	private int characterID;
 	
@@ -27,6 +29,8 @@ public class CharacterSheet {
 	private int[] attributes;
 	
 	private double walletBalance;
+	
+	private ArrayList<Skill> skills;
 	
 	public CharacterSheet(int characterID)
 	{
@@ -50,6 +54,11 @@ public class CharacterSheet {
 		this.walletBalance = walletBalance;
 	}
 	
+	public void setSkills(ArrayList<Skill> skills)
+	{
+		this.skills = skills;
+	}
+	
 	public String getDateOfBirth() { return dateOfBirth; }
 	public int getCloneSkillPoints() { return cloneSkillPoints; }
 	public String getCloneName() { return cloneName; }
@@ -57,6 +66,7 @@ public class CharacterSheet {
 	public int[] getAttributes() { return attributes; }
 	public double getWalletBalance() { return walletBalance; }
 	public int getCharacterID() { return characterID; }
+	public ArrayList<Skill> getSkills() { return skills; }
 	
 	/**
 	 * 

@@ -1,5 +1,6 @@
 package com.zdonnell.eve.character.detail;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,7 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zdonnell.eve.R;
@@ -25,6 +26,7 @@ import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.AssetsEntity.Item;
+import com.zdonnell.eve.api.priceservice.PriceService;
 import com.zdonnell.eve.eve.Eve;
 
 public class InventoryListFragment extends Fragment implements IAssetsSubFragment 
@@ -56,6 +58,8 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	
 	private ParentAssetsFragment parentFragment;
 	
+	private TextView parentAssetName, itemCount, valueOfItems;
+	
 	@Override
 	public void setParent(ParentAssetsFragment parent)
 	{
@@ -64,8 +68,9 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	
 	@Override
 	public void assetsUpdated(AssetsEntity[] assets) 
-	{	
+	{			
 		this.currentItemList = assets;
+		calculatePrices(assets);
 		if (isFragmentCreated) updateGridView();
 	}
 	
@@ -73,9 +78,15 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
     {
     	context = inflater.getContext();
-    	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets, container, false);
+    	RelativeLayout inflatedView = (RelativeLayout) inflater.inflate(R.layout.char_detail_assets, container, false);
     	
     	itemGridView = (GridView) inflatedView.findViewById(R.id.char_detail_assets_list);
+    	
+    	parentAssetName = (TextView) inflatedView.findViewById(R.id.char_detail_assets_inventory_parentName);
+    	itemCount = (TextView) inflatedView.findViewById(R.id.char_detail_assets_inventory_itemCount);
+    	valueOfItems = (TextView) inflatedView.findViewById(R.id.char_detail_assets_inventory_itemValue);
+    	
+    	parentAssetName.setText(parentFragment.getCurrentParentName());
     	
     	if (!initialLoadComplete && currentItemList != null) updateGridView();
     	
@@ -85,8 +96,42 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	
 	private void updateGridView()
 	{
+		itemCount.setText(currentItemList.length + " items");
 		itemGridView.setAdapter(new InventoryArrayAdapter(context, stationRowResourceID, currentItemList));
 		initialLoadComplete = true;
+	}
+	
+	private void calculatePrices(final AssetsEntity[] items)
+	{
+		Integer[] typeIDs = new Integer[items.length];
+		for (int i = 0; i < items.length; i++)
+		{
+			typeIDs[i] = items[i].attributes().typeID;
+		}
+		
+		PriceService.getInstance(context).getValues(typeIDs, new APICallback<SparseArray<Float>>() 
+		{
+			@Override
+			public void onUpdate(SparseArray<Float> updatedData)
+			{				
+				double totalValue = 0;
+
+				for (AssetsEntity entity : items)
+				{
+					int typeID = entity.attributes().typeID;
+					int quantity = entity.attributes().quantity;
+					try 
+					{
+						float value = updatedData.get(typeID);			
+						totalValue += value * quantity;
+					}
+					catch (NullPointerException e) { /* e.printStackTrace(); */ }
+				}
+				
+				DecimalFormat twoDForm = new DecimalFormat("#,###.##");				
+				valueOfItems.setText("~" + twoDForm.format(totalValue) + " ISK");
+			}
+		});
 	}
 	
 	private class InventoryArrayAdapter extends ArrayAdapter<AssetsEntity>
@@ -165,6 +210,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 						
 						listAssets.toArray(subAssets);
 						
+						parentFragment.setCurrentParentName(typeNames.get(assetItem.attributes().typeID));
 						parentFragment.updateChild(subAssets, 1);
 					}
 				}
