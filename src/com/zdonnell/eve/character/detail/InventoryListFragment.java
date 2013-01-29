@@ -70,7 +70,6 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	public void assetsUpdated(AssetsEntity[] assets) 
 	{			
 		this.currentItemList = assets;
-		calculatePrices(assets);
 		if (isFragmentCreated) updateGridView();
 	}
 	
@@ -96,6 +95,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	
 	private void updateGridView()
 	{
+		calculatePrices(currentItemList);
 		itemCount.setText(currentItemList.length + " items");
 		itemGridView.setAdapter(new InventoryArrayAdapter(context, stationRowResourceID, currentItemList));
 		initialLoadComplete = true;
@@ -103,11 +103,15 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	
 	private void calculatePrices(final AssetsEntity[] items)
 	{
-		Integer[] typeIDs = new Integer[items.length];
+		ArrayList<Integer> typeIDsList = new ArrayList<Integer>();
+		
 		for (int i = 0; i < items.length; i++)
 		{
-			typeIDs[i] = items[i].attributes().typeID;
+			if (!typeIDsList.contains(items[i].attributes().typeID)) typeIDsList.add(items[i].attributes().typeID);
 		}
+		
+		Integer[] typeIDs = new Integer[typeIDsList.size()];
+		typeIDsList.toArray(typeIDs);
 		
 		PriceService.getInstance(context).getValues(typeIDs, new APICallback<SparseArray<Float>>() 
 		{

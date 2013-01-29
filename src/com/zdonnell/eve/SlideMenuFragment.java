@@ -2,9 +2,6 @@ package com.zdonnell.eve;
 
 import java.text.NumberFormat;
 
-import com.zdonnell.eve.api.APICallback;
-import com.zdonnell.eve.api.server.Server;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -15,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.api.server.Server;
 
 public class SlideMenuFragment extends ListFragment {
 

@@ -3,15 +3,11 @@ package com.zdonnell.eve;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
-import android.view.MenuItem;
 
-import com.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.character.detail.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.AttributesFragment;
+import com.zdonnell.eve.character.detail.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.WalletFragment;
 

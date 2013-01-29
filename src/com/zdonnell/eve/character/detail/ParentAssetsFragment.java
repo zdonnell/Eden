@@ -1,6 +1,5 @@
 package com.zdonnell.eve.character.detail;
 
-import java.util.ArrayList;
 import java.util.Stack;
 
 import android.content.Context;

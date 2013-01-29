@@ -11,8 +11,6 @@ import android.content.Context;
 import android.graphics.Point;
 import android.util.DisplayMetrics;
 
-import com.zdonnell.eve.api.ResourceManager;
-
 public class Tools {
 	
 	private static long D_MILLIS = 24 * 60 * 60 * 1000;

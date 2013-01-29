@@ -2,22 +2,20 @@ package com.zdonnell.eve.api;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 
-import com.zdonnell.eve.api.ResourceRequestMonitor.RequestNotActiveException;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
-import android.util.Log;
 import android.util.SparseArray;
+
+import com.zdonnell.eve.api.ResourceRequestMonitor.RequestNotActiveException;
 
 public class ImageService {
 

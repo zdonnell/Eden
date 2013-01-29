@@ -1,19 +1,10 @@
 package com.zdonnell.eve.api.priceservice;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
+import android.content.Context;
+import android.util.Log;
+import android.util.SparseArray;
 
 import com.zdonnell.eve.api.APICallback;
-
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.SparseArray;
 
 public class PriceService {
 	
@@ -23,6 +14,8 @@ public class PriceService {
 		
 	/* Time in millis to store the price before forcing a new request */
 	private final long priceCacheTime = 168 * 60 * 60 * 1000; // 168 hours or 7 days
+	
+	private PriceDatabase priceDatabase;
 	
 	/**
 	 * Singleton access method
@@ -41,11 +34,38 @@ public class PriceService {
 	
 	private PriceService(Context context)
 	{
+		this.priceDatabase = new PriceDatabase(context);
 		this.context = context;
 	}
 	
 	public void getValues(Integer[] typeIDs, APICallback<SparseArray<Float>> callback)
 	{		
-		new PriceCheckTask(callback).execute(typeIDs);
+		SparseArray<Float> cachedPrices = priceDatabase.getPrices(typeIDs, priceCacheTime);
+		
+		Log.d("PRICE SERVICE", "GOT VALUES FROM DATABASE FOR " + cachedPrices.size() + " ITEMS");
+		
+		/* If the returned SparseArray is of the same size as the Integer array then it contains all prices requested */
+		if (cachedPrices.size() == typeIDs.length) callback.onUpdate(cachedPrices);
+		else
+		{			
+			Log.d("PRICE SERVICE", "QUERYING SERVER FOR PRICES ON " + (typeIDs.length - cachedPrices.size()) + " ITEMS");
+			
+			Integer[] nonCachedTypeIDs = new Integer[typeIDs.length - cachedPrices.size()];
+			
+			int index = 0;
+			for (int typeID : typeIDs)
+			{
+				/* Check to if each typeID has a price in the cachedPrices SparseArray, 
+				 * if not add it to the Array of prices to be queried 
+				 */
+				if (cachedPrices.get(typeID) == null) 
+				{
+					nonCachedTypeIDs[index] = typeID;
+					++index;
+				}
+			}
+			
+			new PriceCheckTask(callback, cachedPrices, context).execute(nonCachedTypeIDs);
+		}
 	}
 }

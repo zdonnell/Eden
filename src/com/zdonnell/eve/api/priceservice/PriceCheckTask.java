@@ -24,8 +24,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.zdonnell.eve.api.APICallback;
@@ -38,9 +38,15 @@ public class PriceCheckTask extends AsyncTask<Integer, Integer, SparseArray<Floa
 	
 	private APICallback<SparseArray<Float>> callback;
 	
-	public PriceCheckTask(APICallback<SparseArray<Float>> callback)
+	private SparseArray<Float> cachedPrices;
+	
+	private PriceDatabase priceDatabase;
+	
+	public PriceCheckTask(APICallback<SparseArray<Float>> callback, SparseArray<Float> cachedPrices, Context context)
 	{
 		this.callback = callback;
+		this.cachedPrices = cachedPrices;
+		this.priceDatabase = new PriceDatabase(context);
 	}
 	
 	@Override
@@ -48,11 +54,16 @@ public class PriceCheckTask extends AsyncTask<Integer, Integer, SparseArray<Floa
 	{
 		SparseArray<Float> values = new SparseArray<Float>(typeIDs.length);
 		
+		/* 
+		 * break down the list of typeIDs into smaller chunks to query individually, it may be faster to send one bulk request
+		 * TODO determine this
+		 */
 		ArrayList<int[]> chunks = chunkIDs(typeIDs);
 		
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost(apiURL);
 		
+		/* Query the server with each chunk */
 		for (int[] chunk : chunks)
 		{			
 			List<NameValuePair> postData = new ArrayList<NameValuePair>(chunk.length);
@@ -72,21 +83,36 @@ public class PriceCheckTask extends AsyncTask<Integer, Integer, SparseArray<Floa
 			
 		}
 				
+		priceDatabase.setPrices(values);
+		
 		return values;
 	}
 	
 	@Override
 	protected void onPostExecute(SparseArray<Float> values)
-	{
+	{		
+		/* Merge in the prices from the cache database (if there are any) before sending back the final set */
+		if (cachedPrices.size() > 0)
+		{
+			for (int i = 0; i < cachedPrices.size(); i++)
+			{
+				values.put(cachedPrices.keyAt(i), cachedPrices.valueAt(i));
+			}
+		}
+		
 		callback.onUpdate(values);
 	}
 	
+	/**
+	 * Splits an Integer array of typeIDs into smaller Arrays linked in an ArrayList.  Quantity of "chunked" arrays
+	 * is specified by {@link #chunkSize}
+	 * 
+	 * @param typeIDs
+	 * @return An {@link ArrayList} of int arrays ("chunks")
+	 */
 	private ArrayList<int[]> chunkIDs(Integer[] typeIDs)
 	{
-
 		int chunkCount = (int) Math.ceil((float) typeIDs.length / (float) chunkSize);
-		Log.d("PRICE CHECK TASK", "CHUNK COUNT: " + chunkCount);
-
 		
 		ArrayList<int[]> chunkedIDs = new ArrayList<int[]>(chunkCount);
 		
@@ -99,11 +125,10 @@ public class PriceCheckTask extends AsyncTask<Integer, Integer, SparseArray<Floa
 			{
 				int truncatedChunkSize = chunkSize - ((chunkNumber * chunkSize) - typeIDs.length);
 				chunk = new int[truncatedChunkSize];
-				
-				Log.d("PRICE CHECK TASK", "TRUNCATED CUNK SIZE: " + truncatedChunkSize);
 			}
 			else chunk = new int[chunkSize];
 			
+			/* Fill in the chunk with appropriate values */
 			for (int i = 0; i < chunk.length; i++)
 			{
 				chunk[i] = typeIDs[((chunkNumber - 1) * chunkSize) + i];

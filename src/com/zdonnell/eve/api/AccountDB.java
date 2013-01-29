@@ -2,11 +2,11 @@ package com.zdonnell.eve.api;
 
 import java.util.ArrayList;
 
-import com.zdonnell.eve.api.account.EveCharacter;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.zdonnell.eve.api.account.EveCharacter;
 
 public class AccountDB {
 

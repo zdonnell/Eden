@@ -12,7 +12,6 @@ import android.content.Context;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.APIObject;
-import com.zdonnell.eve.api.BaseRequest;
 import com.zdonnell.eve.api.ResourceManager;
 import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
 

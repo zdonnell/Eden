@@ -21,11 +21,11 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.w3c.dom.Document;
 
-import com.zdonnell.eve.api.ResourceRequestMonitor.RequestNotActiveException;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.zdonnell.eve.api.ResourceRequestMonitor.RequestNotActiveException;
 
 /**
  * Class to handle the storage and correct access of API Resources
