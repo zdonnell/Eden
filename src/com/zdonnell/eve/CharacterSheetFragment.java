@@ -25,10 +25,12 @@ import android.widget.TextView;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.character.APICharacter;
+import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.CharacterInfo;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.api.character.Skill;
+import com.zdonnell.eve.api.priceservice.PriceService;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.helpers.Tools;
 
@@ -106,6 +108,8 @@ public class CharacterSheetFragment extends Fragment {
     private ArrayList<QueuedSkill> skillQueue;
     private CharacterSheet characterSheet;
     private CharacterInfo characterInfo;
+    
+    private AssetsEntity[] assets;
     
     private static HashMap<Integer, String> skillLevelMap = new HashMap<Integer, String>();
     
@@ -259,6 +263,16 @@ public class CharacterSheetFragment extends Fragment {
 			public void onUpdate(CharacterInfo pCharacterInfo) 
 			{
 				characterInfo = pCharacterInfo;
+				obtainedCharacterInfoSheet();
+			}
+    	});
+    	
+    	character.getAssetsList(new APICallback<AssetsEntity[]>() 
+    	{
+			@Override
+			public void onUpdate(AssetsEntity[] pAssets) 
+			{
+				assets = pAssets;
 				obtainedCharacterInfoSheet();
 			}
     	});
@@ -422,7 +436,85 @@ public class CharacterSheetFragment extends Fragment {
 		}
 
 		/* Assets */
+		/* if (subTexts[ASSETS] != null && assets != null && assets.length > 0) 
+		{
+			ArrayList<Integer> uniqueIDList = new ArrayList<Integer>();
+			getUniqueAssetsTypeIDs(assets, uniqueIDList);
+			
+			Integer[] uniqueTypeIDs = new Integer[uniqueIDList.size()];
+			uniqueIDList.toArray(uniqueTypeIDs);
+			
+			PriceService.getInstance(context).getValues(uniqueTypeIDs, new APICallback<SparseArray<Float>>() 
+			{
+				@Override
+				public void onUpdate(SparseArray<Float> priceValues) 
+				{
+					subTexts[ASSETS].setText(getAssetsCount(assets) + " items (" + priceValues.size() + " ISK)");
+				}
+			});
+		} */
+	}
+	
+	private void getUniqueAssetsTypeIDs(AssetsEntity[] assets, ArrayList<Integer> returnedList)
+	{		
+		for (AssetsEntity entity : assets)
+		{
+			if (entity.containsAssets())
+			{
+				ArrayList<AssetsEntity> containedAssetsList = entity.getContainedAssets();
+				AssetsEntity[] containedAssetsArray = new AssetsEntity[containedAssetsList.size()];
+				containedAssetsList.toArray(containedAssetsArray);
+				
+				getUniqueAssetsTypeIDs(containedAssetsArray, returnedList);
+			}
+			
+			if (entity instanceof AssetsEntity.Item)
+			{
+				AssetsEntity.Item item = (AssetsEntity.Item) entity;
+				int typeID = item.attributes().typeID;
+				
+				if (!returnedList.contains(typeID)) returnedList.add(typeID);
+			}
+		}
+	}
+	
+	private int getAssetsCount(AssetsEntity[] assets)
+	{
+		int assetsCount = 0;
 		
+		for (AssetsEntity entity : assets)
+		{
+			if (entity instanceof AssetsEntity.Station)
+			{
+				AssetsEntity.Station station = (AssetsEntity.Station) entity;
+
+				if (station.containsAssets())
+				{
+					ArrayList<AssetsEntity> containedAssetsList = station.getContainedAssets();
+					AssetsEntity[] containedAssetsArray = new AssetsEntity[containedAssetsList.size()];
+					containedAssetsList.toArray(containedAssetsArray);
+							
+					assetsCount += getAssetsCount(containedAssetsArray);
+				}
+			}
+			else if (entity instanceof AssetsEntity.Item)
+			{
+				AssetsEntity.Item item = (AssetsEntity.Item) entity;
+				
+				assetsCount++;
+
+				if (item.containsAssets())
+				{
+					ArrayList<AssetsEntity> containedAssetsList = item.getContainedAssets();
+					AssetsEntity[] containedAssetsArray = new AssetsEntity[containedAssetsList.size()];
+					containedAssetsList.toArray(containedAssetsArray);
+							
+					assetsCount += getAssetsCount(containedAssetsArray);
+				}
+			}
+		}
+		
+		return assetsCount;
 	}
 	
 	private class SkillTimeRemainingCountdown extends CountDownTimer

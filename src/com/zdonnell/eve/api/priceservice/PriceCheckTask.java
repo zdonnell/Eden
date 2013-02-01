@@ -26,6 +26,7 @@ import org.w3c.dom.NodeList;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.zdonnell.eve.api.APICallback;
@@ -164,6 +165,8 @@ public class PriceCheckTask extends AsyncTask<Integer, Integer, SparseArray<Floa
 	 */
 	private Document buildDocument(String xmlString) 
 	{
+		Log.d("RESPONSE", xmlString);
+		
 		Document xmlDoc = null;
 		DocumentBuilderFactory factory;
 		DocumentBuilder domBuilder;

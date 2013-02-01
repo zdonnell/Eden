@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -41,42 +42,31 @@ public class PriceDatabase {
 	public SparseArray<Float> getPrices(Integer[] typeIDs, long validCacheAge)
 	{
 		SparseArray<Float> returnSparseArray = new SparseArray<Float>(typeIDs.length);
-		
-		String[] typeIDStrings = new String[typeIDs.length];	
- 		String whereClause = TABLE_ID + " = (?";
+		 		
+ 		Cursor c;
  		
  		for (int i = 0; i < typeIDs.length; i++)
  		{
- 			/* Convert the array of int typeIDs to String typeIDs for use by the query builder */
- 			typeIDStrings[i] = String.valueOf(typeIDs[i]);
- 			
- 			/* append the correct number of ? values for the query builder to the whereClause */
- 	 		if (i != 0) whereClause += " OR ?";
+ 	 		c = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + TABLE_ID + " = ?", new String[]{ String.valueOf(typeIDs[i]) });
+ 	 		
+ 	 		if (c.moveToFirst())
+ 	 		{
+ 	 			int typeID = c.getInt(0);
+ 				float price = c.getFloat(1);
+ 				long timeSet = c.getLong(2);
+ 				
+ 				/* 
+ 				 * If the entry for the typeID is older than required by validCacheAge, don't enter it into the sparse array.
+ 				 * A non entry will force the PriceService to query the price server for it
+ 				 */
+ 				if (System.currentTimeMillis() - validCacheAge < timeSet)
+ 				{
+ 					returnSparseArray.put(typeID, price);
+ 				}
+ 	 		}
+ 	 		
+ 	 		c.close();
  		}
- 		
- 		whereClause += ")";
-		
- 		Log.d("PRICE DATABASE", "Requested Values: " + typeIDStrings.length);
- 		
-		Cursor c = db.query(TABLE_NAME, new String[] { TABLE_ID, TABLE_PRICE, TABLE_DATE_SET }, whereClause, typeIDStrings, null, null, TABLE_ID);
-		
-		while (c.moveToNext())
-		{			
-			int typeID = c.getInt(0);
-			float price = c.getFloat(1);
-			long timeSet = c.getLong(2);
-			
-			/* 
-			 * If the entry for the typeID is older than required by validCacheAge, don't enter it into the sparse array.
-			 * A non entry will force the PriceService to query the price server for it
-			 */
-			if (System.currentTimeMillis() - validCacheAge < timeSet)
-			{
-				returnSparseArray.put(typeID, price);
-			}
-		}
-		
-		c.close();
 		
 		return returnSparseArray;
 	}
@@ -121,7 +111,7 @@ public class PriceDatabase {
 			{
 				db.insertOrThrow(TABLE_NAME, null, tempPriceTypeID);
 			}
-			catch (SQLException e)
+			catch (SQLiteConstraintException e)
 			{
 				db.replace(TABLE_NAME, null, tempPriceTypeID);
 			}

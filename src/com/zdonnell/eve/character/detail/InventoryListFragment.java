@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,7 +78,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
     {
     	context = inflater.getContext();
-    	RelativeLayout inflatedView = (RelativeLayout) inflater.inflate(R.layout.char_detail_assets, container, false);
+    	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets, container, false);
     	
     	itemGridView = (GridView) inflatedView.findViewById(R.id.char_detail_assets_list);
     	
@@ -133,7 +134,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 				}
 				
 				DecimalFormat twoDForm = new DecimalFormat("#,###.##");				
-				valueOfItems.setText("~" + twoDForm.format(totalValue) + " ISK");
+				valueOfItems.setText(twoDForm.format(totalValue) + " ISK");
 			}
 		});
 	}
@@ -260,8 +261,10 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 				{
 					if (((Integer) icon.getTag()).intValue() == typeID)
 					{											
-						icon.setLayoutParams(new LinearLayout.LayoutParams(text.getWidth(), text.getWidth()));
-						icon.setImageBitmap(bitmaps.get(typeID));						
+						icon.setImageBitmap(bitmaps.get(typeID));	
+						
+						int imageWidth = itemGridView.getColumnWidth() - (itemGridView.getPaddingLeft() + itemGridView.getPaddingRight());
+						icon.setLayoutParams(new LinearLayout.LayoutParams(imageWidth, imageWidth));
 					}
 				}
 			}, typeID);
