@@ -112,7 +112,6 @@ public class ResourceManager {
 		catch (ClientProtocolException e) { e.printStackTrace(); }
 		catch (IOException e) { e.printStackTrace(); }
 		
-		Log.d("RAW", rawResponse);
 		return rawResponse;
 	}
 	

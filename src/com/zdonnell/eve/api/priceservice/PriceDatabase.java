@@ -141,7 +141,7 @@ public class PriceDatabase {
 			String newTableQueryString = "create table " + TABLE_NAME + " ("
 					+ TABLE_ID + " integer primary key not null,"
 					+ TABLE_PRICE + " real,"
-					+ TABLE_DATE_SET + " integer)"
+					+ TABLE_DATE_SET + " integer,"
 					+ "UNIQUE (" + TABLE_ID + ") ON CONFLICT REPLACE);";
 	
 			db.execSQL(newTableQueryString);

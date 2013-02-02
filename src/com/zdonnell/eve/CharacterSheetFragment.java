@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +31,6 @@ import com.zdonnell.eve.api.character.CharacterInfo;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.api.character.Skill;
-import com.zdonnell.eve.api.priceservice.PriceService;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.helpers.Tools;
 
@@ -141,6 +141,7 @@ public class CharacterSheetFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
+  
     	context = inflater.getContext();
     	imageService = ImageService.getInstance(context);
     	
@@ -156,7 +157,7 @@ public class CharacterSheetFragment extends Fragment {
     	listView.setAdapter(new CharacterSheetAdapater(context, R.layout.character_sheet_item, items));
     	listView.setDivider(context.getResources().getDrawable(R.drawable.divider_grey));
     	listView.setDividerHeight(1);
-    	    	
+    	        	
     	return rootView;
     }
 
@@ -226,6 +227,10 @@ public class CharacterSheetFragment extends Fragment {
      */
 	public void setCharacter(APICharacter character) 
 	{
+    	long startTime = System.currentTimeMillis();
+		
+		Log.d("ON CREATE VIEW", "START TIME: " + System.currentTimeMillis()); 
+		
 		final ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
 		
 		imageService.getPortraits(new ImageService.IconObtainedCallback() 
@@ -267,7 +272,7 @@ public class CharacterSheetFragment extends Fragment {
 			}
     	});
     	
-    	character.getAssetsList(new APICallback<AssetsEntity[]>() 
+    	/*character.getAssetsList(new APICallback<AssetsEntity[]>() 
     	{
 			@Override
 			public void onUpdate(AssetsEntity[] pAssets) 
@@ -275,7 +280,9 @@ public class CharacterSheetFragment extends Fragment {
 				assets = pAssets;
 				obtainedCharacterInfoSheet();
 			}
-    	});
+    	});*/
+    	
+		Log.d("SET CHARACTER", "TIME: " + (System.currentTimeMillis() - startTime)); 
 	}
 	
 	private void configureSkillQueueTimer()
@@ -349,7 +356,6 @@ public class CharacterSheetFragment extends Fragment {
 			
 			return preparedView;
 		}
-		
 	}
 	
 	/**
@@ -378,6 +384,8 @@ public class CharacterSheetFragment extends Fragment {
 			final ImageView currentShipIcon = (ImageView) rootView.findViewById(R.id.current_ship_icon);
 
 			currentShipName.setText(characterInfo.getCurShipInfo().getName() + " (" + characterInfo.getCurShipInfo().getTypeName() + ")");
+			currentShipName.setSelected(true);
+			currentShipName.setSingleLine(true);
 			currentLocation.setText(characterInfo.getLocation());
 		
 			final int shipTypeID = characterInfo.getCurShipInfo().getTypeID();

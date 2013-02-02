@@ -81,6 +81,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets, container, false);
     	
     	itemGridView = (GridView) inflatedView.findViewById(R.id.char_detail_assets_list);
+    	itemGridView.setNumColumns(4);
     	
     	parentAssetName = (TextView) inflatedView.findViewById(R.id.char_detail_assets_inventory_parentName);
     	itemCount = (TextView) inflatedView.findViewById(R.id.char_detail_assets_inventory_itemCount);
@@ -216,7 +217,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 						listAssets.toArray(subAssets);
 						
 						parentFragment.setCurrentParentName(typeNames.get(assetItem.attributes().typeID));
-						parentFragment.updateChild(subAssets, 1);
+						parentFragment.updateChild(subAssets, 1, false);
 					}
 				}
 			});
@@ -263,7 +264,9 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 					{											
 						icon.setImageBitmap(bitmaps.get(typeID));	
 						
-						int imageWidth = itemGridView.getColumnWidth() - (itemGridView.getPaddingLeft() + itemGridView.getPaddingRight());
+						float colWidthWithPadding = (float) itemGridView.getWidth() / (float) itemGridView.getNumColumns();
+						int imageWidth = (int) (colWidthWithPadding - (itemGridView.getPaddingLeft() + itemGridView.getPaddingRight()));
+						
 						icon.setLayoutParams(new LinearLayout.LayoutParams(imageWidth, imageWidth));
 					}
 				}

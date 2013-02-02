@@ -42,6 +42,7 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="40dp"
 	    android:textColor="#424242"
+	    android:textSize="12sp"
 	    android:gravity="center"
 	    android:maxLines="2"
 	    />

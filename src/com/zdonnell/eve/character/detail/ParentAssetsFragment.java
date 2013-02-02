@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,10 @@ import com.zdonnell.eve.api.character.AssetsEntity;
 
 public class ParentAssetsFragment extends Fragment {
     
-    private APICharacter character;
+    private final static int STATION = 0;
+    private final static int ASSET = 1;
+	
+	private APICharacter character;
         
     private Context context;
     
@@ -28,6 +32,8 @@ public class ParentAssetsFragment extends Fragment {
     private float viewWidth;
             
     private Stack<AssetsEntity[]> parentStack = new Stack<AssetsEntity[]>();
+    
+    private AssetsEntity[] currentAssets;
     
     private IAssetsSubFragment childFragment;
     
@@ -69,6 +75,7 @@ public class ParentAssetsFragment extends Fragment {
 			public void onUpdate(AssetsEntity[] locationArray) 
 			{
 				childFragment.assetsUpdated(locationArray);
+				currentAssets = locationArray;
 				//calculateAssetValue(locationArray);
 			}
     	});   	
@@ -120,33 +127,40 @@ public class ParentAssetsFragment extends Fragment {
     	return nestedTypeIDs;
     }*/
     
-    public void updateChild(AssetsEntity[] newAssetsSet, int type)
+    public void updateChild(AssetsEntity[] newAssetsSet, int type, boolean isBack)
     {
     	FragmentTransaction loadNextAssets = this.getChildFragmentManager().beginTransaction();
     	IAssetsSubFragment nextFragment = null;
     	
     	switch (type)
     	{
-    	case 0: // Station
+    	case STATION: // Station
     		nextFragment = new StationListFragment();
     		break;
-    	case 1: // Item
+    	case ASSET: // Item
     		nextFragment = new InventoryListFragment();
     		break;
     	}
     	
     	nextFragment.assetsUpdated(newAssetsSet);
+    	
+    	if (currentAssets != null && !isBack) parentStack.push(currentAssets);
+    	currentAssets = newAssetsSet;
+    	
     	nextFragment.setParent(this);
     	
     	loadNextAssets.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) nextFragment);
     	loadNextAssets.commit();
     }
 
-	public boolean backKeyPressed() {
-		
+	public boolean backKeyPressed() 
+	{
 		if (!parentStack.empty()) 
     	{
-    		
+			AssetsEntity[] assets = parentStack.pop();
+			updateChild(assets, parentStack.isEmpty() ? STATION : ASSET, true);
+			
+			return true;
     	}
 		
 		return false;

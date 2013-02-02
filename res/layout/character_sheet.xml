@@ -118,6 +118,11 @@
 			        android:textSize="12sp"
 			        android:textColor="#222"
 			        android:textStyle="bold"
+			        android:lines="1"
+				    android:ellipsize="marquee"
+				    android:fadingEdge="horizontal"
+				    android:marqueeRepeatLimit="marquee_forever"
+				    android:scrollHorizontally="true"
 			        android:text="Test"
 			        />
 			    <TextView

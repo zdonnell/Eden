@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -184,7 +185,11 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     		if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
     		{
     			keyPressSwallowed = mSectionsPagerAdapter.assetsFragment().backKeyPressed();
+        		Log.d("TESTTTEST", "!!!!TEST!!!!");
+
     		}
+    		
+    		Log.d("TESTTTEST", "!!!!TEST!!!!");
         }
     	
     	if (!keyPressSwallowed) return super.onKeyDown(keyCode, event);

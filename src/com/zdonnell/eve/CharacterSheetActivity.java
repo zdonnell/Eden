@@ -3,6 +3,7 @@ package com.zdonnell.eve;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
@@ -33,6 +34,7 @@ public class CharacterSheetActivity extends BaseActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         setContentView(R.layout.activity_sheetitem_list);
         
 		setSlidingActionBarEnabled(true);
@@ -41,14 +43,15 @@ public class CharacterSheetActivity extends BaseActivity
         assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
         
         getActionBar().setTitle(new CharacterDB(this).getCharacterName(assembledChar.id()));
-        
+                
         ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar);
-        
+                
         if (findViewById(R.id.sheetitem_detail_container) != null) 
         {
             mTwoPane = true;
             ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setActivateOnItemClick(true);
         }
+        
     }
 
     @Override
