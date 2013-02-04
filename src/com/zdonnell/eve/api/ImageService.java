@@ -342,6 +342,8 @@ public class ImageService {
 		
 		ResourceRequestMonitor.Request request;
 		
+		SparseArray<Bitmap> bitmapsLoaded;
+		
 		public IconLoader(int type)
 		{
 			this.type = type;
@@ -359,9 +361,8 @@ public class ImageService {
 			request = new ResourceRequestMonitor.Request(ids.length, this);
 			ResourceRequestMonitor.getInstance(context).registerRequest(request);
 			
-			SparseArray<Bitmap> bitmapsLoaded = new SparseArray<Bitmap>(ids.length);
+			bitmapsLoaded = new SparseArray<Bitmap>(ids.length);
 			
-			int count = 0;
 			for (int id : ids)
 			{
 				Bitmap bitmapLoaded = null;
@@ -379,17 +380,21 @@ public class ImageService {
 				if (bitmapLoaded != null) bitmapCaches[type].put(id, bitmapLoaded);
 				bitmapsLoaded.put(id, bitmapLoaded);
 				
-				publishProgress(count);
-				++count;
+				publishProgress(id);
 			}
 			return bitmapsLoaded;
 		}
 		
 		@Override
-		protected void onProgressUpdate(Integer... progress)
+		protected void onProgressUpdate(Integer... id)
 		{
-			try { ResourceRequestMonitor.getInstance(context).giveProgressUpdate(request, progress[0]); } 
-			catch (RequestNotActiveException e) { e.printStackTrace(); }
+			if (pendingRequests.get(type).get(id[0]) != null && pendingRequests.get(type).get(id[0]).size() > 0)
+			{
+				SparseArray<Bitmap> bitmapJustLoaded = new SparseArray<Bitmap>();
+				bitmapJustLoaded.put(id[0], bitmapsLoaded.get(id[0]));
+				
+				for (IconObtainedCallback request : pendingRequests.get(type).get(id[0])) request.iconsObtained(bitmapJustLoaded);
+			}
 		}
 		
 		@Override

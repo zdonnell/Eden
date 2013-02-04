@@ -124,7 +124,7 @@ public class AttributesFragment extends Fragment {
 			LinearLayout preparedView; 
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			
-			/* Determine if we recyle the old view, or inflate a new one */
+			/* Determine if we recycle the old view, or inflate a new one */
 			if (convertView == null) preparedView = (LinearLayout) inflater.inflate(resourceID, parent, false);
 			else preparedView = (LinearLayout) convertView;
 				

@@ -78,13 +78,7 @@ public class ResourceManager {
 	@SuppressWarnings("unchecked")	
 	public void get(APIRequestWrapper rw)
 	{		
-		if (cacheDatabase.cacheExists(rw.resourceURL, rw.uniqueIDs))
-		{
-			String cachedResource = cacheDatabase.getCachedResource(rw.resourceURL, rw.uniqueIDs);
-			rw.apiCallback.onUpdate(rw.parser.parse(buildDocument(cachedResource)));
-
-			if (cacheDatabase.cacheExpired(rw.resourceURL, rw.uniqueIDs)) new APIServerQuery(rw).execute();
-		}
+		if (cacheDatabase.cacheExists(rw.resourceURL, rw.uniqueIDs)) new CacheDatabaseQuery(rw).execute();
 		else new APIServerQuery(rw).execute();
 	}
 	
@@ -145,13 +139,39 @@ public class ResourceManager {
 		return xmlDoc;
 	}
 	
+	private class CacheDatabaseQuery extends AsyncTask<String, Integer, Document>
+	{
+		private APIRequestWrapper rw;
+		
+		public CacheDatabaseQuery(APIRequestWrapper rw)
+		{
+			this.rw = rw;
+		}
+		
+		@Override
+		protected Document doInBackground(String... params) 
+		{
+			String cachedResource = cacheDatabase.getCachedResource(rw.resourceURL, rw.uniqueIDs);	
+			return buildDocument(cachedResource);
+		}
+		
+		@SuppressWarnings("unchecked")
+		@Override
+		protected void onPostExecute(Document queriedResource)
+		{
+			rw.apiCallback.onUpdate(rw.parser.parse(queriedResource));
+			if (cacheDatabase.cacheExpired(rw.resourceURL, rw.uniqueIDs)) new APIServerQuery(rw).execute();
+		}
+		
+	}
+	
 	/**
 	 * Class to Asynchronously query the API Server for resource requests
 	 * 
 	 * @author Zach
 	 *
 	 */
-	private class APIServerQuery extends AsyncTask<String, Integer, String> {
+	private class APIServerQuery extends AsyncTask<String, Integer, Document> {
 
 		APIRequestWrapper rw;
 		
@@ -166,7 +186,7 @@ public class ResourceManager {
 		}
 		
 		@Override
-		protected String doInBackground(String... params) 
+		protected Document doInBackground(String... params) 
 		{
 			ArrayList<NameValuePair> assembledPOSTData = new ArrayList<NameValuePair>();
 			for (NameValuePair nvp : rw.uniqueIDs) assembledPOSTData.add(nvp);
@@ -177,26 +197,28 @@ public class ResourceManager {
 				assembledPOSTData.add(new BasicNameValuePair("vCode", rw.credentials.verificationCode));
 			}
 			
-			return queryResource(rw.resourceURL, assembledPOSTData);
+			String queriedResource = queryResource(rw.resourceURL, assembledPOSTData);
+			
+			NameValuePair[] newUniqueIDs = rw.uniqueIDs;
+			if (rw.uniqueIDs.length == 0 && rw.credentials != null) 
+			{
+				newUniqueIDs = new BasicNameValuePair[] { new BasicNameValuePair("keyID", String.valueOf(rw.credentials.keyID))};
+			}
+			cacheDatabase.updateCache(rw.resourceURL, newUniqueIDs, queriedResource);
+					
+			return buildDocument(queriedResource);
 		}
 		
 		@SuppressWarnings("unchecked")
 		@Override
-		protected void onPostExecute(String queriedResource)
+		protected void onPostExecute(Document queriedResource)
 		{
 			try { ResourceRequestMonitor.getInstance(context).requestCompleted(request); } 
 			catch (RequestNotActiveException e) { e.printStackTrace(); }
 			
-			if (!queriedResource.isEmpty()) 
+			if (queriedResource != null) 
 			{
-				rw.apiCallback.onUpdate(rw.parser.parse(buildDocument(queriedResource)));
-
-				NameValuePair[] newUniqueIDs = rw.uniqueIDs;
-				if (rw.uniqueIDs.length == 0 && rw.credentials != null) 
-				{
-					newUniqueIDs = new BasicNameValuePair[] { new BasicNameValuePair("keyID", String.valueOf(rw.credentials.keyID))};
-				}
-				cacheDatabase.updateCache(rw.resourceURL, newUniqueIDs, queriedResource);
+				rw.apiCallback.onUpdate(rw.parser.parse(queriedResource));
 			}
 		}
 	}

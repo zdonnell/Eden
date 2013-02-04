@@ -35,7 +35,6 @@
 		    android:layout_height="wrap_content"
 		    android:layout_marginTop="-4dp"
 		    android:textSize="12sp"
-		    android:text="Sub Text here"
 		    android:textColor="#424242"/>
 	</LinearLayout>	
 </LinearLayout>

@@ -1,5 +1,6 @@
 package com.zdonnell.eve.character.detail;
 
+import java.util.Arrays;
 import java.util.Stack;
 
 import android.content.Context;
@@ -74,6 +75,7 @@ public class ParentAssetsFragment extends Fragment {
 			@Override
 			public void onUpdate(AssetsEntity[] locationArray) 
 			{
+				Arrays.sort(locationArray, new InventorySort.Count());
 				childFragment.assetsUpdated(locationArray);
 				currentAssets = locationArray;
 				//calculateAssetValue(locationArray);
