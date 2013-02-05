@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -113,6 +114,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -159,7 +161,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         		fragment = new AttributesFragment(assembledChar);
         		break;
         	}
-        	        	
+        	        	        	
 			return fragment;
         }
 
@@ -185,14 +187,18 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     		if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
     		{
     			keyPressSwallowed = mSectionsPagerAdapter.assetsFragment().backKeyPressed();
-        		Log.d("TESTTTEST", "!!!!TEST!!!!");
-
     		}
-    		
-    		Log.d("TESTTTEST", "!!!!TEST!!!!");
+
         }
     	
     	if (!keyPressSwallowed) return super.onKeyDown(keyCode, event);
 		else return true;
+    }
+    
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu)
+    {
+    	
+    	return true;
     }
 }
