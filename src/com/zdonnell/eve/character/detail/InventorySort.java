@@ -6,6 +6,9 @@ import com.zdonnell.eve.api.character.AssetsEntity;
 
 public class InventorySort 
 {
+	public static final int COUNT = 0;
+	public static final int COUNT_REVERSE = 1;
+	
 	public static class Count implements Comparator<AssetsEntity>
 	{
 		@Override

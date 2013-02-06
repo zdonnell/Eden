@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -61,6 +62,8 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	
 	private TextView parentAssetName, itemCount, valueOfItems;
 	
+	private InventoryArrayAdapter adapter;
+	
 	@Override
 	public void setParent(ParentAssetsFragment parent)
 	{
@@ -97,10 +100,27 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	
 	private void updateGridView()
 	{
-		calculatePrices(currentItemList);
-		itemCount.setText(currentItemList.length + " items");
-		itemGridView.setAdapter(new InventoryArrayAdapter(context, stationRowResourceID, currentItemList));
-		initialLoadComplete = true;
+		if (adapter == null)
+		{
+			calculatePrices(currentItemList);
+			itemCount.setText(currentItemList.length + " items");
+			
+			adapter = new InventoryArrayAdapter(context, stationRowResourceID, currentItemList);
+			
+			itemGridView.setAdapter(adapter);
+			initialLoadComplete = true;
+		}
+		
+		Log.d("TEST", "TESTESTETESTESTESTESTEST");
+
+		parentFragment.getActivity().runOnUiThread(new Runnable() 
+		{
+	        @Override
+	        public void run() 
+	        {
+	        	adapter.notifyDataSetChanged();
+	        }
+	    });
 	}
 	
 	private void calculatePrices(final AssetsEntity[] items)
@@ -145,9 +165,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 		private int layoutResID;
 		
 		private LayoutInflater inflater;
-		
-		private AssetsEntity[] items;
-    	
+		    	
     	SparseArray<String> typeNames;
     	SparseArray<Bitmap> typeIcons;
     	
@@ -162,7 +180,6 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			
 			inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			
-			this.items = items;
 			this.layoutResID = layoutResourceID;
 			
 			typeNames = new SparseArray<String>(items.length);

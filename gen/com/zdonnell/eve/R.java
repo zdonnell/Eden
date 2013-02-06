@@ -254,6 +254,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int slidingmenumain=0x7f05004a;
         public static final int slidingmenurowicon=0x7f05004c;
         public static final int slidingmenurowtitle=0x7f05004d;
+        public static final int sort_by=0x7f050051;
         public static final int station_assets_list_item_count=0x7f050014;
         public static final int station_assets_list_item_name=0x7f050013;
         public static final int textView3=0x7f050042;
@@ -316,6 +317,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int activity_main_dual=0x7f0a0003;
         public static final int activity_main_strip=0x7f0a0004;
         public static final int activity_test=0x7f0a0005;
+        public static final int char_detail_assets_actionbar_items=0x7f0a0006;
     }
     public static final class string {
         /**  Account 

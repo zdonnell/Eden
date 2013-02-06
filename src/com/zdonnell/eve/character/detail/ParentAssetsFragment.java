@@ -1,6 +1,8 @@
 package com.zdonnell.eve.character.detail;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Stack;
 
 import android.content.Context;
@@ -153,6 +155,14 @@ public class ParentAssetsFragment extends Fragment {
     	
     	loadNextAssets.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) nextFragment);
     	loadNextAssets.commit();
+    }
+    
+    public void updateSort(Comparator<AssetsEntity> sorter, boolean reverse)
+    {
+    	if (reverse) Arrays.sort(currentAssets, Collections.reverseOrder(sorter));
+    	else Arrays.sort(currentAssets, sorter);
+    	
+    	childFragment.assetsUpdated(currentAssets);
     }
 
 	public boolean backKeyPressed() 

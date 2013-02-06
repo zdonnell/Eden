@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item android:id="@+id/sort_by"
+          android:title="SORT BY"
+          android:showAsAction="ifRoom|withText"
+           />
+    <!-- <item android:id="@+id/settings"
+          android:icon="@drawable/settings"
+          android:title="@string/settings"
+          android:showAsAction="ifRoom|withText"
+          />
+     <item android:id="@+id/main_settings"
+          android:icon="@drawable/settings"
+          android:title="@string/settings"
+          android:showAsAction="ifRoom" /> -->
+</menu>

@@ -1,9 +1,15 @@
 package com.zdonnell.eve;
 
+import java.util.Comparator;
+
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -13,13 +19,17 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
+import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.character.detail.AttributesFragment;
+import com.zdonnell.eve.character.detail.InventorySort;
 import com.zdonnell.eve.character.detail.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.WalletFragment;
@@ -37,7 +47,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 	}
 
 	private APICharacter assembledChar;
-	
+		
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
      * sections. We use a {@link android.support.v4.app.FragmentPagerAdapter} derivative, which will
@@ -177,6 +187,15 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         }
     }
     
+    private void updateSort(Comparator<AssetsEntity> sorter, boolean reverse)
+    {
+    	if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.ASSETS)
+    	{
+    		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
+    		assetsFragment.updateSort(sorter, reverse);
+    	}
+    }
+    
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
@@ -196,9 +215,54 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     }
     
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu)
+    public boolean onCreateOptionsMenu(Menu menu)
     {
+    	super.onCreateOptionsMenu(menu);
+        switch (getActionBar().getSelectedNavigationIndex())
+        {
+        case CharacterSheetFragment.ASSETS:
+        	MenuInflater menuInflater = getMenuInflater();
+            menuInflater.inflate(R.menu.char_detail_assets_actionbar_items, menu);
+        	break;
+        }
     	
     	return true;
+    }
+    
+    public boolean onOptionsItemSelected (MenuItem item) {
+	    switch (item.getItemId())
+	    {
+	    case R.id.sort_by:
+	          new SortByDialog().show(getSupportFragmentManager(), "Sort By Dialog");
+	          break;
+	    }
+	    return true;
+    }
+    
+    private class SortByDialog extends DialogFragment
+    {
+    	@Override
+    	public Dialog onCreateDialog(Bundle savedInstanceState) {
+    	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    	    builder.setTitle("Sort By")
+    	           .setItems(new String[] { "One", "Two", "Three" },  new DialogInterface.OnClickListener() 
+		           {
+		               public void onClick(DialogInterface dialog, int which) 
+		               {
+			               switch (which)
+			               {
+			               case InventorySort.COUNT:
+			            	   updateSort(new InventorySort.Count(), false);
+			            	   break;
+			               case InventorySort.COUNT_REVERSE:
+			            	   updateSort(new InventorySort.Count(), true);
+			            	   break;
+			               }
+		               }
+		           }
+    	   );
+    	    
+    	    return builder.create();
+    	}
     }
 }
