@@ -152,15 +152,35 @@ public class ParentAssetsFragment extends Fragment {
     	currentAssets = newAssetsSet;
     	
     	nextFragment.setParent(this);
+    	childFragment = nextFragment;
     	
     	loadNextAssets.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) nextFragment);
     	loadNextAssets.commit();
     }
     
-    public void updateSort(Comparator<AssetsEntity> sorter, boolean reverse)
+    public void updateSort(int sortType)
     {
-    	if (reverse) Arrays.sort(currentAssets, Collections.reverseOrder(sorter));
-    	else Arrays.sort(currentAssets, sorter);
+    	switch (sortType)
+    	{
+    	case InventorySort.COUNT:
+    		Arrays.sort(currentAssets, new InventorySort.Count());
+    		break;
+    	case InventorySort.COUNT_REVERSE:
+    		Arrays.sort(currentAssets, Collections.reverseOrder(new InventorySort.Count()));
+    		break;
+    	case InventorySort.ALPHA:
+    		Arrays.sort(currentAssets, new InventorySort.Alpha(childFragment.getNames()));
+    		break;
+    	case InventorySort.ALPHA_REVERSE:
+    		Arrays.sort(currentAssets, Collections.reverseOrder(new InventorySort.Alpha(childFragment.getNames())));
+    		break;
+    	case InventorySort.VALUE:
+    		Arrays.sort(currentAssets, new InventorySort.Value(childFragment.getValues()));
+    		break;
+    	case InventorySort.VALUE_REVERSE:
+    		Arrays.sort(currentAssets, Collections.reverseOrder(new InventorySort.Value(childFragment.getValues())));
+    		break;
+    	}
     	
     	childFragment.assetsUpdated(currentAssets);
     }

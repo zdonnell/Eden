@@ -146,6 +146,7 @@ int id slidingmenulayout 0x7f05004b
 int id slidingmenumain 0x7f05004a
 int id slidingmenurowicon 0x7f05004c
 int id slidingmenurowtitle 0x7f05004d
+int id sort_by 0x7f050051
 int id station_assets_list_item_count 0x7f050014
 int id station_assets_list_item_name 0x7f050013
 int id textView3 0x7f050042
@@ -204,6 +205,7 @@ int menu activity_main 0x7f0a0002
 int menu activity_main_dual 0x7f0a0003
 int menu activity_main_strip 0x7f0a0004
 int menu activity_test 0x7f0a0005
+int menu char_detail_assets_actionbar_items 0x7f0a0006
 int string account_characters 0x7f080000
 int string app_name 0x7f080001
 int string character_grid_activity_title 0x7f080013

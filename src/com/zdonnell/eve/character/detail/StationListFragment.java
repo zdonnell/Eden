@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -133,4 +134,19 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 			return itemView;
 		}
 	}
+
+	@Override
+	public SparseArray<String> getNames() 
+	{
+		/* TODO fix up this method as soon as Station Names are being loaded correctly */
+		return null;
+	}
+
+	@Override
+	public SparseArray<Float> getValues() 
+	{
+		/* TODO fix up this method as soon as Station Values are being loaded correctly */
+		return null;
+	}
+
 }

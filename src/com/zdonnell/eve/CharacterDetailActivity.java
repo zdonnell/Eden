@@ -187,15 +187,6 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         }
     }
     
-    private void updateSort(Comparator<AssetsEntity> sorter, boolean reverse)
-    {
-    	if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.ASSETS)
-    	{
-    		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
-    		assetsFragment.updateSort(sorter, reverse);
-    	}
-    }
-    
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
@@ -242,21 +233,18 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     private class SortByDialog extends DialogFragment
     {
     	@Override
-    	public Dialog onCreateDialog(Bundle savedInstanceState) {
+    	public Dialog onCreateDialog(Bundle savedInstanceState) 
+    	{
     	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
     	    builder.setTitle("Sort By")
-    	           .setItems(new String[] { "One", "Two", "Three" },  new DialogInterface.OnClickListener() 
+    	           .setItems(InventorySort.sortNames, new DialogInterface.OnClickListener() 
 		           {
 		               public void onClick(DialogInterface dialog, int which) 
 		               {
-			               switch (which)
+		            	   if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.ASSETS)
 			               {
-			               case InventorySort.COUNT:
-			            	   updateSort(new InventorySort.Count(), false);
-			            	   break;
-			               case InventorySort.COUNT_REVERSE:
-			            	   updateSort(new InventorySort.Count(), true);
-			            	   break;
+			               		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
+			               		assetsFragment.updateSort(which);
 			               }
 		               }
 		           }

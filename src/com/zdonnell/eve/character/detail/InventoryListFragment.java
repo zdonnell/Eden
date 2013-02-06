@@ -49,6 +49,11 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	 */
 	private AssetsEntity[] currentItemList;
 	
+	private SparseArray<String> currentTypeNames;
+	
+	private SparseArray<Float> currentValues;
+
+	
 	/**
 	 * The main list view for the station list layout
 	 */
@@ -140,6 +145,8 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			@Override
 			public void onUpdate(SparseArray<Float> updatedData)
 			{				
+				currentValues = updatedData;
+				
 				double totalValue = 0;
 
 				for (AssetsEntity entity : items)
@@ -201,6 +208,8 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 					 */
 					for (int i = 0; i < typeIDs.length; i++) typeNames.put(typeIDs[i], retTypeNames.get(typeIDs[i]));
 					obtainedTypeNames();
+					
+					currentTypeNames = retTypeNames;
 				}
 			}, typeIDs);
 			
@@ -251,7 +260,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			{
 				int typeID = typeNameMappings.get(textView);
 				textView.setText(typeNames.get(typeID));
-			}
+			}			
 		}
 		
 		private void setupAsset(final LinearLayout rootView, AssetsEntity.Item item)
@@ -294,5 +303,17 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			
 			if (isPackaged) quantity.setText(String.valueOf(count));
 		}
+	}
+
+	@Override
+	public SparseArray<String> getNames() 
+	{			
+		return currentTypeNames;
+	}
+
+	@Override
+	public SparseArray<Float> getValues() 
+	{
+		return currentValues;
 	}
 }
