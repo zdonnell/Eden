@@ -30,6 +30,8 @@ import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.AssetsEntity.Item;
 import com.zdonnell.eve.api.priceservice.PriceService;
 import com.zdonnell.eve.eve.Eve;
+import com.zdonnell.eve.staticdata.api.StaticData;
+import com.zdonnell.eve.staticdata.api.TypeInfo;
 
 public class InventoryListFragment extends Fragment implements IAssetsSubFragment 
 {
@@ -193,10 +195,26 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			typeIcons = new SparseArray<Bitmap>(items.length);
 			
 			/* Pull the typeIDs from the array of assets into their own array */
-			final int[] typeIDs = new int[items.length];
+			final Integer[] typeIDs = new Integer[items.length];
 			for (int x = 0; x < items.length; x++) typeIDs[x] = items[x].attributes().typeID;
 			
-			/* get type names */
+			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>()
+			{
+				@Override
+				public void onUpdate(SparseArray<TypeInfo> retTypeInfo) 
+				{
+					/* 
+					 * The returned String array matches the order provided by the input typeID array.
+					 * This will pair them up in a SparseArray so the type name strings can be accessed by typeID
+					 */
+					for (int i = 0; i < typeIDs.length; i++) typeNames.put(typeIDs[i], retTypeInfo.get(typeIDs[i]).typeName);
+					obtainedTypeNames();
+					
+					currentTypeNames = typeNames;
+				}
+			}, typeIDs);
+			
+			/* get type names 
 			new Eve(context).getTypeName(new APICallback<SparseArray<String>>()
 			{
 				@Override
@@ -205,7 +223,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 					/* 
 					 * The returned String array matches the order provided by the input typeID array.
 					 * This will pair them up in a SparseArray so the type name strings can be accessed by typeID
-					 */
+					 
 					for (int i = 0; i < typeIDs.length; i++) typeNames.put(typeIDs[i], retTypeNames.get(typeIDs[i]));
 					obtainedTypeNames();
 					
@@ -213,8 +231,8 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 				}
 			}, typeIDs);
 			
-			/* "cache" type icons */
-			ImageService.getInstance(context).getTypes(null, typeIDs);
+			/* "cache" type icons 
+			ImageService.getInstance(context).getTypes(null, typeIDs);*/
 		}
 		
 		@Override
