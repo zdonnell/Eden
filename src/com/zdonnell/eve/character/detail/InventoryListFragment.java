@@ -108,7 +108,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	private void updateGridView()
 	{
 		if (adapter == null)
-		{
+		{	
 			calculatePrices(currentItemList);
 			itemCount.setText(currentItemList.length + " items");
 			
@@ -118,8 +118,6 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			initialLoadComplete = true;
 		}
 		
-		Log.d("TEST", "TESTESTETESTESTESTESTEST");
-
 		parentFragment.getActivity().runOnUiThread(new Runnable() 
 		{
 	        @Override
@@ -229,10 +227,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 					
 					currentTypeNames = retTypeNames;
 				}
-			}, typeIDs);
-			
-			/* "cache" type icons 
-			ImageService.getInstance(context).getTypes(null, typeIDs);*/
+			}, typeIDs);*/
 		}
 		
 		@Override
