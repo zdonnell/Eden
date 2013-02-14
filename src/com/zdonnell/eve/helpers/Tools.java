@@ -2,6 +2,7 @@ package com.zdonnell.eve.helpers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -122,5 +123,18 @@ public class Tools {
 		}
 		
 		return columns;
+	}
+	
+	public static Integer[] stripDuplicateIDs(Integer[] idsWithDups)
+	{
+		ArrayList<Integer> listOfNonDups = new ArrayList<Integer>(idsWithDups.length);
+		
+		for (int id : idsWithDups) if (!listOfNonDups.contains(id)) listOfNonDups.add(id);
+		
+		Integer[] idsWithoutDups = new Integer[listOfNonDups.size()];
+		
+		for (int i = 0; i < listOfNonDups.size(); ++i) idsWithoutDups[i] = listOfNonDups.get(i);
+		
+		return idsWithoutDups;
 	}
 }

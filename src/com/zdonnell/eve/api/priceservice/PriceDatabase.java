@@ -45,28 +45,34 @@ public class PriceDatabase {
 		 		
  		Cursor c;
  		
- 		for (int i = 0; i < typeIDs.length; i++)
+ 		String whereClause = TABLE_ID + " IN (?";
+		String[] typeIDStrings = new String[typeIDs.length];
+		
+		for (int i = 0; i < typeIDs.length; i++)	
+		{
+			if (i != typeIDs.length - 1) whereClause += ",?";
+			typeIDStrings[i] = String.valueOf(typeIDs[i]);
+		}
+		
+		c = db.query(TABLE_NAME, null, whereClause + ")", typeIDStrings, null, null, null);
+ 		
+ 		while (c.moveToNext())
  		{
- 	 		c = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + TABLE_ID + " = ?", new String[]{ String.valueOf(typeIDs[i]) });
- 	 		
- 	 		if (c.moveToFirst())
- 	 		{
- 	 			int typeID = c.getInt(0);
- 				float price = c.getFloat(1);
- 				long timeSet = c.getLong(2);
- 				
- 				/* 
- 				 * If the entry for the typeID is older than required by validCacheAge, don't enter it into the sparse array.
- 				 * A non entry will force the PriceService to query the price server for it
- 				 */
- 				if (System.currentTimeMillis() - validCacheAge < timeSet)
- 				{
- 					returnSparseArray.put(typeID, price);
- 				}
- 	 		}
- 	 		
- 	 		c.close();
+ 			int typeID = c.getInt(0);
+			float price = c.getFloat(1);
+			long timeSet = c.getLong(2);
+			
+			/* 
+			 * If the entry for the typeID is older than required by validCacheAge, don't enter it into the sparse array.
+			 * A non entry will force the PriceService to query the price server for it
+			 */
+			if (System.currentTimeMillis() - validCacheAge < timeSet)
+			{
+				returnSparseArray.put(typeID, price);
+			}
  		}
+ 		
+ 		c.close();
 		
 		return returnSparseArray;
 	}

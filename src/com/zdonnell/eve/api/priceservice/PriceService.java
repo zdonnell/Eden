@@ -5,6 +5,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.helpers.Tools;
 
 public class PriceService {
 	
@@ -39,21 +40,19 @@ public class PriceService {
 	}
 	
 	public void getValues(Integer[] typeIDs, APICallback<SparseArray<Float>> callback)
-	{		
-		SparseArray<Float> cachedPrices = priceDatabase.getPrices(typeIDs, priceCacheTime);
+	{	
+		Integer[] strippedTypeIDs = Tools.stripDuplicateIDs(typeIDs);
 		
-		Log.d("PRICE SERVICE", "GOT VALUES FROM DATABASE FOR " + cachedPrices.size() + " ITEMS");
-		
+		SparseArray<Float> cachedPrices = priceDatabase.getPrices(strippedTypeIDs, priceCacheTime);
+				
 		/* If the returned SparseArray is of the same size as the Integer array then it contains all prices requested */
-		if (cachedPrices.size() == typeIDs.length) callback.onUpdate(cachedPrices);
+		if (cachedPrices.size() == strippedTypeIDs.length) callback.onUpdate(cachedPrices);
 		else
-		{			
-			Log.d("PRICE SERVICE", "QUERYING SERVER FOR PRICES ON " + (typeIDs.length - cachedPrices.size()) + " ITEMS");
-			
-			Integer[] nonCachedTypeIDs = new Integer[typeIDs.length - cachedPrices.size()];
+		{						
+			Integer[] nonCachedTypeIDs = new Integer[strippedTypeIDs.length - cachedPrices.size()];
 			
 			int index = 0;
-			for (int typeID : typeIDs)
+			for (int typeID : strippedTypeIDs)
 			{
 				/* Check to if each typeID has a price in the cachedPrices SparseArray, 
 				 * if not add it to the Array of prices to be queried 

@@ -110,12 +110,15 @@ public class InventorySort
 		public int compare(AssetsEntity lhs, AssetsEntity rhs) 
 		{
 			if (lhs instanceof AssetsEntity.Item)
-			{
+			{				
 				AssetsEntity.Item leftItem = (AssetsEntity.Item) lhs;
 				AssetsEntity.Item rightItem = (AssetsEntity.Item) rhs;
 				
 				int lhID = leftItem.attributes().typeID;
 				int rhID = rightItem.attributes().typeID;
+				
+				if (values.get(lhID) == null) return 1;
+				if (values.get(rhID) == null) return -1;
 				
 				float lhValue = values.get(lhID) * leftItem.attributes().quantity;
 				float rhValue = values.get(rhID) * rightItem.attributes().quantity;

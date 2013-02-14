@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.util.SparseArray;
 
 public class StaticTypeDatabase 
@@ -48,26 +49,31 @@ public class StaticTypeDatabase
 		
 		Cursor c;
 		
-		/* TODO optimize this into a single query */
-		for (int i = 0; i < typeIDs.length; i++)
+		String whereClause = TABLE_ROW_ID + " IN (?";
+		String[] typeIDStrings = new String[typeIDs.length];
+		
+		for (int i = 0; i < typeIDs.length; i++)	
 		{
-			c = db.query(TABLE_NAME, null, TABLE_ROW_ID + " = ?", new String[] { String.valueOf(typeIDs[i]) }, null, null, null);
-			
-			/* TODO add check to see if the local data is "up to date" */
-			if (c.moveToFirst())
-			{
-				TypeInfo typeInfo = new TypeInfo();
-				typeInfo.typeID = typeIDs[i];
-				typeInfo.groupID = c.getInt(c.getColumnIndex(TABLE_ROW_GROUPID));
-				typeInfo.marketGroupID = c.getInt(c.getColumnIndex(TABLE_ROW_MARKETGROUPID));
-				typeInfo.typeName = c.getString(c.getColumnIndex(TABLE_ROW_TYPENAME));
-				typeInfo.description = c.getString(c.getColumnIndex(TABLE_ROW_DESCRIPTION));
-
-				typeInfoSet.put(typeIDs[i], typeInfo);
-			}
-			
-			c.close();
+			if (i != typeIDs.length - 1) whereClause += ",?";
+			typeIDStrings[i] = String.valueOf(typeIDs[i]);
 		}
+				
+		c = db.query(TABLE_NAME, null, whereClause + ")", typeIDStrings, null, null, null);
+
+		/* TODO add check to see if the local data is "up to date" */
+		while (c.moveToNext())
+		{
+			TypeInfo typeInfo = new TypeInfo();
+			typeInfo.typeID = c.getInt(c.getColumnIndex(TABLE_ROW_ID));
+			typeInfo.groupID = c.getInt(c.getColumnIndex(TABLE_ROW_GROUPID));
+			typeInfo.marketGroupID = c.getInt(c.getColumnIndex(TABLE_ROW_MARKETGROUPID));
+			typeInfo.typeName = c.getString(c.getColumnIndex(TABLE_ROW_TYPENAME));
+			typeInfo.description = c.getString(c.getColumnIndex(TABLE_ROW_DESCRIPTION));
+
+			typeInfoSet.put(typeInfo.typeID, typeInfo);
+		}
+		
+		c.close();
 		
 		return typeInfoSet;
 	}

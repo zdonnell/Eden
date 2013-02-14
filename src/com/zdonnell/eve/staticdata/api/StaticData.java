@@ -15,9 +15,11 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.helpers.Tools;
 
 public class StaticData {
 
@@ -30,7 +32,7 @@ public class StaticData {
 	
 	public void getTypeInfo(APICallback<SparseArray<TypeInfo>> callback, Integer... typeIDs)
 	{
-		new StaticTypeDatabaseRequest(callback).execute(typeIDs);	
+		new StaticTypeDatabaseRequest(callback).execute(Tools.stripDuplicateIDs(typeIDs));	
 	}
 	
 	
@@ -49,12 +51,12 @@ public class StaticData {
 		protected SparseArray<TypeInfo> doInBackground(Integer... typeIDs) 
 		{
 			requestedTypeIDs = typeIDs;
-			return typeDatabase.getTypeInfo(typeIDs);
+			return typeDatabase.getTypeInfo(requestedTypeIDs);
 		}
 		
 		@Override
 		protected void onPostExecute(SparseArray<TypeInfo> storedTypes)
-		{
+		{			
 			int amountOfTypesNotFound = requestedTypeIDs.length - storedTypes.size();
 			
 			/* compare with passed typeIDs array */
@@ -71,7 +73,7 @@ public class StaticData {
 						++unobtainedTypeIDsIndex;
 					}
 				}
-				
+								
 				/* Request the rest from the server, and let that AsyncTask finish the overall request */
 				new StaticTypeServerRequest(storedTypes, onCompleteRequestCallback).execute(unobtainedTypeIDs);
 			}
@@ -82,6 +84,7 @@ public class StaticData {
 			{
 				onCompleteRequestCallback.onUpdate(storedTypes);
 			}
+			
 		}
 	}
 	

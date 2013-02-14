@@ -6,7 +6,7 @@ public class TypeInfo {
 
 	public int groupID;
 	
-	public int marketGroupID;
+	public int marketGroupID = -1;
 	
 	public String typeName;
 	

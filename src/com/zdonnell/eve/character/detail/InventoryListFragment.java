@@ -51,7 +51,9 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	 */
 	private AssetsEntity[] currentItemList;
 	
-	private SparseArray<String> currentTypeNames;
+	private SparseArray<String> currentTypeNames = new SparseArray<String>();
+	
+	private SparseArray<TypeInfo> currentTypeInfo;
 	
 	private SparseArray<Float> currentValues;
 
@@ -109,10 +111,41 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	{
 		if (adapter == null)
 		{	
-			calculatePrices(currentItemList);
 			itemCount.setText(currentItemList.length + " items");
 			
+			Log.d("START UPDATE TIME", ""+System.currentTimeMillis());
+			
 			adapter = new InventoryArrayAdapter(context, stationRowResourceID, currentItemList);
+			
+			/* Pull the typeIDs from the array of assets into their own array */
+			final Integer[] typeIDs = new Integer[currentItemList.length];
+			for (int x = 0; x < currentItemList.length; x++) typeIDs[x] = currentItemList[x].attributes().typeID;
+			
+			Log.d("START UPDATE TIME 2", ""+System.currentTimeMillis());
+
+			
+			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>()
+			{
+				@Override
+				public void onUpdate(SparseArray<TypeInfo> retTypeInfo) 
+				{
+					Log.d("ON UPDATE TIME", ""+System.currentTimeMillis());
+					
+					/* 
+					 * The returned String array matches the order provided by the input typeID array.
+					 * This will pair them up in a SparseArray so the type name strings can be accessed by typeID
+					 */
+					for (int i = 0; i < typeIDs.length; i++) currentTypeNames.put(typeIDs[i], retTypeInfo.get(typeIDs[i]).typeName);
+					
+					Log.d("ON UPDATE TIME 2", ""+System.currentTimeMillis());
+
+					
+					currentTypeInfo = retTypeInfo;
+					adapter.obtainedTypeNames();
+					
+					calculatePrices(currentItemList);
+				}
+			}, typeIDs);
 			
 			itemGridView.setAdapter(adapter);
 			initialLoadComplete = true;
@@ -134,7 +167,8 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 		
 		for (int i = 0; i < items.length; i++)
 		{
-			if (!typeIDsList.contains(items[i].attributes().typeID)) typeIDsList.add(items[i].attributes().typeID);
+			int typeID = items[i].attributes().typeID;
+			if (!typeIDsList.contains(typeID) && currentTypeInfo.get(typeID).marketGroupID != -1) typeIDsList.add(typeID);
 		}
 		
 		Integer[] typeIDs = new Integer[typeIDsList.size()];
@@ -173,11 +207,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 		
 		private LayoutInflater inflater;
 		    	
-    	SparseArray<String> typeNames;
-    	SparseArray<Bitmap> typeIcons;
-    	
     	HashMap<TextView, Integer> typeNameMappings = new HashMap<TextView, Integer>();
-    	HashMap<ImageView, Integer> typeImageMappings = new HashMap<ImageView, Integer>();
     	
     	boolean typeNamesLoaded = false;
     	
@@ -186,48 +216,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			super(context, layoutResourceID, items);
 			
 			inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			
-			this.layoutResID = layoutResourceID;
-			
-			typeNames = new SparseArray<String>(items.length);
-			typeIcons = new SparseArray<Bitmap>(items.length);
-			
-			/* Pull the typeIDs from the array of assets into their own array */
-			final Integer[] typeIDs = new Integer[items.length];
-			for (int x = 0; x < items.length; x++) typeIDs[x] = items[x].attributes().typeID;
-			
-			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>()
-			{
-				@Override
-				public void onUpdate(SparseArray<TypeInfo> retTypeInfo) 
-				{
-					/* 
-					 * The returned String array matches the order provided by the input typeID array.
-					 * This will pair them up in a SparseArray so the type name strings can be accessed by typeID
-					 */
-					for (int i = 0; i < typeIDs.length; i++) typeNames.put(typeIDs[i], retTypeInfo.get(typeIDs[i]).typeName);
-					obtainedTypeNames();
-					
-					currentTypeNames = typeNames;
-				}
-			}, typeIDs);
-			
-			/* get type names 
-			new Eve(context).getTypeName(new APICallback<SparseArray<String>>()
-			{
-				@Override
-				public void onUpdate(SparseArray<String> retTypeNames) 
-				{
-					/* 
-					 * The returned String array matches the order provided by the input typeID array.
-					 * This will pair them up in a SparseArray so the type name strings can be accessed by typeID
-					 
-					for (int i = 0; i < typeIDs.length; i++) typeNames.put(typeIDs[i], retTypeNames.get(typeIDs[i]));
-					obtainedTypeNames();
-					
-					currentTypeNames = retTypeNames;
-				}
-			}, typeIDs);*/
+			this.layoutResID = layoutResourceID;			
 		}
 		
 		@Override
@@ -255,7 +244,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 						
 						listAssets.toArray(subAssets);
 						
-						parentFragment.setCurrentParentName(typeNames.get(assetItem.attributes().typeID));
+						parentFragment.setCurrentParentName(currentTypeNames.get(assetItem.attributes().typeID));
 						parentFragment.updateChild(subAssets, 1, false);
 					}
 				}
@@ -264,7 +253,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			return itemView;
 		}
 		
-		private void obtainedTypeNames()
+		public void obtainedTypeNames()
 		{
 			typeNamesLoaded = true;
 			
@@ -272,7 +261,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			for (TextView textView : typeNameMappings.keySet())
 			{
 				int typeID = typeNameMappings.get(textView);
-				textView.setText(typeNames.get(typeID));
+				textView.setText(currentTypeNames.get(typeID));
 			}			
 		}
 		
@@ -289,7 +278,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			final LinearLayout iconBorder = (LinearLayout) rootView.findViewById(R.id.char_detail_assets_list_item_typeIconBorder);
 			
 			typeNameMappings.put(text, typeID);
-			if (typeNamesLoaded) text.setText(typeNames.get(typeID));
+			if (typeNamesLoaded) text.setText(currentTypeNames.get(typeID));
 			
 			icon.setTag(typeID);
 			icon.setImageBitmap(null);
