@@ -121,24 +121,16 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			final Integer[] typeIDs = new Integer[currentItemList.length];
 			for (int x = 0; x < currentItemList.length; x++) typeIDs[x] = currentItemList[x].attributes().typeID;
 			
-			Log.d("START UPDATE TIME 2", ""+System.currentTimeMillis());
-
-			
 			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>()
 			{
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> retTypeInfo) 
-				{
-					Log.d("ON UPDATE TIME", ""+System.currentTimeMillis());
-					
+				{					
 					/* 
 					 * The returned String array matches the order provided by the input typeID array.
 					 * This will pair them up in a SparseArray so the type name strings can be accessed by typeID
 					 */
 					for (int i = 0; i < typeIDs.length; i++) currentTypeNames.put(typeIDs[i], retTypeInfo.get(typeIDs[i]).typeName);
-					
-					Log.d("ON UPDATE TIME 2", ""+System.currentTimeMillis());
-
 					
 					currentTypeInfo = retTypeInfo;
 					adapter.obtainedTypeNames();

@@ -25,6 +25,7 @@
             android:id="@+id/char_detail_assets_inventory_parentName"
             android:layout_width="0dp"
             android:layout_weight="1"
+            android:textSize="12sp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:textColor="#ccc"/>
