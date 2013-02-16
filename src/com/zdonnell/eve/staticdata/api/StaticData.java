@@ -36,12 +36,12 @@ public class StaticData {
 	
 	public void getTypeInfo(APICallback<SparseArray<TypeInfo>> callback, Integer... typeIDs)
 	{
-		new StaticTypeDatabaseRequest(callback).execute(Tools.stripDuplicateIDs(typeIDs));	
+		new StaticTypeDatabaseRequest(callback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Tools.stripDuplicateIDs(typeIDs));	
 	}
 	
 	public void getStationInfo(APICallback<SparseArray<StationInfo>> callback, Integer... stationIDs)
 	{
-		new StationDatabaseRequest(callback).execute(Tools.stripDuplicateIDs(stationIDs));	
+		new StationDatabaseRequest(callback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Tools.stripDuplicateIDs(stationIDs));	
 	}	
 	
 	private class StationDatabaseRequest extends AsyncTask<Integer, Integer, SparseArray<StationInfo>>
@@ -83,7 +83,7 @@ public class StaticData {
 				}
 								
 				/* Request the rest from the server, and let that AsyncTask finish the overall request */
-				new StationServerRequest(storedTypes, onCompleteRequestCallback).execute(unobtainedTypeIDs);
+				new StationServerRequest(storedTypes, onCompleteRequestCallback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, unobtainedTypeIDs);
 			}
 			/* All requested information was obtained from the database, tell the requesting
 			 * callback
@@ -135,7 +135,7 @@ public class StaticData {
 				}
 								
 				/* Request the rest from the server, and let that AsyncTask finish the overall request */
-				new StaticTypeServerRequest(storedTypes, onCompleteRequestCallback).execute(unobtainedTypeIDs);
+				new StaticTypeServerRequest(storedTypes, onCompleteRequestCallback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, unobtainedTypeIDs);
 			}
 			/* All requested information was obtained from the database, tell the requesting
 			 * callback

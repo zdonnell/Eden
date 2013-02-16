@@ -70,9 +70,7 @@ public class CharactersFragment extends Fragment {
 	 * 
 	 * TODO remove these once account management has been implemented
 	 */
-	private Account slick50zd1, mercenoid22, slpeterson;
-
-	
+	private Account slick50zd1, mercenoid22, slpeterson;	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 

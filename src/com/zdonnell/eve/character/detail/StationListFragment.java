@@ -23,6 +23,7 @@ import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.AssetsEntity.Station;
+import com.zdonnell.eve.api.priceservice.PriceService;
 import com.zdonnell.eve.staticdata.api.StaticData;
 import com.zdonnell.eve.staticdata.api.StationInfo;
 
@@ -47,6 +48,8 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	private SparseArray<String> currentStationNames = new SparseArray<String>();
 	
 	private SparseArray<StationInfo> currentStationInfo = new SparseArray<StationInfo>();
+	
+	SparseArray<SparseArray<Integer>> itemCounts;
 	
 	private StationArrayAdapter adapter;
 	
@@ -116,6 +119,57 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		}, stationIDs);
 		
 		initialLoadComplete = true;
+		
+		calculateStationAssetValue();
+	}
+	
+	private void calculateStationAssetValue()
+	{
+		itemCounts = new SparseArray<SparseArray<Integer>>(currentStationList.length);
+		ArrayList<Integer> totalUniqueTypeIDs = new ArrayList<Integer>();
+		
+		for (AssetsEntity assetsEntity : currentStationList) 
+		{
+			AssetsEntity.Station station = (AssetsEntity.Station) assetsEntity;
+			itemCounts.put(station.getLocationID(), new SparseArray<Integer>());
+			
+			checkAssets(station.getContainedAssets(), station.getLocationID(), totalUniqueTypeIDs);
+		}
+		
+		/* convert the ArrayList of unique IDs to an actual Array for use in the Price Service */
+		Integer[] uniqueIDArray = new Integer[totalUniqueTypeIDs.size()];
+		totalUniqueTypeIDs.toArray(uniqueIDArray);
+		
+		PriceService.getInstance(context).getValues(uniqueIDArray, new APICallback<SparseArray<Float>>() 
+		{
+			@Override
+			public void onUpdate(SparseArray<Float> prices) 
+			{
+				// Do calculations now
+			}
+		});
+	}
+	
+	private void checkAssets(ArrayList<AssetsEntity> assets, int rootStationID, ArrayList<Integer> totalUniqueIDSet)
+	{
+		for (AssetsEntity entity : assets)
+		{
+			/* Grab some attributes of the item */
+			AssetsEntity.Item item = (AssetsEntity.Item) entity;
+			int typeID = item.attributes().typeID;
+			int quantity = item.attributes().quantity;
+			
+			/* If the item contains assets, recurse through them as well */
+			if (item.containsAssets()) checkAssets(item.getContainedAssets(), rootStationID, totalUniqueIDSet);
+			
+			/* Keep track of how many times each type shows up, specific to each station */
+			Integer currentItemCount = itemCounts.get(rootStationID).get(typeID);
+			if (currentItemCount != null) itemCounts.get(rootStationID).put(typeID, currentItemCount + quantity);
+			else itemCounts.get(rootStationID).put(typeID, quantity);
+			
+			/* See if the typeID needs to be added to the main list of unique IDs to get prices on */
+			if (!totalUniqueIDSet.contains(typeID)) totalUniqueIDSet.add(typeID);
+		}
 	}
 	
 	private void getIcons()
@@ -259,8 +313,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	@Override
 	public SparseArray<String> getNames() 
 	{
-		/* TODO fix up this method as soon as Station Names are being loaded correctly */
-		return null;
+		return currentStationNames;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package com.zdonnell.eve.api.priceservice;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -64,7 +65,7 @@ public class PriceService {
 				}
 			}
 			
-			new PriceCheckTask(callback, cachedPrices, context).execute(nonCachedTypeIDs);
+			new PriceCheckTask(callback, cachedPrices, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, nonCachedTypeIDs);
 		}
 	}
 }

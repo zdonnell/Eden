@@ -286,7 +286,7 @@ public class ImageService {
 					if (callback != null) callback.iconsObtained(bitmaps);
 					checkPendingRequests(bitmaps, type);
 				}
-			}).execute(staticIconsToLoad);
+			}).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, staticIconsToLoad);
 		}
 		else
 		{				

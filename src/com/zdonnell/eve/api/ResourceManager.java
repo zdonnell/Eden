@@ -78,7 +78,7 @@ public class ResourceManager {
 	@SuppressWarnings("unchecked")	
 	public void get(APIRequestWrapper rw)
 	{		
-		if (cacheDatabase.cacheExists(rw.resourceURL, rw.uniqueIDs)) new CacheDatabaseQuery(rw).execute();
+		if (cacheDatabase.cacheExists(rw.resourceURL, rw.uniqueIDs)) new CacheDatabaseQuery(rw).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else new APIServerQuery(rw).execute();
 	}
 	
@@ -160,7 +160,7 @@ public class ResourceManager {
 		protected void onPostExecute(Document queriedResource)
 		{
 			rw.apiCallback.onUpdate(rw.parser.parse(queriedResource));
-			if (cacheDatabase.cacheExpired(rw.resourceURL, rw.uniqueIDs)) new APIServerQuery(rw).execute();
+			if (cacheDatabase.cacheExpired(rw.resourceURL, rw.uniqueIDs)) new APIServerQuery(rw).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 		
 	}
