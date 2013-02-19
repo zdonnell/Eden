@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,8 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	 * Array of stations
 	 */
 	private AssetsEntity[] currentStationList;
+	
+	private SparseArray<Double> stationValues;
 	
 	private SparseArray<String> currentStationNames = new SparseArray<String>();
 	
@@ -120,10 +123,10 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		
 		initialLoadComplete = true;
 		
-		calculateStationAssetValue();
+		//obtainPriceInformation();
 	}
 	
-	private void calculateStationAssetValue()
+	private void obtainPriceInformation()
 	{
 		itemCounts = new SparseArray<SparseArray<Integer>>(currentStationList.length);
 		ArrayList<Integer> totalUniqueTypeIDs = new ArrayList<Integer>();
@@ -145,9 +148,37 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 			@Override
 			public void onUpdate(SparseArray<Float> prices) 
 			{
-				// Do calculations now
+				//calculateStationValues(prices, currentStationList);
+				//adapter.obtainedStationValues(stationValues);
 			}
 		});
+	}
+	
+	private void calculateStationValues(SparseArray<Float> prices, AssetsEntity[] currentStationList)
+	{
+		stationValues = new SparseArray<Double>(currentStationList.length);
+		
+		for (AssetsEntity assetsEntity : currentStationList)
+		{
+			double stationValue = 0;
+			
+			AssetsEntity.Station station = (AssetsEntity.Station) assetsEntity;
+			int stationID = station.getLocationID();
+			SparseArray<Integer> curStationAssetCounts = itemCounts.get(stationID);
+			int uniqueItemsInStation = curStationAssetCounts.size();
+			
+			for (int i = 0; i < uniqueItemsInStation; ++i)
+			{
+				int uniqueItemTypeID = curStationAssetCounts.keyAt(i);
+				
+				if (prices.get(uniqueItemTypeID) != null)
+				{
+					stationValue += prices.get(uniqueItemTypeID) * curStationAssetCounts.valueAt(i);
+				}
+			}
+			
+			stationValues.put(stationID, stationValue);
+		}
 	}
 	
 	private void checkAssets(ArrayList<AssetsEntity> assets, int rootStationID, ArrayList<Integer> totalUniqueIDSet)
@@ -206,9 +237,10 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		private LayoutInflater inflater;
 		
     	HashMap<TextView, Integer> stationNameMappings = new HashMap<TextView, Integer>();
+    	HashMap<TextView, Integer> stationValueMappings = new HashMap<TextView, Integer>();
     	HashMap<ImageView, Integer> stationIconMappings = new HashMap<ImageView, Integer>();
 		
-		private boolean stationNamesLoaded = false;
+		private boolean stationNamesLoaded = false, stationValuesLoaded = false;
 		
 		public StationArrayAdapter(Context context, int layoutResourceID, AssetsEntity[] stationList) 
 		{
@@ -224,28 +256,28 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		{
 			LinearLayout itemView;
 			
+			final Station curStation = (Station) getItem(position);
+			
 			/* Determine if we recyle the old view, or inflate a new one */
 			if (convertView == null) itemView = (LinearLayout) inflater.inflate(layoutResID, parent, false);
 			else itemView = (LinearLayout) convertView;
 			
 			TextView stationName = (TextView) itemView.findViewById(R.id.station_assets_list_item_name);
 			TextView assetCount = (TextView) itemView.findViewById(R.id.station_assets_list_item_count);
+			TextView assetValue = (TextView) itemView.findViewById(R.id.station_assets_list_item_value);
 			final ImageView icon = (ImageView) itemView.findViewById(R.id.station_assets_list_item_icon);
 			
-			final Station curStation = (Station) getItem(position);
-			
-			//stationName.setText(String.valueOf(curStation.getLocationID()));
 			assetCount.setText(curStation.getContainedAssets().size() + " items");
 			
 			stationNameMappings.put(stationName, curStation.getLocationID());
 			stationIconMappings.put(icon, curStation.getLocationID());
+			stationValueMappings.put(assetValue, curStation.getLocationID());
 			
 			icon.setTag(curStation.getLocationID());
 
 			if (stationNamesLoaded) 
 			{
 				stationName.setText(currentStationNames.get(curStation.getLocationID()));
-				
 				final int stationTypeID = currentStationInfo.get(curStation.getLocationID()).stationTypeID;
 				
 				ImageService.getInstance(context).getTypes(new IconObtainedCallback() 
@@ -260,6 +292,8 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 					}
 				}, stationTypeID);
 			}
+			
+			if (stationValuesLoaded) assetValue.setText(stationValues.get(curStation.getLocationID()) + " ISK");
 			
 			itemView.setOnClickListener(new View.OnClickListener() 
 			{	
@@ -306,6 +340,17 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 				int stationTypeID = currentStationInfo.get(stationID).stationTypeID;
 				
 				icon.setImageBitmap(bitmaps.get(stationTypeID));
+			}
+		}
+		
+		public void obtainedStationValues(SparseArray<Double> values)
+		{
+			stationValuesLoaded = true;
+			
+			for (TextView textView : stationValueMappings.keySet())
+			{
+				int stationID = stationValueMappings.get(textView);
+				textView.setText(values.get(stationID) + " ISK");
 			}
 		}
 	}

@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +19,6 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zdonnell.eve.R;
@@ -29,7 +28,6 @@ import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.AssetsEntity.Item;
 import com.zdonnell.eve.api.priceservice.PriceService;
-import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.staticdata.api.StaticData;
 import com.zdonnell.eve.staticdata.api.TypeInfo;
 
@@ -156,14 +154,24 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	private void calculatePrices(final AssetsEntity[] items)
 	{
 		ArrayList<Integer> typeIDsList = new ArrayList<Integer>();
+		final SparseIntArray typeIDsCount = new SparseIntArray();
 		
 		for (int i = 0; i < items.length; i++)
 		{
 			int typeID = items[i].attributes().typeID;
-			if (!typeIDsList.contains(typeID) && currentTypeInfo.get(typeID).marketGroupID != -1) typeIDsList.add(typeID);
+			
+			/* The item is on the market, and has a price */
+			if (currentTypeInfo.get(typeID).marketGroupID != -1)
+			{
+				if (!typeIDsList.contains(typeID)) typeIDsList.add(typeID);
+				
+				int currentTypeCount = typeIDsCount.get(typeID);
+				typeIDsCount.put(typeID, currentTypeCount + items[i].attributes().quantity);
+			}
+			
 		}
 		
-		Integer[] typeIDs = new Integer[typeIDsList.size()];
+		final Integer[] typeIDs = new Integer[typeIDsList.size()];
 		typeIDsList.toArray(typeIDs);
 		
 		PriceService.getInstance(context).getValues(typeIDs, new APICallback<SparseArray<Float>>() 
@@ -175,10 +183,10 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 				
 				double totalValue = 0;
 
-				for (AssetsEntity entity : items)
+				for (int typeID : typeIDs)
 				{
-					int typeID = entity.attributes().typeID;
-					int quantity = entity.attributes().quantity;
+					int quantity = typeIDsCount.get(typeID);
+					
 					try 
 					{
 						float value = updatedData.get(typeID);			

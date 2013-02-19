@@ -41,7 +41,7 @@ public class PriceService {
 	}
 	
 	public void getValues(Integer[] typeIDs, APICallback<SparseArray<Float>> callback)
-	{	
+	{			
 		Integer[] strippedTypeIDs = Tools.stripDuplicateIDs(typeIDs);
 		
 		SparseArray<Float> cachedPrices = priceDatabase.getPrices(strippedTypeIDs, priceCacheTime);
