@@ -225,13 +225,11 @@ public class CharacterSheetFragment extends Fragment {
      * A call made to load up character information.  Should be called immediately after the fragment has been inflated.
      * @param characterID
      */
-	public void setCharacter(APICharacter character) 
+	public void setCharacter(APICharacter character, int corpID) 
 	{
-    	long startTime = System.currentTimeMillis();
-		
-		Log.d("ON CREATE VIEW", "START TIME: " + System.currentTimeMillis()); 
-		
+    	long startTime = System.currentTimeMillis();		
 		final ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
+		//final ImageView corpLogo = (ImageView) rootView.findViewById(R.id.char_sheet_corpLogo);
 		
 		imageService.getPortraits(new ImageService.IconObtainedCallback() 
 		{
@@ -379,7 +377,7 @@ public class CharacterSheetFragment extends Fragment {
 			}
 			else cloneNameView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + characterSheet.getCloneName() + "</FONT>"));
 		
-			TextView currentShipName = (TextView) rootView.findViewById(R.id.character_sheet_ship_name);
+			/*TextView currentShipName = (TextView) rootView.findViewById(R.id.character_sheet_ship_name);
 			TextView currentLocation = (TextView) rootView.findViewById(R.id.character_sheet_location);
 			final ImageView currentShipIcon = (ImageView) rootView.findViewById(R.id.current_ship_icon);
 
@@ -396,7 +394,7 @@ public class CharacterSheetFragment extends Fragment {
 					currentShipIcon.setImageBitmap(bitmaps.get(shipTypeID));
 					
 				}
-			}, shipTypeID);
+			}, shipTypeID);*/
 			
 			setSubTexts();
 		}

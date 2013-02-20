@@ -44,7 +44,7 @@ public class CharacterSheetActivity extends BaseActivity
         
         getActionBar().setTitle(new CharacterDB(this).getCharacterName(assembledChar.id()));
                 
-        ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar);
+        ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar, Integer.valueOf(characterInfo[3]));
                 
         if (findViewById(R.id.sheetitem_detail_container) != null) 
         {

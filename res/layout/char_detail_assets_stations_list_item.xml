@@ -4,7 +4,7 @@
     android:layout_height="50dp"
     android:padding="4dp"
     android:orientation="horizontal"
-    android:background="#DDD" >
+    android:background="#FFF" >
     <ImageView
         android:id="@+id/station_assets_list_item_icon"
         android:layout_height="42dp"

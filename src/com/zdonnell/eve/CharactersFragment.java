@@ -150,10 +150,11 @@ public class CharactersFragment extends Fragment {
 				public void onClick(View v) 
 				{
 					Intent intent = new Intent(context, CharacterSheetActivity.class);
-					String[] CharacterInfo = new String[3];
+					String[] CharacterInfo = new String[4];
 					CharacterInfo[0] = String.valueOf(characterID);
 					CharacterInfo[1] = String.valueOf(credentials.keyID);
 					CharacterInfo[2] = credentials.verificationCode;
+					CharacterInfo[3] = String.valueOf(corpID);
 					
 					intent.putExtra("character", CharacterInfo);
 	            	startActivity(intent);

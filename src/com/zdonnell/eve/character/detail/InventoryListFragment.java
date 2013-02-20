@@ -110,9 +110,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 		if (adapter == null)
 		{	
 			itemCount.setText(currentItemList.length + " items");
-			
-			Log.d("START UPDATE TIME", ""+System.currentTimeMillis());
-			
+					
 			adapter = new InventoryArrayAdapter(context, stationRowResourceID, currentItemList);
 			
 			/* Pull the typeIDs from the array of assets into their own array */
@@ -301,7 +299,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			}, typeID);
 			
 			quantity.setVisibility(isPackaged ? View.VISIBLE : View.INVISIBLE);
-			iconBorder.setBackgroundColor(isPackaged ? Color.parseColor("#666666") : Color.parseColor("#aaaaaa"));
+			iconBorder.setBackgroundColor(isPackaged ? Color.parseColor("#666666") : Color.parseColor("#444444"));
 			
 			if (isPackaged) quantity.setText(String.valueOf(count));
 		}
