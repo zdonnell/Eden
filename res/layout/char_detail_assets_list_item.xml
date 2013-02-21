@@ -10,7 +10,7 @@
 	   	<com.zdonnell.eve.character.detail.SquareLinearLayout
 	   	    android:id="@+id/char_detail_assets_list_item_typeIconBorder"
 	   	    android:padding="1dp"
-	   	    android:background="#666"
+	   	    android:background="#000"
 	   	    android:layout_width="match_parent"
 	   		android:layout_height="wrap_content">
 	   	    <ImageView 
@@ -18,7 +18,7 @@
 		        android:layout_width="match_parent"
 		        android:scaleType="fitCenter"
 		        android:layout_height="match_parent"
-		        android:background="#333"/>
+		        android:background="#242424"/>
 	   	</com.zdonnell.eve.character.detail.SquareLinearLayout>
 	    <TextView 
 		    android:id="@+id/char_detail_assets_list_item_count"

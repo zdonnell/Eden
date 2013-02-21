@@ -72,8 +72,6 @@ public class AttributesFragment extends Fragment {
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_attributes, container, false);
     	
     	attributesListView = (ListView) inflatedView.findViewById(R.id.char_detail_attributes_list);
-    	attributesListView.setDivider(context.getResources().getDrawable(R.drawable.divider_grey));
-    	attributesListView.setDividerHeight(1);
     	
     	/* Grab the character sheet to get the attribute info */
     	character.getCharacterSheet(new APICallback<CharacterSheet>()
@@ -144,6 +142,7 @@ public class AttributesFragment extends Fragment {
 			else 
 			{
 				icon.setAlpha(0.3f);
+				implantName.setAlpha(0.5f);
 			}
 			
 			/* Set views to correct implant info */

@@ -299,7 +299,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			}, typeID);
 			
 			quantity.setVisibility(isPackaged ? View.VISIBLE : View.INVISIBLE);
-			iconBorder.setBackgroundColor(isPackaged ? Color.parseColor("#666666") : Color.parseColor("#444444"));
+			iconBorder.setBackgroundColor(isPackaged ? Color.parseColor("#000000") : Color.parseColor("#000000"));
 			
 			if (isPackaged) quantity.setText(String.valueOf(count));
 		}

@@ -76,12 +76,10 @@ public class SkillQueueFragment extends Fragment {
     	final TextView queueTimeRemaining = (TextView) inflatedView.findViewById(R.id.queue_time_remaining_text);
     	final TextView queueLength = (TextView) inflatedView.findViewById(R.id.skill_queue_size_text);
     	
-    	inflatedView.addView(skillQueueBar, 1);
+    	inflatedView.addView(skillQueueBar, 0);
     	skillQueueBar.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Tools.dp2px(80, inflater.getContext())));
     	
     	skillQueueList = (ListView) inflatedView.findViewById(R.id.char_detail_queue_list);
-    	skillQueueList.setDivider(context.getResources().getDrawable(R.drawable.divider_grey));
-    	skillQueueList.setDividerHeight(1);
     	
     	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
     	{
@@ -176,7 +174,7 @@ public class SkillQueueFragment extends Fragment {
 			skillLevelIndicator.provideSkillInfo(currentSkillQueue.get(position), position == 0, colors[0]);
 			
 			/* Alternate Skill Queue Row Background Color */
-			preparedView.setBackgroundColor((position % 2 == 1) ? Color.parseColor("#CCCCCC") : Color.parseColor("#DDDDDD")); 
+			preparedView.setBackgroundColor((position % 2 == 1) ? Color.parseColor("#242424") : Color.parseColor("#181818")); 
 			
 			final TextView skillName = (TextView) preparedView.findViewById(R.id.skillqueue_detail_list_item_skillname);
 			TextView skillLevel = (TextView) preparedView.findViewById(R.id.skill_level_text);			
@@ -282,7 +280,7 @@ public class SkillQueueFragment extends Fragment {
     {    	
     	private static final long DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
     	
-    	private static final int keyColor = Color.DKGRAY;
+    	private final int keyColor = Color.rgb(150, 150, 150);
     	
     	private int manual_padding;
     	
@@ -417,7 +415,7 @@ public class SkillQueueFragment extends Fragment {
     		}
     		
     		/* Draw hour indicators */
-    		paint.setColor(Color.DKGRAY);
+    		paint.setColor(Color.rgb(150, 150, 150));
     		paint.setStyle(Style.FILL);
     		
     		paint.setTextAlign(Align.LEFT);

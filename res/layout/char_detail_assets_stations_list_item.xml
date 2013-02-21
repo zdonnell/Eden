@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:padding="4dp"
+    android:layout_height="60dp"
+    android:padding="5dp"
     android:orientation="horizontal"
-    android:background="#FFF" >
+    android:background="#181818" >
     <ImageView
         android:id="@+id/station_assets_list_item_icon"
-        android:layout_height="42dp"
-        android:layout_marginRight="8dp"
+        android:layout_height="50dp"
+        android:layout_marginRight="10dp"
         android:padding="1dp"
-        android:layout_width="42dp"
-        android:background="#242424"/>
+        android:layout_width="50dp"
+        android:background="#000000"/>
     <TextView
-        android:textColor="#000"
+        android:textColor="#BBB"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:textSize="12sp"
@@ -28,7 +28,7 @@
             android:layout_gravity="center_vertical"
             android:orientation="vertical">
             <TextView
-		        android:textColor="#555"
+		        android:textColor="#777"
 		        android:layout_width="wrap_content"
 		        android:textSize="12sp"
 		        android:layout_gravity="right"

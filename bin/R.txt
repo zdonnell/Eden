@@ -97,7 +97,7 @@ int id char_detail_attributes_list 0x7f050017
 int id char_detail_attributes_list_item_image 0x7f050018
 int id char_detail_attributes_list_item_implantname 0x7f050019
 int id char_detail_attributes_list_item_value 0x7f05001a
-int id char_detail_queue_list 0x7f05001d
+int id char_detail_queue_list 0x7f05001b
 int id char_detail_tab_view_icon 0x7f050021
 int id char_detail_tab_view_text 0x7f050022
 int id char_image 0x7f050031
@@ -126,7 +126,7 @@ int id menu_frame 0x7f05003a
 int id menu_settings 0x7f05004e
 int id pager 0x7f050004
 int id pager_title_strip 0x7f050005
-int id queue_time_remaining_text 0x7f05001c
+int id queue_time_remaining_text 0x7f05001d
 int id row_icon 0x7f050047
 int id row_title 0x7f050048
 int id scroll_scale 0x7f050042
@@ -137,7 +137,7 @@ int id sheetitem_detail_container 0x7f050006
 int id sheetitem_list 0x7f050007
 int id skill_level_indicator 0x7f05001f
 int id skill_level_text 0x7f050020
-int id skill_queue_size_text 0x7f05001b
+int id skill_queue_size_text 0x7f05001c
 int id skillqueue_detail_list_item_skillname 0x7f05001e
 int id slidingmenulayout 0x7f05004a
 int id slidingmenumain 0x7f050049

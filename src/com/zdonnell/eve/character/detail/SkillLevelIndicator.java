@@ -14,7 +14,7 @@ import com.zdonnell.eve.helpers.Tools;
 public class SkillLevelIndicator extends View {
 
 	private static final int SKILL_LEVEL_MAX = 5;
-	private static final int BASE_COLOR = Color.DKGRAY;
+	private static final int BASE_COLOR = Color.rgb(70, 70, 70);
 		
 	private int width, height;
 	

@@ -14,7 +14,7 @@
 	<View
 	    android:layout_width="1px"
 	    android:layout_height="match_parent"
-	    android:background="#999"
+	    android:background="#444"
 	    />
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     	android:layout_width="0px"
@@ -30,12 +30,12 @@
 		    android:layout_height="wrap_content"
 		    android:text="No Implant"
 		    android:textSize="14sp"
-		    android:textColor="#000"/>
+		    android:textColor="#BBB"/>
 	</LinearLayout>	
 	<View
 	    android:layout_width="1px"
 	    android:layout_height="match_parent"
-	    android:background="#999"
+	    android:background="#444"
 	    />
 	<TextView
 	    android:id="@+id/char_detail_attributes_list_item_value"
@@ -44,6 +44,6 @@
 	    android:layout_marginLeft="10dp"
 	    android:textSize="24sp"
 	    android:gravity="center"
-	    android:textColor="#666">
+	    android:textColor="#777">
 	    <!--android:background="#222"--></TextView>
 </LinearLayout>

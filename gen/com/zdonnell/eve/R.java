@@ -205,7 +205,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int char_detail_attributes_list_item_image=0x7f050018;
         public static final int char_detail_attributes_list_item_implantname=0x7f050019;
         public static final int char_detail_attributes_list_item_value=0x7f05001a;
-        public static final int char_detail_queue_list=0x7f05001d;
+        public static final int char_detail_queue_list=0x7f05001b;
         public static final int char_detail_tab_view_icon=0x7f050021;
         public static final int char_detail_tab_view_text=0x7f050022;
         public static final int char_image=0x7f050031;
@@ -234,7 +234,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int menu_settings=0x7f05004e;
         public static final int pager=0x7f050004;
         public static final int pager_title_strip=0x7f050005;
-        public static final int queue_time_remaining_text=0x7f05001c;
+        public static final int queue_time_remaining_text=0x7f05001d;
         public static final int row_icon=0x7f050047;
         public static final int row_title=0x7f050048;
         public static final int scroll_scale=0x7f050042;
@@ -245,7 +245,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int sheetitem_list=0x7f050007;
         public static final int skill_level_indicator=0x7f05001f;
         public static final int skill_level_text=0x7f050020;
-        public static final int skill_queue_size_text=0x7f05001b;
+        public static final int skill_queue_size_text=0x7f05001c;
         public static final int skillqueue_detail_list_item_skillname=0x7f05001e;
         public static final int slidingmenulayout=0x7f05004a;
         public static final int slidingmenumain=0x7f050049;

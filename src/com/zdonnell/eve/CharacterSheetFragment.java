@@ -152,11 +152,8 @@ public class CharacterSheetFragment extends Fragment {
     	skillTimeRemaining = (TextView) rootView.findViewById(R.id.current_skill_time);
     	skillInTraining = (TextView) rootView.findViewById(R.id.current_skill);
     	
-    	listView.addHeaderView(headerText, null, false);
-    	
+    	listView.addHeaderView(headerText, null, false);  	
     	listView.setAdapter(new CharacterSheetAdapater(context, R.layout.character_sheet_item, items));
-    	listView.setDivider(context.getResources().getDrawable(R.drawable.divider_grey));
-    	listView.setDividerHeight(1);
     	        	
     	return rootView;
     }

@@ -145,5 +145,7 @@
         android:id="@+id/char_sheet_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:headerDividersEnabled="true" />
+        android:headerDividersEnabled="true"
+        android:divider="#000"
+    	android:dividerHeight="1dp" />
 </LinearLayout>
