@@ -3,6 +3,8 @@ package com.zdonnell.eve.staticdata.api;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -71,6 +73,8 @@ public class StationDatabase
 		
 		c.close();
 		
+		Log.d("STATIONS", "NEEDED " + stationIDs.length + ", FOUND " + typeInfoSet.size());
+		
 		return typeInfoSet;
 	}
 	
@@ -83,7 +87,7 @@ public class StationDatabase
 			typeInfoArray[i] = stationInfoSet.valueAt(i);
 		}
 		
-		insertTypeInfo(typeInfoArray);
+		insertStationInfo(typeInfoArray);
 	}
 	
 	/**
@@ -91,16 +95,28 @@ public class StationDatabase
 	 * 
 	 * @param typeInfoSet an Array of {@link TypeInfo} objects for insertion
 	 */
-	public void insertTypeInfo(StationInfo... typeInfoSet)
+	public void insertStationInfo(StationInfo... typeInfoSet)
 	{
-		for (StationInfo typeInfo : typeInfoSet)
+		try
 		{
-			ContentValues insertValues = new ContentValues();
-			insertValues.put(TABLE_ROW_ID, typeInfo.stationID);
-			insertValues.put(TABLE_ROW_STATIONTYPEID, typeInfo.stationTypeID);
-			insertValues.put(TABLE_ROW_STATIONNAME, typeInfo.stationName);
-		
-			db.insert(TABLE_NAME, null, insertValues);
+			db.beginTransaction();
+			
+			for (StationInfo typeInfo : typeInfoSet)
+			{
+				ContentValues insertValues = new ContentValues();
+				insertValues.put(TABLE_ROW_ID, typeInfo.stationID);
+				insertValues.put(TABLE_ROW_STATIONTYPEID, typeInfo.stationTypeID);
+				insertValues.put(TABLE_ROW_STATIONNAME, typeInfo.stationName);
+						
+				db.insertWithOnConflict(TABLE_NAME, null, insertValues, SQLiteDatabase.CONFLICT_REPLACE);
+			}
+			
+			db.setTransactionSuccessful();
+		}
+		catch (SQLException e) { }
+		finally
+		{
+			db.endTransaction();
 		}
 	}
 	

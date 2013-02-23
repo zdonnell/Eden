@@ -305,15 +305,19 @@ public class APICharacter extends APIObject {
 			{
 				int locationID = rootAsset.attributes().locationID;
 				
-				/* If this is the first time we have seen this location, set up the AssetLocation */
-				if (assetsByLocation.get(locationID) == null)
-				{						
-					AssetsEntity.Station newLocation = new AssetsEntity.Station(new ArrayList<AssetsEntity>(), locationID);
-					assetsByLocation.put(locationID, newLocation);
+				/* Only get assets in stations TODO expand this */
+				if (locationID > 60000000) 
+				{
+					/* If this is the first time we have seen this location, set up the AssetLocation */
+					if (assetsByLocation.get(locationID) == null)
+					{						
+						AssetsEntity.Station newLocation = new AssetsEntity.Station(new ArrayList<AssetsEntity>(), locationID);
+						assetsByLocation.put(locationID, newLocation);
+					}
+					
+					/* get the appropriate location, grab it's assets list and add the current asset to it */
+					assetsByLocation.get(locationID).getContainedAssets().add(rootAsset);	
 				}
-				
-				/* get the appropriate location, grab it's assets list and add the current asset to it */
-				assetsByLocation.get(locationID).getContainedAssets().add(rootAsset);			
 			}
 						
 			AssetsEntity[] assetsArray = new AssetsEntity[assetsByLocation.size()];

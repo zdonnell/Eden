@@ -57,7 +57,7 @@ public class StaticData {
 		
 		@Override
 		protected SparseArray<StationInfo> doInBackground(Integer... typeIDs) 
-		{
+		{			
 			requestedTypeIDs = typeIDs;
 			return stationDatabase.getStationInfo(requestedTypeIDs);
 		}

@@ -17,17 +17,20 @@ import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.ResourceManager;
 import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
 import com.zdonnell.eve.api.TypeNameDatabase;
+import com.zdonnell.eve.staticdata.api.StationInfo;
 
 public class Eve extends APIObject {
 	
 	public static final int TYPE_NAME = 0;
+	public static final int CONQ_STATIONS = 1;
 	
 	private Context context;
 
-	public static final String[] xmlURLs = new String[1];
+	public static final String[] xmlURLs = new String[2];
 	static
 	{
 		xmlURLs[TYPE_NAME] = baseURL + "eve/TypeName.xml.aspx";
+		xmlURLs[CONQ_STATIONS] = baseURL + "eve/ConquerableStationList.xml.aspx";
 	}
 	
 	private ResourceManager resourceManager ;
@@ -38,6 +41,40 @@ public class Eve extends APIObject {
 		
 		super.setCredentials(credentials);
 		resourceManager = ResourceManager.getInstance(context);
+	}
+	
+	public void getConquerableStations(final APICallback<SparseArray<StationInfo>> apiCallback)
+	{
+		resourceManager.get(new APIRequestWrapper(apiCallback, new ConquerableStationsParser(), null, xmlURLs[CONQ_STATIONS], true));
+	}
+	
+	private class ConquerableStationsParser extends APIParser<SparseArray<StationInfo>>
+	{
+		@Override
+		public SparseArray<StationInfo> parse(Document document) 
+		{
+			SparseArray<StationInfo> stationInformation = new SparseArray<StationInfo>();
+	
+			NodeList stationList = document.getElementsByTagName("row");
+			
+			for (int i = 0; i < stationList.getLength(); ++i)
+			{
+				StationInfo stationInfo = new StationInfo();
+				
+				Node station = stationList.item(i);
+				String stationIDString = station.getAttributes().getNamedItem("stationID").getTextContent();
+				String stationTypeIDString = station.getAttributes().getNamedItem("stationTypeID").getTextContent();
+				String stationName = station.getAttributes().getNamedItem("stationName").getTextContent();
+				
+				stationInfo.stationID = Integer.parseInt(stationIDString);
+				stationInfo.stationTypeID = Integer.parseInt(stationTypeIDString);
+				stationInfo.stationName = stationName;
+				
+				stationInformation.put(stationInfo.stationID, stationInfo);
+			}
+			
+			return stationInformation;
+		}
 	}
 	
 	/** 

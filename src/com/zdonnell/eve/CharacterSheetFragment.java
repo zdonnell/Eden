@@ -286,6 +286,8 @@ public class CharacterSheetFragment extends Fragment {
 		
 		if (!skillQueue.isEmpty()) 
 		{
+			skillTimeRemaining.setVisibility(View.VISIBLE);
+			
 			long timeUntilSkillFinish = 0;
 			try 
 			{
@@ -307,7 +309,7 @@ public class CharacterSheetFragment extends Fragment {
 		else
 		{
 			currentSkillView.setText(Html.fromHtml("<FONT COLOR=#FF4444>No Skill in Training</FONT>"));
-			skillTimeRemaining.setVisibility(View.INVISIBLE);
+			skillTimeRemaining.setVisibility(View.GONE);
 		}
 	}
 	
@@ -370,9 +372,9 @@ public class CharacterSheetFragment extends Fragment {
 			TextView cloneNameView = (TextView) rootView.findViewById(R.id.current_clone);
 			if (characterInfo.getSP() > characterSheet.getCloneSkillPoints())
 			{
-				cloneNameView.setText(Html.fromHtml("<FONT COLOR='#FF4444'>" + characterSheet.getCloneName() + "</FONT>"));
+				cloneNameView.setText(Html.fromHtml("<FONT COLOR='#FF4444'>" + formatter.format(characterSheet.getCloneSkillPoints()) + " SP</FONT>"));
 			}
-			else cloneNameView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + characterSheet.getCloneName() + "</FONT>"));
+			else cloneNameView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + formatter.format(characterSheet.getCloneSkillPoints()) + " SP</FONT>"));
 		
 			/*TextView currentShipName = (TextView) rootView.findViewById(R.id.character_sheet_ship_name);
 			TextView currentLocation = (TextView) rootView.findViewById(R.id.character_sheet_location);

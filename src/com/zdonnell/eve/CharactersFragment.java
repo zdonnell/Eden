@@ -8,10 +8,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,8 +31,11 @@ import com.zdonnell.eve.api.account.Account;
 import com.zdonnell.eve.api.account.EveCharacter;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.QueuedSkill;
+import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.helpers.TimeRemainingCountdown;
 import com.zdonnell.eve.helpers.Tools;
+import com.zdonnell.eve.staticdata.api.StationDatabase;
+import com.zdonnell.eve.staticdata.api.StationInfo;
 
 public class CharactersFragment extends Fragment {
 
@@ -70,7 +75,7 @@ public class CharactersFragment extends Fragment {
 	 * 
 	 * TODO remove these once account management has been implemented
 	 */
-	private Account slick50zd1, mercenoid22, slpeterson;	
+	private Account slick50zd1, mercenoid22, xsteveo243x;	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
@@ -84,6 +89,7 @@ public class CharactersFragment extends Fragment {
 		
 		/* test function to load characters from API keys */
 		if (false) loadCharacters();
+		if (true) loadStationInfo();
 		
 		/* Setup the GridView properties and link with the CursorAdapater */
 		View mainView = (View) inflater.inflate(R.layout.characters_fragment, container, false);
@@ -317,7 +323,7 @@ public class CharactersFragment extends Fragment {
 	{
 		slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", context);
 		mercenoid22 = new Account(1171729, "4QsVKhpkQcM20jU1AahjcGzYFCSJljYFXld5X0wgLV8pYPJMeQRvQAUdDnSGhKvK", context);
-		slpeterson = new Account(339772, "4hlNY5h45OhfTgT6lo9RyXO4jEysiTDRYTXsEPenRBIuAheea3TBNn5LxnatkFjU", context);
+		xsteveo243x = new Account(961364, "a73k2c5HvvwXhKhSRLzDQb8emKtRflovg51niFQSns9X8RT7y8ZbSzgRgQExUZnW", context);
 				
 		slick50zd1.characters(new APICallback<ArrayList<EveCharacter>>() {
 			@Override
@@ -331,11 +337,42 @@ public class CharactersFragment extends Fragment {
 				for (EveCharacter character : updatedData) charDB.addCharacter(character, mercenoid22.getCredentials());				
 			}
 		});
-		slpeterson.characters(new APICallback<ArrayList<EveCharacter>>() {
+		xsteveo243x.characters(new APICallback<ArrayList<EveCharacter>>() {
 			@Override
 			public void onUpdate(ArrayList<EveCharacter> updatedData) {
-				for (EveCharacter character : updatedData) charDB.addCharacter(character, slpeterson.getCredentials());				
+				for (EveCharacter character : updatedData) charDB.addCharacter(character, xsteveo243x.getCredentials());				
 			}
 		});
+	}
+	
+	private void loadStationInfo()
+	{		
+		new Eve(context).getConquerableStations(new APICallback<SparseArray<StationInfo>>() {
+
+			@Override
+			public void onUpdate(SparseArray<StationInfo> stationInfo)
+			{
+				new InsertStationInfoAsyncTask(context, stationInfo).execute();	
+			}
+		});
+	}
+	
+	private class InsertStationInfoAsyncTask extends AsyncTask<Void, Void, Void>
+	{
+		Context context;
+		SparseArray<StationInfo> stationInfo;
+		
+		public InsertStationInfoAsyncTask(Context context, SparseArray<StationInfo> stationInfo)
+		{			
+			this.context = context;
+			this.stationInfo = stationInfo;
+		}
+
+		@Override
+		protected Void doInBackground(Void... arg0) {
+			new StationDatabase(context).insertStationInfo(stationInfo);	
+
+			return null;
+		}
 	}
 }

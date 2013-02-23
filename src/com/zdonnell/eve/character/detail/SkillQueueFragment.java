@@ -280,7 +280,7 @@ public class SkillQueueFragment extends Fragment {
     {    	
     	private static final long DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
     	
-    	private final int keyColor = Color.rgb(150, 150, 150);
+    	private final int keyColor = Color.rgb(0, 0, 0);
     	
     	private int manual_padding;
     	
@@ -309,7 +309,7 @@ public class SkillQueueFragment extends Fragment {
     	}
     	
     	/**
-    	 * Sets th skillQueue to draw from. Forces a redraw.
+    	 * Sets the skillQueue to draw from. Forces a redraw.
     	 * 
     	 * @param skillQueue
     	 */

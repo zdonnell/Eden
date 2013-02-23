@@ -1,6 +1,12 @@
 package com.zdonnell.eve;
 
+import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.eve.Eve;
+import com.zdonnell.eve.staticdata.api.StationDatabase;
+import com.zdonnell.eve.staticdata.api.StationInfo;
+
 import android.os.Bundle;
+import android.util.SparseArray;
 
 
 public class CharactersActivity extends BaseActivity {

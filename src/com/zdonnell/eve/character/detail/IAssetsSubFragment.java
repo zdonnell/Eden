@@ -10,6 +10,10 @@ public interface IAssetsSubFragment
 	
 	public void assetsUpdated(AssetsEntity[] assets);
 	
+	public void obtainedPrices();
+	
+	public void obtainedTypeInfo();
+	
 	public SparseArray<String> getNames();
 	
 	public SparseArray<Float> getValues();	

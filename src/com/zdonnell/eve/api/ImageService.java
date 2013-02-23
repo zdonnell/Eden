@@ -141,7 +141,7 @@ public class ImageService {
 	 * @param callback {@link IconObtainedCallback} to be notified when the loading is complete
 	 * @param typeIDs 
 	 */
-	public void getTypes(IconObtainedCallback callback, int... typeIDs)
+	public void getTypes(IconObtainedCallback callback, Integer... typeIDs)
 	{
 		if (typeIDs.length > 1) getImages(callback, typeIDs, ICON);
 		else
@@ -164,7 +164,7 @@ public class ImageService {
 	 * @param callback {@link IconObtainedCallback} to be notified when the loading is complete
 	 * @param charIDs 
 	 */
-	public void getPortraits(IconObtainedCallback callback, int... charIDs)
+	public void getPortraits(IconObtainedCallback callback, Integer... charIDs)
 	{
 		if (charIDs.length > 1) getImages(callback, charIDs, CHAR);
 		else
@@ -187,7 +187,7 @@ public class ImageService {
 	 * @param callback {@link IconObtainedCallback} to be notified when the loading is complete
 	 * @param charIDs 
 	 */
-	public void getCorpLogos(IconObtainedCallback callback, int... corpIDs)
+	public void getCorpLogos(IconObtainedCallback callback, Integer... corpIDs)
 	{
 		if (corpIDs.length > 1) getImages(callback, corpIDs, CORP);
 		else
@@ -236,7 +236,7 @@ public class ImageService {
 	 * @param ids
 	 * @param type
 	 */
-	private void getImages(final IconObtainedCallback callback, int[] ids, final int type)
+	private void getImages(final IconObtainedCallback callback, Integer[] ids, final int type)
 	{		
 		/* add bitmap ids to the list of bitmaps being loaded */
 		for (int id : ids) 
@@ -487,9 +487,9 @@ public class ImageService {
 	{
 		if (cacheSizes == null) 
 		{
-			this.cacheSizes[CHAR] = 4 * 1024 * 1024; // 4 MB
-			this.cacheSizes[CORP] = 2 * 1024 * 1024; // 2 MB
-			this.cacheSizes[ICON] = 4 * 1024 * 1024; // 4 MB
+			this.cacheSizes[CHAR] = 2 * 1024 * 1024; // 4 MB
+			this.cacheSizes[CORP] = 1 * 1024 * 1024; // 2 MB
+			this.cacheSizes[ICON] = 2 * 1024 * 1024; // 4 MB
 		} 
 		else for (int i = 0; i < 3; i++) this.cacheSizes[i] = cacheSizes[i];
 		

@@ -51,11 +51,6 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	
 	private SparseArray<String> currentTypeNames = new SparseArray<String>();
 	
-	private SparseArray<TypeInfo> currentTypeInfo;
-	
-	private SparseArray<Float> currentValues;
-
-	
 	/**
 	 * The main list view for the station list layout
 	 */
@@ -112,30 +107,10 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			itemCount.setText(currentItemList.length + " items");
 					
 			adapter = new InventoryArrayAdapter(context, stationRowResourceID, currentItemList);
-			
-			/* Pull the typeIDs from the array of assets into their own array */
-			final Integer[] typeIDs = new Integer[currentItemList.length];
-			for (int x = 0; x < currentItemList.length; x++) typeIDs[x] = currentItemList[x].attributes().typeID;
-			
-			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>()
-			{
-				@Override
-				public void onUpdate(SparseArray<TypeInfo> retTypeInfo) 
-				{					
-					/* 
-					 * The returned String array matches the order provided by the input typeID array.
-					 * This will pair them up in a SparseArray so the type name strings can be accessed by typeID
-					 */
-					for (int i = 0; i < typeIDs.length; i++) currentTypeNames.put(typeIDs[i], retTypeInfo.get(typeIDs[i]).typeName);
-					
-					currentTypeInfo = retTypeInfo;
-					adapter.obtainedTypeNames();
-					
-					calculatePrices(currentItemList);
-				}
-			}, typeIDs);
-			
 			itemGridView.setAdapter(adapter);
+		
+			if (parentFragment.getPrices().size() > 0) calculatePrices(currentItemList);
+			
 			initialLoadComplete = true;
 		}
 		
@@ -151,52 +126,58 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	
 	private void calculatePrices(final AssetsEntity[] items)
 	{
-		ArrayList<Integer> typeIDsList = new ArrayList<Integer>();
 		final SparseIntArray typeIDsCount = new SparseIntArray();
-		
+				
 		for (int i = 0; i < items.length; i++)
 		{
 			int typeID = items[i].attributes().typeID;
 			
 			/* The item is on the market, and has a price */
-			if (currentTypeInfo.get(typeID).marketGroupID != -1)
-			{
-				if (!typeIDsList.contains(typeID)) typeIDsList.add(typeID);
-				
+			if (parentFragment.getTypeInfo().get(typeID).marketGroupID != -1)
+			{				
 				int currentTypeCount = typeIDsCount.get(typeID);
 				typeIDsCount.put(typeID, currentTypeCount + items[i].attributes().quantity);
 			}
 			
+			if (items[i].containsAssets()) countChildAssets(items[i], typeIDsCount);
+		}
+
+		double totalValue = 0;
+		
+		for (int i = 0; i < typeIDsCount.size(); ++i)
+		{
+			int typeID = typeIDsCount.keyAt(i);
+			int quantity = typeIDsCount.get(typeID);
+			
+			try 
+			{
+				float value = parentFragment.getPrices().get(typeID);			
+				totalValue += value * quantity;
+			}
+			catch (NullPointerException e) { /* e.printStackTrace(); */ }
 		}
 		
-		final Integer[] typeIDs = new Integer[typeIDsList.size()];
-		typeIDsList.toArray(typeIDs);
-		
-		PriceService.getInstance(context).getValues(typeIDs, new APICallback<SparseArray<Float>>() 
+		DecimalFormat twoDForm = new DecimalFormat("#,###.##");				
+		valueOfItems.setText(twoDForm.format(totalValue) + " ISK");
+	}
+	
+	private void countChildAssets(AssetsEntity parent, SparseIntArray typeIDsCount)
+	{
+		ArrayList<AssetsEntity> containedAssets = parent.getContainedAssets();
+				
+		for (AssetsEntity entity : containedAssets)
 		{
-			@Override
-			public void onUpdate(SparseArray<Float> updatedData)
+			int typeID = entity.attributes().typeID;
+			
+			/* The item is on the market, and has a price */
+			if (parentFragment.getTypeInfo().get(typeID).marketGroupID != -1)
 			{				
-				currentValues = updatedData;
-				
-				double totalValue = 0;
-
-				for (int typeID : typeIDs)
-				{
-					int quantity = typeIDsCount.get(typeID);
-					
-					try 
-					{
-						float value = updatedData.get(typeID);			
-						totalValue += value * quantity;
-					}
-					catch (NullPointerException e) { /* e.printStackTrace(); */ }
-				}
-				
-				DecimalFormat twoDForm = new DecimalFormat("#,###.##");				
-				valueOfItems.setText(twoDForm.format(totalValue) + " ISK");
+				int currentTypeCount = typeIDsCount.get(typeID);
+				typeIDsCount.put(typeID, currentTypeCount + entity.attributes().quantity);
 			}
-		});
+			
+			if (entity.containsAssets()) countChildAssets(entity, typeIDsCount);			
+		}
 	}
 	
 	private class InventoryArrayAdapter extends ArrayAdapter<AssetsEntity>
@@ -207,7 +188,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 		    	
     	HashMap<TextView, Integer> typeNameMappings = new HashMap<TextView, Integer>();
     	
-    	boolean typeNamesLoaded = false;
+    	boolean typeNamesLoaded = parentFragment.getTypeInfo().size() > 0;
     	
 		public InventoryArrayAdapter(Context context, int layoutResourceID, AssetsEntity[] items) 
 		{
@@ -259,7 +240,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			for (TextView textView : typeNameMappings.keySet())
 			{
 				int typeID = typeNameMappings.get(textView);
-				textView.setText(currentTypeNames.get(typeID));
+				textView.setText(parentFragment.getTypeInfo().get(typeID).typeName);
 			}			
 		}
 		
@@ -276,7 +257,8 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			final LinearLayout iconBorder = (LinearLayout) rootView.findViewById(R.id.char_detail_assets_list_item_typeIconBorder);
 			
 			typeNameMappings.put(text, typeID);
-			if (typeNamesLoaded) text.setText(currentTypeNames.get(typeID));
+			if (typeNamesLoaded) text.setText(parentFragment.getTypeInfo().get(typeID).typeName);
+			else text.setText(String.valueOf(typeID));
 			
 			icon.setTag(typeID);
 			icon.setImageBitmap(null);
@@ -314,6 +296,18 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	@Override
 	public SparseArray<Float> getValues() 
 	{
-		return currentValues;
+		return parentFragment.getPrices();
+	}
+
+	@Override
+	public void obtainedPrices() 
+	{
+		calculatePrices(currentItemList);
+	}
+
+	@Override
+	public void obtainedTypeInfo() 
+	{
+		adapter.obtainedTypeNames();
 	}
 }

@@ -42,15 +42,13 @@
 		            android:id="@+id/current_skill"
 		            android:layout_width="match_parent"
 		            android:layout_height="wrap_content"
-		            android:textColor="#FFF"
-		            android:text="Weapon Upgrades V" />
+		            android:textColor="#FFF"/>
 		        <TextView 
 		            android:id="@+id/current_skill_time"
 		            android:layout_width="match_parent"
 		            android:layout_height="wrap_content"
 		            android:textColor="#AAA"
-		            android:textSize="12sp"
-		            android:text="5d 12h 3s Remaining" />"
+		            android:textSize="12sp"/>
 		    </LinearLayout>
 		    <LinearLayout 
 		        android:layout_width="0dp"
@@ -62,16 +60,14 @@
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
 		            android:layout_gravity="right"
-		            android:textColor="#FFF"
-		            android:text="68,382,424" />
+		            android:textColor="#FFF"/>
 		        <TextView 
 		            android:id="@+id/current_clone"
 		            android:layout_width="wrap_content"
 		            android:layout_height="wrap_content"
 		            android:layout_gravity="right"
 		            android:textColor="#AAA"
-		            android:textSize="12sp"
-		            android:text="(72,000,000)" />
+		            android:textSize="12sp" />
 		    </LinearLayout>
 	    </LinearLayout>
 	</RelativeLayout>
