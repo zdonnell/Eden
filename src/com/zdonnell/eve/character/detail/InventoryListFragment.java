@@ -1,10 +1,12 @@
 package com.zdonnell.eve.character.detail;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,10 +17,12 @@ import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zdonnell.eve.R;
@@ -33,11 +37,26 @@ import com.zdonnell.eve.staticdata.api.TypeInfo;
 
 public class InventoryListFragment extends Fragment implements IAssetsSubFragment 
 {
+	private static final int GRID = 0;
+	private static final int LIST = 1;
+	private static final int LIST_COMPACT = 2;
+	
+	public static final String[] layoutTypes = new String[3];
+	static 
+	{
+		layoutTypes[GRID] = "Grid";
+		layoutTypes[LIST] = "List";
+		layoutTypes[LIST_COMPACT] = "Compact List";
+	}
 	
 	/**
 	 * Refrence to the layout to use for list item construction
 	 */
-	private final int stationRowResourceID = R.layout.char_detail_assets_list_item;
+	private int stationRowResourceID = R.layout.char_detail_assets_list_item;
+	
+	private int displayType;
+	
+	private LinearLayout rootView;
 	
 	/**
 	 * Fragment Context (Activity Context)
@@ -54,7 +73,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	/**
 	 * The main list view for the station list layout
 	 */
-	private GridView itemGridView;
+	private AbsListView absListView;
 	
 	private boolean isFragmentCreated = false;
 	
@@ -76,7 +95,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	public void assetsUpdated(AssetsEntity[] assets) 
 	{			
 		this.currentItemList = assets;
-		if (isFragmentCreated) updateGridView();
+		if (isFragmentCreated) updateView();
 	}
 	
 	@Override
@@ -84,9 +103,9 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
     {
     	context = inflater.getContext();
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets, container, false);
+    	this.rootView = inflatedView;
     	
-    	itemGridView = (GridView) inflatedView.findViewById(R.id.char_detail_assets_list);
-    	itemGridView.setNumColumns(4);
+    	setupMainView(inflatedView, -1); /* passing -1 triggers the layout type to be determined from saved prefs */
     	
     	parentAssetName = (TextView) inflatedView.findViewById(R.id.char_detail_assets_inventory_parentName);
     	itemCount = (TextView) inflatedView.findViewById(R.id.char_detail_assets_inventory_itemCount);
@@ -94,20 +113,59 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
     	
     	parentAssetName.setText(parentFragment.getCurrentParentName());
     	
-    	if (!initialLoadComplete && currentItemList != null) updateGridView();
+    	if (!initialLoadComplete && currentItemList != null) updateView();
     	
     	isFragmentCreated = true;
     	return inflatedView;
     }
 	
-	private void updateGridView()
+	private void setupMainView(LinearLayout rootView, int layoutType)
+	{
+		SharedPreferences prefs = context.getSharedPreferences("eden_assets_preferences", Context.MODE_PRIVATE);
+		
+		if (layoutType < 0) displayType = prefs.getInt("display_type", GRID);
+		else 
+		{
+			displayType = layoutType;
+			prefs.edit().putInt("display_type", layoutType).commit();
+		}
+		
+		GridView gridView = (GridView) rootView.findViewById(R.id.char_detail_assets_grid);
+		ListView listView = (ListView) rootView.findViewById(R.id.char_detail_assets_list);
+		
+		listView.setVisibility(View.GONE);
+		gridView.setVisibility(View.GONE);
+		
+		switch (displayType)
+		{
+		case GRID:
+	    	absListView = gridView;
+	    	((GridView) absListView).setNumColumns(4);
+	    	stationRowResourceID = R.layout.char_detail_assets_grid_item;
+			break;
+	    	
+		case LIST:
+	    	absListView = listView;
+	    	stationRowResourceID = R.layout.char_detail_assets_list_item;
+			break;
+			
+		case LIST_COMPACT:
+	    	absListView = listView;
+	    	stationRowResourceID = R.layout.char_detail_assets_listcompact_item;
+			break;
+		}
+		
+		absListView.setVisibility(View.VISIBLE);
+	}
+	
+	private void updateView()
 	{
 		if (adapter == null)
 		{	
 			itemCount.setText(currentItemList.length + " items");
 					
 			adapter = new InventoryArrayAdapter(context, stationRowResourceID, currentItemList);
-			itemGridView.setAdapter(adapter);
+			absListView.setAdapter(adapter);
 		
 			if (parentFragment.getPrices().size() > 0) calculatePrices(currentItemList);
 			
@@ -185,10 +243,15 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 		private int layoutResID;
 		
 		private LayoutInflater inflater;
+		
+		DecimalFormat twoDForm = new DecimalFormat("#,###");				
 		    	
     	HashMap<TextView, Integer> typeNameMappings = new HashMap<TextView, Integer>();
+    	HashMap<TextView, Integer> typeValueMappings = new HashMap<TextView, Integer>();
     	
     	boolean typeNamesLoaded = parentFragment.getTypeInfo().size() > 0;
+    	
+    	boolean typeValuesLoaded = parentFragment.getPrices().size() > 0;
     	
 		public InventoryArrayAdapter(Context context, int layoutResourceID, AssetsEntity[] items) 
 		{
@@ -244,6 +307,18 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			}			
 		}
 		
+		public void obtainedTypeValues()
+		{
+			typeNamesLoaded = true;
+			
+			/* Update Type Names */
+			for (TextView textView : typeValueMappings.keySet())
+			{
+				int typeID = typeValueMappings.get(textView);
+				textView.setText(parentFragment.getTypeInfo().get(typeID).typeName);
+			}
+		}
+		
 		private void setupAsset(final LinearLayout rootView, AssetsEntity.Item item)
 		{
 			boolean isPackaged = !item.attributes().singleton;
@@ -254,12 +329,54 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			final TextView text = (TextView) rootView.findViewById(R.id.char_detail_assets_list_item_name);
 			final ImageView icon = (ImageView) rootView.findViewById(R.id.char_detail_assets_list_item_typeIcon);
 			final TextView quantity = (TextView) rootView.findViewById(R.id.char_detail_assets_list_item_count);
-			final LinearLayout iconBorder = (LinearLayout) rootView.findViewById(R.id.char_detail_assets_list_item_typeIconBorder);
 			
 			typeNameMappings.put(text, typeID);
 			if (typeNamesLoaded) text.setText(parentFragment.getTypeInfo().get(typeID).typeName);
 			else text.setText(String.valueOf(typeID));
 			
+			if (displayType != LIST_COMPACT) configureIcon(icon, typeID);
+			if (displayType == LIST)
+			{
+				final TextView iskValue = (TextView) rootView.findViewById(R.id.char_detail_assets_list_item_value);
+				
+				if (typeValuesLoaded)
+				{
+					iskValue.setText(twoDForm.format(calculateValue(item)) + " ISK");
+				}
+			}
+			
+			quantity.setVisibility(isPackaged ? View.VISIBLE : View.GONE);
+			
+			if (isPackaged) 
+			{
+				if (displayType == GRID)
+				{
+					quantity.setText(String.valueOf(count));
+				}
+				else quantity.setText("Stack: " + String.valueOf(count));
+			}
+		}
+		
+		private float calculateValue(AssetsEntity entity)
+		{
+			float totalValue = 0;
+			
+			try { totalValue = parentFragment.getPrices().get(entity.attributes().typeID) * entity.attributes().quantity; }
+			catch (NullPointerException e) { /* just catch the error if the type doesn't have a value */ }
+			
+			if (entity.containsAssets())
+			{
+				for (AssetsEntity childEntity : entity.getContainedAssets())
+				{
+					totalValue += calculateValue(childEntity);
+				}
+			}
+			
+			return totalValue;
+		}
+		
+		private void configureIcon(final ImageView icon, final int typeID)
+		{
 			icon.setTag(typeID);
 			icon.setImageBitmap(null);
 			
@@ -272,25 +389,31 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 					{											
 						icon.setImageBitmap(bitmaps.get(typeID));	
 						
-						float colWidthWithPadding = (float) itemGridView.getWidth() / (float) itemGridView.getNumColumns();
-						int imageWidth = (int) (colWidthWithPadding - (itemGridView.getPaddingLeft() + itemGridView.getPaddingRight()));
-						
-						icon.setLayoutParams(new LinearLayout.LayoutParams(imageWidth, imageWidth));
+						if (displayType == GRID)
+						{
+							float colWidthWithPadding = (float) absListView.getWidth() / (float) ((GridView) absListView).getNumColumns();
+							int imageWidth = (int) (colWidthWithPadding - (absListView.getPaddingLeft() + absListView.getPaddingRight()));
+							
+							icon.setLayoutParams(new LinearLayout.LayoutParams(imageWidth, imageWidth));
+						}
 					}
 				}
 			}, typeID);
-			
-			quantity.setVisibility(isPackaged ? View.VISIBLE : View.INVISIBLE);
-			iconBorder.setBackgroundColor(isPackaged ? Color.parseColor("#000000") : Color.parseColor("#000000"));
-			
-			if (isPackaged) quantity.setText(String.valueOf(count));
 		}
 	}
 
 	@Override
 	public SparseArray<String> getNames() 
-	{			
-		return currentTypeNames;
+	{		
+		SparseArray<TypeInfo> typeInfo = parentFragment.getTypeInfo();
+		SparseArray<String> typeNames = new SparseArray<String>(typeInfo.size());
+		
+		for (int i = 0; i < typeInfo.size(); ++i)
+		{
+			typeNames.put(typeInfo.keyAt(i), typeInfo.valueAt(i).typeName);
+		}
+		
+		return typeNames;
 	}
 
 	@Override
@@ -309,5 +432,13 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	public void obtainedTypeInfo() 
 	{
 		adapter.obtainedTypeNames();
+	}
+
+	@Override
+	public void updateLayoutStyle(int type) 
+	{
+		setupMainView(rootView, type);
+		adapter = null; /* force refresh */
+		updateView();
 	}
 }

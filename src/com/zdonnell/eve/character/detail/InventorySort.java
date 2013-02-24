@@ -120,8 +120,8 @@ public class InventorySort
 				if (values.get(lhID) == null) return 1;
 				if (values.get(rhID) == null) return -1;
 				
-				float lhValue = values.get(lhID) * leftItem.attributes().quantity;
-				float rhValue = values.get(rhID) * rightItem.attributes().quantity;
+				float lhValue = calculateValue(leftItem);
+				float rhValue = calculateValue(rightItem);
 				
 				if (lhValue < rhValue) return 1;
 				else if (lhValue > rhValue) return -1;
@@ -139,6 +139,24 @@ public class InventorySort
 				else if (values.get(lhID) > values.get(rhID)) return -1;
 				else return 0;
 			}
+		}
+		
+		private float calculateValue(AssetsEntity entity)
+		{
+			float totalValue = 0;
+			
+			try { totalValue = values.get(entity.attributes().typeID) * entity.attributes().quantity; }
+			catch (NullPointerException e) { /* just catch the error if the type doesn't have a value */ }
+			
+			if (entity.containsAssets())
+			{
+				for (AssetsEntity childEntity : entity.getContainedAssets())
+				{
+					totalValue += calculateValue(childEntity);
+				}
+			}
+			
+			return totalValue;
 		}
 	}
 }

@@ -1,0 +1,28 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item android:id="@+id/menu_search"
+          android:title="Search"
+          android:icon="@drawable/ic_menu_search"
+          android:showAsAction="ifRoom|collapseActionView"
+          android:actionViewClass="android.widget.SearchView" 
+          />
+    <item android:id="@+id/sort_by"
+          android:title="Sort By"
+          android:showAsAction="ifRoom|withText"
+          android:icon="@drawable/sort"
+           />
+    <item android:id="@+id/layout_style"
+          android:title="Layout"
+          android:showAsAction="ifRoom|withText"
+          android:icon="@drawable/layout"
+           />
+    <!-- <item android:id="@+id/settings"
+          android:icon="@drawable/settings"
+          android:title="@string/settings"
+          android:showAsAction="ifRoom|withText"
+          />
+     <item android:id="@+id/main_settings"
+          android:icon="@drawable/settings"
+          android:title="@string/settings"
+          android:showAsAction="ifRoom" /> -->
+</menu>

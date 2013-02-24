@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.ImageService;
@@ -28,8 +29,8 @@ import com.zdonnell.eve.staticdata.api.TypeInfo;
 
 public class ParentAssetsFragment extends Fragment {
     
-    private final static int STATION = 0;
-    private final static int ASSET = 1;
+    public final static int STATION = 0;
+    public final static int ASSET = 1;
 	
 	private APICharacter character;
         
@@ -52,15 +53,18 @@ public class ParentAssetsFragment extends Fragment {
     private SparseArray<TypeInfo> typeInfo = new SparseArray<TypeInfo>();
     
     private SparseArray<Float> prices = new SparseArray<Float>();
+    
+    private BaseActivity parentActivity;
             
     /**
      * Constructor
      * 
      * @param character the {@link APICharacter} to build the Attribute info from
      */
-    public ParentAssetsFragment(APICharacter character) 
+    public ParentAssetsFragment(APICharacter character, BaseActivity activity) 
     {
     	this.character = character;
+    	this.parentActivity = activity;
     }
 
     @Override
@@ -103,7 +107,7 @@ public class ParentAssetsFragment extends Fragment {
 
     
     public void updateChild(AssetsEntity[] newAssetsSet, int type, boolean isBack)
-    {    	
+    {    	    	
     	FragmentTransaction loadNextAssets = this.getChildFragmentManager().beginTransaction();
     	IAssetsSubFragment nextFragment = null;
     	
@@ -127,6 +131,8 @@ public class ParentAssetsFragment extends Fragment {
     	
     	loadNextAssets.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) nextFragment);
     	loadNextAssets.commit();
+    	
+    	parentActivity.invalidateOptionsMenu();
     }
     
     private void prepareAssets(AssetsEntity[] locations)
@@ -278,6 +284,11 @@ public class ParentAssetsFragment extends Fragment {
     	childFragment.assetsUpdated(currentAssets);
     }
     
+    public void updateLayoutStyle(int layoutType)
+    {
+    	childFragment.updateLayoutStyle(layoutType);
+    }
+    
     public SparseArray<StationInfo> getStationInfo()
     {
     	return currentStationInfo;
@@ -305,5 +316,10 @@ public class ParentAssetsFragment extends Fragment {
     	}
 		
 		return false;
+	}
+	
+	public int assetsType()
+	{
+		return (currentAssets[0] instanceof AssetsEntity.Station ? STATION : ASSET);
 	}
 }

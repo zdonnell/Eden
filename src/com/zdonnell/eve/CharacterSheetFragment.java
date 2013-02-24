@@ -375,25 +375,6 @@ public class CharacterSheetFragment extends Fragment {
 				cloneNameView.setText(Html.fromHtml("<FONT COLOR='#FF4444'>" + formatter.format(characterSheet.getCloneSkillPoints()) + " SP</FONT>"));
 			}
 			else cloneNameView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + formatter.format(characterSheet.getCloneSkillPoints()) + " SP</FONT>"));
-		
-			/*TextView currentShipName = (TextView) rootView.findViewById(R.id.character_sheet_ship_name);
-			TextView currentLocation = (TextView) rootView.findViewById(R.id.character_sheet_location);
-			final ImageView currentShipIcon = (ImageView) rootView.findViewById(R.id.current_ship_icon);
-
-			currentShipName.setText(characterInfo.getCurShipInfo().getName() + " (" + characterInfo.getCurShipInfo().getTypeName() + ")");
-			currentShipName.setSelected(true);
-			currentShipName.setSingleLine(true);
-			currentLocation.setText(characterInfo.getLocation());
-		
-			final int shipTypeID = characterInfo.getCurShipInfo().getTypeID();
-			imageService.getTypes( new ImageService.IconObtainedCallback() {
-				
-				@Override
-				public void iconsObtained(SparseArray<Bitmap> bitmaps) {
-					currentShipIcon.setImageBitmap(bitmaps.get(shipTypeID));
-					
-				}
-			}, shipTypeID);*/
 			
 			setSubTexts();
 		}

@@ -9,9 +9,47 @@
         android:background="#181818"   
         android:id="@+id/char_detail_assets_stations_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:headerDividersEnabled="true"
         android:divider="#000"
     	android:dividerHeight="1dp"
         android:numColumns="4" />
+    <View
+	    android:layout_width="match_parent"
+	    android:layout_height="1dp"
+	    android:background="#ff8800"
+	    />
+    <LinearLayout
+        android:id="@+id/char_detail_assets_stations_toolbar"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_weight="0"
+        android:layout_height="50dp"
+        android:background="#000"
+        android:padding="6dp" >
+        <TextView 
+            android:id="@+id/char_detail_assets_stations_parentName"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="12sp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="#ccc"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+            <TextView 
+	            android:id="@+id/char_detail_assets_stations_totalValue"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="right"
+	            android:textSize="12sp"
+	            android:textStyle="bold"
+	            android:textColor="#449944"/>
+        </LinearLayout>         
+    </LinearLayout>
 </LinearLayout>

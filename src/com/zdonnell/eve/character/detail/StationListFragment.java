@@ -65,6 +65,8 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	
 	private boolean initialLoadComplete = false;
 	
+	private TextView stationsCount, stationsValue;
+	
 	private ParentAssetsFragment parentFragment;
 
 	
@@ -88,6 +90,8 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets_stations, container, false);
     	
     	stationListView = (ListView) inflatedView.findViewById(R.id.char_detail_assets_stations_list);
+    	stationsCount = (TextView) inflatedView.findViewById(R.id.char_detail_assets_stations_parentName);
+    	stationsValue = (TextView) inflatedView.findViewById(R.id.char_detail_assets_stations_totalValue);
     	
     	if (!initialLoadComplete && currentStationList != null) updateListView();
     	
@@ -98,6 +102,8 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	private void updateListView()
 	{
 		currentStationInfo = parentFragment.getStationInfo();
+		
+		stationsCount.setText(currentStationList.length + " stations");
 		
 		adapter = new StationArrayAdapter(context, stationRowResourceID, currentStationList);
 		stationListView.setAdapter(adapter);
@@ -148,6 +154,8 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		stationValues = new SparseArray<Long>(currentStationList.length);
 		SparseArray<Float> prices = parentFragment.getPrices();
 		
+		double totalAssetValue = 0;
+		
 		for (AssetsEntity assetsEntity : currentStationList)
 		{
 			double stationValue = 0;
@@ -164,11 +172,15 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 				if (prices.get(uniqueItemTypeID) != null)
 				{
 					stationValue += prices.get(uniqueItemTypeID) * curStationAssetCounts.valueAt(i);
+					totalAssetValue += prices.get(uniqueItemTypeID) * curStationAssetCounts.valueAt(i);
 				}
 			}
 			
 			stationValues.put(stationID, Math.round(stationValue));
 		}
+		
+		NumberFormat formatter = NumberFormat.getInstance();
+		stationsValue.setText(formatter.format(totalAssetValue) + " ISK");
 		
 		adapter.obtainedStationValues(stationValues);
 	}	
@@ -323,6 +335,12 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	@Override
 	public void obtainedTypeInfo() 
 	{
+		
+	}
+
+	@Override
+	public void updateLayoutStyle(int type) {
+		// TODO Auto-generated method stub
 		
 	}
 

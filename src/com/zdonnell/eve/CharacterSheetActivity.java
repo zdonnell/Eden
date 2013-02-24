@@ -24,6 +24,8 @@ public class CharacterSheetActivity extends BaseActivity
 		super(R.string.app_name);
 
 	}
+	
+	private CharacterSheetActivity activity;
 
 	private boolean mTwoPane;
     
@@ -38,6 +40,8 @@ public class CharacterSheetActivity extends BaseActivity
         setContentView(R.layout.activity_sheetitem_list);
         
 		setSlidingActionBarEnabled(true);
+		
+		activity = this;
 
         characterInfo = getIntent().getExtras().getStringArray("character");
         assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
@@ -75,7 +79,7 @@ public class CharacterSheetActivity extends BaseActivity
             	fragment = new WalletFragment(assembledChar);
         		break;
         	case CharacterSheetFragment.ASSETS:
-            	fragment = new ParentAssetsFragment(assembledChar);
+            	fragment = new ParentAssetsFragment(assembledChar, activity);
         		break;
         	default:
         		fragment = new AttributesFragment(assembledChar);

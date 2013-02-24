@@ -1,7 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     
+    <item android:id="@+id/menu_search"
+          android:title="Search"
+          android:icon="@drawable/ic_menu_search"
+          android:showAsAction="ifRoom|collapseActionView"
+          android:actionViewClass="android.widget.SearchView" 
+          />
     <item android:id="@+id/sort_by"
-          android:title="SORT BY"
+          android:title="Sort By"
+          android:icon="@drawable/sort"
           android:showAsAction="ifRoom|withText"
            />
     <!-- <item android:id="@+id/settings"

@@ -29,6 +29,7 @@ import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.character.detail.AttributesFragment;
+import com.zdonnell.eve.character.detail.InventoryListFragment;
 import com.zdonnell.eve.character.detail.InventorySort;
 import com.zdonnell.eve.character.detail.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.SkillQueueFragment;
@@ -47,6 +48,8 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 	}
 
 	private APICharacter assembledChar;
+	
+	private CharacterDetailActivity activity;
 		
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -73,6 +76,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
     
         final ActionBar actionBar = getActionBar();
+        activity = this;
         
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setTitle(new CharacterDB(getBaseContext()).getCharacterName(Integer.valueOf(characterInfo[0])));
@@ -165,7 +169,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
             	fragment = new WalletFragment(assembledChar);
         		break;
         	case CharacterSheetFragment.ASSETS:
-            	fragment = assetsFragment = new ParentAssetsFragment(assembledChar);
+            	fragment = assetsFragment = new ParentAssetsFragment(assembledChar, activity);
         		break;
         	default:
         		fragment = new AttributesFragment(assembledChar);
@@ -209,11 +213,28 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     public boolean onCreateOptionsMenu(Menu menu)
     {
     	super.onCreateOptionsMenu(menu);
-        switch (getActionBar().getSelectedNavigationIndex())
+        
+    	switch (getActionBar().getSelectedNavigationIndex())
         {
         case CharacterSheetFragment.ASSETS:
         	MenuInflater menuInflater = getMenuInflater();
-            menuInflater.inflate(R.menu.char_detail_assets_actionbar_items, menu);
+            
+        	int assetsType;
+        	
+        	if (mSectionsPagerAdapter.assetsFragment() == null) assetsType = ParentAssetsFragment.STATION;
+        	else assetsType = mSectionsPagerAdapter.assetsFragment().assetsType();
+        	
+        	switch (assetsType)
+        	{
+        	case ParentAssetsFragment.STATION:
+            	menuInflater.inflate(R.menu.char_detail_assetsstation_actionbar_items, menu);
+        		break;
+        		
+        	case ParentAssetsFragment.ASSET:
+            	menuInflater.inflate(R.menu.char_detail_assetsasset_actionbar_items, menu);
+        		break;
+        	}
+        	
         	break;
         }
     	
@@ -225,6 +246,9 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 	    {
 	    case R.id.sort_by:
 	          new SortByDialog().show(getSupportFragmentManager(), "Sort By Dialog");
+	          break;
+	    case R.id.layout_style:
+	          new LayoutDialog().show(getSupportFragmentManager(), "Layout Type Dialog");
 	          break;
 	    }
 	    return true;
@@ -245,6 +269,30 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 			               {
 			               		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
 			               		assetsFragment.updateSort(which);
+			               }
+		               }
+		           }
+    	   );
+    	    
+    	    return builder.create();
+    	}
+    }
+    
+    private class LayoutDialog extends DialogFragment
+    {
+    	@Override
+    	public Dialog onCreateDialog(Bundle savedInstanceState) 
+    	{
+    	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    	    builder.setTitle("Layout Style")
+    	           .setItems(InventoryListFragment.layoutTypes, new DialogInterface.OnClickListener() 
+		           {
+		               public void onClick(DialogInterface dialog, int which) 
+		               {
+		            	   if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.ASSETS)
+			               {
+			               		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
+			               		assetsFragment.updateLayoutStyle(which);
 			               }
 		               }
 		           }

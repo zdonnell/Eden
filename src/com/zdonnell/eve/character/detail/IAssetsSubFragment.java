@@ -10,6 +10,8 @@ public interface IAssetsSubFragment
 	
 	public void assetsUpdated(AssetsEntity[] assets);
 	
+	public void updateLayoutStyle(int type);
+	
 	public void obtainedPrices();
 	
 	public void obtainedTypeInfo();
