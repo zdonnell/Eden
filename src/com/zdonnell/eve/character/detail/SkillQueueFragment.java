@@ -3,6 +3,7 @@ package com.zdonnell.eve.character.detail;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -21,6 +22,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zdonnell.eve.R;
+import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.StaticTypeDatabase;
 import com.zdonnell.eve.api.character.APICharacter;
@@ -190,6 +192,19 @@ public class SkillQueueFragment extends Fragment {
 					skillName.setText(typeNames.valueAt(0));
 				}
 			}, new int[] { skillQueue[position].skillID });
+			
+			final Intent intent = new Intent(context, TypeInfoActivity.class);
+			intent.putExtra("typeID", skillQueue[position].skillID);
+			
+			preparedView.setOnLongClickListener(new View.OnLongClickListener() 
+			{	
+				@Override
+				public boolean onLongClick(View v) 
+				{
+	            	startActivity(intent);
+					return true;
+				}
+			});
 									
 			return preparedView;
 		}

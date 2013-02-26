@@ -6,6 +6,8 @@ public class TypeInfo {
 
 	public int groupID;
 	
+	public float m3;
+	
 	public int marketGroupID = -1;
 	
 	public String typeName;

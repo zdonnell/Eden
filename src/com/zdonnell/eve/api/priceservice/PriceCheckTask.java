@@ -35,7 +35,7 @@ public class PriceCheckTask extends AsyncTask<Integer, Integer, SparseArray<Floa
 {
 	private final static String apiURL = "http://api.eve-central.com/api/marketstat";
 	
-	private final int chunkSize = 25;
+	private final int chunkSize = 1000;
 	
 	private APICallback<SparseArray<Float>> callback;
 	

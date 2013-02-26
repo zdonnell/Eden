@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Stack;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -61,6 +62,8 @@ public class ParentAssetsFragment extends Fragment {
     private BaseActivity parentActivity;
     
     private String searchFilter;
+    
+    private ProgressDialog initialLoadDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -74,7 +77,7 @@ public class ParentAssetsFragment extends Fragment {
     	context = inflater.getContext();
     	
     	int keyID = getArguments().getInt("keyID");
-    	String vCode = getArguments().getString("keyID");
+    	String vCode = getArguments().getString("vCode");
     	int characterID = getArguments().getInt("characterID");
     	character = new APICharacter(new APICredentials(keyID, vCode), characterID, context);
     	
@@ -90,6 +93,8 @@ public class ParentAssetsFragment extends Fragment {
     	loadStationList.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) childFragment);
     	loadStationList.commit();
     	
+    	initialLoadDialog = ProgressDialog.show(context, "Loading", "Obtaining Asset List");
+    	
     	character.getAssetsList(new APICallback<AssetsEntity[]>()
     	{
 			@Override
@@ -98,6 +103,7 @@ public class ParentAssetsFragment extends Fragment {
 				Arrays.sort(locationArray, new InventorySort.Count());
 				currentAssets = locationArray;
 				
+				initialLoadDialog.setMessage("Getting Asset Type Information");
 				prepareAssets(locationArray);
 			}
     	});   	
@@ -190,11 +196,7 @@ public class ParentAssetsFragment extends Fragment {
 					uniqueStationTypeIDs[i] = uniqueStationTypeIDsList.get(i);
 				}
 				
-				/* Put the station images in memory for the stations sub fragment */
-				ImageService.getInstance(context).getTypes(null, uniqueStationTypeIDs);
 				
-				/* Give the assets list to the stations fragment */
-				childFragment.assetsUpdated(currentAssets);
 			}
     	}, stationIDs);
     }
@@ -217,6 +219,7 @@ public class ParentAssetsFragment extends Fragment {
 			@Override
 			public void onUpdate(SparseArray<TypeInfo> rTypeInfo) 
 			{
+				initialLoadDialog.setMessage("Checking Price Values");
 				obtainedTypeInfo(rTypeInfo);
 			}
     	}, uniqueTypeIDs);
@@ -245,7 +248,9 @@ public class ParentAssetsFragment extends Fragment {
 			public void onUpdate(SparseArray<Float> updatedData) 
 			{
 				prices = updatedData;
+				childFragment.assetsUpdated(currentAssets);
 				childFragment.obtainedPrices();
+				initialLoadDialog.dismiss();
 			}
 		});
     }

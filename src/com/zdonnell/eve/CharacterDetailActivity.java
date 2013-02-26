@@ -78,7 +78,6 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	  super.onCreate(savedInstanceState);
           setContentView(R.layout.character_detail);
           
-  		setSlidingActionBarEnabled(true);
     	
     	String[] characterInfo = getIntent().getExtras().getStringArray("character");
     	assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
@@ -126,6 +125,9 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         
         
         mViewPager.setCurrentItem(getIntent().getExtras().getInt("position"));
+        
+  		setSlidingActionBarEnabled(true);
+
     }
 	
     @Override

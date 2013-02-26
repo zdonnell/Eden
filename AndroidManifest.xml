@@ -23,6 +23,11 @@
                 android:value="com.zdonnell.eve.MainDualActivity" />
         </activity>
         <activity
+            android:name=".TypeInfoActivity"
+            android:label="@string/type_info"
+            >
+        </activity>
+        <activity
             android:name=".CharactersActivity"
             android:label="@string/title_activity_main_strip" >
             <intent-filter>

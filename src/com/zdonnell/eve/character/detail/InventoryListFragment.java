@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -25,7 +26,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.zdonnell.eve.CharacterSheetActivity;
 import com.zdonnell.eve.R;
+import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
@@ -289,6 +292,19 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 						parentFragment.setCurrentParentName(currentTypeNames.get(assetItem.attributes().typeID));
 						parentFragment.updateChild(subAssets, 1, false, false);
 					}
+				}
+			});
+			
+			final Intent intent = new Intent(context, TypeInfoActivity.class);
+			intent.putExtra("typeID", assetItem.attributes().typeID);
+			
+			itemView.setOnLongClickListener(new View.OnLongClickListener() 
+			{	
+				@Override
+				public boolean onLongClick(View v) 
+				{
+	            	startActivity(intent);
+					return true;
 				}
 			});
 			

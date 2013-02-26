@@ -281,6 +281,8 @@ public class StaticData {
 					catch (JSONException e) { }
 					try { typeInfo.description = typeInfoObject.getString("description"); }
 					catch (JSONException e) { }
+					try { typeInfo.m3 = (float) typeInfoObject.getDouble("volume"); }
+					catch (JSONException e) { }
 					
 					typeInfoSet.put(typeInfo.typeID, typeInfo);
 				}

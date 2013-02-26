@@ -1,6 +1,7 @@
 package com.zdonnell.eve.character.detail;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zdonnell.eve.R;
+import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterSheet;

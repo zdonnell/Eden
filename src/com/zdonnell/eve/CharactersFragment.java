@@ -197,6 +197,7 @@ public class CharactersFragment extends Fragment {
 		private void loadPortrait(final View mainView, int characterID)
 		{
 			final ImageView portrait = (ImageView) mainView.findViewById(R.id.char_image);
+			portrait.setImageBitmap(null);
 			
 			imageService.getPortraits(new ImageService.IconObtainedCallback() 
 			{	

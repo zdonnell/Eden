@@ -24,7 +24,7 @@ public class StaticTypeDatabase
 	public final static String TABLE_ROW_MARKETGROUPID = "market_group_id";
 	public final static String TABLE_ROW_TYPENAME = "type_name";
 	public final static String TABLE_ROW_DESCRIPTION = "table_row_description";
-	
+	public final static String TABLE_ROW_M3 = "m3";	
 	
 	public StaticTypeDatabase(Context context)
 	{
@@ -69,6 +69,7 @@ public class StaticTypeDatabase
 			typeInfo.marketGroupID = c.getInt(c.getColumnIndex(TABLE_ROW_MARKETGROUPID));
 			typeInfo.typeName = c.getString(c.getColumnIndex(TABLE_ROW_TYPENAME));
 			typeInfo.description = c.getString(c.getColumnIndex(TABLE_ROW_DESCRIPTION));
+			typeInfo.m3 = c.getFloat(c.getColumnIndex(TABLE_ROW_M3));
 
 			typeInfoSet.put(typeInfo.typeID, typeInfo);
 		}
@@ -105,6 +106,7 @@ public class StaticTypeDatabase
 			insertValues.put(TABLE_ROW_MARKETGROUPID, typeInfo.marketGroupID);
 			insertValues.put(TABLE_ROW_TYPENAME, typeInfo.typeName);
 			insertValues.put(TABLE_ROW_DESCRIPTION, typeInfo.description);
+			insertValues.put(TABLE_ROW_M3, typeInfo.m3);
 		
 			db.insert(TABLE_NAME, null, insertValues);
 		}
@@ -133,6 +135,7 @@ public class StaticTypeDatabase
 					+ TABLE_ROW_MARKETGROUPID + " integer,"
 					+ TABLE_ROW_TYPENAME + " text,"
 					+ TABLE_ROW_DESCRIPTION + " text,"
+					+ TABLE_ROW_M3 + " real,"					
 					+ "UNIQUE (" + TABLE_ROW_ID + ") ON CONFLICT REPLACE);";
 
 			db.execSQL(newTableQueryString);

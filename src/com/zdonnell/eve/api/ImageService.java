@@ -368,7 +368,7 @@ public class ImageService {
 				Bitmap bitmapLoaded = null;
 				
 				try { bitmapLoaded = loadBitmapFromStorage(id, type); }
-				catch (Exception e) { e.printStackTrace(); } 
+				catch (Exception e) {  } 
 				
 				/* There was nothing loaded locally, try to download the image */
 				if (bitmapLoaded == null)

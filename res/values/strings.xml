@@ -19,5 +19,6 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="title_bar_slide">Sliding Content Only</string>
     <string name="character_grid_activity_title">Characters</string>
+    <string name="type_info">Type Information</string>
     
 </resources>

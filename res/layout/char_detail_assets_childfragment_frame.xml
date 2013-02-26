@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/char_detail_assets_childfragment_layoutFrame"
+    android:id="@+id/char_detail_assets_childfragment_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-
+    <LinearLayout android:id="@+id/char_detail_assets_childfragment_loadingFrame"
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:layout_weight="0"
+	    android:background="#080808"
+	    android:orientation="vertical" >
+	    <TextView 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_horizontal|center_vertical"
+	        android:text="loading shit"/>
+	</LinearLayout>
+    <LinearLayout android:id="@+id/char_detail_assets_childfragment_layoutFrame"
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:layout_weight="1"
+	    android:orientation="vertical" >
+	</LinearLayout>
 </LinearLayout>
