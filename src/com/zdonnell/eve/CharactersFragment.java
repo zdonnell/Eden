@@ -75,7 +75,7 @@ public class CharactersFragment extends Fragment {
 	 * 
 	 * TODO remove these once account management has been implemented
 	 */
-	private Account slick50zd1, mercenoid22, xsteveo243x;	
+	private Account slick50zd1, mercenoid22, xsteveo243x, celeste243;	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
@@ -324,6 +324,7 @@ public class CharactersFragment extends Fragment {
 		slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", context);
 		mercenoid22 = new Account(1171729, "4QsVKhpkQcM20jU1AahjcGzYFCSJljYFXld5X0wgLV8pYPJMeQRvQAUdDnSGhKvK", context);
 		xsteveo243x = new Account(961364, "a73k2c5HvvwXhKhSRLzDQb8emKtRflovg51niFQSns9X8RT7y8ZbSzgRgQExUZnW", context);
+		celeste243 = new Account(1865662, "cXFfhhTZqqEStJmXQi3bzKDlahCO8FA3Rn1SGu28mYlBx7pjtobo3oEYe2bf3Low", context);
 				
 		slick50zd1.characters(new APICallback<ArrayList<EveCharacter>>() {
 			@Override
@@ -341,6 +342,12 @@ public class CharactersFragment extends Fragment {
 			@Override
 			public void onUpdate(ArrayList<EveCharacter> updatedData) {
 				for (EveCharacter character : updatedData) charDB.addCharacter(character, xsteveo243x.getCredentials());				
+			}
+		});
+		celeste243.characters(new APICallback<ArrayList<EveCharacter>>() {
+			@Override
+			public void onUpdate(ArrayList<EveCharacter> updatedData) {
+				for (EveCharacter character : updatedData) charDB.addCharacter(character, celeste243.getCredentials());				
 			}
 		});
 	}

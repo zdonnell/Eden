@@ -79,7 +79,14 @@ public class CharacterSheetActivity extends BaseActivity
             	fragment = new WalletFragment(assembledChar);
         		break;
         	case CharacterSheetFragment.ASSETS:
-            	fragment = new ParentAssetsFragment(assembledChar, activity);
+        		fragment = new ParentAssetsFragment();
+            	
+            	Bundle characterDetails = new Bundle();
+            	characterDetails.putInt("keyID", assembledChar.getCredentials().keyID);
+            	characterDetails.putString("vCode", assembledChar.getCredentials().verificationCode);
+            	characterDetails.putInt("characterID", assembledChar.id());
+            	
+            	fragment.setArguments(characterDetails);
         		break;
         	default:
         		fragment = new AttributesFragment(assembledChar);

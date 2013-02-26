@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Stack;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -19,6 +21,7 @@ import android.widget.LinearLayout;
 import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.AssetsEntity;
@@ -27,6 +30,7 @@ import com.zdonnell.eve.staticdata.api.StaticData;
 import com.zdonnell.eve.staticdata.api.StationInfo;
 import com.zdonnell.eve.staticdata.api.TypeInfo;
 
+@SuppressLint("ValidFragment")
 public class ParentAssetsFragment extends Fragment {
     
     public final static int STATION = 0;
@@ -40,7 +44,7 @@ public class ParentAssetsFragment extends Fragment {
     
     private Integer[] uniqueTypeIDs;
                     
-    private Stack<AssetsEntity[]> parentStack = new Stack<AssetsEntity[]>();
+    public Stack<AssetsEntity[]> parentStack = new Stack<AssetsEntity[]>();
     
     private AssetsEntity[] currentAssets;
     
@@ -55,17 +59,8 @@ public class ParentAssetsFragment extends Fragment {
     private SparseArray<Float> prices = new SparseArray<Float>();
     
     private BaseActivity parentActivity;
-            
-    /**
-     * Constructor
-     * 
-     * @param character the {@link APICharacter} to build the Attribute info from
-     */
-    public ParentAssetsFragment(APICharacter character, BaseActivity activity) 
-    {
-    	this.character = character;
-    	this.parentActivity = activity;
-    }
+    
+    private String searchFilter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -77,6 +72,14 @@ public class ParentAssetsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
     {
     	context = inflater.getContext();
+    	
+    	int keyID = getArguments().getInt("keyID");
+    	String vCode = getArguments().getString("keyID");
+    	int characterID = getArguments().getInt("characterID");
+    	character = new APICharacter(new APICredentials(keyID, vCode), characterID, context);
+    	
+    	parentActivity = (BaseActivity) context;
+    	
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets_childfragment_frame, container, false);
     	
     	FragmentTransaction loadStationList = this.getChildFragmentManager().beginTransaction();
@@ -106,8 +109,10 @@ public class ParentAssetsFragment extends Fragment {
     public String getCurrentParentName() { return currentParentName; }
 
     
-    public void updateChild(AssetsEntity[] newAssetsSet, int type, boolean isBack)
-    {    	    	
+    public void updateChild(AssetsEntity[] newAssetsSet, int type, boolean isBack, boolean isSearchUpdate)
+    {    	    	    	
+		SharedPreferences prefs = context.getSharedPreferences("eden_assets_preferences", Context.MODE_PRIVATE);
+    	
     	FragmentTransaction loadNextAssets = this.getChildFragmentManager().beginTransaction();
     	IAssetsSubFragment nextFragment = null;
     	
@@ -121,9 +126,14 @@ public class ParentAssetsFragment extends Fragment {
     		break;
     	}
     	
-    	nextFragment.assetsUpdated(newAssetsSet);
+    	AssetsEntity[] assetsToPass;
+    	if (searchFilter == null) assetsToPass = newAssetsSet;
+    	else assetsToPass = searchAssets(newAssetsSet);
+    	//sortAssets(prefs.getInt("sort_type", InventorySort.ALPHA), assetsToPass);
     	
-    	if (currentAssets != null && !isBack) parentStack.push(currentAssets);
+    	nextFragment.assetsUpdated(assetsToPass);
+    	
+    	if (currentAssets != null && !isBack && !isSearchUpdate) parentStack.push(currentAssets);
     	currentAssets = newAssetsSet;
     	
     	nextFragment.setParent(this);
@@ -132,7 +142,7 @@ public class ParentAssetsFragment extends Fragment {
     	loadNextAssets.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) nextFragment);
     	loadNextAssets.commit();
     	
-    	parentActivity.invalidateOptionsMenu();
+    	//if (!isSearchUpdate) parentActivity.invalidateOptionsMenu();
     }
     
     private void prepareAssets(AssetsEntity[] locations)
@@ -181,7 +191,7 @@ public class ParentAssetsFragment extends Fragment {
 				}
 				
 				/* Put the station images in memory for the stations sub fragment */
-				new ImageService(context).getTypes(null, uniqueStationTypeIDs);
+				ImageService.getInstance(context).getTypes(null, uniqueStationTypeIDs);
 				
 				/* Give the assets list to the stations fragment */
 				childFragment.assetsUpdated(currentAssets);
@@ -211,7 +221,7 @@ public class ParentAssetsFragment extends Fragment {
 			}
     	}, uniqueTypeIDs);
     	
-    	new ImageService(context).getTypes(null, uniqueTypeIDs);
+    	/* ImageService.getInstance(context).getTypes(null, uniqueTypeIDs); */
     }
     
     private void obtainedTypeInfo(SparseArray<TypeInfo> typeInfo)
@@ -256,9 +266,37 @@ public class ParentAssetsFragment extends Fragment {
     		for (AssetsEntity childEntity : entity.getContainedAssets()) countAssets(childEntity, uniqueTypeIDsList);
     	}
     }
+   
+    public void sortAssets(int sortType, AssetsEntity[] assets)
+    {
+    	switch (sortType)
+    	{
+    	case InventorySort.COUNT:
+    		Arrays.sort(assets, new InventorySort.Count());
+    		break;
+    	case InventorySort.COUNT_REVERSE:
+    		Arrays.sort(assets, Collections.reverseOrder(new InventorySort.Count()));
+    		break;
+    	case InventorySort.ALPHA:
+    		Arrays.sort(assets, new InventorySort.Alpha(childFragment.getNames()));
+    		break;
+    	case InventorySort.ALPHA_REVERSE:
+    		Arrays.sort(assets, Collections.reverseOrder(new InventorySort.Alpha(childFragment.getNames())));
+    		break;
+    	case InventorySort.VALUE:
+    		Arrays.sort(assets, new InventorySort.Value(childFragment.getValues()));
+    		break;
+    	case InventorySort.VALUE_REVERSE:
+    		Arrays.sort(assets, Collections.reverseOrder(new InventorySort.Value(childFragment.getValues())));
+    		break;
+    	}
+    }
     
     public void updateSort(int sortType)
     {
+		SharedPreferences prefs = context.getSharedPreferences("eden_assets_preferences", Context.MODE_PRIVATE);
+    	prefs.edit().putInt("sort_type", sortType).commit();
+    	
     	switch (sortType)
     	{
     	case InventorySort.COUNT:
@@ -289,6 +327,12 @@ public class ParentAssetsFragment extends Fragment {
     	childFragment.updateLayoutStyle(layoutType);
     }
     
+    public void updateSearchFilter(String searchQuery)
+    {
+    	searchFilter = searchQuery;
+    	updateChild(currentAssets, assetsType(), false, true);
+    }
+    
     public SparseArray<StationInfo> getStationInfo()
     {
     	return currentStationInfo;
@@ -310,7 +354,7 @@ public class ParentAssetsFragment extends Fragment {
 		if (!parentStack.empty()) 
     	{
 			AssetsEntity[] assets = parentStack.pop();
-			updateChild(assets, parentStack.isEmpty() ? STATION : ASSET, true);
+			updateChild(assets, parentStack.isEmpty() ? STATION : ASSET, true, false);
 			
 			return true;
     	}
@@ -321,5 +365,46 @@ public class ParentAssetsFragment extends Fragment {
 	public int assetsType()
 	{
 		return (currentAssets[0] instanceof AssetsEntity.Station ? STATION : ASSET);
+	}
+	
+	private AssetsEntity[] searchAssets(AssetsEntity[] assetsToSearch)
+	{
+		ArrayList<AssetsEntity> containingAssets = new ArrayList<AssetsEntity>();
+		
+		for (AssetsEntity entity : assetsToSearch)
+		{
+			if (containsSearchString(entity)) containingAssets.add(entity);
+		}
+		
+		AssetsEntity[] filteredAssets = new AssetsEntity[containingAssets.size()];
+		containingAssets.toArray(filteredAssets);
+		
+		return filteredAssets;
+	}
+	
+	private boolean containsSearchString(AssetsEntity entity)
+	{
+		if (entity instanceof AssetsEntity.Station)
+		{
+			for (AssetsEntity childEntity : entity.getContainedAssets())
+			{
+				if (containsSearchString(childEntity)) return true;
+			}
+		}
+		else if (entity instanceof AssetsEntity.Item)
+		{
+			AssetsEntity.Item item = (AssetsEntity.Item) entity;
+			
+			if (typeInfo.get(item.attributes().typeID).typeName.toLowerCase().contains(searchFilter.toLowerCase())) return true;
+			if (item.containsAssets())
+			{
+				for (AssetsEntity childEntity : entity.getContainedAssets())
+				{
+					if (containsSearchString(childEntity)) return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 }

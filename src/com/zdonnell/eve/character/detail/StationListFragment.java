@@ -263,7 +263,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 					listAssets.toArray(subAssets);
 					
 					parentFragment.setCurrentParentName(stationName);
-					parentFragment.updateChild(subAssets, 1, false);
+					parentFragment.updateChild(subAssets, 1, false, false);
 				}
 			});
 			

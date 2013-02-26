@@ -111,7 +111,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
     	itemCount = (TextView) inflatedView.findViewById(R.id.char_detail_assets_inventory_itemCount);
     	valueOfItems = (TextView) inflatedView.findViewById(R.id.char_detail_assets_inventory_itemValue);
     	
-    	parentAssetName.setText(parentFragment.getCurrentParentName());
+    	//parentAssetName.setText(parentFragment.getCurrentParentName());
     	
     	if (!initialLoadComplete && currentItemList != null) updateView();
     	
@@ -287,7 +287,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 						listAssets.toArray(subAssets);
 						
 						parentFragment.setCurrentParentName(currentTypeNames.get(assetItem.attributes().typeID));
-						parentFragment.updateChild(subAssets, 1, false);
+						parentFragment.updateChild(subAssets, 1, false, false);
 					}
 				}
 			});
@@ -353,7 +353,10 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 				{
 					quantity.setText(String.valueOf(count));
 				}
-				else quantity.setText("Stack: " + String.valueOf(count));
+				else
+				{
+					quantity.setText("x " + String.valueOf(twoDForm.format(count)));
+				}
 			}
 		}
 		

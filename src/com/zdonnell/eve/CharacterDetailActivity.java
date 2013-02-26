@@ -1,7 +1,6 @@
 package com.zdonnell.eve;
 
-import java.util.Comparator;
-
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -21,13 +20,18 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MenuItem.OnActionExpandListener;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.widget.ImageView;
+import android.widget.SearchView;
+import android.widget.SearchView.OnCloseListener;
+import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.character.detail.AttributesFragment;
 import com.zdonnell.eve.character.detail.InventoryListFragment;
 import com.zdonnell.eve.character.detail.InventorySort;
@@ -46,10 +50,14 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 		super(R.string.app_name);
 		// TODO Auto-generated constructor stub
 	}
+    
+    private int searchOpenedAtLevel;
 
 	private APICharacter assembledChar;
 	
 	private CharacterDetailActivity activity;
+	
+	public SearchView searchView;
 		
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -169,7 +177,14 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
             	fragment = new WalletFragment(assembledChar);
         		break;
         	case CharacterSheetFragment.ASSETS:
-            	fragment = assetsFragment = new ParentAssetsFragment(assembledChar, activity);
+            	fragment = assetsFragment = new ParentAssetsFragment();
+            	
+            	Bundle characterDetails = new Bundle();
+            	characterDetails.putInt("keyID", assembledChar.getCredentials().keyID);
+            	characterDetails.putString("vCode", assembledChar.getCredentials().verificationCode);
+            	characterDetails.putInt("characterID", assembledChar.id());
+            	
+            	fragment.setArguments(characterDetails);
         		break;
         	default:
         		fragment = new AttributesFragment(assembledChar);
@@ -197,7 +212,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	boolean keyPressSwallowed = false;
     	
     	if (keyCode == KeyEvent.KEYCODE_BACK)
-        {
+        {    		
     		if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
     		{
     			keyPressSwallowed = mSectionsPagerAdapter.assetsFragment().backKeyPressed();
@@ -210,6 +225,25 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     }
     
     @Override
+    public boolean dispatchKeyEvent(KeyEvent event)
+    {
+    	int keyCode = event.getKeyCode();
+    	if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP)
+        {    		
+    		if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
+    		{
+    			if (searchOpenedAtLevel < mSectionsPagerAdapter.assetsFragment().parentStack.size())
+	    		{    				
+    				mSectionsPagerAdapter.assetsFragment().backKeyPressed();
+    				return true;
+	    		}
+    		}
+        }
+    	
+		return super.dispatchKeyEvent(event);
+    }
+    
+    @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
     	super.onCreateOptionsMenu(menu);
@@ -217,24 +251,52 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	switch (getActionBar().getSelectedNavigationIndex())
         {
         case CharacterSheetFragment.ASSETS:
-        	MenuInflater menuInflater = getMenuInflater();
-            
-        	int assetsType;
-        	
-        	if (mSectionsPagerAdapter.assetsFragment() == null) assetsType = ParentAssetsFragment.STATION;
-        	else assetsType = mSectionsPagerAdapter.assetsFragment().assetsType();
-        	
-        	switch (assetsType)
-        	{
-        	case ParentAssetsFragment.STATION:
-            	menuInflater.inflate(R.menu.char_detail_assetsstation_actionbar_items, menu);
-        		break;
+        	MenuInflater menuInflater = getMenuInflater();        	
+        	menuInflater.inflate(R.menu.char_detail_assetsasset_actionbar_items, menu);
         		
-        	case ParentAssetsFragment.ASSET:
-            	menuInflater.inflate(R.menu.char_detail_assetsasset_actionbar_items, menu);
-        		break;
-        	}
-        	
+        	searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView(); 
+        	MenuItem searchViewMenuItem = menu.getItem(0);
+        	searchView.setOnQueryTextListener(new SearchQueryUpdatedListener());
+        	searchViewMenuItem.setOnActionExpandListener(new OnActionExpandListener(){
+
+				@Override
+				public boolean onMenuItemActionCollapse(MenuItem item) 
+				{
+					if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.ASSETS)
+		            {
+		        		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
+		        		assetsFragment.updateSearchFilter(null);
+		            }
+					return true;
+				}
+
+				@Override
+				public boolean onMenuItemActionExpand(MenuItem item) 
+				{
+					searchOpenedAtLevel = mSectionsPagerAdapter.assetsFragment().parentStack.size();
+					return true;
+				}
+        		
+        	});
+        	            	
+        	searchView.setOnKeyListener(new OnKeyListener() 
+        	{
+				@Override
+				public boolean onKey(View view, int keyCode, KeyEvent arg2) 
+				{									
+					if (keyCode == KeyEvent.KEYCODE_BACK)
+			        {						
+						if (searchOpenedAtLevel < mSectionsPagerAdapter.assetsFragment().parentStack.size())
+			    		{
+			    			return false;
+			    		}
+			    		else return true;
+			        }
+					return true;
+				}
+        		
+        	});
+        	        	
         	break;
         }
     	
@@ -254,9 +316,10 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 	    return true;
     }
     
-    private class SortByDialog extends DialogFragment
+    @SuppressLint("ValidFragment")
+	private class SortByDialog extends DialogFragment
     {
-    	@Override
+		@Override
     	public Dialog onCreateDialog(Bundle savedInstanceState) 
     	{
     	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -278,6 +341,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	}
     }
     
+	@SuppressLint("ValidFragment")
     private class LayoutDialog extends DialogFragment
     {
     	@Override
@@ -300,5 +364,31 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	    
     	    return builder.create();
     	}
+    }
+    
+    private class SearchQueryUpdatedListener implements OnQueryTextListener
+    {
+		@Override
+		public boolean onQueryTextChange(String searchString) 
+		{			
+			ifStillOnAssetsSearch(searchString);
+			return false;
+		}
+
+		@Override
+		public boolean onQueryTextSubmit(String searchString) 
+		{
+			ifStillOnAssetsSearch(searchString);
+			return false;
+		}
+		
+		private void ifStillOnAssetsSearch(String searchString)
+		{
+			if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.ASSETS)
+            {
+        		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
+        		assetsFragment.updateSearchFilter(searchString);
+            }
+		}
     }
 }

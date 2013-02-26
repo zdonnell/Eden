@@ -99,7 +99,7 @@ public class ImageService {
 	 * @see #cacheSizes
 	 * 
 	 */
-	public ImageService(Context context)
+	private ImageService(Context context)
 	{
 		this.context = context;
 		initializeCaches(null);
@@ -122,7 +122,7 @@ public class ImageService {
 	 * @see #cacheSizes
 	 * 
 	 */
-	public ImageService(Context context, int[] cacheSizes)
+	private ImageService(Context context, int[] cacheSizes)
 	{
 		this.context = context;
 		initializeCaches(cacheSizes);
