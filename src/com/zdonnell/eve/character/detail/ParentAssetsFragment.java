@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.Stack;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -23,7 +23,6 @@ import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.priceservice.PriceService;
@@ -63,8 +62,8 @@ public class ParentAssetsFragment extends Fragment {
     
     private String searchFilter;
     
-    private ProgressDialog initialLoadDialog;
-
+    private boolean stationInfoFullyLoaded = false, typeInfoFullyLoaded = false;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
@@ -92,9 +91,7 @@ public class ParentAssetsFragment extends Fragment {
     	
     	loadStationList.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) childFragment);
     	loadStationList.commit();
-    	
-    	initialLoadDialog = ProgressDialog.show(context, "Loading", "Obtaining Asset List");
-    	
+    	    	
     	character.getAssetsList(new APICallback<AssetsEntity[]>()
     	{
 			@Override
@@ -103,8 +100,9 @@ public class ParentAssetsFragment extends Fragment {
 				Arrays.sort(locationArray, new InventorySort.Count());
 				currentAssets = locationArray;
 				
-				initialLoadDialog.setMessage("Getting Asset Type Information");
+				//initialLoadDialog.setMessage("Getting Asset Type Information");
 				prepareAssets(locationArray);
+				childFragment.assetsUpdated(currentAssets);
 			}
     	});   	
     	
@@ -169,7 +167,7 @@ public class ParentAssetsFragment extends Fragment {
     	getTypeItems(locations);
     }
     
-    private void getStationItems(Integer[] stationIDs)
+    private void getStationItems(final Integer[] stationIDs)
     {
     	/* Start by getting the information for the Stations
     	 * This will get us the Station Names and the typeIDs for the station icons
@@ -181,22 +179,7 @@ public class ParentAssetsFragment extends Fragment {
 			{
 				/* set this so sub fragments can pull from it later */
 				currentStationInfo = stationInformation;
-				
-				ArrayList<Integer> uniqueStationTypeIDsList = new ArrayList<Integer>();
-				
-				for (int i = 0; i < stationInformation.size(); ++i)
-				{
-					int stationTypeID = stationInformation.valueAt(i).stationTypeID;
-					if (!uniqueStationTypeIDsList.contains(stationTypeID)) uniqueStationTypeIDsList.add(stationTypeID);
-				}
-				
-				Integer[] uniqueStationTypeIDs = new Integer[uniqueStationTypeIDsList.size()];
-				for (int i = 0; i < uniqueStationTypeIDsList.size(); ++i)
-				{
-					uniqueStationTypeIDs[i] = uniqueStationTypeIDsList.get(i);
-				}
-				
-				
+				childFragment.obtainedStationInfo();
 			}
     	}, stationIDs);
     }
@@ -219,12 +202,10 @@ public class ParentAssetsFragment extends Fragment {
 			@Override
 			public void onUpdate(SparseArray<TypeInfo> rTypeInfo) 
 			{
-				initialLoadDialog.setMessage("Checking Price Values");
+				childFragment.obtainedTypeInfo();
 				obtainedTypeInfo(rTypeInfo);
 			}
     	}, uniqueTypeIDs);
-    	
-    	/* ImageService.getInstance(context).getTypes(null, uniqueTypeIDs); */
     }
     
     private void obtainedTypeInfo(SparseArray<TypeInfo> typeInfo)
@@ -248,9 +229,7 @@ public class ParentAssetsFragment extends Fragment {
 			public void onUpdate(SparseArray<Float> updatedData) 
 			{
 				prices = updatedData;
-				childFragment.assetsUpdated(currentAssets);
 				childFragment.obtainedPrices();
-				initialLoadDialog.dismiss();
 			}
 		});
     }
@@ -292,8 +271,7 @@ public class ParentAssetsFragment extends Fragment {
     		Arrays.sort(assets, new InventorySort.Value(childFragment.getValues()));
     		break;
     	case InventorySort.VALUE_REVERSE:
-    		Arrays.sort(assets, Collections.reverseOrder(new InventorySort.Value(childFragment.getValues())));
-    		break;
+     		break;
     	}
     }
     

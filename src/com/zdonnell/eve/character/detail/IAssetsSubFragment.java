@@ -15,6 +15,8 @@ public interface IAssetsSubFragment
 	public void obtainedPrices();
 	
 	public void obtainedTypeInfo();
+
+	public void obtainedStationInfo();
 	
 	public SparseArray<String> getNames();
 	

@@ -313,8 +313,6 @@ public class CharactersFragment extends Fragment {
 		return columns;
 	}
 	
-	
-	
 	/**
 	 * TODO Remove function once account loading finished
 	 * 

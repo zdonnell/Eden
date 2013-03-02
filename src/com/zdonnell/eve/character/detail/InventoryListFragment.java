@@ -460,4 +460,10 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 		adapter = null; /* force refresh */
 		updateView();
 	}
+
+	@Override
+	public void obtainedStationInfo() 
+	{
+		
+	}
 }

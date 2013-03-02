@@ -67,6 +67,8 @@ public class StaticData {
 		{			
 			int amountOfTypesNotFound = requestedTypeIDs.length - storedTypes.size();
 			
+			Log.d("AMOUNT OF TYPES NOT FOUND", "COUNT: " + amountOfTypesNotFound);
+			
 			/* compare with passed typeIDs array */
 			if (amountOfTypesNotFound > 0)
 			{
@@ -118,7 +120,7 @@ public class StaticData {
 		protected void onPostExecute(SparseArray<TypeInfo> storedTypes)
 		{			
 			int amountOfTypesNotFound = requestedTypeIDs.length - storedTypes.size();
-			
+						
 			/* compare with passed typeIDs array */
 			if (amountOfTypesNotFound > 0)
 			{
@@ -168,6 +170,7 @@ public class StaticData {
 			SparseArray<StationInfo> stationInfoSet = new SparseArray<StationInfo>(typeIDs.length);
 			
 			String serverRawResponse = getRawResponse(typeIDs);
+			
 			try 
 			{
 				JSONArray jsonResponse = new JSONArray(serverRawResponse);
