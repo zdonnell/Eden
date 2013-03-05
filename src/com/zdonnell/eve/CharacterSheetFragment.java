@@ -33,6 +33,8 @@ import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.api.character.Skill;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.helpers.Tools;
+import com.zdonnell.eve.staticdata.api.StaticData;
+import com.zdonnell.eve.staticdata.api.TypeInfo;
 
 public class CharacterSheetFragment extends Fragment {
 
@@ -297,14 +299,15 @@ public class CharacterSheetFragment extends Fragment {
 			catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
 			
 			final int skillLevel = skillQueue.get(0).skillLevel;
-			new Eve(context).getTypeName(new APICallback<SparseArray<String>>() 
+			
+			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>()
 			{
 				@Override
-				public void onUpdate(SparseArray<String> typeName) {
-					currentSkillView.setText(typeName.valueAt(0) + " " + skillLevelMap.get(skillLevel));						
+				public void onUpdate(SparseArray<TypeInfo> updatedData) 
+				{
+					currentSkillView.setText(updatedData.valueAt(0).typeName);
 				}
-				
-			}, new int[] { skillQueue.get(0).skillID });
+			}, skillQueue.get(0).skillID);
 		}
 		else
 		{

@@ -36,6 +36,7 @@ import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.AssetsEntity.Item;
 import com.zdonnell.eve.api.priceservice.PriceService;
 import com.zdonnell.eve.staticdata.api.StaticData;
+import com.zdonnell.eve.staticdata.api.StationInfo;
 import com.zdonnell.eve.staticdata.api.TypeInfo;
 
 public class InventoryListFragment extends Fragment implements IAssetsSubFragment 
@@ -86,7 +87,11 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	
 	private TextView parentAssetName, itemCount, valueOfItems;
 	
+	private ImageView parentAssetIcon;
+	
 	private InventoryArrayAdapter adapter;
+	
+	private int[] savedScrollPoint;
 	
 	@Override
 	public void setParent(ParentAssetsFragment parent)
@@ -109,8 +114,8 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
     	this.rootView = inflatedView;
     	
     	setupMainView(inflatedView, -1); /* passing -1 triggers the layout type to be determined from saved prefs */
+    	updateParentInfo();
     	
-    	parentAssetName = (TextView) inflatedView.findViewById(R.id.char_detail_assets_inventory_parentName);
     	itemCount = (TextView) inflatedView.findViewById(R.id.char_detail_assets_inventory_itemCount);
     	valueOfItems = (TextView) inflatedView.findViewById(R.id.char_detail_assets_inventory_itemValue);
     	
@@ -121,6 +126,50 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
     	isFragmentCreated = true;
     	return inflatedView;
     }
+	
+	private void updateParentInfo()
+	{
+    	parentAssetName = (TextView) rootView.findViewById(R.id.char_detail_assets_inventory_parentName);
+    	parentAssetIcon = (ImageView) rootView.findViewById(R.id.char_detail_assets_inventory_parentIcon);
+		
+		AssetsEntity parent = parentFragment.getCurrentParent();
+		
+		if (parent instanceof AssetsEntity.Station)
+		{
+			AssetsEntity.Station parentStation = (AssetsEntity.Station) parent;		
+			StationInfo parentStationInfo = parentFragment.getStationInfo().get(parentStation.getLocationID());
+
+			if (parentStationInfo != null)
+			{
+				parentAssetName.setText(parentStationInfo.stationName);
+				
+				ImageService.getInstance(context).getTypes(new ImageService.IconObtainedCallback() 
+				{
+					@Override
+					public void iconsObtained(SparseArray<Bitmap> bitmaps) 
+					{
+						parentAssetIcon.setImageBitmap(bitmaps.valueAt(0));
+					}
+				}, parentStationInfo.stationTypeID);
+			}
+		}
+		else if (parent instanceof AssetsEntity.Item)
+		{
+			AssetsEntity.Item parentItem = (AssetsEntity.Item) parent;
+			TypeInfo parentItemInfo = parentFragment.getTypeInfo().get(parentItem.attributes().typeID);
+			
+			if (parentItemInfo != null) parentAssetName.setText(parentItemInfo.typeName);
+
+			ImageService.getInstance(context).getTypes(new ImageService.IconObtainedCallback() 
+			{
+				@Override
+				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
+				{
+					parentAssetIcon.setImageBitmap(bitmaps.valueAt(0));
+				}
+			}, parentItem.attributes().typeID);
+		}
+	}
 	
 	private void setupMainView(LinearLayout rootView, int layoutType)
 	{
@@ -173,6 +222,13 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			if (parentFragment.getPrices().size() > 0) calculatePrices(currentItemList);
 			
 			initialLoadComplete = true;
+		}
+		
+		if (savedScrollPoint != null)
+		{
+			if (absListView instanceof ListView) ((ListView) absListView).setSelectionFromTop(savedScrollPoint[0], savedScrollPoint[1]);		
+			else if (absListView instanceof GridView) ((GridView) absListView).setSelection(savedScrollPoint[0]);
+			savedScrollPoint = null;
 		}
 		
 		parentFragment.getActivity().runOnUiThread(new Runnable() 
@@ -253,7 +309,6 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
     	HashMap<TextView, Integer> typeValueMappings = new HashMap<TextView, Integer>();
     	
     	boolean typeNamesLoaded = parentFragment.getTypeInfo().size() > 0;
-    	
     	boolean typeValuesLoaded = parentFragment.getPrices().size() > 0;
     	
 		public InventoryArrayAdapter(Context context, int layoutResourceID, AssetsEntity[] items) 
@@ -289,7 +344,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 						
 						listAssets.toArray(subAssets);
 						
-						parentFragment.setCurrentParentName(currentTypeNames.get(assetItem.attributes().typeID));
+						parentFragment.setCurrentParent(assetItem);
 						parentFragment.updateChild(subAssets, 1, false, false);
 					}
 				}
@@ -347,6 +402,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			final TextView quantity = (TextView) rootView.findViewById(R.id.char_detail_assets_list_item_count);
 			
 			typeNameMappings.put(text, typeID);
+			
 			if (typeNamesLoaded) text.setText(parentFragment.getTypeInfo().get(typeID).typeName);
 			else text.setText(String.valueOf(typeID));
 			
@@ -451,6 +507,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	public void obtainedTypeInfo() 
 	{
 		adapter.obtainedTypeNames();
+		updateParentInfo();
 	}
 
 	@Override
@@ -464,6 +521,30 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	@Override
 	public void obtainedStationInfo() 
 	{
+		updateParentInfo();
+	}
+
+	@Override
+	public int[] getScrollPoint() 
+	{
+		int index = absListView.getFirstVisiblePosition();
+	    View v = absListView.getChildAt(0);
+	    int top = (v == null) ? 0 : v.getTop();
 		
+		return new int[] { index, top };
+	}
+
+	@Override
+	public void setScrollPoint(int[] scrollPoint) 
+	{
+		if (adapter != null)
+		{
+			if (absListView instanceof ListView) ((ListView) absListView).setSelectionFromTop(scrollPoint[0], scrollPoint[1]);		
+			else if (absListView instanceof GridView) ((GridView) absListView).setSelection(scrollPoint[0]);
+		}
+		else
+		{
+			savedScrollPoint = scrollPoint;	
+		}
 	}
 }

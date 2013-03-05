@@ -24,12 +24,14 @@ import android.widget.TextView;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.StaticTypeDatabase;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.QueuedSkill;
-import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.helpers.TimeRemainingCountdown;
 import com.zdonnell.eve.helpers.Tools;
+import com.zdonnell.eve.staticdata.api.StaticData;
+import com.zdonnell.eve.staticdata.api.TypeInfo;
 
 public class SkillQueueFragment extends Fragment {
     
@@ -56,11 +58,6 @@ public class SkillQueueFragment extends Fragment {
     
     private StaticTypeDatabase typeDatabase;
     
-    public SkillQueueFragment(APICharacter character) 
-    {
-    	this.character = character;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
@@ -72,6 +69,8 @@ public class SkillQueueFragment extends Fragment {
     {
     	context = inflater.getContext();
     	typeDatabase = new StaticTypeDatabase(context);
+    	
+    	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
     	
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_skillqueue, container, false);
     	final SkillQueueBar skillQueueBar = new SkillQueueBar(inflater.getContext(), colors);
@@ -181,17 +180,15 @@ public class SkillQueueFragment extends Fragment {
 			final TextView skillName = (TextView) preparedView.findViewById(R.id.skillqueue_detail_list_item_skillname);
 			TextView skillLevel = (TextView) preparedView.findViewById(R.id.skill_level_text);			
 			skillLevel.setText("Level " + currentSkillQueue.get(position).skillLevel);
-			
-			//skillName.setText(typeDatabase.getTypeName(skillQueue[position].skillID));
-			
-			new Eve(context).getTypeName(new APICallback<SparseArray<String>>() 
+						
+			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>()
 			{
 				@Override
-				public void onUpdate(SparseArray<String> typeNames) 
+				public void onUpdate(SparseArray<TypeInfo> updatedData) 
 				{
-					skillName.setText(typeNames.valueAt(0));
+					skillName.setText(updatedData.valueAt(0).typeName);
 				}
-			}, new int[] { skillQueue[position].skillID });
+			}, skillQueue[position].skillID);
 			
 			final Intent intent = new Intent(context, TypeInfoActivity.class);
 			intent.putExtra("typeID", skillQueue[position].skillID);

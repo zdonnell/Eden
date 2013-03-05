@@ -46,12 +46,16 @@ public class ParentAssetsFragment extends Fragment {
                     
     public Stack<AssetsEntity[]> parentStack = new Stack<AssetsEntity[]>();
     
+    public Stack<AssetsEntity> parentItemStack = new Stack<AssetsEntity>();
+    
+    public Stack<int[]> scrollPointStack = new Stack<int[]>();
+
     private AssetsEntity[] currentAssets;
     
+    private AssetsEntity parentAsset;
+    
     private IAssetsSubFragment childFragment;
-    
-    private String currentParentName;
-    
+        
     private SparseArray<StationInfo> currentStationInfo = new SparseArray<StationInfo>();
     
     private SparseArray<TypeInfo> typeInfo = new SparseArray<TypeInfo>();
@@ -109,8 +113,8 @@ public class ParentAssetsFragment extends Fragment {
     	return inflatedView;
     }
     
-    public void setCurrentParentName(String name) { this.currentParentName = name; }
-    public String getCurrentParentName() { return currentParentName; }
+    public void setCurrentParent(AssetsEntity asset) { parentItemStack.push(asset); }
+    public AssetsEntity getCurrentParent() { return parentItemStack.peek(); }
 
     
     public void updateChild(AssetsEntity[] newAssetsSet, int type, boolean isBack, boolean isSearchUpdate)
@@ -129,7 +133,7 @@ public class ParentAssetsFragment extends Fragment {
     		nextFragment = new InventoryListFragment();
     		break;
     	}
-    	
+
     	AssetsEntity[] assetsToPass;
     	if (searchFilter == null) assetsToPass = newAssetsSet;
     	else assetsToPass = searchAssets(newAssetsSet);
@@ -137,7 +141,11 @@ public class ParentAssetsFragment extends Fragment {
     	
     	nextFragment.assetsUpdated(assetsToPass);
     	
-    	if (currentAssets != null && !isBack && !isSearchUpdate) parentStack.push(currentAssets);
+    	if (currentAssets != null && !isBack && !isSearchUpdate) 
+    	{
+    		parentStack.push(currentAssets);
+    		scrollPointStack.push(childFragment.getScrollPoint());
+    	}
     	currentAssets = newAssetsSet;
     	
     	nextFragment.setParent(this);
@@ -202,8 +210,8 @@ public class ParentAssetsFragment extends Fragment {
 			@Override
 			public void onUpdate(SparseArray<TypeInfo> rTypeInfo) 
 			{
-				childFragment.obtainedTypeInfo();
 				obtainedTypeInfo(rTypeInfo);
+				childFragment.obtainedTypeInfo();
 			}
     	}, uniqueTypeIDs);
     }
@@ -337,7 +345,11 @@ public class ParentAssetsFragment extends Fragment {
 		if (!parentStack.empty()) 
     	{
 			AssetsEntity[] assets = parentStack.pop();
+			parentItemStack.pop();
 			updateChild(assets, parentStack.isEmpty() ? STATION : ASSET, true, false);
+			childFragment.setScrollPoint(scrollPointStack.pop());
+			
+			Log.d("BACK KEY PRESSED", "PRESSED");
 			
 			return true;
     	}

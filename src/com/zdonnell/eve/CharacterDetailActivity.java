@@ -37,6 +37,7 @@ import com.zdonnell.eve.character.detail.InventoryListFragment;
 import com.zdonnell.eve.character.detail.InventorySort;
 import com.zdonnell.eve.character.detail.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.SkillQueueFragment;
+import com.zdonnell.eve.character.detail.SkillsFragment;
 import com.zdonnell.eve.character.detail.WalletFragment;
 
 public class CharacterDetailActivity extends BaseActivity implements ActionBar.TabListener {
@@ -164,13 +165,18 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         {
         	Fragment fragment;
         	
+        	Bundle characterDetails = new Bundle();
+        	characterDetails.putInt("keyID", assembledChar.getCredentials().keyID);
+        	characterDetails.putString("vCode", assembledChar.getCredentials().verificationCode);
+        	characterDetails.putInt("characterID", assembledChar.id());
+        	
         	switch (i)
         	{
         	case CharacterSheetFragment.SKILLS:
-        		fragment = new AttributesFragment(assembledChar);
+        		fragment = new SkillsFragment();
         		break;
         	case CharacterSheetFragment.SKILL_QUEUE:
-        		fragment = new SkillQueueFragment(assembledChar);
+        		fragment = new SkillQueueFragment();
         		break;
         	case CharacterSheetFragment.ATTRIBUTES:
         		fragment = new AttributesFragment(assembledChar);
@@ -180,19 +186,14 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         		break;
         	case CharacterSheetFragment.ASSETS:
             	fragment = assetsFragment = new ParentAssetsFragment();
-            	
-            	Bundle characterDetails = new Bundle();
-            	characterDetails.putInt("keyID", assembledChar.getCredentials().keyID);
-            	characterDetails.putString("vCode", assembledChar.getCredentials().verificationCode);
-            	characterDetails.putInt("characterID", assembledChar.id());
-            	
-            	fragment.setArguments(characterDetails);
         		break;
         	default:
         		fragment = new AttributesFragment(assembledChar);
         		break;
         	}
-        	        	        	
+        	     
+        	fragment.setArguments(characterDetails);
+
 			return fragment;
         }
 
@@ -234,7 +235,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         {    		
     		if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
     		{
-    			if (searchOpenedAtLevel < mSectionsPagerAdapter.assetsFragment().parentStack.size())
+    			if (searchOpenedAtLevel < mSectionsPagerAdapter.assetsFragment().parentStack.size() && !searchView.isIconified())
 	    		{    				
     				mSectionsPagerAdapter.assetsFragment().backKeyPressed();
     				return true;

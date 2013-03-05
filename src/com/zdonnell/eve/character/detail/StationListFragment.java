@@ -69,6 +69,8 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	private TextView stationsCount, stationsValue;
 	
 	private ParentAssetsFragment parentFragment;
+	
+	private int[] savedScrollPoint;
 
 	
 	@Override
@@ -87,7 +89,9 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
     {
-    	context = inflater.getContext();
+		currentStationInfo = parentFragment.getStationInfo();
+		
+		context = inflater.getContext();
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets_stations, container, false);
     	
     	stationListView = (ListView) inflatedView.findViewById(R.id.char_detail_assets_stations_list);
@@ -101,13 +105,17 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
     }
 	
 	private void updateListView()
-	{
-		currentStationInfo = parentFragment.getStationInfo();
-		
+	{		
 		stationsCount.setText(currentStationList.length + " stations");
 		
 		adapter = new StationArrayAdapter(context, stationRowResourceID, currentStationList);
 		stationListView.setAdapter(adapter);
+		
+		if (savedScrollPoint != null) 
+		{
+			stationListView.setSelectionFromTop(savedScrollPoint[0], savedScrollPoint[1]);	
+			savedScrollPoint = null;
+		}
 		
 		final Integer[] stationIDs = new Integer[currentStationList.length];
 		for (int x = 0; x < currentStationList.length; x++) stationIDs[x] = ((AssetsEntity.Station) currentStationList[x]).getLocationID();
@@ -266,13 +274,12 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 				@Override
 				public void onClick(View v) 
 				{
-					
 					ArrayList<AssetsEntity> listAssets = curStation.getContainedAssets();
 					AssetsEntity[] subAssets = new AssetsEntity[listAssets.size()];
 					
 					listAssets.toArray(subAssets);
 					
-					//parentFragment.setCurrentParentName(stationName);
+					parentFragment.setCurrentParent(curStation);
 					parentFragment.updateChild(subAssets, 1, false, false);
 				}
 			});
@@ -312,12 +319,9 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		{
 			for (ImageView icon : stationIconMappings.keySet())
 			{
-				Integer stationID = stationNameMappings.get(icon);
-				if (stationID != null)
-				{
-					int stationTypeID = currentStationInfo.get(stationID).stationTypeID;
-					icon.setImageBitmap(iconsByStationTypeID.get(stationTypeID));
-				}
+				int stationID = stationIconMappings.get(icon);
+				int stationTypeID = currentStationInfo.get(stationID).stationTypeID;
+				icon.setImageBitmap(iconsByStationTypeID.get(stationTypeID));
 			}
 		}
 	}
@@ -384,13 +388,35 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		Integer[] uniqueStationTypeIDs = new Integer[uniqueStationTypeIDsList.size()];
 		uniqueStationTypeIDsList.toArray(uniqueStationTypeIDs);
 		
+		Log.d("STATION ICONS", "TRYING TO GET STATION ICONS");
 		ImageService.getInstance(context).getTypes(new ImageService.IconObtainedCallback() 
 		{
 			@Override
 			public void iconsObtained(SparseArray<Bitmap> bitmaps) 
 			{
+				Log.d("STATION ICONS", "NUMBER OF STATION ICON TYPES: " + bitmaps.size());
 				adapter.obtainedStationIcons(bitmaps);
 			}
 		}, uniqueStationTypeIDs);
+	}
+
+	@Override
+	public int[] getScrollPoint() 
+	{
+		int index = stationListView.getFirstVisiblePosition();
+	    View v = stationListView.getChildAt(0);
+	    int top = (v == null) ? 0 : v.getTop();
+		
+		return new int[] { index, top };
+	}
+
+	@Override
+	public void setScrollPoint(int[] scrollPoint) 
+	{
+		if (adapter != null)
+		{
+			stationListView.setSelectionFromTop(scrollPoint[0], scrollPoint[1]);	
+		}
+		else savedScrollPoint = scrollPoint;
 	}
 }

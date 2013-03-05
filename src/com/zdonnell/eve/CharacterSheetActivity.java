@@ -10,6 +10,7 @@ import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.character.detail.AttributesFragment;
 import com.zdonnell.eve.character.detail.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.SkillQueueFragment;
+import com.zdonnell.eve.character.detail.SkillsFragment;
 import com.zdonnell.eve.character.detail.WalletFragment;
 
 public class CharacterSheetActivity extends BaseActivity
@@ -64,13 +65,18 @@ public class CharacterSheetActivity extends BaseActivity
             
         	Fragment fragment;
         	
+        	Bundle characterDetails = new Bundle();
+        	characterDetails.putInt("keyID", assembledChar.getCredentials().keyID);
+        	characterDetails.putString("vCode", assembledChar.getCredentials().verificationCode);
+        	characterDetails.putInt("characterID", assembledChar.id());
+        	
         	switch (id)
         	{
         	case CharacterSheetFragment.SKILLS:
-        		fragment = new AttributesFragment(assembledChar);
+        		fragment = new SkillsFragment();
         		break;
         	case CharacterSheetFragment.SKILL_QUEUE:
-        		fragment = new SkillQueueFragment(assembledChar);
+        		fragment = new SkillQueueFragment();
         		break;
         	case CharacterSheetFragment.ATTRIBUTES:
         		fragment = new AttributesFragment(assembledChar);
@@ -80,18 +86,13 @@ public class CharacterSheetActivity extends BaseActivity
         		break;
         	case CharacterSheetFragment.ASSETS:
         		fragment = new ParentAssetsFragment();
-            	
-            	Bundle characterDetails = new Bundle();
-            	characterDetails.putInt("keyID", assembledChar.getCredentials().keyID);
-            	characterDetails.putString("vCode", assembledChar.getCredentials().verificationCode);
-            	characterDetails.putInt("characterID", assembledChar.id());
-            	
-            	fragment.setArguments(characterDetails);
         		break;
         	default:
         		fragment = new AttributesFragment(assembledChar);
         		break;
         	}
+        	
+        	fragment.setArguments(characterDetails);
         	        	            
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.sheetitem_detail_container, fragment)

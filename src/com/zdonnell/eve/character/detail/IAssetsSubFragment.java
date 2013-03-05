@@ -18,6 +18,10 @@ public interface IAssetsSubFragment
 
 	public void obtainedStationInfo();
 	
+	public int[] getScrollPoint();
+	
+	public void setScrollPoint(int[] scrollPoint);
+	
 	public SparseArray<String> getNames();
 	
 	public SparseArray<Float> getValues();	
