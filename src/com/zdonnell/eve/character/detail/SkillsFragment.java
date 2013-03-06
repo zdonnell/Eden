@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.Skill;
 import com.zdonnell.eve.api.character.CharacterSheet.AttributeEnhancer;
 import com.zdonnell.eve.eve.Eve;
+import com.zdonnell.eve.eve.SkillInfo;
 
 public class SkillsFragment extends Fragment {
     
@@ -127,6 +129,36 @@ public class SkillsFragment extends Fragment {
 		private void prepareGroup(SkillGroup skillGroup, LinearLayout preparedView)
 		{
 			TextView groupName = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_groupName);
+			final LinearLayout subSkillWrapper = (LinearLayout) preparedView.findViewById(R.id.char_detail_skills_list_item_group_skillContainer);
+			
+			preparedView.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v) 
+				{
+					switch (subSkillWrapper.getVisibility())
+					{
+					case View.VISIBLE:
+						subSkillWrapper.setVisibility(View.GONE);
+						break;
+					case View.GONE:
+						subSkillWrapper.setVisibility(View.VISIBLE);
+						break;
+					}
+				}
+			});
+			
+			subSkillWrapper.removeAllViews();
+			
+			for (SkillInfo skillInfo : skillGroup.containedSkills())
+			{
+				if (skillInfo.isPublished())
+				{
+					TextView skillName = new TextView(context);
+					skillName.setText(skillInfo.typeName());
+					subSkillWrapper.addView(skillName);
+				}
+			}
 			
 			groupName.setText(skillGroup.groupName());
 		}

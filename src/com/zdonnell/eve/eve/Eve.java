@@ -88,8 +88,8 @@ public class Eve extends APIObject {
 			Node resultNode = document.getElementsByTagName("result").item(0);
 			NodeList groupNodes = resultNode.getFirstChild().getChildNodes();
 			
-			SkillGroup[] skillTree = new SkillGroup[groupNodes.getLength()];
-			Log.d("CHILD NODES LENGTH", "CHILD NODES LENGTH: " + groupNodes.getLength());
+			SparseArray<ArrayList<SkillInfo>> assembledSkillInfo = new SparseArray<ArrayList<SkillInfo>>();
+			SparseArray<String> groupNames = new SparseArray<String>();
 			
 			for (int i = 0; i < groupNodes.getLength(); ++i)
 			{
@@ -99,6 +99,9 @@ public class Eve extends APIObject {
 				String groupName = groupNode.getAttributes().getNamedItem("groupName").getTextContent();
 				int groupID = Integer.parseInt(groupNode.getAttributes().getNamedItem("groupID").getTextContent());
 				
+				groupNames.put(groupID, groupName);
+				if (assembledSkillInfo.get(groupID) == null) assembledSkillInfo.put(groupID, new ArrayList<SkillInfo>());
+				
 				/* get the list of contained skills */
 				NodeList containedSkillsNodeList = groupNode.getFirstChild().getChildNodes();
 				SkillInfo[] containedSkills = new SkillInfo[containedSkillsNodeList.getLength()];
@@ -106,10 +109,21 @@ public class Eve extends APIObject {
 				for (int j = 0; j < containedSkillsNodeList.getLength(); ++j)
 				{
 					Node skillNode = containedSkillsNodeList.item(j);
-					containedSkills[j] = parseSkillNode(skillNode);
-				}
+					assembledSkillInfo.get(groupID).add(parseSkillNode(skillNode));
+				}				
+			}
+			
+			SkillGroup[] skillTree = new SkillGroup[assembledSkillInfo.size()];
+			
+			for (int a = 0; a < assembledSkillInfo.size(); ++a)
+			{
+				int groupID = assembledSkillInfo.keyAt(a);
+				ArrayList<SkillInfo> containedSkillsList = assembledSkillInfo.valueAt(a);
 				
-				skillTree[i] = new SkillGroup(groupID, groupName, containedSkills);
+				SkillInfo[] containedSkills = new SkillInfo[containedSkillsList.size()];
+				containedSkillsList.toArray(containedSkills);
+				
+				skillTree[a] = new SkillGroup(groupID, groupNames.get(groupID), containedSkills);
 			}
 			
 			return skillTree;

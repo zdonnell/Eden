@@ -31,6 +31,8 @@ public class SkillInfo
 	}
 	
 	public boolean isPublished() { return published; }
+	public int typeID() { return typeID; }
+	public String typeName() { return typeName; }
 	public String description() { return description; }
 	public int rank() { return rank; }
 	public String[] attributes() { return new String[] { primaryAttribute, secondaryAttribute }; }
