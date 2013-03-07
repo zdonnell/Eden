@@ -91,7 +91,7 @@ public class SkillsFragment extends Fragment {
 		int resourceID;
 		
 		private int displayMode = TRAINED_SKILLS;
-		
+				
 		/**
 		 * Constructor
 		 * 
@@ -126,7 +126,7 @@ public class SkillsFragment extends Fragment {
 			return preparedView;
 		}
 		
-		private void prepareGroup(SkillGroup skillGroup, LinearLayout preparedView)
+		private void prepareGroup(final SkillGroup skillGroup, LinearLayout preparedView)
 		{
 			TextView groupName = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_groupName);
 			final LinearLayout subSkillWrapper = (LinearLayout) preparedView.findViewById(R.id.char_detail_skills_list_item_group_skillContainer);
@@ -140,25 +140,27 @@ public class SkillsFragment extends Fragment {
 					{
 					case View.VISIBLE:
 						subSkillWrapper.setVisibility(View.GONE);
+						subSkillWrapper.removeAllViews();
+
 						break;
 					case View.GONE:
 						subSkillWrapper.setVisibility(View.VISIBLE);
+						
+						for (SkillInfo skillInfo : skillGroup.containedSkills())
+						{
+							if (skillInfo.isPublished())
+							{
+								LinearLayout skillLayout = (LinearLayout) View.inflate(context, R.layout.char_detail_skills_list_item_subskill, subSkillWrapper);
+								
+								TextView skillName = (TextView) skillLayout.findViewById(R.id.char_detail_skills_list_item_skillname);
+								skillName.setText(skillInfo.typeName());
+								/*subSkillWrapper.addView(skillName);*/
+							}
+						}
 						break;
 					}
 				}
 			});
-			
-			subSkillWrapper.removeAllViews();
-			
-			for (SkillInfo skillInfo : skillGroup.containedSkills())
-			{
-				if (skillInfo.isPublished())
-				{
-					TextView skillName = new TextView(context);
-					skillName.setText(skillInfo.typeName());
-					subSkillWrapper.addView(skillName);
-				}
-			}
 			
 			groupName.setText(skillGroup.groupName());
 		}

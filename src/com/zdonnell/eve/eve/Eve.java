@@ -100,17 +100,23 @@ public class Eve extends APIObject {
 				int groupID = Integer.parseInt(groupNode.getAttributes().getNamedItem("groupID").getTextContent());
 				
 				groupNames.put(groupID, groupName);
-				if (assembledSkillInfo.get(groupID) == null) assembledSkillInfo.put(groupID, new ArrayList<SkillInfo>());
 				
 				/* get the list of contained skills */
 				NodeList containedSkillsNodeList = groupNode.getFirstChild().getChildNodes();
-				SkillInfo[] containedSkills = new SkillInfo[containedSkillsNodeList.getLength()];
-								
+				ArrayList<SkillInfo> skillsInGroup = new ArrayList<SkillInfo>();
+				
 				for (int j = 0; j < containedSkillsNodeList.getLength(); ++j)
 				{
 					Node skillNode = containedSkillsNodeList.item(j);
-					assembledSkillInfo.get(groupID).add(parseSkillNode(skillNode));
+					SkillInfo parsedSkill = parseSkillNode(skillNode);
+					if (parsedSkill != null) skillsInGroup.add(parsedSkill);
 				}				
+				
+				if (skillsInGroup.size() > 0)
+				{
+					if (assembledSkillInfo.get(groupID) == null) assembledSkillInfo.put(groupID, new ArrayList<SkillInfo>());
+					assembledSkillInfo.get(groupID).addAll(skillsInGroup);
+				}
 			}
 			
 			SkillGroup[] skillTree = new SkillGroup[assembledSkillInfo.size()];
@@ -158,6 +164,7 @@ public class Eve extends APIObject {
 			if (attributeTypeNodes.item(0) != null) primaryAttribute = attributeTypeNodes.item(0).getTextContent();
 			if (attributeTypeNodes.item(1) != null) secondaryAttribute = attributeTypeNodes.item(1).getTextContent();
 			
+			if (!published) return null;
 			return new SkillInfo(published, typeID, typeName, description, rank, primaryAttribute, secondaryAttribute, requiredSkills);
 		}
 	}
