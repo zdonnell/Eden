@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#181818" >
-    <ListView
+    <ExpandableListView
         android:background="#181818"   
         android:id="@+id/char_detail_skills_list"
         android:layout_width="match_parent"
