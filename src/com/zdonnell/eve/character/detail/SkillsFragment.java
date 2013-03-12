@@ -1,30 +1,31 @@
 package com.zdonnell.eve.character.detail;
 
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zdonnell.eve.R;
-import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.Skill;
-import com.zdonnell.eve.api.character.CharacterSheet.AttributeEnhancer;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.eve.SkillInfo;
 
@@ -33,25 +34,39 @@ public class SkillsFragment extends Fragment {
 	public static final int ALL_SKILLS = 0;
 	public static final int TRAINED_SKILLS = 1;
 	public static final int TRAINABLE_SKILLS = 2;
+	
+	public static final String[] skillOptions = new String[2];
+    private static final int[] baseSPAtLevel = new int[6];
+
+	static
+	{
+		skillOptions[ALL_SKILLS] = "All Skills";
+		skillOptions[TRAINED_SKILLS] = "Trained Skills";
+		
+		baseSPAtLevel[0] = 0;
+		baseSPAtLevel[1] = 250;
+		baseSPAtLevel[2] = 1414;
+		baseSPAtLevel[3] = 8000;
+		baseSPAtLevel[4] = 45255;
+		baseSPAtLevel[5] = 256000;
+	}
     
     private APICharacter character;
-        
-    /**
-     * Array storing attribute values
-     */
-    private int[] attributes = new int[5];
     
-    /**
-     * Array of implants / augmentations
-     */
-    private AttributeEnhancer[] implants = new AttributeEnhancer[5];
         
     private Context context;
     
     private SkillGroup[] skillTree;
     
+    private SparseArray<Skill> currentSkills;
+    
     private ExpandableListView skillsListView;
+    
+    private SharedPreferences prefs;
 
+
+    private int mode = 1;
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
     {
@@ -59,8 +74,19 @@ public class SkillsFragment extends Fragment {
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_skills, container, false);
     	
     	skillsListView = (ExpandableListView) inflatedView.findViewById(R.id.char_detail_skills_list);
+    	prefs = context.getSharedPreferences("eden_skills_preferences", Context.MODE_PRIVATE);
+    	mode = prefs.getInt("skill_display", TRAINED_SKILLS);
     	
     	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
+    	character.getCharacterSheet(new APICallback<CharacterSheet>() 
+    	{
+			@Override
+			public void onUpdate(CharacterSheet updatedData) 
+			{
+				currentSkills = updatedData.getSkills();
+				updateSkillList();
+			}
+    	});
     	
     	new Eve(context).getSkillTree(new APICallback<SkillGroup[]>() 
     	{
@@ -77,27 +103,87 @@ public class SkillsFragment extends Fragment {
     
     private void updateSkillList()
     {
-    	skillsListView.setAdapter(new SkillsExpandedListAdapter(context, skillTree));
+    	if (currentSkills != null && skillTree != null)
+    	{
+    		skillsListView.setAdapter(new SkillsExpandedListAdapter(context, skillTree, currentSkills, mode));
+    	}
+    }
+    
+    public void updateSkillDisplay(int mode)
+    {
+    	this.mode = mode;
+    	prefs.edit().putInt("skill_display", mode).commit();
+    	updateSkillList();
     }
     
     private class SkillsExpandedListAdapter implements ExpandableListAdapter
     {
         private Context context;
         
-        private SkillGroup[] skillTree;
+        private SkillGroup[] skillTree, skillTreeTrainedSkills;
         
-		LayoutInflater inflater;
+        private SparseArray<Skill> currentSkills;
+                
+        private HashMap<String, Integer> attributeColors = new HashMap<String, Integer>(5);
+        
+		private NumberFormat formatter = NumberFormat.getInstance();
+		
+		private boolean showAll = false;
+        
+		private LayoutInflater inflater;
         
         private static final int groupLayoutID = R.layout.char_detail_skills_list_item;
         private static final int childLayoutID = R.layout.char_detail_skills_list_item_subskill;
 
-        public SkillsExpandedListAdapter(Context context, SkillGroup[] skillTree) 
+        public SkillsExpandedListAdapter(Context context, SkillGroup[] skillTree, SparseArray<Skill> currentSkills, int mode) 
         {
             this.context = context;
             this.skillTree = skillTree;
+            this.currentSkills = currentSkills;
+            this.showAll = (mode == 0);
+            
+            prepareSkillsets();
+            
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            
+            attributeColors.put("intelligence", Color.rgb(60, 109, 133));
+            attributeColors.put("memory", Color.rgb(140, 104, 158));
+            attributeColors.put("charisma", Color.rgb(188, 158, 69));
+            attributeColors.put("perception", Color.rgb(60, 140, 101));
+            attributeColors.put("willpower", Color.rgb(210, 144, 104));
+        }
+        
+        private void prepareSkillsets()
+        {
+        	ArrayList<SkillGroup> groupsWithSkillsTrained = new ArrayList<SkillGroup>();
+        	for (SkillGroup group : skillTree)
+        	{
+        		ArrayList<SkillInfo> trainedSkills = new ArrayList<SkillInfo>();
+        		for (SkillInfo info : group.containedSkills())
+        		{
+        			if (currentSkills.get(info.typeID()) != null) trainedSkills.add(info);
+        		}
+        		
+        		if (!trainedSkills.isEmpty())
+        		{
+        			SkillInfo[] containedSkills = new SkillInfo[trainedSkills.size()];
+        			trainedSkills.toArray(containedSkills);
+        			
+        			SkillGroup newGroup = new SkillGroup(group.groupID(), group.groupName(), containedSkills);
+        			groupsWithSkillsTrained.add(newGroup);
+        		}
+        	}
+        	
+        	skillTreeTrainedSkills = new SkillGroup[groupsWithSkillsTrained.size()];
+        	groupsWithSkillsTrained.toArray(skillTreeTrainedSkills);
         }
     	
+        public void setMode(int mode)
+        {
+        	showAll = (mode == 0);
+        	
+        }
+        
 		@Override
 		public boolean areAllItemsEnabled() {
 			// TODO Auto-generated method stub
@@ -107,13 +193,15 @@ public class SkillsFragment extends Fragment {
 		@Override
 		public Object getChild(int groupPosition, int childPosition) 
 		{
-			return skillTree[groupPosition].containedSkills()[childPosition];
+			SkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
+			return skillTreeType[groupPosition].containedSkills()[childPosition];
 		}
 
 		@Override
 		public long getChildId(int groupPosition, int childPosition) 
 		{
-			return skillTree[groupPosition].containedSkills()[childPosition].typeID();
+			SkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
+			return skillTreeType[groupPosition].containedSkills()[childPosition].typeID();
 		}
 
 		@Override
@@ -133,13 +221,73 @@ public class SkillsFragment extends Fragment {
 		protected void prepareChild(SkillInfo skillInfo, View preparedView)
 		{
 			TextView skillName = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_skillname);
-			skillName.setText(skillInfo.typeName());
+			TextView spText = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_skillsptext);
+			TextView timeUntilNextLevel = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_skillTimeRemaining);
+			TextView primAttribute = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_subitem_primAttr);
+			TextView secAttribute = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_subitem_secAttr);
+			
+			ImageView skillIcon = (ImageView) preparedView.findViewById(R.id.char_detail_skills_subitem_skillIcon);
+			
+			SkillLevelIndicator levelIndicator = (SkillLevelIndicator) preparedView.findViewById(R.id.skill_level_indicator);
+			
+			levelIndicator.reset();
+			skillName.setText(skillInfo.typeName() + " (" + skillInfo.rank() + "x)");
+			
+			primAttribute.setTextColor(attributeColors.get(skillInfo.attributes()[0]));
+			secAttribute.setTextColor(attributeColors.get(skillInfo.attributes()[1]));
+			primAttribute.setText(skillInfo.attributes()[0].substring(0, 1));
+			secAttribute.setText(skillInfo.attributes()[1].substring(0, 1));
+			
+			if (currentSkills.get(skillInfo.typeID()) == null) 
+			{
+				levelIndicator.setVisibility(View.GONE);
+				
+				skillIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.skills));
+				
+				skillName.setAlpha(0.45f);
+				spText.setAlpha(0.45f);
+				
+				boolean preReqsMet = true;
+				for (SkillInfo.SkillPreReq preReq : skillInfo.requiredSkills())
+				{
+					if (currentSkills.get(preReq.typeID()) == null || currentSkills.get(preReq.typeID()).getLevel() < preReq.skillLevel()) preReqsMet = false;
+				}
+				
+				if (preReqsMet) spText.setText("You meet the requirements to train this skill");
+				else spText.setText("You do not meet the requirements to train this skill");
+			}
+			else 
+			{
+				levelIndicator.setVisibility(View.VISIBLE);
+				levelIndicator.provideSkillInfo(currentSkills.get(skillInfo.typeID()), false, Color.rgb(75, 75, 75));
+		
+				Skill currentSkill = currentSkills.get(skillInfo.typeID());
+				if (currentSkill.getLevel() == 5) skillIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.skill_finished_training));
+				else 
+				{
+					if (currentSkill.getSkillPoints() > baseSPAtLevel[currentSkill.getLevel()] * skillInfo.rank())
+					{
+						skillIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.skill_in_progress));
+					}
+					else
+					{
+						skillIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.skill_at_midlevel));
+					}
+				}
+				
+				skillName.setAlpha(1);
+				spText.setAlpha(1);
+				
+				spText.setText("SP: " + formatter.format(currentSkill.getSkillPoints()) + " / " + formatter.format(skillInfo.rank() * 256000));
+			}
+			
 		}
-
+		
 		@Override
 		public int getChildrenCount(int groupPosition) 
 		{
-			return skillTree[groupPosition].containedSkills().length;
+			SkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
+			return skillTreeType[groupPosition].containedSkills().length;
 		}
 
 		@Override
@@ -157,19 +305,22 @@ public class SkillsFragment extends Fragment {
 		@Override
 		public Object getGroup(int groupPosition) 
 		{
-			return skillTree[groupPosition];
+			SkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
+			return skillTreeType[groupPosition];
 		}
 
 		@Override
 		public int getGroupCount() 
 		{
-			return skillTree.length;
+			SkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
+			return skillTreeType.length;
 		}
 
 		@Override
 		public long getGroupId(int groupPosition) 
 		{
-			return skillTree[groupPosition].groupID();
+			SkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
+			return skillTreeType[groupPosition].groupID();
 		}
 
 		@Override
@@ -181,15 +332,32 @@ public class SkillsFragment extends Fragment {
 			else preparedView = inflater.inflate(groupLayoutID, parent, false);
 			
 			SkillGroup skillGroup = (SkillGroup) getGroup(groupPosition);
-			prepareGroup(skillGroup, preparedView);
+			prepareGroup(skillGroup, preparedView, groupPosition);
 			
 			return preparedView;
 		}
 		
-		protected void prepareGroup(final SkillGroup skillGroup, View preparedView)
+		protected void prepareGroup(final SkillGroup skillGroup, View preparedView, int groupPosition)
 		{
-			TextView groupName = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_groupName);			
+			TextView groupName = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_groupName);
+			TextView skillCount = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_groupSubText);
+			TextView groupSP = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_groupSkillPoints);			
+
 			groupName.setText(skillGroup.groupName());
+			
+			int totalSkillsCount = skillTree[groupPosition].containedSkills().length;
+			int currentSkillsCount = 0;
+			for (SkillInfo info : skillGroup.containedSkills()) if (currentSkills.get(info.typeID()) != null) ++currentSkillsCount;
+			
+			skillCount.setText("Skills: " + currentSkillsCount + " of " + totalSkillsCount);
+			
+			int groupSPCount = 0;
+			for (SkillInfo info : skillGroup.containedSkills())
+			{
+				if (currentSkills.get(info.typeID()) != null) groupSPCount += currentSkills.get(info.typeID()).getSkillPoints();
+			}
+			
+			groupSP.setText(formatter.format(groupSPCount) + " SP");
 		}
 
 		@Override

@@ -393,12 +393,16 @@ public class CharacterSheetFragment extends Fragment {
 		/* Skills */
 		if (subTexts[SKILLS] != null && characterSheet != null)
 		{
-			ArrayList<Skill> skills = characterSheet.getSkills();
+			SparseArray<Skill> skills = characterSheet.getSkills();
 			
 			int level5count = 0;
-			for (Skill skill : skills) if (skill.getLevel() == 5) level5count++;
+			for (int i = 0; i < skills.size(); ++i) 
+			{
+				Skill skill = skills.valueAt(i);
+				if (skill.getLevel() == 5) level5count++;
+			}
 			
-			subTexts[SKILLS].setText(characterSheet.getSkills().size() + " Skills Trained (" + level5count + " at Level V)");
+			subTexts[SKILLS].setText(skills.size() + " Skills Trained (" + level5count + " at Level V)");
 		}
 		
 		/* SkillQueue */

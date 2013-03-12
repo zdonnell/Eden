@@ -38,7 +38,7 @@ public class SkillInfo
 	public String[] attributes() { return new String[] { primaryAttribute, secondaryAttribute }; }
 	public ArrayList<SkillPreReq> requiredSkills() { return requiredSkills; }
 	
-	static class SkillPreReq
+	public static class SkillPreReq
 	{
 		private int skillLevel;
 		
@@ -50,7 +50,7 @@ public class SkillInfo
 			this.typeID = typeID;
 		}
 		
-		private int skillLevel() { return skillLevel; }
-		private int typeID() { return typeID; }
+		public int skillLevel() { return skillLevel; }
+		public int typeID() { return typeID; }
 	}
 }

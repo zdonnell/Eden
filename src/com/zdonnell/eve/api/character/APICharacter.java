@@ -180,7 +180,7 @@ public class APICharacter extends APIObject {
 			
 			if (skillNodeList != null)
 			{
-				ArrayList<Skill> skillList = new ArrayList<Skill>(skillNodeList.getLength());
+				SparseArray<Skill> skillList = new SparseArray<Skill>();
 				
 				for (int i = 0; i < skillNodeList.getLength(); i++)
 				{
@@ -191,7 +191,7 @@ public class APICharacter extends APIObject {
 					int level = Integer.parseInt(skill.getAttributes().getNamedItem("level").getNodeValue());
 					boolean published = skill.getAttributes().getNamedItem("typeID").getNodeValue().equals("1") ? true : false;
 					
-					skillList.add(new Skill(typeID, skillPoints, level, published));
+					skillList.put(typeID, new Skill(typeID, skillPoints, level, published));
 				}
 			
 				characterSheet.setSkills(skillList);

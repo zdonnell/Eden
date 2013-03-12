@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.zdonnell.eve.api.character.QueuedSkill;
+import com.zdonnell.eve.api.character.Skill;
 import com.zdonnell.eve.helpers.Tools;
 
 public class SkillLevelIndicator extends View {
@@ -35,6 +36,15 @@ public class SkillLevelIndicator extends View {
     public SkillLevelIndicator (Context context, AttributeSet attrs) { super(context, attrs); }
     public SkillLevelIndicator (Context context, AttributeSet attrs, int style) { super(context, attrs, style); }
 
+	public void provideSkillInfo(Skill skill, boolean isTraining, int activeSkillColor)
+	{
+		this.isTraining = isTraining;
+		currentLevel = skill.getLevel();
+		
+		this.activeSkillColor = activeSkillColor;
+		skillInfoObtained = true;
+	}
+	
 	public void provideSkillInfo(QueuedSkill skill, boolean isTraining, int activeSkillColor)
 	{
 		this.isTraining = isTraining;
@@ -42,6 +52,12 @@ public class SkillLevelIndicator extends View {
 		
 		this.activeSkillColor = activeSkillColor;
 		skillInfoObtained = true;
+	}
+	
+	public void reset()
+	{
+		this.isTraining = false;
+		this.currentLevel = -1;
 	}
 	
 	@Override

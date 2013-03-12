@@ -1,6 +1,7 @@
 package com.zdonnell.eve.eve;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -15,6 +16,7 @@ import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.ResourceManager;
 import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
 import com.zdonnell.eve.character.detail.SkillGroup;
+import com.zdonnell.eve.character.detail.SkillsSort;
 import com.zdonnell.eve.staticdata.api.StationInfo;
 
 public class Eve extends APIObject {
@@ -128,10 +130,12 @@ public class Eve extends APIObject {
 				
 				SkillInfo[] containedSkills = new SkillInfo[containedSkillsList.size()];
 				containedSkillsList.toArray(containedSkills);
+				Arrays.sort(containedSkills, new SkillsSort.SkillInfoAlpha());
 				
 				skillTree[a] = new SkillGroup(groupID, groupNames.get(groupID), containedSkills);
 			}
 			
+			Arrays.sort(skillTree, new SkillsSort.SkillGroupAlpha());
 			return skillTree;
 		}
 		

@@ -2,6 +2,8 @@ package com.zdonnell.eve.api.character;
 
 import java.util.ArrayList;
 
+import android.util.SparseArray;
+
 /**
  * TODO Implement other character sheet fields
  * 
@@ -30,7 +32,7 @@ public class CharacterSheet {
 	
 	private double walletBalance;
 	
-	private ArrayList<Skill> skills;
+	private SparseArray<Skill> skills;
 	
 	public CharacterSheet(int characterID)
 	{
@@ -54,7 +56,7 @@ public class CharacterSheet {
 		this.walletBalance = walletBalance;
 	}
 	
-	public void setSkills(ArrayList<Skill> skills)
+	public void setSkills(SparseArray<Skill> skills)
 	{
 		this.skills = skills;
 	}
@@ -66,7 +68,7 @@ public class CharacterSheet {
 	public int[] getAttributes() { return attributes; }
 	public double getWalletBalance() { return walletBalance; }
 	public int getCharacterID() { return characterID; }
-	public ArrayList<Skill> getSkills() { return skills; }
+	public SparseArray<Skill> getSkills() { return skills; }
 	
 	/**
 	 * 

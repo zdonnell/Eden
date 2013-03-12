@@ -155,8 +155,10 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	private static final int COUNT = 5;
     	
     	private ParentAssetsFragment assetsFragment;
-    	
     	public ParentAssetsFragment assetsFragment() { return assetsFragment; }
+    	
+    	private SkillsFragment skillsFragment;
+    	public SkillsFragment skillsFragment() { return skillsFragment; }
     	    	
         public SectionsPagerAdapter(FragmentManager fm) { super(fm); }
 
@@ -173,7 +175,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         	switch (i)
         	{
         	case CharacterSheetFragment.SKILLS:
-        		fragment = new SkillsFragment();
+        		fragment = skillsFragment = new SkillsFragment();
         		break;
         	case CharacterSheetFragment.SKILL_QUEUE:
         		fragment = new SkillQueueFragment();
@@ -250,11 +252,12 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     public boolean onCreateOptionsMenu(Menu menu)
     {
     	super.onCreateOptionsMenu(menu);
+    	
+    	MenuInflater menuInflater = getMenuInflater();        	
         
     	switch (getActionBar().getSelectedNavigationIndex())
         {
         case CharacterSheetFragment.ASSETS:
-        	MenuInflater menuInflater = getMenuInflater();        	
         	menuInflater.inflate(R.menu.char_detail_assetsasset_actionbar_items, menu);
         		
         	searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView(); 
@@ -301,22 +304,56 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         	});
         	        	
         	break;
+        case CharacterSheetFragment.SKILLS:
+        	menuInflater.inflate(R.menu.char_detail_skills_actionbar_items, menu);
+        	break;
         }
     	
     	return true;
     }
     
     public boolean onOptionsItemSelected (MenuItem item) {
+    	
+    	int curTab = getActionBar().getSelectedNavigationIndex();
+    	
 	    switch (item.getItemId())
 	    {
+	    case R.id.skill_list:
+	    	new SkillList().show(getSupportFragmentManager(), "Skill List Dialog");
+	    	break;
 	    case R.id.sort_by:
-	          new SortByDialog().show(getSupportFragmentManager(), "Sort By Dialog");
-	          break;
+	    	new SortByDialog().show(getSupportFragmentManager(), "Sort By Dialog");
+	    	break;
 	    case R.id.layout_style:
-	          new LayoutDialog().show(getSupportFragmentManager(), "Layout Type Dialog");
-	          break;
+	        new LayoutDialog().show(getSupportFragmentManager(), "Layout Type Dialog");
+	        break;
 	    }
 	    return true;
+    }
+    
+    
+    @SuppressLint("ValidFragment")
+	private class SkillList extends DialogFragment
+    {
+		@Override
+    	public Dialog onCreateDialog(Bundle savedInstanceState) 
+    	{
+    	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    	    builder.setTitle("Show")
+    	           .setItems(SkillsFragment.skillOptions, new DialogInterface.OnClickListener() 
+		           {
+		               public void onClick(DialogInterface dialog, int which) 
+		               {
+		            	   if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.SKILLS)
+			               {
+			               		mSectionsPagerAdapter.skillsFragment().updateSkillDisplay(which);
+			               }
+		               }
+		           }
+    	   );
+    	    
+    	    return builder.create();
+    	}
     }
     
     @SuppressLint("ValidFragment")
