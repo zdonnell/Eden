@@ -105,7 +105,7 @@ public class ResourceManager {
 		} 
 		catch (ClientProtocolException e) { e.printStackTrace(); }
 		catch (IOException e) { e.printStackTrace(); }
-		
+				
 		return rawResponse;
 	}
 	
@@ -118,8 +118,8 @@ public class ResourceManager {
 		Document xmlDoc = null;
 		DocumentBuilderFactory factory;
 		DocumentBuilder domBuilder;
-		
-		/* remove whitespace inbetween nodes */
+				
+		/* remove whitespace in between nodes */
 		xmlString = xmlString.replaceAll(">\\s*<", "><");
 		
 		factory = DocumentBuilderFactory.newInstance();

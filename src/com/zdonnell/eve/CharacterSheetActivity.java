@@ -82,7 +82,7 @@ public class CharacterSheetActivity extends BaseActivity
         		fragment = new AttributesFragment(assembledChar);
         		break;
         	case CharacterSheetFragment.WALLET:
-            	fragment = new WalletFragment(assembledChar);
+            	fragment = new WalletFragment();
         		break;
         	case CharacterSheetFragment.ASSETS:
         		fragment = new ParentAssetsFragment();

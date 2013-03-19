@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.graphics.Color;
@@ -21,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.zdonnell.eve.R;
+import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
@@ -214,6 +216,19 @@ public class SkillsFragment extends Fragment {
 			
 			SkillInfo skillInfo = (SkillInfo) getChild(groupPosition, childPosition);
 			prepareChild(skillInfo, preparedView);
+			
+			final Intent intent = new Intent(context, TypeInfoActivity.class);
+			intent.putExtra("typeID", skillInfo.typeID());
+			
+			preparedView.setOnLongClickListener(new View.OnLongClickListener() 
+			{	
+				@Override
+				public boolean onLongClick(View v) 
+				{
+	            	startActivity(intent);
+					return true;
+				}
+			});
 			
 			return preparedView;
 		}

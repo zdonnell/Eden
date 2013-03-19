@@ -9,6 +9,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.zdonnell.eve.api.APICallback;
@@ -78,10 +79,10 @@ public class APICharacter extends APIObject {
 		resourceManager.get(new APIRequestWrapper(apiCallback, new WalletJournalParser(), credentials, xmlURLs[CHAR_INFO], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
 	}
 	
-	/*public void getWalletTransactions(APICallback<WalletEntry.Transaction> apiCallback)
+	public void getWalletTransactions(APICallback<WalletEntry.Transaction[]> apiCallback)
 	{
-		resourceManager.get(new APIRequestWrapper(apiCallback, new WalletTransactionsParser(), credentials, xmlURLs[CHAR_INFO], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
-	}*/
+		resourceManager.get(new APIRequestWrapper(apiCallback, new WalletTransactionParser(), credentials, xmlURLs[WALLET_TRANS], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
+	}
 	
 	public void getAssetsList(APICallback<AssetsEntity[]> apiCallback)
 	{
@@ -243,6 +244,50 @@ public class APICharacter extends APIObject {
 		public WalletEntry.Journal parse(Document document) {
 			
 			return null;
+		}
+	}
+	
+	/**
+	 * 
+	 * @author Zach
+	 *
+	 */
+	private class WalletTransactionParser extends APIParser<WalletEntry.Transaction[]>
+	{
+		@Override
+		public WalletEntry.Transaction[] parse(Document document) 
+		{
+			Node rowset = document.getElementsByTagName("rowset").item(0);	
+			NodeList transactionNodes = document.getElementsByTagName("row");
+			
+			ArrayList<WalletEntry.Transaction> transactionsList = new ArrayList<WalletEntry.Transaction>(transactionNodes.getLength());
+			
+			Log.d("TRANSACTIONS", "TOTAL COUNT: " + transactionNodes.getLength());
+			
+			for (int i = 0; i < transactionNodes.getLength(); ++i)
+			{
+				Node transactionNode = transactionNodes.item(i);
+				NamedNodeMap transactionAttributes = transactionNode.getAttributes();
+				
+				Log.d("ATTRIBUTES", "SIZE: " + transactionAttributes.getLength());
+				
+				String dateTime = transactionAttributes.getNamedItem("transactionDateTime").getTextContent();
+				long transactionID = Long.valueOf(transactionAttributes.getNamedItem("transactionID").getTextContent());
+				int quantity = Integer.valueOf(transactionAttributes.getNamedItem("quantity").getTextContent());
+				int typeID = Integer.valueOf(transactionAttributes.getNamedItem("typeID").getTextContent());
+				String typeName = transactionAttributes.getNamedItem("typeName").getTextContent();
+				double price = Double.valueOf(transactionAttributes.getNamedItem("price").getTextContent());
+				String stationName = transactionAttributes.getNamedItem("stationName").getTextContent();
+				String transactionTypeString = transactionAttributes.getNamedItem("transactionType").getTextContent();
+				int transactionType = transactionTypeString.equals("buy") ? WalletEntry.Transaction.BUY : WalletEntry.Transaction.SELL;
+			
+				transactionsList.add(new WalletEntry.Transaction(dateTime, transactionID, quantity, typeID, typeName, price, stationName, transactionType));
+			}
+			
+			WalletEntry.Transaction[] transactions = new WalletEntry.Transaction[transactionsList.size()];
+			transactionsList.toArray(transactions);
+			
+			return transactions;
 		}
 	}
 	

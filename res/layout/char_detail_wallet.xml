@@ -9,17 +9,18 @@
     
 	 <ListView
         android:background="#181818"   
-        android:id="@+id/char_detail_queue_list"
+        android:id="@+id/char_detail_wallet_listview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:divider="#000"
+    	android:dividerHeight="1dp"/>
 	 <View
 	    android:layout_width="match_parent"
 	    android:layout_height="1dp"
 	    android:background="#ff8800"
 	    />
     <LinearLayout
-	    xmlns:tools="http://schemas.android.com/tools"
 	    android:layout_width="match_parent"
 	    android:layout_height="50dp"
 	    android:paddingLeft="10sp"

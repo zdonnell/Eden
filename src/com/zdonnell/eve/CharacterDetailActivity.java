@@ -184,7 +184,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         		fragment = new AttributesFragment(assembledChar);
         		break;
         	case CharacterSheetFragment.WALLET:
-            	fragment = new WalletFragment(assembledChar);
+            	fragment = new WalletFragment();
         		break;
         	case CharacterSheetFragment.ASSETS:
             	fragment = assetsFragment = new ParentAssetsFragment();
