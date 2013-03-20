@@ -39,6 +39,7 @@ public class WalletEntry {
 			this.typeName = typeName;
 			this.price = price;
 			this.stationName = stationName;
+			this.transactionType = transactionType;
 		}
 		
 		public long transactionID() { return transactionID; }

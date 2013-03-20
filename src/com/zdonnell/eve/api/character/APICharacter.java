@@ -261,16 +261,12 @@ public class APICharacter extends APIObject {
 			NodeList transactionNodes = document.getElementsByTagName("row");
 			
 			ArrayList<WalletEntry.Transaction> transactionsList = new ArrayList<WalletEntry.Transaction>(transactionNodes.getLength());
-			
-			Log.d("TRANSACTIONS", "TOTAL COUNT: " + transactionNodes.getLength());
-			
+						
 			for (int i = 0; i < transactionNodes.getLength(); ++i)
 			{
 				Node transactionNode = transactionNodes.item(i);
 				NamedNodeMap transactionAttributes = transactionNode.getAttributes();
-				
-				Log.d("ATTRIBUTES", "SIZE: " + transactionAttributes.getLength());
-				
+								
 				String dateTime = transactionAttributes.getNamedItem("transactionDateTime").getTextContent();
 				long transactionID = Long.valueOf(transactionAttributes.getNamedItem("transactionID").getTextContent());
 				int quantity = Integer.valueOf(transactionAttributes.getNamedItem("quantity").getTextContent());
@@ -279,7 +275,7 @@ public class APICharacter extends APIObject {
 				double price = Double.valueOf(transactionAttributes.getNamedItem("price").getTextContent());
 				String stationName = transactionAttributes.getNamedItem("stationName").getTextContent();
 				String transactionTypeString = transactionAttributes.getNamedItem("transactionType").getTextContent();
-				int transactionType = transactionTypeString.equals("buy") ? WalletEntry.Transaction.BUY : WalletEntry.Transaction.SELL;
+				int transactionType = transactionTypeString.equals("sell") ? WalletEntry.Transaction.SELL : WalletEntry.Transaction.BUY;
 			
 				transactionsList.add(new WalletEntry.Transaction(dateTime, transactionID, quantity, typeID, typeName, price, stationName, transactionType));
 			}

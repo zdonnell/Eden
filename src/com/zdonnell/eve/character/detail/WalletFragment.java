@@ -6,6 +6,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
@@ -80,6 +81,8 @@ public class WalletFragment extends Fragment {
     {
 		private LayoutInflater inflater;
 		
+		private NumberFormat formatter = NumberFormat.getInstance();
+		
 		private final int journalLayout = R.layout.char_detail_wallet_list_item_journal;
 		private final int transactionLayout = R.layout.char_detail_wallet_list_item_transaction;
     	
@@ -119,12 +122,16 @@ public class WalletFragment extends Fragment {
 			final TextView typeNameCount = (TextView) itemView.findViewById(R.id.char_detail_wallet_list_item_itemname);
 			final TextView stationName = (TextView) itemView.findViewById(R.id.char_detail_wallet_list_item_stationname);
 			final TextView price = (TextView) itemView.findViewById(R.id.char_detail_wallet_list_item_itemvalue);
-			final TextView quantity = (TextView) itemView.findViewById(R.id.char_detail_wallet_list_item_itemquantity);
 			
-			typeNameCount.setText(entry.typeName());
+			typeNameCount.setText(entry.quantity() + "x " + entry.typeName());
 			stationName.setText(entry.stationName());
-			price.setText(String.valueOf(entry.price() * entry.quantity()));
-			quantity.setText("quantity: " + entry.quantity());
+			//quantity.setText("quantity: " + entry.quantity());
+			
+			boolean isBuy = entry.transactionType() == WalletEntry.Transaction.BUY;
+			String formattedValue = formatter.format(entry.price() * entry.quantity());
+			String priceString = (isBuy ? "-" : "+") + formattedValue + " ISK";
+			price.setText(priceString);
+			price.setTextColor(isBuy ? Color.parseColor("#FF4444") : Color.parseColor("#449944"));
 			
 			typeIcon.setImageBitmap(null);
 			ImageService.getInstance(context).getTypes(new IconObtainedCallback()
