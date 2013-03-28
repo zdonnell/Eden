@@ -23,14 +23,16 @@ public class Eve extends APIObject {
 	
 	public static final int SKILL_TREE = 0;
 	public static final int CONQ_STATIONS = 1;
+	public static final int REF_TYPES = 2;
 	
 	private Context context;
 
-	public static final String[] xmlURLs = new String[2];
+	public static final String[] xmlURLs = new String[3];
 	static
 	{
 		xmlURLs[SKILL_TREE] = baseURL + "eve/SkillTree.xml.aspx";
 		xmlURLs[CONQ_STATIONS] = baseURL + "eve/ConquerableStationList.xml.aspx";
+		xmlURLs[REF_TYPES] = baseURL + "/eve/RefTypes.xml.aspx";
 	}
 	
 	private ResourceManager resourceManager ;
@@ -51,6 +53,11 @@ public class Eve extends APIObject {
 	public void getSkillTree(final APICallback<SkillGroup[]> apiCallback)
 	{
 		resourceManager.get(new APIRequestWrapper(apiCallback, new SkillTreeParser(), null, xmlURLs[SKILL_TREE], true));
+	}
+	
+	public void getRefTypes(final APICallback<SparseArray<String>> apiCallback)
+	{
+		resourceManager.get(new APIRequestWrapper(apiCallback, new RefTypesParser(), null, xmlURLs[REF_TYPES], true));
 	}
 	
 	private class ConquerableStationsParser extends APIParser<SparseArray<StationInfo>>
@@ -79,6 +86,29 @@ public class Eve extends APIObject {
 			}
 			
 			return stationInformation;
+		}
+	}
+	
+	private class RefTypesParser extends APIParser<SparseArray<String>>
+	{
+		@Override
+		public SparseArray<String> parse(Document document) 
+		{
+	
+			NodeList refList = document.getElementsByTagName("row");
+			SparseArray<String> refTypes = new SparseArray<String>(refList.getLength());
+
+			for (int i = 0; i < refList.getLength(); ++i)
+			{				
+				Node station = refList.item(i);
+				
+				int refTypeID = Integer.valueOf(station.getAttributes().getNamedItem("refTypeID").getTextContent());
+				String refTypeName = station.getAttributes().getNamedItem("refTypeName").getTextContent();
+				
+				refTypes.put(refTypeID, refTypeName);
+			}
+			
+			return refTypes;
 		}
 	}
 	
@@ -172,4 +202,6 @@ public class Eve extends APIObject {
 			return new SkillInfo(published, typeID, typeName, description, rank, primaryAttribute, secondaryAttribute, requiredSkills);
 		}
 	}
+	
+	
 }

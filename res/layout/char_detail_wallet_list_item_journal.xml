@@ -2,51 +2,52 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="56dp"
-    android:padding="4dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
     android:orientation="horizontal"
     android:background="#181818" >
-    <com.zdonnell.eve.character.detail.SquareLinearLayout
-	    android:id="@+id/char_detail_assets_station_item_typeIconBorder"
-	   	android:background="#000"
-	   	android:layout_height="48dp"
-        android:layout_marginRight="8dp"
-        android:padding="1dp"
-        android:layout_width="48dp">
-	   	    <ImageView 
-		        android:id="@+id/station_assets_list_item_icon"
-		        android:layout_width="match_parent"
-		        android:scaleType="fitCenter"
-		        android:layout_height="match_parent"
-		        android:background="#242424"/>
-	   	</com.zdonnell.eve.character.detail.SquareLinearLayout>
-    <TextView
-        android:textColor="#BBB"
+    <LinearLayout
         android:layout_width="0dp"
-        android:layout_weight="1.8"
-        android:textSize="12sp"
-        android:maxLines="2"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:id="@+id/station_assets_list_item_name"/>
+        android:orientation="vertical">
+	    <TextView
+	        android:textColor="#BBB"
+	        android:layout_width="wrap_content"
+	        android:textSize="14sp"
+	        android:maxLines="1"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_vertical"
+	        android:id="@+id/char_detail_wallet_list_item_journalType"/>
+	    <TextView
+	        android:textColor="#777"
+	        android:layout_width="wrap_content"
+	        android:textSize="11sp"
+	        android:maxLines="2"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_vertical"
+	        android:id="@+id/char_detail_wallet_list_item_journalDescription"/>
+	</LinearLayout>
     <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:orientation="vertical">
             <TextView
-		        android:textColor="#777"
 		        android:layout_width="wrap_content"
 		        android:textSize="12sp"
 		        android:layout_gravity="right"
 		        android:layout_height="wrap_content"
-		        android:id="@+id/station_assets_list_item_count"/>
+		        android:id="@+id/char_detail_wallet_list_item_journalAmount"/>
            <TextView 
-	            android:id="@+id/station_assets_list_item_value"
+	            android:id="@+id/char_detail_wallet_list_item_journalBalance"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_gravity="right"
 	            android:textSize="11sp"
-	            android:textColor="#449944"/>
+	            android:textColor="#999"/>
         </LinearLayout>
 </LinearLayout>

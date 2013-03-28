@@ -28,31 +28,14 @@
 	    android:background="#000"
 	    android:orientation="horizontal" >
 	    <TextView 
-	        android:id="@+id/skill_queue_size_text"
-	        android:text="Wallet Balance"
-	        android:textColor="#999"
-	        android:textSize="14sp"
+	        android:id="@+id/char_detail_wallet_balance"
+	        android:textColor="#449944"
+	        android:textSize="12sp"
+	        android:textStyle="bold"
 	        android:layout_width="0dp"
 	        android:layout_gravity="center_vertical"
+	        android:gravity="right"
 	        android:layout_weight="1"
 	        android:layout_height="wrap_content"/>
-
-	    <CheckBox
-	        android:id="@+id/wallet_transactions_checkbox"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_margin="0sp"
-	        android:text="Transactions"
-	        android:layout_gravity="center_vertical"
-	        android:textSize="11sp" />
-	    
-	    <CheckBox
-	        android:id="@+id/wallet_journal_checkbox"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_margin="0sp"
-            android:layout_gravity="center_vertical"
-	        android:text="Journal"
-	        android:textSize="11sp" />	
 	</LinearLayout>
 </LinearLayout>

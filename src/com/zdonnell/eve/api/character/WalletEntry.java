@@ -9,9 +9,61 @@ public class WalletEntry {
 	
 	public String dateTime() { return dateTime; }
 	
-	public class Journal extends WalletEntry
+	public static class Journal extends WalletEntry
 	{
+		private long refID;
+		private int refTypeID;
 		
+		private String ownerName1, ownerName2;
+		private int ownerID1, ownerID2;
+		
+		private String argName1;
+		private int argID1;
+		
+		private double amount, balance;
+		private String reason;
+		
+		private int taxReceiverID;
+		private double taxAmount;
+		
+		public Journal(String dateTime, long refID, int refTypeID, String ownerName1, String ownerName2, int ownerID1, int ownerID2,
+				String argName1, int argID1, double amount, double balance, String reason, int taxReceiverID, double taxAmount)
+		{
+			this.dateTime = dateTime;
+			this.refID = refID;
+			this.refTypeID = refTypeID;
+			this.ownerName1 = ownerName1;
+			this.ownerName2 = ownerName2;
+			this.ownerID1 = ownerID1;
+			this.ownerID2 = ownerID2;
+			this.argName1 = argName1;
+			this.argID1 = argID1;
+			this.amount = amount;
+			this.balance = balance;
+			this.reason = reason;
+			this.taxReceiverID = taxReceiverID;
+			this.taxAmount = taxAmount;
+		}
+		
+		public long refID() { return refID; }
+		public int refTypeID() { return refTypeID; }
+		
+		public String ownerName1() { return ownerName1; }
+		public String ownerName2() { return ownerName2; }
+		
+		public int ownerID1() { return ownerID1; }
+		public int ownerID2() { return ownerID2; }
+		
+		public String argName1() { return argName1; }
+		public int argID1() { return argID1; }
+
+		public double amount() { return amount; }
+		public double balance() { return balance; }
+		
+		public String reason() { return reason; }
+		
+		public int taxReceiverID() { return taxReceiverID; }
+		public double taxAmount() { return taxAmount; }
 	}
 	
 	public static class Transaction extends WalletEntry

@@ -59,6 +59,8 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 	private CharacterDetailActivity activity;
 	
 	public SearchView searchView;
+	
+	private String characterName;
 		
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -86,8 +88,10 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         final ActionBar actionBar = getActionBar();
         activity = this;
         
+        characterName = new CharacterDB(getBaseContext()).getCharacterName(Integer.valueOf(characterInfo[0]));
+        
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.setTitle(new CharacterDB(getBaseContext()).getCharacterName(Integer.valueOf(characterInfo[0])));
+        actionBar.setTitle(characterName);
                 
         // Create the adapter that will return a fragment for each of the three primary sections
         // of the app.
@@ -171,6 +175,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         	characterDetails.putInt("keyID", assembledChar.getCredentials().keyID);
         	characterDetails.putString("vCode", assembledChar.getCredentials().verificationCode);
         	characterDetails.putInt("characterID", assembledChar.id());
+        	characterDetails.putString("characterName", characterName);
         	
         	switch (i)
         	{

@@ -74,9 +74,12 @@ public class APICharacter extends APIObject {
 		resourceManager.get(new APIRequestWrapper(apiCallback, new CharacterInfoParser(), credentials, xmlURLs[CHAR_INFO], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
 	}
 	
-	public void getWalletJournal(APICallback<ArrayList<WalletEntry.Journal>> apiCallback)
+	public void getWalletJournal(APICallback<WalletEntry.Journal[]> apiCallback)
 	{
-		resourceManager.get(new APIRequestWrapper(apiCallback, new WalletJournalParser(), credentials, xmlURLs[CHAR_INFO], true, new BasicNameValuePair("characterID", String.valueOf(characterID))));		
+		BasicNameValuePair[] args = new BasicNameValuePair[2];
+		args[0] = new BasicNameValuePair("characterID", String.valueOf(characterID));
+		args[1] = new BasicNameValuePair("rowCount", String.valueOf(1000));
+		resourceManager.get(new APIRequestWrapper(apiCallback, new WalletJournalParser(), credentials, xmlURLs[WALLET_JOURN], true, args));		
 	}
 	
 	public void getWalletTransactions(APICallback<WalletEntry.Transaction[]> apiCallback)
@@ -238,12 +241,52 @@ public class APICharacter extends APIObject {
 	 * @author Zach
 	 *
 	 */
-	private class WalletJournalParser extends APIParser<WalletEntry.Journal>
+	private class WalletJournalParser extends APIParser<WalletEntry.Journal[]>
 	{
 		@Override
-		public WalletEntry.Journal parse(Document document) {
+		public WalletEntry.Journal[] parse(Document document) 
+		{
+			NodeList journalNodes = document.getElementsByTagName("row");
 			
-			return null;
+			ArrayList<WalletEntry.Journal> journalEntryList = new ArrayList<WalletEntry.Journal>(journalNodes.getLength());
+						
+			for (int i = 0; i < journalNodes.getLength(); ++i)
+			{
+				Node journalNode = journalNodes.item(i);
+				NamedNodeMap journalEntryAttrs = journalNode.getAttributes();
+				
+				
+				String dateTime = journalEntryAttrs.getNamedItem("date").getTextContent();
+				long refID = Long.parseLong(journalEntryAttrs.getNamedItem("refID").getTextContent());
+				int refTypeID = Integer.parseInt(journalEntryAttrs.getNamedItem("refTypeID").getTextContent());
+				String ownerName1 = journalEntryAttrs.getNamedItem("ownerName1").getTextContent();
+				int ownerID1 = Integer.parseInt(journalEntryAttrs.getNamedItem("ownerID1").getTextContent());
+				String ownerName2 = journalEntryAttrs.getNamedItem("ownerName2").getTextContent();
+				int ownerID2 = Integer.parseInt(journalEntryAttrs.getNamedItem("ownerID2").getTextContent());
+				String argName1 = journalEntryAttrs.getNamedItem("argName1").getTextContent();
+				int argID1 = Integer.parseInt(journalEntryAttrs.getNamedItem("argID1").getTextContent());
+				double amount = Double.parseDouble(journalEntryAttrs.getNamedItem("amount").getTextContent());
+				double balance = Double.parseDouble(journalEntryAttrs.getNamedItem("balance").getTextContent());
+				String reason = journalEntryAttrs.getNamedItem("reason").getTextContent();
+				
+				int taxReceiverID = 0;
+				double taxAmount = 0;
+				try 
+				{
+					taxReceiverID = Integer.parseInt(journalEntryAttrs.getNamedItem("taxReceiverID").getTextContent());
+					taxAmount = Double.parseDouble(journalEntryAttrs.getNamedItem("taxAmount").getTextContent());
+				} 
+				catch (NumberFormatException e) { }
+			
+				WalletEntry.Journal journalEntry = new WalletEntry.Journal(dateTime, refID, refTypeID, ownerName1, ownerName2, ownerID1, ownerID2, argName1, argID1, amount, balance, reason, taxReceiverID, taxAmount);
+				
+				journalEntryList.add(journalEntry);
+			}
+			
+			WalletEntry.Journal[] journalEntries = new WalletEntry.Journal[journalEntryList.size()];
+			journalEntryList.toArray(journalEntries);
+			
+			return journalEntries;
 		}
 	}
 	
@@ -257,7 +300,6 @@ public class APICharacter extends APIObject {
 		@Override
 		public WalletEntry.Transaction[] parse(Document document) 
 		{
-			Node rowset = document.getElementsByTagName("rowset").item(0);	
 			NodeList transactionNodes = document.getElementsByTagName("row");
 			
 			ArrayList<WalletEntry.Transaction> transactionsList = new ArrayList<WalletEntry.Transaction>(transactionNodes.getLength());
