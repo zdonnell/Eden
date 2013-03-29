@@ -87,14 +87,18 @@ public class ParentAssetsFragment extends Fragment {
     	parentActivity = (BaseActivity) context;
     	
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets_childfragment_frame, container, false);
-    	
+    	Log.d("ASSETS SUB FRAGMENT START", "TIME: " + System.currentTimeMillis());
+
     	FragmentTransaction loadStationList = this.getChildFragmentManager().beginTransaction();
 
+    	
     	childFragment = new StationListFragment();
     	childFragment.setParent(this);
     	
     	loadStationList.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) childFragment);
     	loadStationList.commit();
+    	Log.d("ASSETS SUB FRAGMENT END", "TIME: " + System.currentTimeMillis());
+
     	    	
     	character.getAssetsList(new APICallback<AssetsEntity[]>()
     	{
@@ -115,7 +119,6 @@ public class ParentAssetsFragment extends Fragment {
     
     public void setCurrentParent(AssetsEntity asset) { parentItemStack.push(asset); }
     public AssetsEntity getCurrentParent() { return parentItemStack.peek(); }
-
     
     public void updateChild(AssetsEntity[] newAssetsSet, int type, boolean isBack, boolean isSearchUpdate)
     {    	    	    	
@@ -137,7 +140,6 @@ public class ParentAssetsFragment extends Fragment {
     	AssetsEntity[] assetsToPass;
     	if (searchFilter == null) assetsToPass = newAssetsSet;
     	else assetsToPass = searchAssets(newAssetsSet);
-    	//sortAssets(prefs.getInt("sort_type", InventorySort.ALPHA), assetsToPass);
     	
     	nextFragment.assetsUpdated(assetsToPass);
     	
@@ -153,9 +155,7 @@ public class ParentAssetsFragment extends Fragment {
     	
     	loadNextAssets.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) nextFragment);
     	loadNextAssets.commit();
-    	
-    	//if (!isSearchUpdate) parentActivity.invalidateOptionsMenu();
-    }
+	}
     
     private void prepareAssets(AssetsEntity[] locations)
     {

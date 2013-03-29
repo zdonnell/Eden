@@ -11,6 +11,7 @@ import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,6 +73,8 @@ public class SkillsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
     {
+    	Log.d("SKILL LIST ONCREATEVIEW START", "TIME: " + System.currentTimeMillis());
+    	
     	context = inflater.getContext();
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_skills, container, false);
     	
@@ -80,6 +83,7 @@ public class SkillsFragment extends Fragment {
     	mode = prefs.getInt("skill_display", TRAINED_SKILLS);
     	
     	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
+    	
     	character.getCharacterSheet(new APICallback<CharacterSheet>() 
     	{
 			@Override
@@ -99,6 +103,9 @@ public class SkillsFragment extends Fragment {
 				updateSkillList();
 			}
     	});
+    	
+    	Log.d("SKILL LIST ONCREATEVIEW END", "TIME: " + System.currentTimeMillis());
+
     	
     	return inflatedView;
     }   

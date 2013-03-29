@@ -80,7 +80,9 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     {
     	  super.onCreate(savedInstanceState);
           setContentView(R.layout.character_detail);
-          
+         
+    		setSlidingActionBarEnabled(true);
+
     	
     	String[] characterInfo = getIntent().getExtras().getStringArray("character");
     	assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
@@ -90,7 +92,6 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         
         characterName = new CharacterDB(getBaseContext()).getCharacterName(Integer.valueOf(characterInfo[0]));
         
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setTitle(characterName);
                 
         // Create the adapter that will return a fragment for each of the three primary sections
@@ -107,31 +108,15 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
+                invalidateOptionsMenu();
+
             }
         });
 
     	LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);    	
         
-        // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by the adapter.
-            // Also specify this Activity object, which implements the TabListener interface, as the
-            // listener for when this tab is selected.
-        	View tabView = inflater.inflate(R.layout.char_detail_tab_view, mViewPager, false);
-        	((TextView) tabView.findViewById(R.id.char_detail_tab_view_text)).setText(mSectionsPagerAdapter.getPageTitle(i));
-        	((ImageView) tabView.findViewById(R.id.char_detail_tab_view_icon)).setImageResource(CharacterSheetFragment.sheetItemImageIDs[i]);
-        	
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setCustomView(tabView)
-                            .setTabListener(this));
-        }
-        
-        
         mViewPager.setCurrentItem(getIntent().getExtras().getInt("position"));
         
-  		setSlidingActionBarEnabled(true);
 
     }
 	
@@ -163,6 +148,9 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	
     	private SkillsFragment skillsFragment;
     	public SkillsFragment skillsFragment() { return skillsFragment; }
+    	
+    	private WalletFragment walletFragment;
+    	public WalletFragment walletFragment() { return walletFragment; }
     	    	
         public SectionsPagerAdapter(FragmentManager fm) { super(fm); }
 
@@ -189,7 +177,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         		fragment = new AttributesFragment(assembledChar);
         		break;
         	case CharacterSheetFragment.WALLET:
-            	fragment = new WalletFragment();
+            	fragment = walletFragment = new WalletFragment();
         		break;
         	case CharacterSheetFragment.ASSETS:
             	fragment = assetsFragment = new ParentAssetsFragment();
@@ -260,7 +248,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	
     	MenuInflater menuInflater = getMenuInflater();        	
         
-    	switch (getActionBar().getSelectedNavigationIndex())
+    	switch (mViewPager.getCurrentItem())
         {
         case CharacterSheetFragment.ASSETS:
         	menuInflater.inflate(R.menu.char_detail_assetsasset_actionbar_items, menu);
@@ -312,6 +300,9 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         case CharacterSheetFragment.SKILLS:
         	menuInflater.inflate(R.menu.char_detail_skills_actionbar_items, menu);
         	break;
+        case CharacterSheetFragment.WALLET:
+        	menuInflater.inflate(R.menu.char_detail_wallet_actionbar_items, menu);
+        	break;
         }
     	
     	return true;
@@ -326,6 +317,9 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 	    case R.id.skill_list:
 	    	new SkillList().show(getSupportFragmentManager(), "Skill List Dialog");
 	    	break;
+	    case R.id.wallet_type:
+	    	new WalletType().show(getSupportFragmentManager(), "Skill List Dialog");
+	    	break;
 	    case R.id.sort_by:
 	    	new SortByDialog().show(getSupportFragmentManager(), "Sort By Dialog");
 	    	break;
@@ -336,6 +330,29 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 	    return true;
     }
     
+    @SuppressLint("ValidFragment")
+	private class WalletType extends DialogFragment
+    {
+		@Override
+    	public Dialog onCreateDialog(Bundle savedInstanceState) 
+    	{
+    	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    	    builder.setTitle("Show")
+    	           .setItems(WalletFragment.displayTypeNames, new DialogInterface.OnClickListener() 
+		           {
+		               public void onClick(DialogInterface dialog, int which) 
+		               {
+		            	   if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.WALLET)
+			               {
+			               		mSectionsPagerAdapter.walletFragment().updateWalletType(which);
+			               }
+		               }
+		           }
+    	   );
+    	    
+    	    return builder.create();
+    	}
+    }
     
     @SuppressLint("ValidFragment")
 	private class SkillList extends DialogFragment

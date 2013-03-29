@@ -109,7 +109,9 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
     {
-    	context = inflater.getContext();
+    	if (parentFragment == null) parentFragment = (ParentAssetsFragment) getParentFragment();
+		
+		context = inflater.getContext();
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets, container, false);
     	this.rootView = inflatedView;
     	

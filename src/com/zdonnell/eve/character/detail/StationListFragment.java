@@ -89,6 +89,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
     {
+		if (parentFragment == null) parentFragment = (ParentAssetsFragment) getParentFragment();
 		currentStationInfo = parentFragment.getStationInfo();
 		
 		context = inflater.getContext();

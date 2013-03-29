@@ -6,11 +6,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,7 +39,16 @@ import com.zdonnell.eve.eve.Eve;
 
 public class WalletFragment extends Fragment {
     
-    
+	public static final int TRANSACTION = 0;
+	public static final int JOURNAL = 1;
+	
+    public static String[] displayTypeNames = new String[2];
+	static
+	{
+		displayTypeNames[TRANSACTION] = "Wallet Transactions";
+		displayTypeNames[JOURNAL] = "Journal Entries";
+	}
+	
     private APICharacter character;
         
     private Context context;
@@ -51,6 +62,9 @@ public class WalletFragment extends Fragment {
     private String characterName;
     
 	private NumberFormat formatter = NumberFormat.getInstance();
+	
+	SharedPreferences prefs;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -60,8 +74,10 @@ public class WalletFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
-    {
+    {    	
     	context = inflater.getContext();
+    	prefs = context.getSharedPreferences("eden_wallet_preferences", Context.MODE_PRIVATE);
+    	
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_wallet, container, false);
     	
     	formatter.setMaximumFractionDigits(2);
@@ -72,6 +88,23 @@ public class WalletFragment extends Fragment {
     	
     	final TextView walletBalance = (TextView) inflatedView.findViewById(R.id.char_detail_wallet_balance);
     	
+    	switch (prefs.getInt("wallet_type", JOURNAL))
+    	{
+    	case JOURNAL: loadInJournal();
+    	case TRANSACTION: loadInTransactions();
+    	}
+    	
+    	// Needed to set wallet balance
+    	character.getCharacterSheet(new APICallback<CharacterSheet>()
+    	{
+			@Override
+			public void onUpdate(CharacterSheet updatedData) 
+			{
+				walletBalance.setText(formatter.format(updatedData.getWalletBalance()) + " ISK");
+			}
+    	});
+    	
+    	// Needed for the base description of wallet journal entry types
     	new Eve(context).getRefTypes(new APICallback<SparseArray<String>>()
     	{
 			@Override
@@ -82,17 +115,28 @@ public class WalletFragment extends Fragment {
 			}
     	});
     	
-    	character.getWalletTransactions(new APICallback<WalletEntry.Transaction[]>() 
-    	{
-			@Override
-			public void onUpdate(Transaction[] updatedData) 
-			{
-				/*walletEntries = updatedData;
-				Arrays.sort(walletEntries, new WalletSort.DateTime());
-				dataUpdated();*/
-			}
-    	});
+    	walletListView = (ListView) inflatedView.findViewById(R.id.char_detail_wallet_listview);
+    	    	
+    	return inflatedView;
+    }  
+    
+    public void updateWalletType(int type)
+    {
+		prefs.edit().putInt("wallet_type", type).commit();
     	
+    	switch (type)
+    	{
+    	case TRANSACTION:
+    		loadInTransactions();
+    		break;
+    	case JOURNAL:
+    		loadInJournal();
+    		break;
+    	}
+    }
+    
+    public void loadInJournal()
+    {
     	character.getWalletJournal(new APICallback<WalletEntry.Journal[]>() 
     	{
 			@Override
@@ -103,20 +147,21 @@ public class WalletFragment extends Fragment {
 				dataUpdated();
 			}
     	});
-    	
-    	character.getCharacterSheet(new APICallback<CharacterSheet>()
+    }
+    
+    public void loadInTransactions()
+    {
+    	character.getWalletTransactions(new APICallback<WalletEntry.Transaction[]>() 
     	{
 			@Override
-			public void onUpdate(CharacterSheet updatedData) 
+			public void onUpdate(Transaction[] updatedData) 
 			{
-				walletBalance.setText(formatter.format(updatedData.getWalletBalance()) + " ISK");
+				walletEntries = updatedData;
+				Arrays.sort(walletEntries, new WalletSort.DateTime());
+				dataUpdated();
 			}
     	});
-    	
-    	walletListView = (ListView) inflatedView.findViewById(R.id.char_detail_wallet_listview);
-    	
-    	return inflatedView;
-    }  
+    }
     
     private void dataUpdated()
     {

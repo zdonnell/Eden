@@ -72,9 +72,7 @@ public class StationDatabase
 		}
 		
 		c.close();
-		
-		Log.d("STATIONS", "NEEDED " + stationIDs.length + ", FOUND " + typeInfoSet.size());
-		
+				
 		return typeInfoSet;
 	}
 	
