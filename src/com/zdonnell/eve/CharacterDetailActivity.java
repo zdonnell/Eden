@@ -13,7 +13,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -74,6 +76,8 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+    
+    PagerTitleStrip mViewPagerTitleStrip;
 
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -98,8 +102,15 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         // of the app.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPagerTitleStrip = (PagerTitleStrip) findViewById(R.id.pager_title);
+        mViewPagerTitleStrip.setNonPrimaryAlpha(0.3f);
+        mViewPagerTitleStrip.setTextSpacing((int) (displayMetrics.widthPixels/4f));
+        
         mViewPager.setAdapter(mSectionsPagerAdapter);
         
         // When swiping between different sections, select the corresponding tab.
@@ -261,7 +272,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 				@Override
 				public boolean onMenuItemActionCollapse(MenuItem item) 
 				{
-					if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.ASSETS)
+					if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
 		            {
 		        		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
 		        		assetsFragment.updateSearchFilter(null);
@@ -309,9 +320,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     }
     
     public boolean onOptionsItemSelected (MenuItem item) {
-    	
-    	int curTab = getActionBar().getSelectedNavigationIndex();
-    	
+    	    	
 	    switch (item.getItemId())
 	    {
 	    case R.id.skill_list:
@@ -342,7 +351,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 		           {
 		               public void onClick(DialogInterface dialog, int which) 
 		               {
-		            	   if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.WALLET)
+		            	   if (mViewPager.getCurrentItem() == CharacterSheetFragment.WALLET)
 			               {
 			               		mSectionsPagerAdapter.walletFragment().updateWalletType(which);
 			               }
@@ -366,7 +375,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 		           {
 		               public void onClick(DialogInterface dialog, int which) 
 		               {
-		            	   if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.SKILLS)
+		            	   if (mViewPager.getCurrentItem() == CharacterSheetFragment.SKILLS)
 			               {
 			               		mSectionsPagerAdapter.skillsFragment().updateSkillDisplay(which);
 			               }
@@ -390,7 +399,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 		           {
 		               public void onClick(DialogInterface dialog, int which) 
 		               {
-		            	   if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.ASSETS)
+		            	   if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
 			               {
 			               		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
 			               		assetsFragment.updateSort(which);
@@ -415,7 +424,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 		           {
 		               public void onClick(DialogInterface dialog, int which) 
 		               {
-		            	   if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.ASSETS)
+		            	   if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
 			               {
 			               		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
 			               		assetsFragment.updateLayoutStyle(which);
@@ -446,7 +455,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 		
 		private void ifStillOnAssetsSearch(String searchString)
 		{
-			if (getActionBar().getSelectedNavigationIndex() == CharacterSheetFragment.ASSETS)
+			if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
             {
         		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
         		assetsFragment.updateSearchFilter(searchString);

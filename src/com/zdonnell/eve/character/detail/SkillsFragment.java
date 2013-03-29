@@ -84,12 +84,14 @@ public class SkillsFragment extends Fragment {
     	
     	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
     	
+    	Log.d("REQUESTED SKILLS", "AT: " + System.currentTimeMillis());
     	character.getCharacterSheet(new APICallback<CharacterSheet>() 
     	{
 			@Override
 			public void onUpdate(CharacterSheet updatedData) 
 			{
 				currentSkills = updatedData.getSkills();
+		    	Log.d("ACQUIRED SKILLS", "AT: " + System.currentTimeMillis());
 				updateSkillList();
 			}
     	});

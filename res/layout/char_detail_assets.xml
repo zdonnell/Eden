@@ -6,7 +6,7 @@
     android:background="#000" >
     <GridView
         android:padding="5dp"
-        android:background="#181818"   
+        android:background="#151515"   
         android:id="@+id/char_detail_assets_grid"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -16,7 +16,7 @@
         android:numColumns="4" />
     <ListView
         android:padding="5dp"
-        android:background="#181818"   
+        android:background="#151515"   
         android:id="@+id/char_detail_assets_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"

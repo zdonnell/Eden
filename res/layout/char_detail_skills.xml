@@ -3,9 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#181818" >
+    android:background="#151515" >
     <ExpandableListView
-        android:background="#181818"   
+        android:background="#151515"   
         android:id="@+id/char_detail_skills_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
