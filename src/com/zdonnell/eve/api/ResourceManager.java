@@ -106,6 +106,8 @@ public class ResourceManager {
 		catch (ClientProtocolException e) { e.printStackTrace(); }
 		catch (IOException e) { e.printStackTrace(); }
 				
+		rawResponse = rawResponse.replaceAll(">\\s*<", "><");
+
 		return rawResponse;
 	}
 	
@@ -119,9 +121,6 @@ public class ResourceManager {
 		DocumentBuilderFactory factory;
 		DocumentBuilder domBuilder;
 				
-		/* remove whitespace in between nodes */
-		xmlString = xmlString.replaceAll(">\\s*<", "><");
-		
 		factory = DocumentBuilderFactory.newInstance();
 		
 		try 

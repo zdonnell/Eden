@@ -38,7 +38,17 @@
 	            android:layout_height="wrap_content"
 				android:maxLines="1"
 	            android:textSize="11sp"
-	            android:textColor="#999"/>
+	            android:textColor="#777"/>
+
+        </LinearLayout>
+        <View 
+            android:layout_width="10dp"
+            android:layout_height="fill_parent"/>
+          <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
            <TextView 
 	            android:id="@+id/char_detail_wallet_list_item_itemvalue"
 	            android:layout_width="wrap_content"

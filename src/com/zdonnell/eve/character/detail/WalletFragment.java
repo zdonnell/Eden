@@ -90,8 +90,12 @@ public class WalletFragment extends Fragment {
     	
     	switch (prefs.getInt("wallet_type", JOURNAL))
     	{
-    	case JOURNAL: loadInJournal();
-    	case TRANSACTION: loadInTransactions();
+    	case JOURNAL: 
+    		loadInJournal();
+    		break;
+    	case TRANSACTION: 
+    		loadInTransactions();
+    		break;
     	}
     	
     	// Needed to set wallet balance
