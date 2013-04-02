@@ -83,7 +83,7 @@ public class CharacterDB {
 			Log.e("DB Error", e.toString());
 			e.printStackTrace();
 		}
-
+		
 		// return the ArrayList that holds the data collected from
 		// the database.
 		return cursor;

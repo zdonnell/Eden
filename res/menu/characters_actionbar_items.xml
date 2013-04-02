@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item android:id="@+id/add_characters"
+          android:title="Add"
+          android:showAsAction="ifRoom|withText"
+           />
+    <item android:id="@+id/edit_characters"
+          android:title="Edit"
+          android:showAsAction="ifRoom|withText"
+           />
+</menu>

@@ -13,7 +13,7 @@ public class EveCharacter {
 	public final String corpName;
 	public final int corpID;
 
-	EveCharacter(String name, int charID, String corpName, int corpID) {
+	public EveCharacter(String name, int charID, String corpName, int corpID) {
 		this.name = name;
 		this.charID = charID;
 		this.corpName = corpName;

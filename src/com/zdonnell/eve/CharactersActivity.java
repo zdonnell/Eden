@@ -7,6 +7,9 @@ import com.zdonnell.eve.staticdata.api.StationInfo;
 
 import android.os.Bundle;
 import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 
 public class CharactersActivity extends BaseActivity {
@@ -32,5 +35,31 @@ public class CharactersActivity extends BaseActivity {
 		
 		setSlidingActionBarEnabled(true);
 	}
+	
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+    	super.onCreateOptionsMenu(menu);
+    	
+    	MenuInflater menuInflater = getMenuInflater();        	
+        menuInflater.inflate(R.menu.characters_actionbar_items, menu);
+        
+        return true;
+    }
+	 
+	public boolean onOptionsItemSelected (MenuItem item) {
+    	
+	    switch (item.getItemId())
+	    {
+	    case R.id.add_characters:
+	    	new EditCharactersDialog().show(getSupportFragmentManager(), "Skill List Dialog");
+	    	break;
+	    case R.id.edit_characters:
+	    	new EditCharactersDialog().show(getSupportFragmentManager(), "Skill List Dialog");
+	    	break;
+	    }
+	    return true;
+    }
+	
 	
 }

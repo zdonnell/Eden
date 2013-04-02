@@ -44,7 +44,7 @@ public class ImageService {
 		localImagePrefix[ICON] = "type_";
 		
 		imageSize[CHAR] = 512;
-		imageSize[CORP] = 256;
+		imageSize[CORP] = 128;
 		imageSize[ICON] = 64;
 		
 		imageExtension[CHAR] = ".jpg";
@@ -487,9 +487,9 @@ public class ImageService {
 	{
 		if (cacheSizes == null) 
 		{
-			this.cacheSizes[CHAR] = 2 * 1024 * 1024; // 4 MB
-			this.cacheSizes[CORP] = 1 * 1024 * 1024; // 2 MB
-			this.cacheSizes[ICON] = 2 * 1024 * 1024; // 4 MB
+			this.cacheSizes[CHAR] = 4 * 1024 * 1024; // 4 MB
+			this.cacheSizes[CORP] = 2 * 1024 * 1024; // 2 MB
+			this.cacheSizes[ICON] = 4 * 1024 * 1024; // 4 MB
 		} 
 		else for (int i = 0; i < 3; i++) this.cacheSizes[i] = cacheSizes[i];
 		

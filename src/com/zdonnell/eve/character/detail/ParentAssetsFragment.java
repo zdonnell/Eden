@@ -124,7 +124,17 @@ public class ParentAssetsFragment extends Fragment {
     }
     
     public void setCurrentParent(AssetsEntity asset) { parentItemStack.push(asset); }
-    public AssetsEntity getCurrentParent() { return parentItemStack.peek(); }
+    public AssetsEntity getCurrentParent() 
+    { 
+    	try 
+    	{
+    		return parentItemStack.peek(); 
+    	}
+    	catch (Exception e)
+    	{
+    		return null;
+    	}
+   	}
     
     public void updateChild(AssetsEntity[] newAssetsSet, int type, boolean isBack, boolean isSearchUpdate)
     {    	    	    	
