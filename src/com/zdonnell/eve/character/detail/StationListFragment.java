@@ -199,8 +199,8 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	{
 		private int layoutResID;
 		
-		private boolean stationValuesLoaded = parentFragment.getPrices().size() > 0;
-		private boolean stationInfoLoaded = parentFragment.getStationInfo().size() > 0;
+		private boolean stationValuesLoaded = parentFragment.getPrices() != null && parentFragment.getPrices().size() > 0;
+		private boolean stationInfoLoaded = parentFragment.getStationInfo() != null && parentFragment.getStationInfo().size() > 0;
 		
 		private LayoutInflater inflater;
 		
@@ -357,7 +357,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	@Override
 	public void obtainedPrices() 
 	{
-		calculateStationValues(currentStationList);
+		if (adapter != null) calculateStationValues(currentStationList);
 	}
 
 	@Override
@@ -376,7 +376,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	public void obtainedStationInfo() 
 	{
 		currentStationInfo = parentFragment.getStationInfo();
-		adapter.obtainedStationInfo();
+		if (adapter != null) adapter.obtainedStationInfo();
 		
 		ArrayList<Integer> uniqueStationTypeIDsList = new ArrayList<Integer>();
 		
@@ -389,14 +389,12 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		Integer[] uniqueStationTypeIDs = new Integer[uniqueStationTypeIDsList.size()];
 		uniqueStationTypeIDsList.toArray(uniqueStationTypeIDs);
 		
-		Log.d("STATION ICONS", "TRYING TO GET STATION ICONS");
 		ImageService.getInstance(context).getTypes(new ImageService.IconObtainedCallback() 
 		{
 			@Override
 			public void iconsObtained(SparseArray<Bitmap> bitmaps) 
 			{
-				Log.d("STATION ICONS", "NUMBER OF STATION ICON TYPES: " + bitmaps.size());
-				adapter.obtainedStationIcons(bitmaps);
+				if (adapter != null) adapter.obtainedStationIcons(bitmaps);
 			}
 		}, uniqueStationTypeIDs);
 	}

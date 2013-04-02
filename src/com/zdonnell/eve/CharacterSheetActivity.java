@@ -79,7 +79,7 @@ public class CharacterSheetActivity extends BaseActivity
         		fragment = new SkillQueueFragment();
         		break;
         	case CharacterSheetFragment.ATTRIBUTES:
-        		fragment = new AttributesFragment(assembledChar);
+        		fragment = new AttributesFragment();
         		break;
         	case CharacterSheetFragment.WALLET:
             	fragment = new WalletFragment();
@@ -88,7 +88,7 @@ public class CharacterSheetActivity extends BaseActivity
         		fragment = new ParentAssetsFragment();
         		break;
         	default:
-        		fragment = new AttributesFragment(assembledChar);
+        		fragment = new AttributesFragment();
         		break;
         	}
         	

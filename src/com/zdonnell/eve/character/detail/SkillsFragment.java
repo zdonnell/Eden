@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.api.APICallback;
@@ -56,7 +57,8 @@ public class SkillsFragment extends Fragment {
     
     private APICharacter character;
     
-        
+    private CharacterDetailActivity parentActivity;  
+    
     private Context context;
     
     private SkillGroup[] skillTree;
@@ -72,11 +74,11 @@ public class SkillsFragment extends Fragment {
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
-    {
-    	Log.d("SKILL LIST ONCREATEVIEW START", "TIME: " + System.currentTimeMillis());
-    	
+    {    	
     	context = inflater.getContext();
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_skills, container, false);
+    	
+    	parentActivity = (CharacterDetailActivity) getActivity();
     	
     	skillsListView = (ExpandableListView) inflatedView.findViewById(R.id.char_detail_skills_list);
     	prefs = context.getSharedPreferences("eden_skills_preferences", Context.MODE_PRIVATE);
@@ -84,30 +86,43 @@ public class SkillsFragment extends Fragment {
     	
     	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
     	
-    	Log.d("REQUESTED SKILLS", "AT: " + System.currentTimeMillis());
-    	character.getCharacterSheet(new APICallback<CharacterSheet>() 
+    	if (parentActivity.dataCache.getCharacterSheet() != null)
     	{
-			@Override
-			public void onUpdate(CharacterSheet updatedData) 
-			{
-				currentSkills = updatedData.getSkills();
-		    	Log.d("ACQUIRED SKILLS", "AT: " + System.currentTimeMillis());
-				updateSkillList();
-			}
-    	});
-    	
-    	new Eve(context).getSkillTree(new APICallback<SkillGroup[]>() 
+    		currentSkills = parentActivity.dataCache.getCharacterSheet().getSkills();
+			updateSkillList();
+    	}
+    	else
     	{
-			@Override
-			public void onUpdate(SkillGroup[] newSkillTree) 
-			{
-				skillTree = newSkillTree;
-				updateSkillList();
-			}
-    	});
+	    	character.getCharacterSheet(new APICallback<CharacterSheet>() 
+	    	{
+				@Override
+				public void onUpdate(CharacterSheet updatedData) 
+				{
+					currentSkills = updatedData.getSkills();
+					parentActivity.dataCache.cacheCharacterSheet(updatedData);
+					updateSkillList();
+				}
+	    	});
+    	}
     	
-    	Log.d("SKILL LIST ONCREATEVIEW END", "TIME: " + System.currentTimeMillis());
-
+    	if (parentActivity.dataCache.getSkillTree() != null)
+    	{
+    		skillTree = parentActivity.dataCache.getSkillTree();
+			updateSkillList();
+    	}
+    	else
+    	{
+    		new Eve(context).getSkillTree(new APICallback<SkillGroup[]>() 
+	    	{
+				@Override
+				public void onUpdate(SkillGroup[] newSkillTree) 
+				{
+					skillTree = newSkillTree;
+					parentActivity.dataCache.cacheSkillTree(newSkillTree);
+					updateSkillList();
+				}
+	    	});
+    	}
     	
     	return inflatedView;
     }   
@@ -188,12 +203,7 @@ public class SkillsFragment extends Fragment {
         	skillTreeTrainedSkills = new SkillGroup[groupsWithSkillsTrained.size()];
         	groupsWithSkillsTrained.toArray(skillTreeTrainedSkills);
         }
-    	
-        public void setMode(int mode)
-        {
-        	showAll = (mode == 0);
-        	
-        }
+
         
 		@Override
 		public boolean areAllItemsEnabled() {

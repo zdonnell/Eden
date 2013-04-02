@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.zdonnell.eve.BaseActivity;
+import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
@@ -62,7 +63,7 @@ public class ParentAssetsFragment extends Fragment {
     
     private SparseArray<Float> prices = new SparseArray<Float>();
     
-    private BaseActivity parentActivity;
+    private CharacterDetailActivity parentActivity;
     
     private String searchFilter;
     
@@ -84,35 +85,40 @@ public class ParentAssetsFragment extends Fragment {
     	int characterID = getArguments().getInt("characterID");
     	character = new APICharacter(new APICredentials(keyID, vCode), characterID, context);
     	
-    	parentActivity = (BaseActivity) context;
+    	parentActivity = (CharacterDetailActivity) getActivity();
     	
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets_childfragment_frame, container, false);
-    	Log.d("ASSETS SUB FRAGMENT START", "TIME: " + System.currentTimeMillis());
 
     	FragmentTransaction loadStationList = this.getChildFragmentManager().beginTransaction();
 
-    	
     	childFragment = new StationListFragment();
     	childFragment.setParent(this);
     	
     	loadStationList.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) childFragment);
     	loadStationList.commit();
-    	Log.d("ASSETS SUB FRAGMENT END", "TIME: " + System.currentTimeMillis());
-
-    	    	
-    	character.getAssetsList(new APICallback<AssetsEntity[]>()
+    	 
+    	currentAssets = parentActivity.dataCache.getAssets();
+    	if (currentAssets != null)
     	{
-			@Override
-			public void onUpdate(AssetsEntity[] locationArray) 
-			{
-				Arrays.sort(locationArray, new InventorySort.Count());
-				currentAssets = locationArray;
-				
-				//initialLoadDialog.setMessage("Getting Asset Type Information");
-				prepareAssets(locationArray);
-				childFragment.assetsUpdated(currentAssets);
-			}
-    	});   	
+    		prepareAssets(currentAssets);
+			childFragment.assetsUpdated(currentAssets);
+    	}
+    	else
+    	{	
+	    	character.getAssetsList(new APICallback<AssetsEntity[]>()
+	    	{
+				@Override
+				public void onUpdate(AssetsEntity[] locationArray) 
+				{
+					Arrays.sort(locationArray, new InventorySort.Count());
+					currentAssets = locationArray;
+					parentActivity.dataCache.cacheAssets(currentAssets);
+					
+					prepareAssets(locationArray);
+					childFragment.assetsUpdated(currentAssets);
+				}
+	    	});
+    	}
     	
     	return inflatedView;
     }
@@ -180,16 +186,23 @@ public class ParentAssetsFragment extends Fragment {
     	/* Start by getting the information for the Stations
     	 * This will get us the Station Names and the typeIDs for the station icons
     	 */
-    	new StaticData(context).getStationInfo(new APICallback<SparseArray<StationInfo>>() 
+    	currentStationInfo = parentActivity.dataCache.getStationInfo();
+    	
+    	if (currentStationInfo != null) childFragment.obtainedStationInfo();
+    	else
     	{
-			@Override
-			public void onUpdate(SparseArray<StationInfo> stationInformation) 
-			{
-				/* set this so sub fragments can pull from it later */
-				currentStationInfo = stationInformation;
-				childFragment.obtainedStationInfo();
-			}
-    	}, stationIDs);
+    		new StaticData(context).getStationInfo(new APICallback<SparseArray<StationInfo>>() 
+	    	{
+				@Override
+				public void onUpdate(SparseArray<StationInfo> stationInformation) 
+				{
+					/* set this so sub fragments can pull from it later */
+					parentActivity.dataCache.cacheStationInfo(stationInformation);
+					currentStationInfo = stationInformation;
+					childFragment.obtainedStationInfo();
+				}
+	    	}, stationIDs);
+    	}
     }
     
     private void getTypeItems(AssetsEntity[] locations)
@@ -205,20 +218,31 @@ public class ParentAssetsFragment extends Fragment {
     	Integer[] uniqueTypeIDs = new Integer[uniqueTypeIDsList.size()];
     	uniqueTypeIDsList.toArray(uniqueTypeIDs);
     	
-    	new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>()
+    	typeInfo = parentActivity.dataCache.getTypeInfo();
+    	
+    	if (typeInfo != null)
     	{
-			@Override
-			public void onUpdate(SparseArray<TypeInfo> rTypeInfo) 
-			{
-				obtainedTypeInfo(rTypeInfo);
-				childFragment.obtainedTypeInfo();
-			}
-    	}, uniqueTypeIDs);
+    		obtainedTypeInfo(typeInfo);
+			childFragment.obtainedTypeInfo();
+    	}
+    	else
+    	{
+	    	new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>()
+	    	{
+				@Override
+				public void onUpdate(SparseArray<TypeInfo> rTypeInfo) 
+				{
+					typeInfo = rTypeInfo;
+					obtainedTypeInfo(rTypeInfo);
+					parentActivity.dataCache.cacheTypeInfo(rTypeInfo);
+					childFragment.obtainedTypeInfo();
+				}
+	    	}, uniqueTypeIDs);
+    	}
     }
     
     private void obtainedTypeInfo(SparseArray<TypeInfo> typeInfo)
     {
-		this.typeInfo = typeInfo;
 		childFragment.obtainedTypeInfo();
 		
 		/* With the type info obtained, grab prices for the valid typeIDs */
@@ -231,15 +255,22 @@ public class ParentAssetsFragment extends Fragment {
 		Integer[] marketTypeIDs = new Integer[marketTypeIDsList.size()];
 		marketTypeIDsList.toArray(marketTypeIDs);
 		
-		PriceService.getInstance(context).getValues(marketTypeIDs, new APICallback<SparseArray<Float>>() 
+		prices = parentActivity.dataCache.getPrices();
+		
+		if (prices != null) childFragment.obtainedPrices();
+		else
 		{
-			@Override
-			public void onUpdate(SparseArray<Float> updatedData) 
+			PriceService.getInstance(context).getValues(marketTypeIDs, new APICallback<SparseArray<Float>>() 
 			{
-				prices = updatedData;
-				childFragment.obtainedPrices();
-			}
-		});
+				@Override
+				public void onUpdate(SparseArray<Float> updatedData) 
+				{
+					prices = updatedData;
+					parentActivity.dataCache.cachePrices(updatedData);
+					childFragment.obtainedPrices();
+				}
+			});
+		}
     }
     
     private void countAssets(AssetsEntity entity, ArrayList<Integer> uniqueTypeIDsList)

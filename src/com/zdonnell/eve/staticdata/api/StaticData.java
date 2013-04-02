@@ -66,9 +66,7 @@ public class StaticData {
 		protected void onPostExecute(SparseArray<StationInfo> storedTypes)
 		{			
 			int amountOfTypesNotFound = requestedTypeIDs.length - storedTypes.size();
-			
-			Log.d("AMOUNT OF TYPES NOT FOUND", "COUNT: " + amountOfTypesNotFound);
-			
+						
 			/* compare with passed typeIDs array */
 			if (amountOfTypesNotFound > 0)
 			{

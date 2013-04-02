@@ -63,6 +63,8 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 	public SearchView searchView;
 	
 	private String characterName;
+	
+	public CharacterDetailCache dataCache = new CharacterDetailCache();
 		
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -82,11 +84,10 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
-    	  super.onCreate(savedInstanceState);
-          setContentView(R.layout.character_detail);
+    	super.onCreate(savedInstanceState);
+        setContentView(R.layout.character_detail);
          
-    		setSlidingActionBarEnabled(true);
-
+    	setSlidingActionBarEnabled(true);
     	
     	String[] characterInfo = getIntent().getExtras().getStringArray("character");
     	assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
@@ -127,8 +128,6 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);    	
         
         mViewPager.setCurrentItem(getIntent().getExtras().getInt("position"));
-        
-
     }
 	
     @Override
@@ -185,7 +184,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         		fragment = new SkillQueueFragment();
         		break;
         	case CharacterSheetFragment.ATTRIBUTES:
-        		fragment = new AttributesFragment(assembledChar);
+        		fragment = new AttributesFragment();
         		break;
         	case CharacterSheetFragment.WALLET:
             	fragment = walletFragment = new WalletFragment();
@@ -194,7 +193,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
             	fragment = assetsFragment = new ParentAssetsFragment();
         		break;
         	default:
-        		fragment = new AttributesFragment(assembledChar);
+        		fragment = new AttributesFragment();
         		break;
         	}
         	     
@@ -226,7 +225,6 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     		{
     			keyPressSwallowed = mSectionsPagerAdapter.assetsFragment().backKeyPressed();
     		}
-
         }
     	
     	if (!keyPressSwallowed) return super.onKeyDown(keyCode, event);
@@ -335,6 +333,9 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 	    case R.id.layout_style:
 	        new LayoutDialog().show(getSupportFragmentManager(), "Layout Type Dialog");
 	        break;
+	    case android.R.id.home:
+			toggle();
+			return true;
 	    }
 	    return true;
     }

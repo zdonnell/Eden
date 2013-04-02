@@ -3,6 +3,7 @@ package com.zdonnell.eve.character.detail;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
@@ -17,12 +18,14 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
@@ -49,6 +52,8 @@ public class WalletFragment extends Fragment {
 		displayTypeNames[JOURNAL] = "Journal Entries";
 	}
 	
+	private CharacterDetailActivity parentActivity;
+	
     private APICharacter character;
         
     private Context context;
@@ -60,6 +65,10 @@ public class WalletFragment extends Fragment {
     private SparseArray<String> refTypes;
     
     private String characterName;
+    
+    private int scrollState;
+    
+    private HashMap<ImageView, Integer> visibleViews = new HashMap<ImageView, Integer>();
     
 	private NumberFormat formatter = NumberFormat.getInstance();
 	
@@ -78,6 +87,8 @@ public class WalletFragment extends Fragment {
     	context = inflater.getContext();
     	prefs = context.getSharedPreferences("eden_wallet_preferences", Context.MODE_PRIVATE);
     	
+    	parentActivity = (CharacterDetailActivity) getActivity();
+    	
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_wallet, container, false);
     	
     	formatter.setMaximumFractionDigits(2);
@@ -87,6 +98,8 @@ public class WalletFragment extends Fragment {
     	characterName = getArguments().getString("characterName");
     	
     	final TextView walletBalance = (TextView) inflatedView.findViewById(R.id.char_detail_wallet_balance);
+    	
+    	walletListView = (ListView) inflatedView.findViewById(R.id.char_detail_wallet_listview);
     	
     	switch (prefs.getInt("wallet_type", JOURNAL))
     	{
@@ -118,11 +131,33 @@ public class WalletFragment extends Fragment {
 				dataUpdated();
 			}
     	});
-    	
-    	walletListView = (ListView) inflatedView.findViewById(R.id.char_detail_wallet_listview);
     	    	
     	return inflatedView;
     }  
+    
+    public void fillImageViews()
+    {
+    	Integer[] typeIDs = new Integer[visibleViews.values().size()];
+        int index = 0;
+    	for (Integer typeID : visibleViews.values())
+        {
+    		typeIDs[index] = typeID;
+        	++index;
+        }
+    	
+    	ImageService.getInstance(context).getTypes(new IconObtainedCallback() 
+    	{
+			@Override
+			public void iconsObtained(SparseArray<Bitmap> bitmaps) 
+			{
+				for (ImageView icon : visibleViews.keySet())
+				{
+					Integer imageTypeID = (Integer) icon.getTag();
+					if (imageTypeID != null) icon.setImageBitmap(bitmaps.get(imageTypeID));
+				}
+			}
+    	}, typeIDs);
+    }
     
     public void updateWalletType(int type)
     {
@@ -141,6 +176,13 @@ public class WalletFragment extends Fragment {
     
     public void loadInJournal()
     {
+    	if (parentActivity.dataCache.getJournalEntries() != null) 
+    	{
+    		walletEntries = parentActivity.dataCache.getJournalEntries(); 
+			dataUpdated();
+    		return;
+    	}
+    	
     	character.getWalletJournal(new APICallback<WalletEntry.Journal[]>() 
     	{
 			@Override
@@ -148,6 +190,8 @@ public class WalletFragment extends Fragment {
 			{
 				walletEntries = updatedData;
 				Arrays.sort(walletEntries, new WalletSort.DateTime());
+				
+				parentActivity.dataCache.cacheJournalEntries(updatedData);
 				dataUpdated();
 			}
     	});
@@ -155,6 +199,13 @@ public class WalletFragment extends Fragment {
     
     public void loadInTransactions()
     {
+    	if (parentActivity.dataCache.getTransactions() != null) 
+    	{
+    		walletEntries = parentActivity.dataCache.getTransactions(); 
+			dataUpdated();
+    		return;
+    	}
+    	
     	character.getWalletTransactions(new APICallback<WalletEntry.Transaction[]>() 
     	{
 			@Override
@@ -162,6 +213,8 @@ public class WalletFragment extends Fragment {
 			{
 				walletEntries = updatedData;
 				Arrays.sort(walletEntries, new WalletSort.DateTime());
+				
+				parentActivity.dataCache.cacheTransactions(updatedData);
 				dataUpdated();
 			}
     	});
@@ -261,14 +314,20 @@ public class WalletFragment extends Fragment {
 			price.setTextColor(isBuy ? Color.parseColor("#FF4444") : Color.parseColor("#449944"));
 			
 			typeIcon.setImageBitmap(null);
-			ImageService.getInstance(context).getTypes(new IconObtainedCallback()
-			{
-				@Override
-				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
+			typeIcon.setTag(Integer.valueOf(entry.typeID()));
+			visibleViews.put(typeIcon, entry.typeID());
+			
+			//if (scrollState != AbsListView.OnScrollListener.SCROLL_STATE_FLING)
+			//{
+				ImageService.getInstance(context).getTypes(new IconObtainedCallback()
 				{
-					typeIcon.setImageBitmap(bitmaps.valueAt(0));
-				}	
-			}, entry.typeID());
+					@Override
+					public void iconsObtained(SparseArray<Bitmap> bitmaps) 
+					{
+						if ((Integer) typeIcon.getTag() == bitmaps.keyAt(0)) typeIcon.setImageBitmap(bitmaps.valueAt(0));
+					}	
+				}, entry.typeID());
+			//}
 		}
     }
 }

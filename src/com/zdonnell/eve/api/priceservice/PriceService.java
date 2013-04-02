@@ -44,28 +44,6 @@ public class PriceService {
 	{			
 		Integer[] strippedTypeIDs = Tools.stripDuplicateIDs(typeIDs);
 		
-		SparseArray<Float> cachedPrices = priceDatabase.getPrices(strippedTypeIDs, priceCacheTime);
-				
-		/* If the returned SparseArray is of the same size as the Integer array then it contains all prices requested */
-		if (cachedPrices.size() == strippedTypeIDs.length) callback.onUpdate(cachedPrices);
-		else
-		{						
-			Integer[] nonCachedTypeIDs = new Integer[strippedTypeIDs.length - cachedPrices.size()];
-			
-			int index = 0;
-			for (int typeID : strippedTypeIDs)
-			{
-				/* Check to if each typeID has a price in the cachedPrices SparseArray, 
-				 * if not add it to the Array of prices to be queried 
-				 */
-				if (cachedPrices.get(typeID) == null) 
-				{
-					nonCachedTypeIDs[index] = typeID;
-					++index;
-				}
-			}
-			
-			new PriceCheckTask(callback, cachedPrices, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, nonCachedTypeIDs);
-		}
+		new PriceDatabaseTask(callback, context).execute(strippedTypeIDs);
 	}
 }

@@ -58,6 +58,8 @@ public class SkillQueueFragment extends Fragment {
     
     private StaticTypeDatabase typeDatabase;
     
+    public SkillQueueFragment() {} 
+    
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {

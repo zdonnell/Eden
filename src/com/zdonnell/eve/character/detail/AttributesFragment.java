@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.CharacterSheet.AttributeEnhancer;
@@ -51,15 +52,6 @@ public class AttributesFragment extends Fragment {
     
     private ListView attributesListView;
     
-    /**
-     * Constructor
-     * 
-     * @param character the {@link APICharacter} to build the Attribute info from
-     */
-    public AttributesFragment(APICharacter character) 
-    {
-    	this.character = character;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -73,6 +65,8 @@ public class AttributesFragment extends Fragment {
     	context = inflater.getContext();
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_attributes, container, false);
     	
+    	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
+    
     	attributesListView = (ListView) inflatedView.findViewById(R.id.char_detail_attributes_list);
     	
     	/* Grab the character sheet to get the attribute info */
