@@ -237,7 +237,7 @@ public class CharacterSheetFragment extends Fragment {
 			{
 				portrait.setImageBitmap(bitmaps.valueAt(0));
 			}
-		}, character.id());
+		}, false, character.id());
 		    	
     	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
     	{

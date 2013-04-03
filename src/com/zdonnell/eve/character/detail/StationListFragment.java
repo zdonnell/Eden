@@ -255,7 +255,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 					{
 						icon.setImageBitmap(bitmaps.valueAt(0));
 					}
-				}, stationTypeID);
+				}, false, stationTypeID);
 			}
 			else
 			{
@@ -396,7 +396,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 			{
 				if (adapter != null) adapter.obtainedStationIcons(bitmaps);
 			}
-		}, uniqueStationTypeIDs);
+		}, false, uniqueStationTypeIDs);
 	}
 
 	@Override

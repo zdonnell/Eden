@@ -130,6 +130,7 @@ public class EditCharactersDialog extends DialogFragment
 			for (int i = 0; i < characters.get(keyID).size(); ++i)
 			{
 				charIDs[i] = characters.get(keyID).get(i).charID;
+				portraits[i].setTag(characters.get(keyID).get(i).charID);
 			}
 			
 			ImageService.getInstance(getContext()).getPortraits(new IconObtainedCallback()
@@ -139,10 +140,10 @@ public class EditCharactersDialog extends DialogFragment
 				{
 					for (int i = 0; i < characters.get(keyID).size(); ++i)
 					{
-						if (i < 3) portraits[i].setImageBitmap(bitmaps.get(charIDs[i]));
+						if (i < 3 && portraits[i].getTag().equals(charIDs[i])) portraits[i].setImageBitmap(bitmaps.get(charIDs[i]));
 					}
 				}
-			}, charIDs);
+			}, true, charIDs);
 			
 			return convertView;
 		}

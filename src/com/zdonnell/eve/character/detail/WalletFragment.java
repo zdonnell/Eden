@@ -156,7 +156,7 @@ public class WalletFragment extends Fragment {
 					if (imageTypeID != null) icon.setImageBitmap(bitmaps.get(imageTypeID));
 				}
 			}
-    	}, typeIDs);
+    	}, false, typeIDs);
     }
     
     public void updateWalletType(int type)
@@ -326,7 +326,7 @@ public class WalletFragment extends Fragment {
 					{
 						if ((Integer) typeIcon.getTag() == bitmaps.keyAt(0)) typeIcon.setImageBitmap(bitmaps.valueAt(0));
 					}	
-				}, entry.typeID());
+				}, false, entry.typeID());
 			//}
 		}
     }

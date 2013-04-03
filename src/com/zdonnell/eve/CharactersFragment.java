@@ -1,6 +1,7 @@
 package com.zdonnell.eve;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,7 +14,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +39,10 @@ import com.zdonnell.eve.staticdata.api.StationInfo;
 
 public class CharactersFragment extends Fragment {
 
+	private static final int CURRENT_ID_DISPLAYED = 1;
+	
+	HashMap<View, Integer> viewCharacterMap = new HashMap<View, Integer>();
+		
 	/**
 	 * Global value to store the number of columns the GridView is displaying
 	 */
@@ -93,7 +97,7 @@ public class CharactersFragment extends Fragment {
 		
 		/* Setup the GridView properties and link with the CursorAdapater */
 		View mainView = (View) inflater.inflate(R.layout.characters_fragment, container, false);
-		GridView charGrid = (GridView) mainView.findViewById(R.id.charGrid);
+		GridView charGrid = (GridView) mainView.findViewById(R.id.charGrid);		
 		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
 						
 		columns = calcColumns((Activity) context);
@@ -145,9 +149,15 @@ public class CharactersFragment extends Fragment {
 			TextView charName = (TextView) view.findViewById(R.id.char_tile_name);
 			charName.setText(cursor.getString(1));
 			
-			loadPortrait(view, characterID);
-			loadCorpLogo(view, corpID);				
-			setupQueueTimeRemaining(character, view);				
+			Integer viewsLastID = viewCharacterMap.get(view);
+			if (viewsLastID == null || viewCharacterMap.get(view) != characterID)
+			{
+				loadPortrait(view, cursor.getPosition(), characterID);
+				loadCorpLogo(view, cursor.getPosition(), corpID);				
+				setupQueueTimeRemaining(character, view);	
+				
+				viewCharacterMap.put(view, characterID);
+			}
 			
 			/* configure the onClick action */
 			view.setOnClickListener(new View.OnClickListener() 
@@ -194,20 +204,23 @@ public class CharactersFragment extends Fragment {
 		 * @param mainView
 		 * @param characterID
 		 */
-		private void loadPortrait(final View mainView, int characterID)
+		private void loadPortrait(final View mainView, int position, final int characterID)
 		{
 			final ImageView portrait = (ImageView) mainView.findViewById(R.id.char_image);
-			portrait.setImageBitmap(null);
+			Integer currentID = (Integer) mainView.getTag();
 			
+			portrait.setImageBitmap(null);
+
 			imageService.getPortraits(new ImageService.IconObtainedCallback() 
 			{	
 				@Override
 				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
 				{
 					portrait.setImageBitmap(bitmaps.valueAt(0));
+					viewCharacterMap.put(mainView, characterID);
 					if (mainView.getAlpha() == 0) mainView.setAlpha(1);
 				}
-			}, characterID);
+			}, false, characterID);
 			
 			/* Set the correct size for the ImageView */
 			int width = mainView.getLayoutParams().width;
@@ -221,17 +234,19 @@ public class CharactersFragment extends Fragment {
 		 * @param mainView
 		 * @param corpID
 		 */
-		private void loadCorpLogo(final View mainView, int corpID)
+		private void loadCorpLogo(final View mainView, int position, int corpID)
 		{
 			final ImageView corpLogo = (ImageView) mainView.findViewById(R.id.corp_image);
+			
 			imageService.getCorpLogos(new ImageService.IconObtainedCallback() 
 			{	
 				@Override
 				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
 				{
 					corpLogo.setImageBitmap(bitmaps.valueAt(0));
+					corpLogo.setTag(bitmaps.keyAt(0));
 				}
-			}, corpID);
+			}, true, corpID);
 		}
 		
 		/**

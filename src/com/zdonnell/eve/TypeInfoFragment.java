@@ -44,7 +44,7 @@ public class TypeInfoFragment extends Fragment {
 			public void iconsObtained(SparseArray<Bitmap> bitmaps) {
 				typeIcon.setImageBitmap(bitmaps.get(typeID));
 			}
-		}, typeID);
+		}, false, typeID);
 		
 		new StaticData(inflater.getContext()).getTypeInfo(new APICallback<SparseArray<TypeInfo>>() 
 		{

@@ -152,7 +152,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 					{
 						parentAssetIcon.setImageBitmap(bitmaps.valueAt(0));
 					}
-				}, parentStationInfo.stationTypeID);
+				}, false, parentStationInfo.stationTypeID);
 			}
 		}
 		else if (parent instanceof AssetsEntity.Item)
@@ -169,7 +169,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 				{
 					parentAssetIcon.setImageBitmap(bitmaps.valueAt(0));
 				}
-			}, parentItem.attributes().typeID);
+			}, false, parentItem.attributes().typeID);
 		}
 	}
 	
@@ -475,7 +475,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 						}
 					}
 				}
-			}, typeID);
+			}, false, typeID);
 		}
 	}
 

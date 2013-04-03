@@ -13,9 +13,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
+import android.util.Log;
 import android.util.SparseArray;
-
-import com.zdonnell.eve.api.ResourceRequestMonitor.RequestNotActiveException;
 
 public class ImageService {
 
@@ -44,7 +43,7 @@ public class ImageService {
 		localImagePrefix[ICON] = "type_";
 		
 		imageSize[CHAR] = 512;
-		imageSize[CORP] = 128;
+		imageSize[CORP] = 256;
 		imageSize[ICON] = 64;
 		
 		imageExtension[CHAR] = ".jpg";
@@ -141,13 +140,13 @@ public class ImageService {
 	 * @param callback {@link IconObtainedCallback} to be notified when the loading is complete
 	 * @param typeIDs 
 	 */
-	public void getTypes(IconObtainedCallback callback, Integer... typeIDs)
+	public void getTypes(IconObtainedCallback callback, boolean thumb, Integer... typeIDs)
 	{
-		if (typeIDs.length > 1) getImages(callback, typeIDs, ICON);
+		if (typeIDs.length > 1) getImages(callback, typeIDs, ICON, thumb);
 		else
 		{
 			if (idIsBeingLoaded(typeIDs[0], ICON)) queueRequest(typeIDs[0], ICON, callback);
-			else getImages(callback, typeIDs, ICON);
+			else getImages(callback, typeIDs, ICON, thumb);
 		}
 	}
 	
@@ -164,13 +163,13 @@ public class ImageService {
 	 * @param callback {@link IconObtainedCallback} to be notified when the loading is complete
 	 * @param charIDs 
 	 */
-	public void getPortraits(IconObtainedCallback callback, Integer... charIDs)
+	public void getPortraits(IconObtainedCallback callback, boolean thumb, Integer... charIDs)
 	{
-		if (charIDs.length > 1) getImages(callback, charIDs, CHAR);
+		if (charIDs.length > 1) getImages(callback, charIDs, CHAR, thumb);
 		else
 		{
 			if (idIsBeingLoaded(charIDs[0], CHAR)) queueRequest(charIDs[0], CHAR, callback);
-			else getImages(callback, charIDs, CHAR);
+			else getImages(callback, charIDs, CHAR, thumb);
 		}
 	}
 	
@@ -187,13 +186,13 @@ public class ImageService {
 	 * @param callback {@link IconObtainedCallback} to be notified when the loading is complete
 	 * @param charIDs 
 	 */
-	public void getCorpLogos(IconObtainedCallback callback, Integer... corpIDs)
+	public void getCorpLogos(IconObtainedCallback callback, boolean thumb, Integer... corpIDs)
 	{
-		if (corpIDs.length > 1) getImages(callback, corpIDs, CORP);
+		if (corpIDs.length > 1) getImages(callback, corpIDs, CORP, thumb);
 		else
 		{
 			if (idIsBeingLoaded(corpIDs[0], CORP)) queueRequest(corpIDs[0], CORP, callback);
-			else getImages(callback, corpIDs, CORP);
+			else getImages(callback, corpIDs, CORP, thumb);
 		}
 	}
 	
@@ -236,8 +235,13 @@ public class ImageService {
 	 * @param ids
 	 * @param type
 	 */
-	private void getImages(final IconObtainedCallback callback, Integer[] ids, final int type)
+	private void getImages(final IconObtainedCallback callback, Integer[] ids, final int type, boolean thumb)
 	{		
+		for (int i = 0; i < pendingRequests.get(CHAR).size(); ++i)
+		{
+			ArrayList<IconObtainedCallback> requestsForChar = pendingRequests.get(CHAR).valueAt(i);
+		}
+		
 		/* add bitmap ids to the list of bitmaps being loaded */
 		for (int id : ids) 
 		{
@@ -252,13 +256,19 @@ public class ImageService {
 		for (int id : ids)
 		{
 			Bitmap cachedIcon = bitmapCaches[type].get(id);
+			boolean isValidIcon = false;
 			
-			if (cachedIcon != null) 
+			if (cachedIcon != null)
+			{
+				if (cachedIcon.getWidth() > (thumb ? imageSize[type]/4 : imageSize[type])) isValidIcon = true;
+			}
+			
+			if (isValidIcon) 
 			{
 				cachedIDs.put(id, cachedIcon); 
 				idsCached.add(id);
 			}
-			else idsToLoad.add(id);
+			else idsToLoad.add(id);;
 		}
 			
 		/** 
@@ -269,8 +279,8 @@ public class ImageService {
 		 */
 		Integer[] staticIconsToLoad = new Integer[idsToLoad.size()];
 		idsToLoad.toArray(staticIconsToLoad);
-		
-		if (!idsToLoad.isEmpty())
+				
+		if (staticIconsToLoad.length > 0)
 		{			
 			new IconLoader(type, new IconObtainedCallback()
 			{
@@ -286,7 +296,7 @@ public class ImageService {
 					if (callback != null) callback.iconsObtained(bitmaps);
 					checkPendingRequests(bitmaps, type);
 				}
-			}).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, staticIconsToLoad);
+			}, thumb).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, staticIconsToLoad);
 		}
 		else
 		{				
@@ -309,10 +319,12 @@ public class ImageService {
 		
 		/* Cycle through all Bitmaps provided */
 		for (int i = 0; i < bitmaps.size(); i++)
-		{
+		{			
 			/* Get the key of the Bitmap (id) and try to acquire the pending request list for that type + id */
 			int bitmapID = bitmaps.keyAt(i);
 			ArrayList<IconObtainedCallback> callbacksForID = pendingRequests.get(type).get(bitmapID);
+			
+			Log.d("TESTING LOG STATEMENT", "HERE" + bitmapID);
 			
 			/* check if there are actually pending requests */
 			if (callbacksForID != null && !callbacksForID.isEmpty())
@@ -339,41 +351,38 @@ public class ImageService {
 	{
 		private IconObtainedCallback callback = null;
 		private int type;
-		
-		ResourceRequestMonitor.Request request;
-		
+		private boolean thumb;
+				
 		SparseArray<Bitmap> bitmapsLoaded;
 		
-		public IconLoader(int type)
+		public IconLoader(int type, boolean thumb)
 		{
 			this.type = type;
+			this.thumb = thumb;
 		}
 		
-		public IconLoader(int type, IconObtainedCallback callback)
+		public IconLoader(int type, IconObtainedCallback callback, boolean thumb)
 		{
-			this(type);
+			this(type, thumb);
 			this.callback = callback;
 		}
 		
 		@Override
 		protected SparseArray<Bitmap> doInBackground(Integer... ids) 
 		{			
-			request = new ResourceRequestMonitor.Request(ids.length, this);
-			ResourceRequestMonitor.getInstance(context).registerRequest(request);
-			
 			bitmapsLoaded = new SparseArray<Bitmap>(ids.length);
 			
 			for (int id : ids)
 			{
 				Bitmap bitmapLoaded = null;
 				
-				try { bitmapLoaded = loadBitmapFromStorage(id, type); }
+				try { bitmapLoaded = loadBitmapFromStorage(id, type, thumb); }
 				catch (Exception e) {  } 
 				
 				/* There was nothing loaded locally, try to download the image */
 				if (bitmapLoaded == null)
 				{					
-					try { bitmapLoaded = retrieveBitmapFromServer(id, type); }
+					try { bitmapLoaded = retrieveBitmapFromServer(id, type, thumb); }
 					catch (Exception e) { e.printStackTrace(); }
 				}
 				
@@ -417,9 +426,11 @@ public class ImageService {
 	 * @return the {@link Bitmap} loaded from storage
 	 * @throws IOException if the image does not exist
 	 */
-	private Bitmap loadBitmapFromStorage(int id, int type) throws IOException
+	private Bitmap loadBitmapFromStorage(int id, int type, boolean thumb) throws IOException
 	{
-		FileInputStream fis = context.openFileInput(localImagePrefix[type] + id + ".png");
+		int fileSize = thumb ? imageSize[type]/4 : imageSize[type];
+		
+		FileInputStream fis = context.openFileInput(localImagePrefix[type] + fileSize + "_" + id + ".png");
 		BufferedInputStream buf = new BufferedInputStream(fis);
 		
 		byte[] ByteBuffer = new byte[buf.available()];
@@ -441,7 +452,7 @@ public class ImageService {
 	 * @return the {@link Bitmap} obtained from the server, or null if it could not be retrieved.
 	 * @throws IOException if the image does not exist
 	 */
-	private Bitmap retrieveBitmapFromServer(int id, int type) throws MalformedURLException, IOException
+	private Bitmap retrieveBitmapFromServer(int id, int type, boolean thumb) throws MalformedURLException, IOException
 	{
 		Bitmap bitmapLoaded = null;
 		
@@ -450,7 +461,10 @@ public class ImageService {
 		InputStream in = new java.net.URL(imageURL).openStream();
 		bitmapLoaded = BitmapFactory.decodeStream(in);
 			
-		if (bitmapLoaded != null) saveBitmap(bitmapLoaded, id, type);
+		if (bitmapLoaded != null) {
+			saveBitmap(bitmapLoaded, id, type);
+			if (thumb) bitmapLoaded = Bitmap.createScaledBitmap(bitmapLoaded, imageSize[type]/4, imageSize[type]/4, true);
+		}
 		
 		return bitmapLoaded;
 	}
@@ -466,8 +480,13 @@ public class ImageService {
 	{		
 		try 
 		{
-			FileOutputStream out = context.openFileOutput(localImagePrefix[type] + id + ".png", 0);
+			FileOutputStream out = context.openFileOutput(localImagePrefix[type] + imageSize[type] + "_" + id + ".png", 0);
 			image.compress(Bitmap.CompressFormat.PNG, 100, out);
+			out.close();
+			
+			out = context.openFileOutput(localImagePrefix[type] + imageSize[type]/4 + "_" + id + ".png", 0);
+			Bitmap scaledImage = Bitmap.createScaledBitmap(image, imageSize[type]/4, imageSize[type]/4, true);
+			scaledImage.compress(Bitmap.CompressFormat.PNG, 100, out);
 			out.close();
 		} 
 		catch (Exception e) { e.printStackTrace(); }
