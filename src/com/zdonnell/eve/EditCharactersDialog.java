@@ -124,7 +124,7 @@ public class EditCharactersDialog extends DialogFragment
 			portraits[1] = (ImageView) convertView.findViewById(R.id.characters_edit_characters_list_item_portrait2);
 			portraits[2] = (ImageView) convertView.findViewById(R.id.characters_edit_characters_list_item_portrait3);
 			
-			apiKeyText.setText("API Key: " + getItem(position).keyID);
+			apiKeyText.setText(String.valueOf(getItem(position).keyID));
 						
 			final Integer[] charIDs = new Integer[characters.get(keyID).size()];
 			for (int i = 0; i < characters.get(keyID).size(); ++i)

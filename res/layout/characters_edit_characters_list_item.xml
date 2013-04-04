@@ -2,43 +2,67 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" 
-    android:padding="10dp"
+    android:orientation="horizontal" 
+    android:padding="8dp"
    	>
    	<LinearLayout
    	    android:orientation="vertical" 
-   	    android:layout_width="match_parent"
+   	    android:layout_width="80dp"
    	    android:layout_height="wrap_content"
+   	    android:layout_gravity="center_vertical"
+   	    android:paddingLeft="2dp"
    	    >
+   	    <TextView 
+		    android:id="@+id/characters_edit_characters_list_item_apikeytext"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="API Key:"
+		    android:textStyle="bold"
+		    android:textSize="14sp"
+		    android:shadowColor="#000"
+		        android:shadowDx="3"
+		        android:shadowDy="3"
+		        android:shadowRadius="9"
+		    android:textColor="#BBB"/>
    	    <TextView 
 		    android:id="@+id/characters_edit_characters_list_item_apikey"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
-		    android:textSize="12sp"
-		    android:textColor="#BBB"/>
+		    android:textSize="14sp"
+		    android:shadowColor="#000"
+		        android:shadowDx="2"
+		        android:shadowDy="2"
+		        android:shadowRadius="4"
+		    android:textColor="#999"/>
    	</LinearLayout>
    	<LinearLayout
    	    android:orientation="horizontal" 
-   	    android:layout_width="match_parent"
+   	    android:layout_width="wrap_content"
    	    android:layout_height="wrap_content"
    	    >
    	    <ImageView
 		    android:id="@+id/characters_edit_characters_list_item_portrait1"
-		    android:layout_width="36dp"
-		    android:layout_height="36dp"
-		    android:layout_marginRight="10dp">
+		    android:layout_width="44dp"
+		    android:padding="1dp"
+		    android:background="#151515"
+		    android:layout_height="44dp"
+		    android:layout_marginRight="6dp">
 		    <!--android:background="#222"--></ImageView>
 		<ImageView
 		    android:id="@+id/characters_edit_characters_list_item_portrait2"
-		    android:layout_width="36dp"
-		    android:layout_height="36dp"
-		    android:layout_marginRight="10dp">
+		    android:layout_width="44dp"
+		    		    android:padding="1dp"
+		    android:background="#151515"
+		    android:layout_height="44dp"
+		    android:layout_marginRight="6dp">
 		    <!--android:background="#222"--></ImageView>
 		<ImageView
 		    android:id="@+id/characters_edit_characters_list_item_portrait3"
-		    android:layout_width="36dp"
-		    android:layout_height="36dp"
-		    android:layout_marginRight="10dp">
+		    android:layout_width="44dp"
+		    		    android:padding="1dp"
+		    android:background="#151515"
+		    android:layout_height="44dp"
+		    android:layout_marginRight="6dp">
 		    <!--android:background="#222"--></ImageView>
    	</LinearLayout>
 	
