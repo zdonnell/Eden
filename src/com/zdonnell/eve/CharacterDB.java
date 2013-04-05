@@ -35,6 +35,7 @@ public class CharacterDB {
 	public final static String CHAR_TABLE_CORPNAME = "char_corpname";
 	public final static String CHAR_TABLE_KEYID = "char_keyid";
 	public final static String CHAR_TABLE_VCODE = "char_vcode";
+	public final static String CHAR_TABLE_ENABLED = "char_enabled";
 
 	public CharacterDB(Context context) {
 		this.context = context;
@@ -45,7 +46,7 @@ public class CharacterDB {
 	}
 
 	
-	public void addCharacter(EveCharacter character, APICredentials credentials) {
+	public void addCharacter(EveCharacter character, APICredentials credentials, boolean enabled) {
 		// this is a key value pair holder used by android's SQLite functions
 		ContentValues values = new ContentValues();
 		values.put(CHAR_TABLE_NAME, character.name);
@@ -54,6 +55,7 @@ public class CharacterDB {
 		values.put(CHAR_TABLE_CORPID, character.corpID);
 		values.put(CHAR_TABLE_KEYID, credentials.keyID);
 		values.put(CHAR_TABLE_VCODE, credentials.verificationCode);
+		values.put(CHAR_TABLE_ENABLED, enabled ? "1" : "0");
 
 		// ask the database object to insert the new data
 		try {
@@ -89,6 +91,29 @@ public class CharacterDB {
 		return cursor;
 	}
 	
+	public Cursor getEnabledCharacters() 
+	{
+
+		// this is a database call that creates a "cursor" object.
+		// the cursor object store the information collected from the
+		// database and is used to iterate through the data.
+		Cursor cursor = null;
+
+		try {
+			// ask the database object to create the cursor.
+			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_ID, CHAR_TABLE_NAME, CHAR_TABLE_EVEID, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE },
+					CHAR_TABLE_ENABLED + " = 1", null, null, null, null);
+
+		} catch (SQLException e) {
+			Log.e("DB Error", e.toString());
+			e.printStackTrace();
+		}
+		
+		// return the ArrayList that holds the data collected from
+		// the database.
+		return cursor;
+	}
+	
 	public String getCharacterName(int characterID)
 	{
 		String query = "SELECT " + CHAR_TABLE_NAME + " FROM " + CHAR_TABLE + " WHERE " + CHAR_TABLE_EVEID + "=?";
@@ -102,6 +127,26 @@ public class CharacterDB {
 		c.close();
 		
 		return name;
+	}
+	
+	public void setCharEnabled(int characterID, boolean enabled)
+	{
+		ContentValues values = new ContentValues();
+		values.put(CHAR_TABLE_ENABLED, enabled ? "1" : "0");
+		
+		db.update(CHAR_TABLE, values, CHAR_TABLE_EVEID + " = ?", new String[] { String.valueOf(characterID) });
+	}
+	
+	public boolean isCharEnabled(int characterID)
+	{
+		boolean isEnabled = false;
+		
+		Cursor cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_ENABLED }, CHAR_TABLE_EVEID + " = " + characterID, null, null, null, null);
+		if (cursor.moveToFirst()) isEnabled = (cursor.getInt(0) != 0);
+		
+		cursor.close();
+		
+		return isEnabled;
 	}
 
 	/**
@@ -131,7 +176,8 @@ public class CharacterDB {
 					+ " integer," + CHAR_TABLE_CORPNAME + " string,"
 					+ CHAR_TABLE_CORPID + " integer,"
 					+ CHAR_TABLE_KEYID + " integer,"
-					+ CHAR_TABLE_VCODE + " text" + ");";
+					+ CHAR_TABLE_VCODE + " text,"
+					+ CHAR_TABLE_ENABLED + " integer);";
 			// execute the query string to the database.
 			db.execSQL(newTableQueryString);
 		}

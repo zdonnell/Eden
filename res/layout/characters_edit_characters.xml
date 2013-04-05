@@ -8,6 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:headerDividersEnabled="true"
-        android:divider="#000"
+        android:divider="#222"
     	android:dividerHeight="1dp" />
 </LinearLayout>

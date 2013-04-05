@@ -32,6 +32,8 @@ public class EditCharactersDialog extends DialogFragment
 	
 	SparseArray<ArrayList<EveCharacter>> characters = new SparseArray<ArrayList<EveCharacter>>();
 	
+	CharacterDB charDB;
+	
 	public EditCharactersDialog()
 	{
 		
@@ -55,6 +57,7 @@ public class EditCharactersDialog extends DialogFragment
 				public void onClick(DialogInterface dialog, int id) 
 				{
 					dismiss();
+					((CharactersActivity) getActivity()).refreshCharactersList();
 				}
 			});    
 		
@@ -63,7 +66,7 @@ public class EditCharactersDialog extends DialogFragment
 	
 	private void getData()
 	{
-		CharacterDB charDB = new CharacterDB(getActivity());
+		charDB = new CharacterDB(getActivity());
 		
 		ArrayList<APICredentials> apiCredsList = new ArrayList<APICredentials>();
 		
@@ -119,6 +122,7 @@ public class EditCharactersDialog extends DialogFragment
 			TextView apiKeyText = (TextView) convertView.findViewById(R.id.characters_edit_characters_list_item_apikey);
 			
 			final ImageView[] portraits = new ImageView[3];
+			final boolean charOn[] = new boolean[3];
 			
 			portraits[0] = (ImageView) convertView.findViewById(R.id.characters_edit_characters_list_item_portrait1);
 			portraits[1] = (ImageView) convertView.findViewById(R.id.characters_edit_characters_list_item_portrait2);
@@ -130,8 +134,23 @@ public class EditCharactersDialog extends DialogFragment
 			for (int i = 0; i < characters.get(keyID).size(); ++i)
 			{
 				charIDs[i] = characters.get(keyID).get(i).charID;
-				portraits[i].setTag(characters.get(keyID).get(i).charID);
-			}
+				portraits[i].setTag(charIDs[i]);
+				charOn[i] = charDB.isCharEnabled(charIDs[i]);
+				
+				final int charNum = i;
+				
+				portraits[i].setAlpha(charOn[i] ? 1f : 0.25f);
+				portraits[i].setOnClickListener(new View.OnClickListener() 				
+				{		
+					@Override
+					public void onClick(View v) 
+					{
+						charOn[charNum] = !charOn[charNum];
+						((ImageView) v).setAlpha(charOn[charNum] ? 1f : 0.25f);
+						charDB.setCharEnabled(charIDs[charNum], charOn[charNum]);
+					}
+				});
+			}	
 			
 			ImageService.getInstance(getContext()).getPortraits(new IconObtainedCallback()
 			{
@@ -140,7 +159,11 @@ public class EditCharactersDialog extends DialogFragment
 				{
 					for (int i = 0; i < characters.get(keyID).size(); ++i)
 					{
-						if (i < 3 && portraits[i].getTag().equals(charIDs[i])) portraits[i].setImageBitmap(bitmaps.get(charIDs[i]));
+						portraits[i].setVisibility(View.VISIBLE);						
+						if (i < 3 && portraits[i].getTag().equals(charIDs[i])) 
+						{
+							portraits[i].setImageBitmap(bitmaps.get(charIDs[i]));
+						}
 					}
 				}
 			}, true, charIDs);

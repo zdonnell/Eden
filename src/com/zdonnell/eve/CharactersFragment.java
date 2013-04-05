@@ -79,7 +79,11 @@ public class CharactersFragment extends Fragment {
 	 * 
 	 * TODO remove these once account management has been implemented
 	 */
-	private Account slick50zd1, mercenoid22, xsteveo243x, celeste243;	
+	private Account slick50zd1, mercenoid22, xsteveo243x, celeste243;
+	
+	private CharacterCursorAdapater cursorAdapter;
+	
+	private GridView charGrid;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
@@ -97,13 +101,23 @@ public class CharactersFragment extends Fragment {
 		
 		/* Setup the GridView properties and link with the CursorAdapater */
 		View mainView = (View) inflater.inflate(R.layout.characters_fragment, container, false);
-		GridView charGrid = (GridView) mainView.findViewById(R.id.charGrid);		
-		charGrid.setAdapter(new CharacterCursorAdapater(inflater.getContext(), charDB.allCharacters()));
+		charGrid = (GridView) mainView.findViewById(R.id.charGrid);		
+		
+		cursorAdapter = new CharacterCursorAdapater(inflater.getContext(), charDB.getEnabledCharacters());
+		charGrid.setAdapter(cursorAdapter);
 						
 		columns = calcColumns((Activity) context);
 		charGrid.setNumColumns(columns);
 		
 		return mainView;
+	}
+	
+	public void refreshChars()
+	{
+		viewCharacterMap.clear();
+		
+		cursorAdapter = new CharacterCursorAdapater(getActivity(), charDB.getEnabledCharacters());
+		charGrid.setAdapter(cursorAdapter);
 	}
 
 	@Override
@@ -343,25 +357,25 @@ public class CharactersFragment extends Fragment {
 		slick50zd1.characters(new APICallback<ArrayList<EveCharacter>>() {
 			@Override
 			public void onUpdate(ArrayList<EveCharacter> updatedData) {
-				for (EveCharacter character : updatedData) charDB.addCharacter(character, slick50zd1.getCredentials());				
+				for (EveCharacter character : updatedData) charDB.addCharacter(character, slick50zd1.getCredentials(), true);				
 			}
 		});
 		mercenoid22.characters(new APICallback<ArrayList<EveCharacter>>() {
 			@Override
 			public void onUpdate(ArrayList<EveCharacter> updatedData) {
-				for (EveCharacter character : updatedData) charDB.addCharacter(character, mercenoid22.getCredentials());				
+				for (EveCharacter character : updatedData) charDB.addCharacter(character, mercenoid22.getCredentials(), true);				
 			}
 		});
 		xsteveo243x.characters(new APICallback<ArrayList<EveCharacter>>() {
 			@Override
 			public void onUpdate(ArrayList<EveCharacter> updatedData) {
-				for (EveCharacter character : updatedData) charDB.addCharacter(character, xsteveo243x.getCredentials());				
+				for (EveCharacter character : updatedData) charDB.addCharacter(character, xsteveo243x.getCredentials(), true);				
 			}
 		});
 		celeste243.characters(new APICallback<ArrayList<EveCharacter>>() {
 			@Override
 			public void onUpdate(ArrayList<EveCharacter> updatedData) {
-				for (EveCharacter character : updatedData) charDB.addCharacter(character, celeste243.getCredentials());				
+				for (EveCharacter character : updatedData) charDB.addCharacter(character, celeste243.getCredentials(), true);				
 			}
 		});
 	}

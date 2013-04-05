@@ -14,6 +14,8 @@ import android.view.MenuItem;
 
 public class CharactersActivity extends BaseActivity {
 
+	private CharactersFragment currentCharactersFragment;
+	
 	public CharactersActivity() 
 	{
 		super(R.string.character_grid_activity_title);
@@ -28,9 +30,12 @@ public class CharactersActivity extends BaseActivity {
 		 * Load the fragment into the activity
 		 */
 		setContentView(R.layout.content_frame);
+		
+		currentCharactersFragment = new CharactersFragment();
+		
 		getSupportFragmentManager()
 		.beginTransaction()
-		.replace(R.id.content_frame, new CharactersFragment())
+		.replace(R.id.content_frame, currentCharactersFragment)
 		.commit();
 		
 		setSlidingActionBarEnabled(true);
@@ -61,5 +66,8 @@ public class CharactersActivity extends BaseActivity {
 	    return true;
     }
 	
-	
+	public void refreshCharactersList()
+	{
+		currentCharactersFragment.refreshChars();
+	}
 }
