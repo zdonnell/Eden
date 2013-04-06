@@ -34,6 +34,8 @@ public class EditCharactersDialog extends DialogFragment
 	
 	CharacterDB charDB;
 	
+	boolean refreshRequired = false;
+	
 	public EditCharactersDialog()
 	{
 		
@@ -57,9 +59,11 @@ public class EditCharactersDialog extends DialogFragment
 				public void onClick(DialogInterface dialog, int id) 
 				{
 					dismiss();
-					((CharactersActivity) getActivity()).refreshCharactersList();
+					if (refreshRequired) ((CharactersActivity) getActivity()).refreshCharactersList();
 				}
-			});    
+			})
+			.setTitle("Edit Characters")
+			.setMessage("Tap on a portrait to toggle monitoring of that character");    
 		
 	    return builder.create();
 	}
@@ -115,11 +119,17 @@ public class EditCharactersDialog extends DialogFragment
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent)
 		{
-			if (convertView == null) convertView = View.inflate(getContext(), listItemLayoutID, null);
+			if (convertView == null)
+			{
+				convertView = View.inflate(getContext(), listItemLayoutID, null);
+				convertView.setClickable(false);
+				convertView.setOnClickListener(null);
+			}
 			
 			final int keyID = getItem(position).keyID;
 			
 			TextView apiKeyText = (TextView) convertView.findViewById(R.id.characters_edit_characters_list_item_apikey);
+			ImageView deleteImage = (ImageView) convertView.findViewById(R.id.characters_edit_characters_list_item_delete_icon);
 			
 			final ImageView[] portraits = new ImageView[3];
 			final boolean charOn[] = new boolean[3];
@@ -129,7 +139,19 @@ public class EditCharactersDialog extends DialogFragment
 			portraits[2] = (ImageView) convertView.findViewById(R.id.characters_edit_characters_list_item_portrait3);
 			
 			apiKeyText.setText(String.valueOf(getItem(position).keyID));
-						
+			deleteImage.setOnClickListener(new View.OnClickListener() 
+			{	
+				@Override
+				public void onClick(View v) 
+				{
+					charDB.deleteCharactersByKeyID(keyID);
+					EditCharactersDialog.this.getData();
+					APIKeyListAdapter.this.clear();
+					APIKeyListAdapter.this.addAll(EditCharactersDialog.this.keys);
+					APIKeyListAdapter.this.notifyDataSetChanged();
+				}
+			});	
+			
 			final Integer[] charIDs = new Integer[characters.get(keyID).size()];
 			for (int i = 0; i < characters.get(keyID).size(); ++i)
 			{
@@ -145,6 +167,8 @@ public class EditCharactersDialog extends DialogFragment
 					@Override
 					public void onClick(View v) 
 					{
+						refreshRequired = true;
+						
 						charOn[charNum] = !charOn[charNum];
 						((ImageView) v).setAlpha(charOn[charNum] ? 1f : 0.25f);
 						charDB.setCharEnabled(charIDs[charNum], charOn[charNum]);

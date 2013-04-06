@@ -37,7 +37,8 @@
    	</LinearLayout>
    	<LinearLayout
    	    android:orientation="horizontal" 
-   	    android:layout_width="wrap_content"
+   	    android:layout_width="0dp"
+   	    android:layout_weight="1"
    	    android:layout_height="wrap_content"
    	    >
    	    <ImageView
@@ -68,5 +69,20 @@
 		    android:layout_marginRight="6dp">
 		    <!--android:background="#222"--></ImageView>
    	</LinearLayout>
-	
+   	<View 
+   	    android:layout_width="1dp"
+   	    android:layout_height="34dp"
+   	    android:layout_gravity="center_vertical"
+   	    android:background="#444">
+   	    
+   	</View>
+   	<ImageView
+		    android:id="@+id/characters_edit_characters_list_item_delete_icon"
+		    android:layout_width="30dp"
+			android:layout_gravity="center_vertical"
+			android:layout_marginLeft="6dp"
+		    android:padding="1dp"
+		    android:src="@drawable/delete_red"
+		    android:layout_height="30dp">
+		    <!--android:background="#222"--></ImageView>
 </LinearLayout>

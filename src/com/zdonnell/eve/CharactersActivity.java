@@ -57,7 +57,7 @@ public class CharactersActivity extends BaseActivity {
 	    switch (item.getItemId())
 	    {
 	    case R.id.add_characters:
-	    	new EditCharactersDialog().show(getSupportFragmentManager(), "Skill List Dialog");
+	    	new AddAPIDialog().show(getSupportFragmentManager(), "Skill List Dialog");
 	    	break;
 	    case R.id.edit_characters:
 	    	new EditCharactersDialog().show(getSupportFragmentManager(), "Skill List Dialog");

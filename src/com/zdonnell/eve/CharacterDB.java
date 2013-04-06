@@ -148,6 +148,11 @@ public class CharacterDB {
 		
 		return isEnabled;
 	}
+	
+	public int deleteCharactersByKeyID(int apiKey)
+	{
+		return db.delete(CHAR_TABLE, CHAR_TABLE_KEYID + " = ?", new String[] { String.valueOf(apiKey) });
+	}
 
 	/**
 	 * This class is designed to check if there is a database that currently
