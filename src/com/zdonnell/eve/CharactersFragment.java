@@ -151,10 +151,10 @@ public class CharactersFragment extends Fragment {
 		public void bindView(final View view, final Context context, Cursor cursor) 
 		{		
 			/* Establish some basic values / info for use later */
-			final int characterID = cursor.getInt(2);
-			final int corpID = cursor.getInt(4);	
-			final APICredentials credentials = new APICredentials(cursor.getInt(5), cursor.getString(6));
-			APICharacter character = new APICharacter(credentials, cursor.getInt(2), context);
+			final int characterID = cursor.getInt(0);
+			final int corpID = cursor.getInt(3);	
+			final APICredentials credentials = new APICredentials(cursor.getInt(4), cursor.getString(5));
+			APICharacter character = new APICharacter(credentials, cursor.getInt(0), context);
 			
 			/* handle view configuration */
 			int calculatedWidth = calculatedColumnWidths[cursor.getPosition() % columns];

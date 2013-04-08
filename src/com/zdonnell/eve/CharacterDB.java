@@ -27,10 +27,8 @@ public class CharacterDB {
 	// changed to suit your needs.
 	public final static String CHAR_TABLE = "char_table";
 
-	public final static String CHAR_TABLE_ID = "_id";
-
 	public final static String CHAR_TABLE_NAME = "char_name";
-	public final static String CHAR_TABLE_EVEID = "char_eveid";
+	public final static String CHAR_TABLE_EVEID = "_id";
 	public final static String CHAR_TABLE_CORPID = "char_corpid";
 	public final static String CHAR_TABLE_CORPNAME = "char_corpname";
 	public final static String CHAR_TABLE_KEYID = "char_keyid";
@@ -78,7 +76,7 @@ public class CharacterDB {
 
 		try {
 			// ask the database object to create the cursor.
-			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_ID, CHAR_TABLE_NAME, CHAR_TABLE_EVEID, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE },
+			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_NAME, CHAR_TABLE_EVEID, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE },
 					null, null, null, null, null);
 
 		} catch (SQLException e) {
@@ -101,7 +99,7 @@ public class CharacterDB {
 
 		try {
 			// ask the database object to create the cursor.
-			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_ID, CHAR_TABLE_NAME, CHAR_TABLE_EVEID, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE },
+			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_EVEID, CHAR_TABLE_NAME, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE },
 					CHAR_TABLE_ENABLED + " = 1", null, null, null, null);
 
 		} catch (SQLException e) {
@@ -175,10 +173,9 @@ public class CharacterDB {
 			// This string is used to create the database. It should
 			// be changed to suit your needs.
 			String newTableQueryString = "create table " + CHAR_TABLE
-					+ " (" + CHAR_TABLE_ID
-					+ " integer primary key autoincrement not null,"
-					+ CHAR_TABLE_NAME + " string," + CHAR_TABLE_EVEID
-					+ " integer," + CHAR_TABLE_CORPNAME + " string,"
+					+ " (" + CHAR_TABLE_NAME + " string," 
+					+ CHAR_TABLE_EVEID + " integer primary key not null," 
+					+ CHAR_TABLE_CORPNAME + " string,"
 					+ CHAR_TABLE_CORPID + " integer,"
 					+ CHAR_TABLE_KEYID + " integer,"
 					+ CHAR_TABLE_VCODE + " text,"

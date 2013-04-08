@@ -36,6 +36,8 @@ public class EditCharactersDialog extends DialogFragment
 	
 	boolean refreshRequired = false;
 	
+	ListView apiKeyList;
+	
 	public EditCharactersDialog()
 	{
 		
@@ -50,7 +52,7 @@ public class EditCharactersDialog extends DialogFragment
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		
 		View root = inflater.inflate(R.layout.characters_edit_characters, null);
-		ListView apiKeyList = (ListView) root.findViewById(R.id.characters_edit_characters_list);
+		apiKeyList = (ListView) root.findViewById(R.id.characters_edit_characters_list);
 		apiKeyList.setAdapter(new APIKeyListAdapter(getActivity(), R.layout.characters_edit_characters_list_item, keys, characters));
 		
 		builder.setView(root)
@@ -103,6 +105,12 @@ public class EditCharactersDialog extends DialogFragment
 		return false;
 	}
 	
+	private void updateList()
+	{
+		getData();
+		apiKeyList.getAdapter().clear();
+	}
+	
 	private class APIKeyListAdapter extends ArrayAdapter<APICredentials>
 	{
 		int listItemLayoutID;
@@ -145,10 +153,7 @@ public class EditCharactersDialog extends DialogFragment
 				public void onClick(View v) 
 				{
 					charDB.deleteCharactersByKeyID(keyID);
-					EditCharactersDialog.this.getData();
-					APIKeyListAdapter.this.clear();
-					APIKeyListAdapter.this.addAll(EditCharactersDialog.this.keys);
-					APIKeyListAdapter.this.notifyDataSetChanged();
+					updateList();
 				}
 			});	
 			

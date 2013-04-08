@@ -1,12 +1,8 @@
 package com.zdonnell.eve;
 
-import com.zdonnell.eve.api.APICallback;
-import com.zdonnell.eve.eve.Eve;
-import com.zdonnell.eve.staticdata.api.StationDatabase;
-import com.zdonnell.eve.staticdata.api.StationInfo;
-
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -38,6 +34,17 @@ public class CharactersActivity extends BaseActivity {
 		.replace(R.id.content_frame, currentCharactersFragment)
 		.commit();
 		
+		Intent receivedIntent = getIntent();
+		Uri data = receivedIntent.getData();
+		
+		if (data != null)
+		{
+			int keyID = Integer.valueOf(data.getQueryParameter("keyID"));
+			String vCode = data.getQueryParameter("vCode");
+			
+	    	new AddAPIDialog().setKey(keyID, vCode).show(getSupportFragmentManager(), "Skill List Dialog");
+		}
+		
 		setSlidingActionBarEnabled(true);
 	}
 	
@@ -51,7 +58,7 @@ public class CharactersActivity extends BaseActivity {
         
         return true;
     }
-	 
+	
 	public boolean onOptionsItemSelected (MenuItem item) {
     	
 	    switch (item.getItemId())

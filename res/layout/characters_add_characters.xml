@@ -9,6 +9,7 @@
         android:id="@+id/characters_add_characters_api_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="Key ID"
         android:ems="10" >
 
         <requestFocus />
@@ -18,6 +19,30 @@
         android:id="@+id/characters_add_characters_vcode_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="Verification Code"
         android:ems="10" />
-    
+    <LinearLayout
+        android:id="@+id/characters_add_characters_dynamic_content"
+        android:layout_marginTop="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        
+    </LinearLayout>
+    <Button 
+        android:id="@+id/characters_add_characters_get_button" 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="8dp"
+        android:text="Get Characters" />
+    <Button 
+        android:id="@+id/characters_add_characters_add_button" 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"      
+        android:layout_margin="8dp"  
+        android:layout_gravity="center_horizontal"       
+        android:text="Add Characters" />
 </LinearLayout>
