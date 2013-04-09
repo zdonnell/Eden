@@ -3,16 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#181818" >
+    android:background="#DDD" >
     <ListView
         android:padding="5dp"
-        android:background="#181818"   
+        android:background="#DDD"   
         android:id="@+id/char_detail_assets_stations_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:headerDividersEnabled="true"
-        android:divider="#000"
+        android:divider="#CCC"
     	android:dividerHeight="1dp"
         android:numColumns="4" />
     <View

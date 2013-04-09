@@ -96,7 +96,7 @@ public class CharactersFragment extends Fragment {
 		charDB = new CharacterDB(context);
 		
 		/* test function to load characters from API keys */
-		if (false) loadCharacters();
+		if (true) loadCharacters();
 		if (true) loadStationInfo();
 		
 		/* Setup the GridView properties and link with the CursorAdapater */

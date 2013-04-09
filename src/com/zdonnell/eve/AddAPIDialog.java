@@ -84,6 +84,11 @@ public class AddAPIDialog extends DialogFragment
 				passedKeyID = Integer.parseInt(keyIDField.getText().toString());
 				passedVCode = vCodeField.getText().toString();
 				
+				keyIDField.setEnabled(false);
+				vCodeField.setEnabled(false);
+				
+				getCharsButton.setEnabled(false);
+				
 				loadCharacters(dynamicContentArea);
 			}
 		});
@@ -105,9 +110,6 @@ public class AddAPIDialog extends DialogFragment
 		{	
 			keyIDField.setText(String.valueOf(passedKeyID));
 			vCodeField.setText(passedVCode);
-			
-			keyIDField.setEnabled(false);
-			vCodeField.setEnabled(false);
 			
 			loadCharacters(dynamicContentArea);
 		}

@@ -19,7 +19,7 @@
 
 <resources>
 
-    <style name="Theme.yelloworange" parent="@android:style/Theme.Holo">
+    <style name="Theme.yelloworange" parent="@android:style/Theme.Holo.Light">
         <item name="android:actionBarItemBackground">@drawable/selectable_background_yelloworange</item>
         <item name="android:popupMenuStyle">@style/yelloworange_PopupMenu</item>
         <item name="android:dropDownListViewStyle">@style/yelloworange_DropDownListView</item>

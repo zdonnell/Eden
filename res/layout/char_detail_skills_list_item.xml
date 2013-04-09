@@ -24,13 +24,13 @@
 			    android:layout_height="wrap_content"
 			    android:textSize="14sp"
 			    android:textStyle="bold"
-			    android:textColor="#BBB"/>
+			    android:textColor="#424242"/>
 			<TextView 
 			    android:id="@+id/char_detail_skills_list_item_groupSubText"
 			    android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"
 			    android:textSize="12sp"
-			    android:textColor="#999"/>
+			    android:textColor="#666"/>
 		</LinearLayout>	
 		<TextView 
 		    android:id="@+id/char_detail_skills_list_item_groupSkillPoints"
@@ -39,6 +39,6 @@
 		    android:gravity="center_vertical"
 		    android:paddingRight="6sp"
 		    android:textSize="12sp"
-		    android:textColor="#BBB"/>
+		    android:textColor="#424242"/>
 	</LinearLayout>
 </LinearLayout>

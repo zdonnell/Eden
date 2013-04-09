@@ -14,7 +14,7 @@
 	<View
 	    android:layout_width="1px"
 	    android:layout_height="match_parent"
-	    android:background="#444"
+	    android:background="#CCC"
 	    />
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     	android:layout_width="wrap_content"
@@ -29,7 +29,7 @@
 		    android:layout_height="0dp"
 		    android:layout_weight="1"
 		    android:textSize="16sp"
-		    android:textColor="#BBB"/>
+		    android:textColor="#424242"/>
 		<TextView 
 		    android:id="@+id/character_sheet_item_subtext"
 		    android:layout_width="wrap_content"
@@ -37,6 +37,6 @@
 		    android:layout_marginTop="-4dp"
 		    android:layout_weight="1"
 		    android:textSize="12sp"
-		    android:textColor="#999"/>
+		    android:textColor="#666"/>
 	</LinearLayout>	
 </LinearLayout>

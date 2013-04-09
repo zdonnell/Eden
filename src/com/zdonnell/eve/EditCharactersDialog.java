@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,7 +29,7 @@ import com.zdonnell.eve.api.account.EveCharacter;
 
 public class EditCharactersDialog extends DialogFragment 
 {
-	APICredentials[] keys;
+	ArrayList<APICredentials> apiCredsList;
 	
 	SparseArray<ArrayList<EveCharacter>> characters = new SparseArray<ArrayList<EveCharacter>>();
 	
@@ -53,17 +54,20 @@ public class EditCharactersDialog extends DialogFragment
 		
 		View root = inflater.inflate(R.layout.characters_edit_characters, null);
 		apiKeyList = (ListView) root.findViewById(R.id.characters_edit_characters_list);
-		apiKeyList.setAdapter(new APIKeyListAdapter(getActivity(), R.layout.characters_edit_characters_list_item, keys, characters));
+		apiKeyList.setAdapter(new APIKeyListAdapter(getActivity(), R.layout.characters_edit_characters_list_item, apiCredsList, characters));
 		
-		builder.setView(root)
-			.setNegativeButton("Done", new DialogInterface.OnClickListener() 
+		Button doneButton = (Button) root.findViewById(R.id.characters_edit_characters_done_button);
+		doneButton.setOnClickListener(new View.OnClickListener() 
+		{	
+			@Override
+			public void onClick(View view) 
 			{
-				public void onClick(DialogInterface dialog, int id) 
-				{
-					dismiss();
-					if (refreshRequired) ((CharactersActivity) getActivity()).refreshCharactersList();
-				}
-			})
+				dismiss();
+				if (refreshRequired) ((CharactersActivity) getActivity()).refreshCharactersList();
+			}
+		});
+				
+		builder.setView(root)
 			.setTitle("Edit Characters")
 			.setMessage("Tap on a portrait to toggle monitoring of that character");    
 		
@@ -74,7 +78,8 @@ public class EditCharactersDialog extends DialogFragment
 	{
 		charDB = new CharacterDB(getActivity());
 		
-		ArrayList<APICredentials> apiCredsList = new ArrayList<APICredentials>();
+		characters.clear();
+		apiCredsList = new ArrayList<APICredentials>();
 		
 		Cursor c = charDB.allCharacters();
 		while (c.moveToNext())
@@ -91,8 +96,6 @@ public class EditCharactersDialog extends DialogFragment
 		}
 		c.close();
 		
-		keys = new APICredentials[apiCredsList.size()];
-		apiCredsList.toArray(keys);
 	}
 	
 	private boolean keyAccountedFor(int apiKey, String vCode, ArrayList<APICredentials> apiCredsList)
@@ -106,9 +109,16 @@ public class EditCharactersDialog extends DialogFragment
 	}
 	
 	private void updateList()
-	{
+	{		
+		((CharactersActivity) getActivity()).refreshCharactersList();
+		refreshRequired = false;
+		
 		getData();
-		apiKeyList.getAdapter().clear();
+		
+		APIKeyListAdapter currentAdapter = (APIKeyListAdapter) apiKeyList.getAdapter();
+		currentAdapter.clear();
+		currentAdapter.addAll(apiCredsList);
+		currentAdapter.notifyDataSetChanged();
 	}
 	
 	private class APIKeyListAdapter extends ArrayAdapter<APICredentials>
@@ -117,7 +127,7 @@ public class EditCharactersDialog extends DialogFragment
 		
 		SparseArray<ArrayList<EveCharacter>> characters;
 		
-		public APIKeyListAdapter(Context context, int textViewResourceId, APICredentials[] keys, SparseArray<ArrayList<EveCharacter>> characters) 
+		public APIKeyListAdapter(Context context, int textViewResourceId, ArrayList<APICredentials> keys, SparseArray<ArrayList<EveCharacter>> characters) 
 		{
 			super(context, textViewResourceId, keys);
 			this.characters = characters;
@@ -146,6 +156,8 @@ public class EditCharactersDialog extends DialogFragment
 			portraits[1] = (ImageView) convertView.findViewById(R.id.characters_edit_characters_list_item_portrait2);
 			portraits[2] = (ImageView) convertView.findViewById(R.id.characters_edit_characters_list_item_portrait3);
 			
+			for (int i = 0; i < 3; ++i) portraits[i].setVisibility(View.GONE);
+			
 			apiKeyText.setText(String.valueOf(getItem(position).keyID));
 			deleteImage.setOnClickListener(new View.OnClickListener() 
 			{	
@@ -167,7 +179,7 @@ public class EditCharactersDialog extends DialogFragment
 				final int charNum = i;
 				
 				portraits[i].setAlpha(charOn[i] ? 1f : 0.25f);
-				portraits[i].setOnClickListener(new View.OnClickListener() 				
+				portraits[i].setOnClickListener(new View.OnClickListener() 		
 				{		
 					@Override
 					public void onClick(View v) 
