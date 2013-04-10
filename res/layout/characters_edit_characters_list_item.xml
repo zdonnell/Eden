@@ -20,9 +20,9 @@
 		    android:textStyle="bold"
 		    android:textSize="14sp"
 		    android:shadowColor="#000"
-		        android:shadowDx="3"
-		        android:shadowDy="3"
-		        android:shadowRadius="9"
+		    android:shadowDx="3"
+		    android:shadowDy="3"
+		    android:shadowRadius="9"
 		    android:textColor="#BBB"/>
    	    <TextView 
 		    android:id="@+id/characters_edit_characters_list_item_apikey"
@@ -39,7 +39,7 @@
    	    android:orientation="horizontal" 
    	    android:layout_width="0dp"
    	    android:layout_weight="1"
-   	    android:layout_height="wrap_content"
+   	    android:layout_height="44dp"
    	    >
    	    <ImageView
 		    android:id="@+id/characters_edit_characters_list_item_portrait1"

@@ -2,6 +2,7 @@ package com.zdonnell.eve.api.priceservice;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.zdonnell.eve.api.APICallback;
@@ -40,6 +41,8 @@ public class PriceDatabaseTask extends AsyncTask<Integer, Integer, SparseArray<F
 		else
 		{						
 			Integer[] nonCachedTypeIDs = new Integer[strippedTypeIDs.length - cachedPrices.size()];
+			
+			Log.d("Price Service", "Requesting prices for " + nonCachedTypeIDs.length + " types");
 			
 			int index = 0;
 			for (int typeID : strippedTypeIDs)

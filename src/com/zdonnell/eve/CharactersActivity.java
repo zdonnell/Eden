@@ -69,6 +69,9 @@ public class CharactersActivity extends BaseActivity {
 	    case R.id.edit_characters:
 	    	new EditCharactersDialog().show(getSupportFragmentManager(), "Skill List Dialog");
 	    	break;
+	    case android.R.id.home:
+			toggle();
+			return true;
 	    }
 	    return true;
     }

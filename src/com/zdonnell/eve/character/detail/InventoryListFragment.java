@@ -221,7 +221,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			adapter = new InventoryArrayAdapter(context, stationRowResourceID, currentItemList);
 			absListView.setAdapter(adapter);
 		
-			if (parentFragment.getPrices().size() > 0) calculatePrices(currentItemList);
+			if (parentFragment.getPrices() != null && parentFragment.getPrices().size() > 0) calculatePrices(currentItemList);
 			
 			initialLoadComplete = true;
 		}
@@ -310,8 +310,8 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
     	HashMap<TextView, Integer> typeNameMappings = new HashMap<TextView, Integer>();
     	HashMap<TextView, Integer> typeValueMappings = new HashMap<TextView, Integer>();
     	
-    	boolean typeNamesLoaded = parentFragment.getTypeInfo().size() > 0;
-    	boolean typeValuesLoaded = parentFragment.getPrices().size() > 0;
+    	boolean typeNamesLoaded = (parentFragment.getTypeInfo() != null && parentFragment.getTypeInfo().size() > 0);
+    	boolean typeValuesLoaded = (parentFragment.getPrices() != null && parentFragment.getPrices().size() > 0);
     	
 		public InventoryArrayAdapter(Context context, int layoutResourceID, AssetsEntity[] items) 
 		{
@@ -502,6 +502,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	@Override
 	public void obtainedPrices() 
 	{
+		adapter.obtainedTypeValues();
 		calculatePrices(currentItemList);
 	}
 

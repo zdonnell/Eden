@@ -222,7 +222,7 @@ public class WalletFragment extends Fragment {
     
     private void dataUpdated()
     {
-    	if (walletEntries != null)
+    	if (walletEntries != null && walletEntries.length > 0)
     	{
     		if (walletEntries[0] instanceof WalletEntry.Journal)
     		{

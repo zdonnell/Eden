@@ -3,6 +3,7 @@ package com.zdonnell.eve;
 import java.text.NumberFormat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.text.Html;
@@ -19,31 +20,31 @@ import com.zdonnell.eve.api.server.Server;
 public class SlideMenuFragment extends ListFragment {
 
 	private final static int CHARS = 0;
-	private final static int CORPS = 1;
-	private final static int ACCOUNTS = 2;
-	private final static int SETTINGS = 3;
+	//private final static int CORPS = 1;
+	//private final static int ACCOUNTS = 2;
+	private final static int SETTINGS = 1;
 	
 	/**
 	 * Array of Strings for the menu item titles
 	 */
-	private static String[] mainMenuItems = new String[4];
+	private static String[] mainMenuItems = new String[2];
 	static
 	{
 		mainMenuItems[CHARS] = "Characters";
-		mainMenuItems[CORPS] = "Corporations";
-		mainMenuItems[ACCOUNTS] = "Accounts";
+		//mainMenuItems[CORPS] = "Corporations";
+		//mainMenuItems[ACCOUNTS] = "Accounts";
 		mainMenuItems[SETTINGS] = "Settings";
 	}
 	
 	/**
 	 * Array of Resource IDs for the menu item icons
 	 */
-	private static int[] ItemImageResources = new int[4];
+	private static int[] ItemImageResources = new int[2];
 	static
 	{
 		ItemImageResources[CHARS] = R.drawable.characters_icon;
-		ItemImageResources[CORPS] = R.drawable.corporations_icon;
-		ItemImageResources[ACCOUNTS] = R.drawable.accounts_icon;
+		//ItemImageResources[CORPS] = R.drawable.corporations_icon;
+		//ItemImageResources[ACCOUNTS] = R.drawable.accounts_icon;
 		ItemImageResources[SETTINGS] = R.drawable.settings_icon;
 	}
 	
@@ -69,12 +70,36 @@ public class SlideMenuFragment extends ListFragment {
 			super(context, 0, items);
 		}
 
-		public View getView(int position, View convertView, ViewGroup parent) 
+		public View getView(final int position, View convertView, ViewGroup parent) 
 		{
 			if (convertView == null) 
 			{
 				convertView = LayoutInflater.from(getContext()).inflate(R.layout.row, null);
 			}
+			
+			convertView.setOnClickListener(new View.OnClickListener() 
+			{
+				@Override
+				public void onClick(View v) 
+				{
+					Intent intent;
+					
+					switch (position)
+					{
+					case CHARS:
+						intent = new Intent(getActivity(), CharactersActivity.class);
+						break;
+					case SETTINGS:
+						intent = new Intent(getActivity(), SettingsActivity.class);
+						break;
+					default:
+						intent = null;
+						break;
+					}
+					
+					startActivity(intent);
+				}
+			});
 			
 			ImageView icon = (ImageView) convertView.findViewById(R.id.row_icon);
 			icon.setImageResource(ItemImageResources[position]);

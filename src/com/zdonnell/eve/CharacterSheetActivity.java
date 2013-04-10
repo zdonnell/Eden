@@ -143,6 +143,9 @@ public class CharacterSheetActivity extends BaseActivity
 	    	}, true, assembledChar.id());
 	    	
 	    	break;
+	    case android.R.id.home:
+			toggle();
+			return true;
 	    }
 		return true;
     }

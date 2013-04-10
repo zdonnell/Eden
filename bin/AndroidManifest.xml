@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zdonnell.eve"
     android:versionCode="1"
@@ -14,44 +15,54 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:logo="@drawable/eden_logo"
-        android:theme="@style/Theme.yelloworange">
-       <activity
-            android:name=".AddAccount"
+        android:theme="@style/Theme.yelloworange" >
+        <activity
+            android:name="com.zdonnell.eve.AddAccount"
             android:label="@string/title_activity_add_account" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zdonnell.eve.MainDualActivity" />
         </activity>
         <activity
-            android:name=".TypeInfoActivity"
-            android:label="@string/type_info"
-            >
+            android:name="com.zdonnell.eve.TypeInfoActivity"
+            android:label="@string/type_info" >
         </activity>
         <activity
-            android:name=".CharactersActivity"
+            android:name="com.zdonnell.eve.CharactersActivity"
             android:label="@string/title_activity_main_strip" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-           <intent-filter>
-			  <action android:name="android.intent.action.VIEW"></action>
-			  <category android:name="android.intent.category.DEFAULT"></category>
-			  <category android:name="android.intent.category.BROWSABLE"></category>
-			  <data android:host="api.eveonline.com" android:scheme="http"></data>
-			  <data android:host="api.eveonline.com" android:scheme="eve"></data>			  
-			</intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" >
+                </action>
+
+                <category android:name="android.intent.category.DEFAULT" >
+                </category>
+                <category android:name="android.intent.category.BROWSABLE" >
+                </category>
+
+                <data
+                    android:host="api.eveonline.com"
+                    android:scheme="http" >
+                </data>
+                <data
+                    android:host="api.eveonline.com"
+                    android:scheme="eve" >
+                </data>
+            </intent-filter>
         </activity>
         <activity
-            android:name=".CharacterSheetActivity"
+            android:name="com.zdonnell.eve.CharacterSheetActivity"
             android:label="@string/title_sheetitem_list" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zdonnell.eve.MainStripActivity" />
         </activity>
         <activity
-            android:name=".CharacterDetailActivity"
+            android:name="com.zdonnell.eve.CharacterDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_sheetitem_detail" >
             <meta-data
@@ -59,15 +70,19 @@
                 android:value=".SheetItemListActivity" />
         </activity>
         <activity
-            android:name=".APITestActivity"
+            android:name="com.zdonnell.eve.APITestActivity"
             android:label="@string/title_activity_apitest" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zdonnell.eve.MainStripActivity" />
         </activity>
-        <activity            
-            android:name=".SlidingTitleBar"
+        <activity
+            android:name="com.zdonnell.eve.SlidingTitleBar"
             android:label="SlideIn" >
+        </activity>
+        <activity
+            android:name="com.zdonnell.eve.SettingsActivity"
+            android:label="@string/title_activity_settings" >
         </activity>
     </application>
 
