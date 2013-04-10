@@ -4,7 +4,7 @@
     android:layout_height="56dp"
     android:padding="4dp"
     android:orientation="horizontal"
-    android:background="#DDD" >
+    android:background="#151515" >
     <com.zdonnell.eve.character.detail.SquareLinearLayout
 	    android:id="@+id/char_detail_assets_station_item_typeIconBorder"
 	   	android:background="#000"
@@ -20,7 +20,7 @@
 		        android:background="#242424"/>
 	   	</com.zdonnell.eve.character.detail.SquareLinearLayout>
     <TextView
-        android:textColor="#424242"
+        android:textColor="#BBB"
         android:layout_width="0dp"
         android:layout_weight="1.8"
         android:textSize="12sp"
@@ -35,7 +35,7 @@
             android:layout_gravity="center_vertical"
             android:orientation="vertical">
             <TextView
-		        android:textColor="#666"
+		        android:textColor="#999"
 		        android:layout_width="wrap_content"
 		        android:textSize="12sp"
 		        android:layout_gravity="right"

@@ -3,13 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#DDD" >
+    android:background="#151515" >
     <ExpandableListView
-        android:background="#DDD"   
+        android:background="#151515"   
         android:id="@+id/char_detail_skills_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:headerDividersEnabled="true"
-        android:divider="#BBB"
+        android:divider="#000"
     	android:dividerHeight="1dp" />
 </LinearLayout>

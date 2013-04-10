@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item android:id="@+id/notification_toggle"
+          android:title="Notification"
+          android:icon="@drawable/notification"
+          android:showAsAction="ifRoom|collapseActionView"
+          />
+    <!-- <item android:id="@+id/settings"
+          android:icon="@drawable/settings"
+          android:title="@string/settings"
+          android:showAsAction="ifRoom|withText"
+          />
+     <item android:id="@+id/main_settings"
+          android:icon="@drawable/settings"
+          android:title="@string/settings"
+          android:showAsAction="ifRoom" /> -->
+</menu>

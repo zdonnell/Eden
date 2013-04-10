@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical" 
-    android:background="#CCC">
+    android:background="#101010">
 	<LinearLayout 
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
 			    android:id="@+id/char_detail_skills_list_item_skillname"
 			    android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"
-			    android:textColor="#424242"
+			    android:textColor="#BBB"
 			    android:textStyle="bold"
 			    android:textSize="12sp"
 			     />
@@ -63,7 +63,7 @@
 			    android:id="@+id/char_detail_skills_list_item_skillsptext"
 			    android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"
-			    android:textColor="#666"
+			    android:textColor="#999"
 			    android:textSize="11sp"
 			     />
 		</LinearLayout>

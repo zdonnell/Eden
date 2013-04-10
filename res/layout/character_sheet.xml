@@ -2,8 +2,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#DDD" >
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#151515" >
+    <RelativeLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="210dp"
 	    android:orientation="vertical"
@@ -142,6 +142,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:headerDividersEnabled="true"
-        android:divider="#BBB"
+        android:divider="#000"
     	android:dividerHeight="1dp" />
 </LinearLayout>
