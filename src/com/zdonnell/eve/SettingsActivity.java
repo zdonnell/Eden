@@ -1,6 +1,8 @@
 package com.zdonnell.eve;
 
 import android.annotation.TargetApi;
+import android.app.Fragment;
+import android.app.ListFragment;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.media.Ringtone;
@@ -15,9 +17,14 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.view.MenuItem;
 
 import java.util.List;
+
+import com.slidingmenu.lib.SlidingMenu;
+import com.slidingmenu.lib.app.SlidingPreferenceActivity;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -30,7 +37,7 @@ import java.util.List;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends SlidingPreferenceActivity {
 	/**
 	 * Determines whether to always show the simplified settings UI, where
 	 * settings are presented in a single list. When false, settings are shown
@@ -39,8 +46,46 @@ public class SettingsActivity extends PreferenceActivity {
 	 */
 	private static final boolean ALWAYS_SIMPLE_PREFS = false;
 
+	protected Fragment mFrag;
+
+	public boolean onOptionsItemSelected (MenuItem item) {
+    	
+	    switch (item.getItemId())
+	    {
+	    case android.R.id.home:
+			toggle();
+			return true;
+	    }
+	    return true;
+    }
+	
 	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		
+		// set the Behind View
+			setBehindContentView(R.layout.menu_frame);
+			android.app.FragmentTransaction t = getFragmentManager().beginTransaction();
+			mFrag = new SlideMenuFragmentNonSupport();
+			t.replace(R.id.menu_frame, mFrag);
+			t.commit();
+
+			// customize the SlidingMenu
+			SlidingMenu sm = getSlidingMenu();
+			sm.setShadowWidthRes(R.dimen.shadow_width);
+			sm.setShadowDrawable(R.drawable.shadow);
+			sm.setBehindOffsetRes(R.dimen.actionbar_home_width);
+			sm.setFadeDegree(0.75f);
+
+			// customize the ActionBar
+			if (Build.VERSION.SDK_INT >= 11) {
+				getActionBar().setDisplayHomeAsUpEnabled(true);
+			}
+	}
+	
+	@Override
+	public void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
 		setupSimplePreferencesScreen();
