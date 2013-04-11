@@ -14,8 +14,8 @@ public final class R {
         public static final int static_animation=0x7f040002;
     }
     public static final class array {
-        public static final int pref_example_list_titles=0x7f0b0000;
-        public static final int pref_example_list_values=0x7f0b0001;
+        public static final int pref_price_frequency=0x7f0b0000;
+        public static final int pref_price_frequency_values=0x7f0b0001;
         public static final int pref_sync_frequency_titles=0x7f0b0002;
         public static final int pref_sync_frequency_values=0x7f0b0003;
     }
@@ -431,10 +431,12 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         /**  Example settings for Notifications 
          */
         public static final int pref_header_notifications=0x7f07001f;
+        public static final int pref_header_price=0x7f070026;
         public static final int pref_ringtone_silent=0x7f070022;
         public static final int pref_title_add_friends_to_messages=0x7f07001b;
         public static final int pref_title_display_name=0x7f070019;
         public static final int pref_title_new_message_notifications=0x7f070020;
+        public static final int pref_title_price_frequency=0x7f070025;
         public static final int pref_title_price_service=0x7f070024;
         public static final int pref_title_ringtone=0x7f070021;
         public static final int pref_title_social_recommendations=0x7f070017;
@@ -487,6 +489,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int pref_general=0x7f050001;
         public static final int pref_headers=0x7f050002;
         public static final int pref_notification=0x7f050003;
+        public static final int pref_price=0x7f050004;
     }
     public static final class styleable {
         /** Attributes that can be used with a SlidingMenu.
