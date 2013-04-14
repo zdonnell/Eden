@@ -1,8 +1,16 @@
 package com.zdonnell.eve;
 
+import com.zdonnell.eve.character.detail.InventorySort;
+import com.zdonnell.eve.character.detail.ParentAssetsFragment;
+
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -69,6 +77,9 @@ public class CharactersActivity extends BaseActivity {
 	    case R.id.edit_characters:
 	    	new EditCharactersDialog().show(getSupportFragmentManager(), "Skill List Dialog");
 	    	break;
+	    case R.id.sort_by:
+	    	new SortByDialog().show(getSupportFragmentManager(), "Sort By Dialog");
+	    	break;
 	    case android.R.id.home:
 			toggle();
 			return true;
@@ -80,4 +91,25 @@ public class CharactersActivity extends BaseActivity {
 	{
 		currentCharactersFragment.refreshChars();
 	}
+	
+	 @SuppressLint("ValidFragment")
+	private class SortByDialog extends DialogFragment
+    {
+		@Override
+    	public Dialog onCreateDialog(Bundle savedInstanceState) 
+    	{
+    	    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    	    builder.setTitle("Sort By")
+    	           .setItems(CharacterSort.sortNames, new DialogInterface.OnClickListener() 
+		           {
+		               public void onClick(DialogInterface dialog, int which) 
+		               {
+		            	   
+		               }
+		           }
+    	   );
+    	    
+    	    return builder.create();
+    	}
+    }
 }

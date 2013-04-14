@@ -29,7 +29,8 @@
         </activity>
         <activity
             android:name="com.zdonnell.eve.CharactersActivity"
-            android:label="@string/title_activity_main_strip" >
+            android:label="@string/title_activity_main_strip" 
+            android:uiOptions="splitActionBarWhenNarrow">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

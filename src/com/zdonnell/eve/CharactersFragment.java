@@ -1,6 +1,7 @@
 package com.zdonnell.eve;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import android.app.Activity;
@@ -76,12 +77,7 @@ public class CharactersFragment extends Fragment {
 	 */
 	private SparseArray<TimeRemainingCountdown> cachedTrainingTime = new SparseArray<TimeRemainingCountdown>(10);
 		
-	/**
-	 * Accounts used for testing purposes
-	 * 
-	 * TODO remove these once account management has been implemented
-	 */
-	private Account slick50zd1, mercenoid22, xsteveo243x, celeste243;
+	private EveCharacter[] characters;
 	
 	private CharacterArrayAdapter arrayAdapter;
 	
@@ -104,8 +100,9 @@ public class CharactersFragment extends Fragment {
 		View mainView = (View) inflater.inflate(R.layout.characters_fragment, container, false);
 		charGrid = (GridView) mainView.findViewById(R.id.charGrid);		
 		
-		//cursorAdapter = new CharacterCursorAdapater(inflater.getContext(), charDB.getEnabledCharacters());
-		arrayAdapter = new CharacterArrayAdapter(context, R.layout.character_tile, charDB.getEnabledCharactersAsArray());
+		characters = charDB.getEnabledCharactersAsArray();
+		
+		arrayAdapter = new CharacterArrayAdapter(context, R.layout.character_tile, characters);
 		charGrid.setAdapter(arrayAdapter);
 						
 		columns = calcColumns((Activity) context);
