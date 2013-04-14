@@ -92,7 +92,7 @@ public class EditCharactersDialog extends DialogFragment
 			if (!keyAccountedFor(apiKey, vCode, apiCredsList)) apiCredsList.add(new APICredentials(apiKey, vCode));
 
 			if (characters.get(apiKey) == null) characters.put(apiKey, new ArrayList<EveCharacter>());
-			characters.get(apiKey).add(new EveCharacter(charName, charID, null, 0));
+			characters.get(apiKey).add(new EveCharacter(charName, charID, null, 0, 0, null));
 		}
 		c.close();
 		

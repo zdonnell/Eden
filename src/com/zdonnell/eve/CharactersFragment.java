@@ -19,8 +19,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -81,7 +83,7 @@ public class CharactersFragment extends Fragment {
 	 */
 	private Account slick50zd1, mercenoid22, xsteveo243x, celeste243;
 	
-	private CharacterCursorAdapater cursorAdapter;
+	private CharacterArrayAdapter arrayAdapter;
 	
 	private GridView charGrid;
 	
@@ -96,15 +98,15 @@ public class CharactersFragment extends Fragment {
 		charDB = new CharacterDB(context);
 		
 		/* test function to load characters from API keys */
-		if (true) loadCharacters();
 		if (true) loadStationInfo();
 		
 		/* Setup the GridView properties and link with the CursorAdapater */
 		View mainView = (View) inflater.inflate(R.layout.characters_fragment, container, false);
 		charGrid = (GridView) mainView.findViewById(R.id.charGrid);		
 		
-		cursorAdapter = new CharacterCursorAdapater(inflater.getContext(), charDB.getEnabledCharacters());
-		charGrid.setAdapter(cursorAdapter);
+		//cursorAdapter = new CharacterCursorAdapater(inflater.getContext(), charDB.getEnabledCharacters());
+		arrayAdapter = new CharacterArrayAdapter(context, R.layout.character_tile, charDB.getEnabledCharactersAsArray());
+		charGrid.setAdapter(arrayAdapter);
 						
 		columns = calcColumns((Activity) context);
 		charGrid.setNumColumns(columns);
@@ -116,8 +118,8 @@ public class CharactersFragment extends Fragment {
 	{
 		viewCharacterMap.clear();
 		
-		cursorAdapter = new CharacterCursorAdapater(getActivity(), charDB.getEnabledCharacters());
-		charGrid.setAdapter(cursorAdapter);
+		arrayAdapter = new CharacterArrayAdapter(context, R.layout.character_tile, charDB.getEnabledCharactersAsArray());
+		charGrid.setAdapter(arrayAdapter);
 	}
 
 	@Override
@@ -127,54 +129,51 @@ public class CharactersFragment extends Fragment {
 		setUserVisibleHint(true);
 	}
 
-	/**
-	 * CursorAdapter that handles the population of the character list
-	 * 
-	 * @author zachd
-	 *
-	 */
-	private class CharacterCursorAdapater extends CursorAdapter 
-	{		
-		public CharacterCursorAdapater(Context context, Cursor c) 
+	private class CharacterArrayAdapter extends ArrayAdapter<EveCharacter>
+	{
+		private int layoutResId;
+		
+		public CharacterArrayAdapter(Context context, int textViewResourceId, EveCharacter[] objects) 
 		{
-			super(context, c, false);
+			super(context, textViewResourceId, objects);
+			layoutResId = textViewResourceId;
 		}
 		
-		/**
-		 * configures the view provided, with info from the cursor, for use in the main {@link GridView}
-		 * 
-		 * @param view
-		 * @param context
-		 * @param cursor
-		 */
 		@Override
-		public void bindView(final View view, final Context context, Cursor cursor) 
-		{		
+		public View getView(final int position, View convertView, ViewGroup parent)
+		{
+			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			
+			if (convertView == null) convertView = inflater.inflate(layoutResId, parent, false);
+			
+			/* get the character at the current position */
+			EveCharacter currentCharacter = getItem(position);
+			
 			/* Establish some basic values / info for use later */
-			final int characterID = cursor.getInt(0);
-			final int corpID = cursor.getInt(3);	
-			final APICredentials credentials = new APICredentials(cursor.getInt(4), cursor.getString(5));
-			APICharacter character = new APICharacter(credentials, cursor.getInt(0), context);
+			final int characterID = currentCharacter.charID;
+			final int corpID = currentCharacter.corpID;	
+			final APICredentials credentials = new APICredentials(currentCharacter.keyID, currentCharacter.vCode);
+			APICharacter character = new APICharacter(credentials, characterID, context);
 			
 			/* handle view configuration */
-			int calculatedWidth = calculatedColumnWidths[cursor.getPosition() % columns];
-			view.setLayoutParams(new AbsListView.LayoutParams(calculatedWidth, calculatedColumnWidths[0]));
+			int calculatedWidth = calculatedColumnWidths[position % columns];
+			convertView.setLayoutParams(new AbsListView.LayoutParams(calculatedWidth, calculatedColumnWidths[0]));
 			
-			TextView charName = (TextView) view.findViewById(R.id.char_tile_name);
-			charName.setText(cursor.getString(1));
+			TextView charName = (TextView) convertView.findViewById(R.id.char_tile_name);
+			charName.setText(currentCharacter.name);
 			
-			Integer viewsLastID = viewCharacterMap.get(view);
-			if (viewsLastID == null || viewCharacterMap.get(view) != characterID)
+			Integer viewsLastID = viewCharacterMap.get(convertView);
+			if (viewsLastID == null || viewCharacterMap.get(convertView) != characterID)
 			{
-				loadPortrait(view, cursor.getPosition(), characterID);
-				loadCorpLogo(view, cursor.getPosition(), corpID);				
-				setupQueueTimeRemaining(character, view);	
+				loadPortrait(convertView, position, characterID);
+				loadCorpLogo(convertView, position, corpID);				
+				setupQueueTimeRemaining(character, convertView);	
 				
-				viewCharacterMap.put(view, characterID);
+				viewCharacterMap.put(convertView, characterID);
 			}
 			
 			/* configure the onClick action */
-			view.setOnClickListener(new View.OnClickListener() 
+			convertView.setOnClickListener(new View.OnClickListener() 
 			{	
 				@Override
 				public void onClick(View v) 
@@ -190,26 +189,8 @@ public class CharactersFragment extends Fragment {
 	            	startActivity(intent);
 				}
 			});
-		}
-
-		/**
-		 * if there is not a view to reuse, inflate a new one for use in the main {@link GridView}
-		 * 
-		 * @param view
-		 * @param context
-		 * @param cursor
-		 */
-		@Override
-		public View newView(Context context, Cursor cursor, ViewGroup parent) 
-		{
-			LayoutInflater inflater = LayoutInflater.from(context);
-			View v = inflater.inflate(R.layout.character_tile, parent, false);
-
-			v.setLayoutParams(new AbsListView.LayoutParams(parent.getWidth()/columns, parent.getWidth()/columns));
-			//v.setAlpha(0);
 			
-			bindView(v, context, cursor);
-			return v;
+			return convertView;
 		}
 		
 		/**
@@ -299,6 +280,7 @@ public class CharactersFragment extends Fragment {
 				}
 			});
 		}
+		
 	}
 	
 	/**
@@ -342,43 +324,6 @@ public class CharactersFragment extends Fragment {
 		return columns;
 	}
 	
-	/**
-	 * TODO Remove function once account loading finished
-	 * 
-	 * Testing function
-	 */
-	private void loadCharacters()
-	{
-		slick50zd1 = new Account(1171726, "G87RoqlTiVG7ecrLSLuehJnBl0VjRG11xYppONMOu9GpbHghCqcgqk3n81egdAGm", context);
-		mercenoid22 = new Account(1171729, "4QsVKhpkQcM20jU1AahjcGzYFCSJljYFXld5X0wgLV8pYPJMeQRvQAUdDnSGhKvK", context);
-		xsteveo243x = new Account(961364, "a73k2c5HvvwXhKhSRLzDQb8emKtRflovg51niFQSns9X8RT7y8ZbSzgRgQExUZnW", context);
-		celeste243 = new Account(1865662, "cXFfhhTZqqEStJmXQi3bzKDlahCO8FA3Rn1SGu28mYlBx7pjtobo3oEYe2bf3Low", context);
-				
-		slick50zd1.characters(new APICallback<ArrayList<EveCharacter>>() {
-			@Override
-			public void onUpdate(ArrayList<EveCharacter> updatedData) {
-				for (EveCharacter character : updatedData) charDB.addCharacter(character, slick50zd1.getCredentials(), true);				
-			}
-		});
-		mercenoid22.characters(new APICallback<ArrayList<EveCharacter>>() {
-			@Override
-			public void onUpdate(ArrayList<EveCharacter> updatedData) {
-				for (EveCharacter character : updatedData) charDB.addCharacter(character, mercenoid22.getCredentials(), true);				
-			}
-		});
-		xsteveo243x.characters(new APICallback<ArrayList<EveCharacter>>() {
-			@Override
-			public void onUpdate(ArrayList<EveCharacter> updatedData) {
-				for (EveCharacter character : updatedData) charDB.addCharacter(character, xsteveo243x.getCredentials(), true);				
-			}
-		});
-		celeste243.characters(new APICallback<ArrayList<EveCharacter>>() {
-			@Override
-			public void onUpdate(ArrayList<EveCharacter> updatedData) {
-				for (EveCharacter character : updatedData) charDB.addCharacter(character, celeste243.getCredentials(), true);				
-			}
-		});
-	}
 	
 	private void loadStationInfo()
 	{		

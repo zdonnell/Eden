@@ -1,5 +1,7 @@
 package com.zdonnell.eve;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -110,6 +112,39 @@ public class CharacterDB {
 		// return the ArrayList that holds the data collected from
 		// the database.
 		return cursor;
+	}
+	
+	public EveCharacter[] getEnabledCharactersAsArray() 
+	{
+
+		// this is a database call that creates a "cursor" object.
+		// the cursor object store the information collected from the
+		// database and is used to iterate through the data.
+		Cursor cursor = null;
+
+		try {
+			// ask the database object to create the cursor.
+			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_EVEID, CHAR_TABLE_NAME, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE },
+					CHAR_TABLE_ENABLED + " = 1", null, null, null, null);
+
+		} catch (SQLException e) {
+			Log.e("DB Error", e.toString());
+			e.printStackTrace();
+		}
+		
+		ArrayList<EveCharacter> charArrayList = new ArrayList<EveCharacter>(cursor.getCount());
+		while (cursor.moveToNext())
+		{
+			charArrayList.add(new EveCharacter(cursor.getString(1), cursor.getInt(0), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getString(5)));
+		}
+		
+		EveCharacter[] charArray = new EveCharacter[charArrayList.size()];
+		charArrayList.toArray(charArray);
+		
+		cursor.close();
+		// return the ArrayList that holds the data collected from
+		// the database.
+		return charArray;
 	}
 	
 	public String getCharacterName(int characterID)

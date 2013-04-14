@@ -113,11 +113,6 @@ public class AddAPIDialog extends DialogFragment
 			
 			loadCharacters(dynamicContentArea);
 		}
-		else
-		{	
-			keyIDField.setText("961364");
-			vCodeField.setText("a73k2c5HvvwXhKhSRLzDQb8emKtRflovg51niFQSns9X8RT7y8ZbSzgRgQExUZnW");
-		}
 		
 		builder.setView(root).setTitle("Add API Key");		
 				

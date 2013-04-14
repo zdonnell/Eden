@@ -123,7 +123,7 @@ public class CharacterSheetActivity extends BaseActivity
     	super.onCreateOptionsMenu(menu);
     	
     	MenuInflater menuInflater = getMenuInflater(); 
-    	menuInflater.inflate(R.menu.character_sheet, menu);
+    	//menuInflater.inflate(R.menu.character_sheet, menu);
     	
     	return true;
     }

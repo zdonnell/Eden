@@ -60,7 +60,7 @@ public class Account extends APIObject {
 				String charID = charAttributes.getNamedItem("characterID").getTextContent();
 				String corpID = charAttributes.getNamedItem("corporationID").getTextContent();
 
-				characters.add(new EveCharacter(name, Integer.parseInt(charID), corpName, Integer.parseInt(corpID)));
+				characters.add(new EveCharacter(name, Integer.parseInt(charID), corpName, Integer.parseInt(corpID), Account.this.credentials.keyID, Account.this.credentials.verificationCode));
 			}
 			
 			return characters;
