@@ -133,9 +133,10 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int viewBehind=0x7f010002;
     }
     public static final class color {
-        public static final int darkgrey=0x7f080001;
-        public static final int pressed_yelloworange=0x7f080000;
-        public static final int textgrey=0x7f080002;
+        public static final int darkgrey=0x7f070002;
+        public static final int pressed_yelloworange=0x7f070001;
+        public static final int textgrey=0x7f070003;
+        public static final int transDarkGrey=0x7f070000;
     }
     public static final class dimen {
         public static final int actionbar_home_width=0x7f0a0003;
@@ -413,52 +414,52 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     public static final class string {
         /**  Account 
          */
-        public static final int account_characters=0x7f070000;
-        public static final int app_name=0x7f070001;
-        public static final int character_grid_activity_title=0x7f070013;
-        public static final int hello_world=0x7f070002;
-        public static final int menu_addaccount=0x7f070003;
-        public static final int menu_settings=0x7f070008;
-        public static final int pref_default_display_name=0x7f07001a;
-        public static final int pref_description_social_recommendations=0x7f070018;
+        public static final int account_characters=0x7f080000;
+        public static final int app_name=0x7f080001;
+        public static final int character_grid_activity_title=0x7f080013;
+        public static final int hello_world=0x7f080002;
+        public static final int menu_addaccount=0x7f080003;
+        public static final int menu_settings=0x7f080008;
+        public static final int pref_default_display_name=0x7f08001a;
+        public static final int pref_description_social_recommendations=0x7f080018;
         /**  Example settings for Data & Sync 
          */
-        public static final int pref_header_data_sync=0x7f07001c;
+        public static final int pref_header_data_sync=0x7f08001c;
         /**  Strings related to Settings 
  Example General settings 
          */
-        public static final int pref_header_general=0x7f070016;
+        public static final int pref_header_general=0x7f080016;
         /**  Example settings for Notifications 
          */
-        public static final int pref_header_notifications=0x7f07001f;
-        public static final int pref_header_price=0x7f070026;
-        public static final int pref_ringtone_silent=0x7f070022;
-        public static final int pref_title_add_friends_to_messages=0x7f07001b;
-        public static final int pref_title_display_name=0x7f070019;
-        public static final int pref_title_new_message_notifications=0x7f070020;
-        public static final int pref_title_price_frequency=0x7f070025;
-        public static final int pref_title_price_service=0x7f070024;
-        public static final int pref_title_ringtone=0x7f070021;
-        public static final int pref_title_social_recommendations=0x7f070017;
-        public static final int pref_title_sync_frequency=0x7f07001d;
-        public static final int pref_title_system_sync_settings=0x7f07001e;
-        public static final int pref_title_vibrate=0x7f070023;
-        public static final int title_activity_add_account=0x7f070009;
-        public static final int title_activity_apitest=0x7f070010;
-        public static final int title_activity_main=0x7f070004;
-        public static final int title_activity_main_dual=0x7f070007;
-        public static final int title_activity_main_strip=0x7f07000d;
-        public static final int title_activity_settings=0x7f070015;
-        public static final int title_activity_test=0x7f070011;
-        public static final int title_bar_slide=0x7f070012;
-        public static final int title_characters=0x7f070005;
-        public static final int title_corporations=0x7f070006;
-        public static final int title_section1=0x7f07000c;
-        public static final int title_section2=0x7f07000b;
-        public static final int title_section3=0x7f07000a;
-        public static final int title_sheetitem_detail=0x7f07000e;
-        public static final int title_sheetitem_list=0x7f07000f;
-        public static final int type_info=0x7f070014;
+        public static final int pref_header_notifications=0x7f08001f;
+        public static final int pref_header_price=0x7f080026;
+        public static final int pref_ringtone_silent=0x7f080022;
+        public static final int pref_title_add_friends_to_messages=0x7f08001b;
+        public static final int pref_title_display_name=0x7f080019;
+        public static final int pref_title_new_message_notifications=0x7f080020;
+        public static final int pref_title_price_frequency=0x7f080025;
+        public static final int pref_title_price_service=0x7f080024;
+        public static final int pref_title_ringtone=0x7f080021;
+        public static final int pref_title_social_recommendations=0x7f080017;
+        public static final int pref_title_sync_frequency=0x7f08001d;
+        public static final int pref_title_system_sync_settings=0x7f08001e;
+        public static final int pref_title_vibrate=0x7f080023;
+        public static final int title_activity_add_account=0x7f080009;
+        public static final int title_activity_apitest=0x7f080010;
+        public static final int title_activity_main=0x7f080004;
+        public static final int title_activity_main_dual=0x7f080007;
+        public static final int title_activity_main_strip=0x7f08000d;
+        public static final int title_activity_settings=0x7f080015;
+        public static final int title_activity_test=0x7f080011;
+        public static final int title_bar_slide=0x7f080012;
+        public static final int title_characters=0x7f080005;
+        public static final int title_corporations=0x7f080006;
+        public static final int title_section1=0x7f08000c;
+        public static final int title_section2=0x7f08000b;
+        public static final int title_section3=0x7f08000a;
+        public static final int title_sheetitem_detail=0x7f08000e;
+        public static final int title_sheetitem_list=0x7f08000f;
+        public static final int type_info=0x7f080014;
     }
     public static final class style {
         public static final int AppTheme=0x7f090003;
@@ -466,21 +467,22 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int Theme_yelloworange=0x7f090004;
         /**  this style is only referenced in a Light.DarkActionBar based theme 
          */
-        public static final int Theme_yelloworange_widget=0x7f09000d;
+        public static final int Theme_yelloworange_widget=0x7f09000e;
         public static final int custom_animation=0x7f090002;
         public static final int dialog_custom=0x7f090000;
-        public static final int yelloworange_ActionBarTabBarStyle=0x7f09000a;
-        public static final int yelloworange_ActionBarTabStyle=0x7f090009;
+        public static final int yelloworange_ActionBarSplit=0x7f090007;
+        public static final int yelloworange_ActionBarTabBarStyle=0x7f09000b;
+        public static final int yelloworange_ActionBarTabStyle=0x7f09000a;
         /**  this style is only referenced in a Light.DarkActionBar based theme 
          */
-        public static final int yelloworange_DropDownItem=0x7f09000e;
-        public static final int yelloworange_DropDownListView=0x7f090008;
-        public static final int yelloworange_DropDownNav=0x7f09000b;
-        public static final int yelloworange_PopupMenu=0x7f090007;
-        public static final int yelloworange_ProgressBar=0x7f09000c;
+        public static final int yelloworange_DropDownItem=0x7f09000f;
+        public static final int yelloworange_DropDownListView=0x7f090009;
+        public static final int yelloworange_DropDownNav=0x7f09000c;
+        public static final int yelloworange_PopupMenu=0x7f090008;
+        public static final int yelloworange_ProgressBar=0x7f09000d;
         /**  this style is only referenced in a Light.DarkActionBar based theme 
          */
-        public static final int yelloworange_SpinnerItem=0x7f09000f;
+        public static final int yelloworange_SpinnerItem=0x7f090010;
         public static final int yelloworange_solid_ActionBar=0x7f090005;
         public static final int yelloworange_transparent_ActionBar=0x7f090006;
     }

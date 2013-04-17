@@ -14,6 +14,7 @@ public class EveCharacter {
 	public final int corpID;
 	public final int keyID;
 	public final String vCode;
+    private long queueTimeRemaining;
 
 	public EveCharacter(String name, int charID, String corpName, int corpID, int keyID, String vCode) {
 		this.name = name;
@@ -23,4 +24,7 @@ public class EveCharacter {
 		this.keyID = keyID;
 		this.vCode = vCode;
 	}
+	
+	public void setQueueTimeRemaining(long queueTimeRemaining) { this.queueTimeRemaining = queueTimeRemaining; }
+	public long getQueueTimeRemaining() { return queueTimeRemaining; }
 }

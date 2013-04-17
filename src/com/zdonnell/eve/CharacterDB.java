@@ -23,7 +23,7 @@ public class CharacterDB {
 	// These constants are specific to the database. They should be
 	// changed to suit your needs.
 	private final String DB_NAME = "char_db";
-	private final int DB_VERSION = 1;
+	private final int DB_VERSION = 2;
 
 	// These constants are specific to the database table. They should be
 	// changed to suit your needs.
@@ -36,6 +36,8 @@ public class CharacterDB {
 	public final static String CHAR_TABLE_KEYID = "char_keyid";
 	public final static String CHAR_TABLE_VCODE = "char_vcode";
 	public final static String CHAR_TABLE_ENABLED = "char_enabled";
+	public final static String CHAR_TABLE_QUEUETIME = "char_queuetime";
+
 
 	public CharacterDB(Context context) {
 		this.context = context;
@@ -56,6 +58,7 @@ public class CharacterDB {
 		values.put(CHAR_TABLE_KEYID, credentials.keyID);
 		values.put(CHAR_TABLE_VCODE, credentials.verificationCode);
 		values.put(CHAR_TABLE_ENABLED, enabled ? "1" : "0");
+		values.put(CHAR_TABLE_QUEUETIME, 0);
 
 		// ask the database object to insert the new data
 		try {
@@ -78,7 +81,7 @@ public class CharacterDB {
 
 		try {
 			// ask the database object to create the cursor.
-			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_NAME, CHAR_TABLE_EVEID, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE },
+			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_NAME, CHAR_TABLE_EVEID, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE, CHAR_TABLE_QUEUETIME },
 					null, null, null, null, null);
 
 		} catch (SQLException e) {
@@ -101,7 +104,7 @@ public class CharacterDB {
 
 		try {
 			// ask the database object to create the cursor.
-			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_EVEID, CHAR_TABLE_NAME, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE },
+			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_EVEID, CHAR_TABLE_NAME, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE, CHAR_TABLE_QUEUETIME },
 					CHAR_TABLE_ENABLED + " = 1", null, null, null, null);
 
 		} catch (SQLException e) {
@@ -124,7 +127,7 @@ public class CharacterDB {
 
 		try {
 			// ask the database object to create the cursor.
-			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_EVEID, CHAR_TABLE_NAME, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE },
+			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_EVEID, CHAR_TABLE_NAME, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE, CHAR_TABLE_QUEUETIME },
 					CHAR_TABLE_ENABLED + " = 1", null, null, null, null);
 
 		} catch (SQLException e) {
@@ -135,7 +138,9 @@ public class CharacterDB {
 		ArrayList<EveCharacter> charArrayList = new ArrayList<EveCharacter>(cursor.getCount());
 		while (cursor.moveToNext())
 		{
-			charArrayList.add(new EveCharacter(cursor.getString(1), cursor.getInt(0), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getString(5)));
+			EveCharacter newChar = new EveCharacter(cursor.getString(1), cursor.getInt(0), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getString(5));
+			newChar.setQueueTimeRemaining(cursor.getLong(6));
+			charArrayList.add(newChar);
 		}
 		
 		EveCharacter[] charArray = new EveCharacter[charArrayList.size()];
@@ -166,6 +171,14 @@ public class CharacterDB {
 	{
 		ContentValues values = new ContentValues();
 		values.put(CHAR_TABLE_ENABLED, enabled ? "1" : "0");
+		
+		db.update(CHAR_TABLE, values, CHAR_TABLE_EVEID + " = ?", new String[] { String.valueOf(characterID) });
+	}
+	
+	public void setCharQueueTime(int characterID, long queueTime)
+	{
+		ContentValues values = new ContentValues();
+		values.put(CHAR_TABLE_QUEUETIME, queueTime);
 		
 		db.update(CHAR_TABLE, values, CHAR_TABLE_EVEID + " = ?", new String[] { String.valueOf(characterID) });
 	}
@@ -214,14 +227,19 @@ public class CharacterDB {
 					+ CHAR_TABLE_CORPID + " integer,"
 					+ CHAR_TABLE_KEYID + " integer,"
 					+ CHAR_TABLE_VCODE + " text,"
-					+ CHAR_TABLE_ENABLED + " integer);";
+					+ CHAR_TABLE_ENABLED + " integer,"
+					+ CHAR_TABLE_QUEUETIME + " integer);";
 			// execute the query string to the database.
 			db.execSQL(newTableQueryString);
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+			
+			if (oldVersion == 1 && newVersion == 2)
+			{
+				db.execSQL("alter table " + CHAR_TABLE + " add column " + CHAR_TABLE_QUEUETIME + " integer;");
+			}
 		}
 	}
 }

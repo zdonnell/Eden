@@ -43,6 +43,10 @@
         <item name="android:backgroundSplit">@drawable/ab_bottom_solid_yelloworange</item>
         <item name="android:progressBarStyle">@style/yelloworange_ProgressBar</item>
     </style>
+    
+    <style name="yelloworange_ActionBarSplit">
+        <item name="android:background">@drawable/ab_transparent_yelloworange</item>
+    </style>
 
     <style name="yelloworange_PopupMenu" parent="@android:style/Widget.Holo.ListPopupWindow">
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_yelloworange</item>

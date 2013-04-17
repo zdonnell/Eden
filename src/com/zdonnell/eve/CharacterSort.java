@@ -32,21 +32,14 @@ public class CharacterSort {
 	}
 	
 	public static class TrainingTimeRemaining implements Comparator<EveCharacter>
-	{
-		private SparseArray<Long> queueTimes;
-		
-		public TrainingTimeRemaining(SparseArray<Long> queueTimes)
-		{
-			this.queueTimes = queueTimes;
-		}
-		
+	{	
 		@Override
 		public int compare(EveCharacter lhs, EveCharacter rhs)
 		{
-			Long lhsTimeRemaining = queueTimes.get(lhs.charID);
-			Long rhsTimeRemaining = queueTimes.get(rhs.charID);
+			Long lhsTimeRemaining = lhs.getQueueTimeRemaining();
+			Long rhsTimeRemaining = rhs.getQueueTimeRemaining();
 			
-			return lhsTimeRemaining.compareTo(rhsTimeRemaining);
+			return rhsTimeRemaining.compareTo(lhsTimeRemaining);
 		}
 	}
 }

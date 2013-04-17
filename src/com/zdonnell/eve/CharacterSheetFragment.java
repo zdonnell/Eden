@@ -305,7 +305,8 @@ public class CharacterSheetFragment extends Fragment {
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> updatedData) 
 				{
-					currentSkillView.setText(updatedData.valueAt(0).typeName);
+					if (updatedData == null || updatedData.valueAt(0) == null) currentSkillView.setText("Skill ID: " + skillQueue.get(0).skillID);
+					else currentSkillView.setText(updatedData.valueAt(0).typeName);
 				}
 			}, skillQueue.get(0).skillID);
 		}

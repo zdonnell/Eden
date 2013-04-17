@@ -1,5 +1,7 @@
 package com.zdonnell.eve.api.priceservice;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -45,34 +47,52 @@ public class PriceDatabase {
 		 		
  		Cursor c;
  		
- 		String whereClause = TABLE_ID + " IN (?";
 		String[] typeIDStrings = new String[typeIDs.length];
 		
-		for (int i = 0; i < typeIDs.length; i++)	
+		ArrayList<String[]> typeChunks = new ArrayList<String[]>();	
+		
+		for (int i = 0; i < typeIDs.length; i++) typeIDStrings[i] = String.valueOf(typeIDs[i]);
+		
+		int position = 0;
+		int size = 999;
+		while (position <= typeIDStrings.length)
 		{
-			if (i != typeIDs.length - 1) whereClause += ",?";
-			typeIDStrings[i] = String.valueOf(typeIDs[i]);
+			int lengthOfRemaining = typeIDStrings.length - position; 
+			if (lengthOfRemaining > size) lengthOfRemaining = size;
+			
+			String[] segment = new String[lengthOfRemaining];
+			System.arraycopy(typeIDStrings, position, segment, 0, lengthOfRemaining);
+			
+			typeChunks.add(segment);
+			
+			position += size;
 		}
 		
-		c = db.query(TABLE_NAME, null, whereClause + ")", typeIDStrings, null, null, null);
- 		
- 		while (c.moveToNext())
- 		{
- 			int typeID = c.getInt(0);
-			float price = c.getFloat(1);
-			long timeSet = c.getLong(2);
+		for (String[] typeIDStringsSegment : typeChunks)
+		{
+	 		String whereClause = TABLE_ID + " IN (?";
+			for (int i = 0; i < typeIDStringsSegment.length; i++) if (i != typeIDStringsSegment.length - 1) whereClause += ",?";
 			
-			/* 
-			 * If the entry for the typeID is older than required by validCacheAge, don't enter it into the sparse array.
-			 * A non entry will force the PriceService to query the price server for it
-			 */
-			if (System.currentTimeMillis() - validCacheAge < timeSet)
-			{
-				returnSparseArray.put(typeID, price);
-			}
- 		}
- 		
- 		c.close();
+			c = db.query(TABLE_NAME, null, whereClause + ")", typeIDStringsSegment, null, null, null);
+			
+	 		while (c.moveToNext())
+	 		{
+	 			int typeID = c.getInt(0);
+				float price = c.getFloat(1);
+				long timeSet = c.getLong(2);
+				
+				/* 
+				 * If the entry for the typeID is older than required by validCacheAge, don't enter it into the sparse array.
+				 * A non entry will force the PriceService to query the price server for it
+				 */
+				if (System.currentTimeMillis() - validCacheAge < timeSet)
+				{
+					returnSparseArray.put(typeID, price);
+				}
+	 		}
+	 		
+	 		c.close();
+		}
 		
 		return returnSparseArray;
 	}

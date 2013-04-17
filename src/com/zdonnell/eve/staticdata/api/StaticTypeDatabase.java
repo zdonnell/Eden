@@ -1,11 +1,12 @@
 package com.zdonnell.eve.staticdata.api;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import android.util.SparseArray;
 
 public class StaticTypeDatabase 
@@ -49,32 +50,52 @@ public class StaticTypeDatabase
 		
 		Cursor c;
 		
-		String whereClause = TABLE_ROW_ID + " IN (?";
 		String[] typeIDStrings = new String[typeIDs.length];
 		
-		for (int i = 0; i < typeIDs.length; i++)	
-		{
-			if (i != typeIDs.length - 1) whereClause += ",?";
-			typeIDStrings[i] = String.valueOf(typeIDs[i]);
-		}
-				
-		c = db.query(TABLE_NAME, null, whereClause + ")", typeIDStrings, null, null, null);
-
-		/* TODO add check to see if the local data is "up to date" */
-		while (c.moveToNext())
-		{
-			TypeInfo typeInfo = new TypeInfo();
-			typeInfo.typeID = c.getInt(c.getColumnIndex(TABLE_ROW_ID));
-			typeInfo.groupID = c.getInt(c.getColumnIndex(TABLE_ROW_GROUPID));
-			typeInfo.marketGroupID = c.getInt(c.getColumnIndex(TABLE_ROW_MARKETGROUPID));
-			typeInfo.typeName = c.getString(c.getColumnIndex(TABLE_ROW_TYPENAME));
-			typeInfo.description = c.getString(c.getColumnIndex(TABLE_ROW_DESCRIPTION));
-			typeInfo.m3 = c.getFloat(c.getColumnIndex(TABLE_ROW_M3));
-
-			typeInfoSet.put(typeInfo.typeID, typeInfo);
-		}
+		TypeInfo typeInfo = new TypeInfo();
 		
-		c.close();
+		ArrayList<String[]> typeChunks = new ArrayList<String[]>();	
+		
+		for (int i = 0; i < typeIDs.length; i++) typeIDStrings[i] = String.valueOf(typeIDs[i]);
+		
+		int position = 0;
+		int size = 999;
+		while (position <= typeIDStrings.length)
+		{
+			int lengthOfRemaining = typeIDStrings.length - position; 
+			if (lengthOfRemaining > size) lengthOfRemaining = size;
+			
+			String[] segment = new String[lengthOfRemaining];
+			System.arraycopy(typeIDStrings, position, segment, 0, lengthOfRemaining);
+			
+			typeChunks.add(segment);
+			
+			position += size;
+		}
+			
+		for (String[] typeIDStringsSegment : typeChunks)
+		{
+			String whereClause = TABLE_ROW_ID + " IN (?";
+			
+			for (int i = 0; i < typeIDStringsSegment.length; i++) if (i != typeIDStringsSegment.length - 1) whereClause += ",?";
+			
+			c = db.query(TABLE_NAME, null, whereClause + ")", typeIDStringsSegment, null, null, null);
+
+			/* TODO add check to see if the local data is "up to date" */
+			while (c.moveToNext())
+			{
+				typeInfo.typeID = c.getInt(c.getColumnIndex(TABLE_ROW_ID));
+				typeInfo.groupID = c.getInt(c.getColumnIndex(TABLE_ROW_GROUPID));
+				typeInfo.marketGroupID = c.getInt(c.getColumnIndex(TABLE_ROW_MARKETGROUPID));
+				typeInfo.typeName = c.getString(c.getColumnIndex(TABLE_ROW_TYPENAME));
+				typeInfo.description = c.getString(c.getColumnIndex(TABLE_ROW_DESCRIPTION));
+				typeInfo.m3 = c.getFloat(c.getColumnIndex(TABLE_ROW_M3));
+
+				typeInfoSet.put(typeInfo.typeID, typeInfo);
+			}
+			
+			c.close();
+		}
 		
 		return typeInfoSet;
 	}

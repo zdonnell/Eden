@@ -104,7 +104,7 @@ public class CharactersActivity extends BaseActivity {
 		           {
 		               public void onClick(DialogInterface dialog, int which) 
 		               {
-		            	   
+		            	   currentCharactersFragment.updateSort(which);
 		               }
 		           }
     	   );

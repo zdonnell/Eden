@@ -122,7 +122,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		for (int x = 0; x < currentStationList.length; x++) stationIDs[x] = ((AssetsEntity.Station) currentStationList[x]).getLocationID();
 		
 		countAssets();
-		if (parentFragment.getPrices().size() > 0) calculateStationValues(currentStationList);
+		if (parentFragment.getPrices() != null && parentFragment.getPrices().size() > 0) calculateStationValues(currentStationList);
 		
 		initialLoadComplete = true;
 	}

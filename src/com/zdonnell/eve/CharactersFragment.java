@@ -2,11 +2,13 @@ package com.zdonnell.eve;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -16,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +48,8 @@ public class CharactersFragment extends Fragment {
 	private static final int CURRENT_ID_DISPLAYED = 1;
 	
 	HashMap<View, Integer> viewCharacterMap = new HashMap<View, Integer>();
+	
+	private SparseArray<Long> queueTimesRemaining = new SparseArray<Long>();
 		
 	/**
 	 * Global value to store the number of columns the GridView is displaying
@@ -83,6 +88,14 @@ public class CharactersFragment extends Fragment {
 	
 	private GridView charGrid;
 	
+	private int sortType;
+	
+	private SharedPreferences prefs;
+	
+	private boolean reSortOnQueueUpdates = false;
+	
+	private SparseBooleanArray characterQueueUpdated = new SparseBooleanArray();
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	{		
@@ -93,14 +106,19 @@ public class CharactersFragment extends Fragment {
 		imageService = ImageService.getInstance(context);
 		charDB = new CharacterDB(context);
 		
-		/* test function to load characters from API keys */
-		if (true) loadStationInfo();
+		prefs = context.getSharedPreferences("eden", Context.MODE_PRIVATE);
+		sortType = prefs.getInt("sort type", CharacterSort.ALPHA);
+		
+		if (sortType == CharacterSort.QUEUETIME || sortType == CharacterSort.QUEUETIME_REVERSE) reSortOnQueueUpdates = true;
+		
+		loadStationInfo();
 		
 		/* Setup the GridView properties and link with the CursorAdapater */
 		View mainView = (View) inflater.inflate(R.layout.characters_fragment, container, false);
 		charGrid = (GridView) mainView.findViewById(R.id.charGrid);		
 		
 		characters = charDB.getEnabledCharactersAsArray();
+		updateSort(sortType);
 		
 		arrayAdapter = new CharacterArrayAdapter(context, R.layout.character_tile, characters);
 		charGrid.setAdapter(arrayAdapter);
@@ -114,8 +132,33 @@ public class CharactersFragment extends Fragment {
 	public void refreshChars()
 	{
 		viewCharacterMap.clear();
+		characters = charDB.getEnabledCharactersAsArray();
+		updateSort(sortType);
+	}
+	
+	public void updateSort(int sortType)
+	{
+		this.sortType = sortType;
+		prefs.edit().putInt("sort type", sortType).commit();
 		
-		arrayAdapter = new CharacterArrayAdapter(context, R.layout.character_tile, charDB.getEnabledCharactersAsArray());
+		switch (sortType)
+		{
+		case CharacterSort.ALPHA:
+			Arrays.sort(characters, new CharacterSort.Alpha());
+			break;
+		case CharacterSort.ALPHA_REVERSE:
+			Arrays.sort(characters, Collections.reverseOrder(new CharacterSort.Alpha()));
+			break;
+		case CharacterSort.QUEUETIME:
+			Arrays.sort(characters, new CharacterSort.TrainingTimeRemaining());
+			break;
+		case CharacterSort.QUEUETIME_REVERSE:
+			Arrays.sort(characters, Collections.reverseOrder(new CharacterSort.TrainingTimeRemaining()));
+			break;
+		}
+		
+		viewCharacterMap.clear();
+		arrayAdapter = new CharacterArrayAdapter(context, R.layout.character_tile, characters);
 		charGrid.setAdapter(arrayAdapter);
 	}
 
@@ -264,6 +307,15 @@ public class CharactersFragment extends Fragment {
 				public void onUpdate(ArrayList<QueuedSkill> updatedData) 
 				{	
 					long timeUntilQueueEmpty = updatedData.isEmpty() ? 0 : Tools.timeUntilUTCTime(updatedData.get(updatedData.size() - 1).endTime);
+					queueTimesRemaining.put(characterID, timeUntilQueueEmpty);
+					charDB.setCharQueueTime(characterID, timeUntilQueueEmpty);
+					
+					characterQueueUpdated.put(characterID, true);
+					if (characterQueueUpdated.size() == characters.length)
+					{
+						characterQueueUpdated.clear();
+						if (reSortOnQueueUpdates) updateSort(sortType);
+					}
 					
 					TimeRemainingCountdown timer = new TimeRemainingCountdown(timeUntilQueueEmpty, 1000, timeRemainingTextView);					
 					if (cachedTrainingTime.get(characterID) != null) 
@@ -277,7 +329,6 @@ public class CharactersFragment extends Fragment {
 				}
 			});
 		}
-		
 	}
 	
 	/**
