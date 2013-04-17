@@ -17,13 +17,20 @@ public class TimeRemainingCountdown extends CountDownTimer
 	
 	public void updateTextView(TextView view)
 	{
-		if (finished) view.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
+		if (view != null) 
+		{
+			if (finished) 
+			{
+				view.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
+			}
+			else view.setText("");
+		}
 		this.view = view;
 	}
 
 	@Override
 	public void onFinish() {
-		view.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
+		if (view != null) view.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
 		finished = true;
 	}
 
@@ -32,8 +39,8 @@ public class TimeRemainingCountdown extends CountDownTimer
 	{
 		if (millisUntilFinished < 24 * 60 * 60 * 1000 && millisUntilFinished > 0) 
 		{
-			view.setText(Html.fromHtml("<FONT COLOR='#FFBB33'>" + Tools.millisToEveFormatString(millisUntilFinished) + "</FONT>"));
+			if (view != null) view.setText(Html.fromHtml("<FONT COLOR='#FFBB33'>" + Tools.millisToEveFormatString(millisUntilFinished) + "</FONT>"));
 		}
-		else view.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + Tools.millisToEveFormatString(millisUntilFinished) + "</FONT>"));
+		else if (view != null) view.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + Tools.millisToEveFormatString(millisUntilFinished) + "</FONT>"));
 	}
 }

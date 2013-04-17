@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.CursorAdapter;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
@@ -296,6 +297,7 @@ public class CharactersFragment extends Fragment {
 		{
 			final int characterID = character.id();
 			final TextView timeRemainingTextView = (TextView) mainView.findViewById(R.id.char_tile_training);			
+			timeRemainingTextView.setText("");
 			
 			/* if the character already has an established timer, tell it to update the new TextView */
 			if (cachedTrainingTime.get(characterID) != null) cachedTrainingTime.get(characterID).updateTextView(timeRemainingTextView);
@@ -310,22 +312,37 @@ public class CharactersFragment extends Fragment {
 					queueTimesRemaining.put(characterID, timeUntilQueueEmpty);
 					charDB.setCharQueueTime(characterID, timeUntilQueueEmpty);
 					
-					characterQueueUpdated.put(characterID, true);
+					
+					if (timeUntilQueueEmpty > 24 * 60 * 60 * 1000) 
+					{
+						timeRemainingTextView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + Tools.millisToEveFormatString(timeUntilQueueEmpty) + "</FONT>"));
+					}
+					else if (timeUntilQueueEmpty > 0)
+					{
+						timeRemainingTextView.setText(Html.fromHtml("<FONT COLOR='#FFBB33'>" + Tools.millisToEveFormatString(timeUntilQueueEmpty) + "</FONT>"));
+					}
+					else timeRemainingTextView.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
+					
+					/* characterQueueUpdated.put(characterID, true);
 					if (characterQueueUpdated.size() == characters.length)
 					{
 						characterQueueUpdated.clear();
 						if (reSortOnQueueUpdates) updateSort(sortType);
 					}
 					
-					TimeRemainingCountdown timer = new TimeRemainingCountdown(timeUntilQueueEmpty, 1000, timeRemainingTextView);					
-					if (cachedTrainingTime.get(characterID) != null) 
+					if (timeRemainingTextView.getTag() != null)
 					{
-						cachedTrainingTime.get(characterID).cancel();
-						cachedTrainingTime.remove(characterID);
+						cachedTrainingTime.get((Integer) timeRemainingTextView.getTag()).updateTextView(null);
 					}
+					timeRemainingTextView.setTag(characterID);
 					
-					cachedTrainingTime.put(characterID, timer);
-					timer.start();
+					if (cachedTrainingTime.get(characterID) == null)
+					{
+						TimeRemainingCountdown timer = new TimeRemainingCountdown(timeUntilQueueEmpty, 1000, timeRemainingTextView);					
+						cachedTrainingTime.put(characterID, timer);
+						timer.start();
+					}
+					else cachedTrainingTime.get(characterID).updateTextView(timeRemainingTextView); */
 				}
 			});
 		}

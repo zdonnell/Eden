@@ -1,12 +1,14 @@
 package com.zdonnell.eve.staticdata.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.util.SparseArray;
 
 public class StaticTypeDatabase 
@@ -51,9 +53,7 @@ public class StaticTypeDatabase
 		Cursor c;
 		
 		String[] typeIDStrings = new String[typeIDs.length];
-		
-		TypeInfo typeInfo = new TypeInfo();
-		
+				
 		ArrayList<String[]> typeChunks = new ArrayList<String[]>();	
 		
 		for (int i = 0; i < typeIDs.length; i++) typeIDStrings[i] = String.valueOf(typeIDs[i]);
@@ -64,10 +64,12 @@ public class StaticTypeDatabase
 		{
 			int lengthOfRemaining = typeIDStrings.length - position; 
 			if (lengthOfRemaining > size) lengthOfRemaining = size;
+						
+			Log.d("TYPE DATABASE", "lenRemaining: " + lengthOfRemaining + ", typeIDStringslenth:" + typeIDStrings.length);
 			
 			String[] segment = new String[lengthOfRemaining];
-			System.arraycopy(typeIDStrings, position, segment, 0, lengthOfRemaining);
-			
+			segment = Arrays.copyOfRange(typeIDStrings, position, position + lengthOfRemaining);
+								
 			typeChunks.add(segment);
 			
 			position += size;
@@ -84,6 +86,8 @@ public class StaticTypeDatabase
 			/* TODO add check to see if the local data is "up to date" */
 			while (c.moveToNext())
 			{
+				TypeInfo typeInfo = new TypeInfo();
+
 				typeInfo.typeID = c.getInt(c.getColumnIndex(TABLE_ROW_ID));
 				typeInfo.groupID = c.getInt(c.getColumnIndex(TABLE_ROW_GROUPID));
 				typeInfo.marketGroupID = c.getInt(c.getColumnIndex(TABLE_ROW_MARKETGROUPID));

@@ -289,7 +289,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			int typeID = entity.attributes().typeID;
 			
 			/* The item is on the market, and has a price */
-			if (parentFragment.getTypeInfo().get(typeID).marketGroupID != -1)
+			if (parentFragment.getTypeInfo() != null && parentFragment.getTypeInfo().get(typeID).marketGroupID != -1)
 			{				
 				int currentTypeCount = typeIDsCount.get(typeID);
 				typeIDsCount.put(typeID, currentTypeCount + entity.attributes().quantity);
