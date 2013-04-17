@@ -1,8 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     
     <item android:id="@+id/skill_list"
-          android:title="Sort By"
-          android:icon="@drawable/sort"
+          android:title="Show"
           android:showAsAction="ifRoom|withText"
            />
 </menu>

@@ -1,10 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     
-    <item android:id="@+id/layout_style"
+    <!-- <item android:id="@+id/layout_style"
           android:title="Layout"
           android:showAsAction="ifRoom|withText"
           android:icon="@drawable/layout"
-           />
+           /> -->
     
     <item android:id="@+id/sort_by"
           android:title="Sort By"

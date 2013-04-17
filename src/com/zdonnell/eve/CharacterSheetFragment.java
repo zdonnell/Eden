@@ -32,6 +32,7 @@ import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.api.character.Skill;
 import com.zdonnell.eve.eve.Eve;
+import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.Tools;
 import com.zdonnell.eve.staticdata.api.StaticData;
 import com.zdonnell.eve.staticdata.api.TypeInfo;
@@ -354,6 +355,8 @@ public class CharacterSheetFragment extends Fragment {
 					 mCallbacks.onItemSelected(position);
 				}
 			});
+			
+			preparedView.setOnTouchListener(new BasicOnTouchListener());
 			
 			return preparedView;
 		}

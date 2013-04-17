@@ -28,6 +28,7 @@ import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.AssetsEntity.Station;
 import com.zdonnell.eve.api.priceservice.PriceService;
+import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.StandardOnTouchListener;
 import com.zdonnell.eve.staticdata.api.StaticData;
 import com.zdonnell.eve.staticdata.api.StationInfo;
@@ -284,6 +285,8 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 					parentFragment.updateChild(subAssets, 1, false, false);
 				}
 			});
+			
+			itemView.setOnTouchListener(new BasicOnTouchListener());
 						
 			return itemView;
 		}

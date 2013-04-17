@@ -35,6 +35,7 @@ import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.AssetsEntity.Item;
 import com.zdonnell.eve.api.priceservice.PriceService;
+import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.staticdata.api.StaticData;
 import com.zdonnell.eve.staticdata.api.StationInfo;
 import com.zdonnell.eve.staticdata.api.TypeInfo;
@@ -351,6 +352,11 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 					}
 				}
 			});
+			
+			if (assetItem.containsAssets()) 
+			{
+				itemView.setOnTouchListener(new BasicOnTouchListener());
+			}
 			
 			final Intent intent = new Intent(context, TypeInfoActivity.class);
 			intent.putExtra("typeID", assetItem.attributes().typeID);
