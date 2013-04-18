@@ -13,11 +13,12 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.Window;
 
 import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
 
-public class BaseActivity extends SlidingFragmentActivity {
+public abstract class BaseActivity extends SlidingFragmentActivity {
 
 	private int mTitleRes;
 	protected ListFragment mFrag;
@@ -29,6 +30,9 @@ public class BaseActivity extends SlidingFragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);  
+
 		
 		setTitle(mTitleRes);
 
@@ -56,10 +60,13 @@ public class BaseActivity extends SlidingFragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			Log.d("TOGGLE, TOGGLE", "TOGGLE, TOGGLE");
 			toggle();
 			return true;
+		case R.id.refresh_loading:
+	        item.setActionView(R.layout.progress);
+			break;
 		}
+		
 		return super.onOptionsItemSelected(item);
 	}
 	
@@ -88,4 +95,15 @@ public class BaseActivity extends SlidingFragmentActivity {
 		}
 	}
 	
+	protected abstract void refresh();
+	
+	public void dataLoading()
+	{
+		
+	}
+	
+	public void loadingFinished(boolean dataError)
+	{
+		
+	}
 }

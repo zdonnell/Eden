@@ -318,7 +318,9 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     }
     
     public boolean onOptionsItemSelected (MenuItem item) {
-    	    	
+    	 
+    	super.onOptionsItemSelected(item);
+    	
 	    switch (item.getItemId())
 	    {
 	    case R.id.skill_list:
@@ -333,9 +335,6 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 	    case R.id.layout_style:
 	        new LayoutDialog().show(getSupportFragmentManager(), "Layout Type Dialog");
 	        break;
-	    case android.R.id.home:
-			toggle();
-			return true;
 	    }
 	    return true;
     }
@@ -463,4 +462,10 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
             }
 		}
     }
+
+	@Override
+	protected void refresh() {
+		// TODO Auto-generated method stub
+		
+	}
 }

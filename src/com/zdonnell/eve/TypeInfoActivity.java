@@ -41,5 +41,11 @@ public class TypeInfoActivity extends BaseActivity {
 		
 		setSlidingActionBarEnabled(true);
 	}
+
+	@Override
+	protected void refresh() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

@@ -1,5 +1,5 @@
 # cache for current jar dependecy. DO NOT EDIT.
 # format is <lastModified> <length> <SHA-1> <path>
 # Encoding is UTF-8
-1365109542000 385685 48c94ae70fa65718b382098237806a5909bb096e C:\workspace\SlidingMenuActivity\libs\android-support-v4.jar
-1365574855276 385685 48c94ae70fa65718b382098237806a5909bb096e C:\workspace\Eden\libs\android-support-v4.jar
+1365615340000 385685 48c94ae70fa65718b382098237806a5909bb096e /Users/zachd/Documents/Eden Clone/Eden/libs/android-support-v4.jar
+1365109542000 385685 48c94ae70fa65718b382098237806a5909bb096e /Users/zachd/Downloads/SlidingMenu-master/library/libs/android-support-v4.jar

@@ -130,6 +130,8 @@ public class CharacterSheetActivity extends BaseActivity
     
     public boolean onOptionsItemSelected (MenuItem item) {
     	
+    	super.onOptionsItemSelected(item);
+    	
 	    switch (item.getItemId())
 	    {
 	    case R.id.notification_toggle:
@@ -143,9 +145,6 @@ public class CharacterSheetActivity extends BaseActivity
 	    	}, true, assembledChar.id());
 	    	
 	    	break;
-	    case android.R.id.home:
-			toggle();
-			return true;
 	    }
 		return true;
     }
@@ -182,4 +181,10 @@ public class CharacterSheetActivity extends BaseActivity
     	// mId allows you to update the notification later on.
     	mNotificationManager.notify(0, mBuilder.build());
     }
+
+	@Override
+	protected void refresh() {
+		// TODO Auto-generated method stub
+		
+	}
 }

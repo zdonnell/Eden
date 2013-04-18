@@ -69,6 +69,8 @@ public class CharactersActivity extends BaseActivity {
 	
 	public boolean onOptionsItemSelected (MenuItem item) {
     	
+		super.onOptionsItemSelected(item);
+		
 	    switch (item.getItemId())
 	    {
 	    case R.id.add_characters:
@@ -80,9 +82,6 @@ public class CharactersActivity extends BaseActivity {
 	    case R.id.sort_by:
 	    	new SortByDialog().show(getSupportFragmentManager(), "Sort By Dialog");
 	    	break;
-	    case android.R.id.home:
-			toggle();
-			return true;
 	    }
 	    return true;
     }
@@ -112,4 +111,10 @@ public class CharactersActivity extends BaseActivity {
     	    return builder.create();
     	}
     }
+
+	@Override
+	protected void refresh() {
+		// TODO Auto-generated method stub
+		
+	}
 }

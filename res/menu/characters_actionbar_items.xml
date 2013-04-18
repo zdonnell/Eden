@@ -14,7 +14,7 @@
     
     <item android:id="@+id/add_characters"
           android:title="Add"
-          android:showAsAction="ifRoom|withText"
+          android:showAsAction="always|withText"
                     android:icon="@drawable/add"
           
            />
@@ -22,6 +22,12 @@
           android:title="Edit"
           android:showAsAction="ifRoom|withText"
                     android:icon="@drawable/edit"
+          
+           />
+    <item android:id="@+id/refresh_loading"
+          android:title="Refresh"
+          android:showAsAction="always|withText"
+                    android:icon="@drawable/refresh"
           
            />
 </menu>
