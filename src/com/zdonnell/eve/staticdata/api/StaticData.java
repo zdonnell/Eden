@@ -118,6 +118,7 @@ public class StaticData {
 		protected void onPostExecute(SparseArray<TypeInfo> storedTypes)
 		{			
 			int amountOfTypesNotFound = requestedTypeIDs.length - storedTypes.size();
+			Log.d("amountOfTypesNotFound", "amountOfTypesNotFound: " + String.valueOf(amountOfTypesNotFound));
 						
 			/* compare with passed typeIDs array */
 			if (amountOfTypesNotFound > 0)
@@ -133,6 +134,8 @@ public class StaticData {
 						++unobtainedTypeIDsIndex;
 					}
 				}
+				
+				for (int id : unobtainedTypeIDs) Log.d("unobtainedTypeIDs", "unobtainedTypeIDs: " + id);
 								
 				/* Request the rest from the server, and let that AsyncTask finish the overall request */
 				new StaticTypeServerRequest(storedTypes, onCompleteRequestCallback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, unobtainedTypeIDs);
@@ -199,13 +202,16 @@ public class StaticData {
 		@Override
 		protected void onPostExecute(SparseArray<StationInfo> queriedTypes)
 		{
-			/* merge the results from the server, into the original SparseArray filled by the database */
-			for (int i = 0; i < queriedTypes.size(); ++i)
+			if (queriedTypes != null)
 			{
-				stationSetFromDatabase.put(queriedTypes.keyAt(i), queriedTypes.valueAt(i));
+				/* merge the results from the server, into the original SparseArray filled by the database */
+				for (int i = 0; i < queriedTypes.size(); ++i)
+				{
+					stationSetFromDatabase.put(queriedTypes.keyAt(i), queriedTypes.valueAt(i));
+				}
+				
+				onCompleteRequestCallback.onUpdate(stationSetFromDatabase);
 			}
-			
-			onCompleteRequestCallback.onUpdate(stationSetFromDatabase);
 		}
 		
 		/**
@@ -289,6 +295,7 @@ public class StaticData {
 				}
 			} 
 			catch (JSONException e) { }
+			catch (NullPointerException e) { return null; }
 			
 			if (typeInfoSet.size() > 0) typeDatabase.insertTypeInfo(typeInfoSet);
 			
@@ -298,13 +305,21 @@ public class StaticData {
 		@Override
 		protected void onPostExecute(SparseArray<TypeInfo> queriedTypes)
 		{
-			/* merge the results from the server, into the original SparseArray filled by the database */
-			for (int i = 0; i < queriedTypes.size(); ++i)
+			if (queriedTypes != null)
 			{
-				typeInfoSetFromDatabase.put(queriedTypes.keyAt(i), queriedTypes.valueAt(i));
+				/* merge the results from the server, into the original SparseArray filled by the database */
+				for (int i = 0; i < queriedTypes.size(); ++i)
+				{
+					typeInfoSetFromDatabase.put(queriedTypes.keyAt(i), queriedTypes.valueAt(i));
+				}
+				
+				onCompleteRequestCallback.onUpdate(typeInfoSetFromDatabase);
+			}
+			else if (typeInfoSetFromDatabase.size() > 0)
+			{
+				onCompleteRequestCallback.onUpdate(typeInfoSetFromDatabase);
 			}
 			
-			onCompleteRequestCallback.onUpdate(typeInfoSetFromDatabase);
 		}
 		
 		/**

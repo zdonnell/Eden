@@ -106,7 +106,7 @@ public class ResourceManager {
 		catch (ClientProtocolException e) { e.printStackTrace(); }
 		catch (IOException e) { e.printStackTrace(); }
 				
-		rawResponse = rawResponse.replaceAll(">\\s*<", "><");
+		if (rawResponse != null) rawResponse = rawResponse.replaceAll(">\\s*<", "><");
 
 		return rawResponse;
 	}
@@ -197,15 +197,18 @@ public class ResourceManager {
 			}
 			
 			String queriedResource = queryResource(rw.resourceURL, assembledPOSTData);
-			
-			NameValuePair[] newUniqueIDs = rw.uniqueIDs;
-			if (rw.uniqueIDs.length == 0 && rw.credentials != null) 
+			if (queriedResource != null)
 			{
-				newUniqueIDs = new BasicNameValuePair[] { new BasicNameValuePair("keyID", String.valueOf(rw.credentials.keyID))};
-			}
-			cacheDatabase.updateCache(rw.resourceURL, newUniqueIDs, queriedResource);
+				NameValuePair[] newUniqueIDs = rw.uniqueIDs;
+				if (rw.uniqueIDs.length == 0 && rw.credentials != null) 
+				{
+					newUniqueIDs = new BasicNameValuePair[] { new BasicNameValuePair("keyID", String.valueOf(rw.credentials.keyID))};
+				}
+				cacheDatabase.updateCache(rw.resourceURL, newUniqueIDs, queriedResource);
 					
-			return buildDocument(queriedResource);
+				return buildDocument(queriedResource);
+			}
+			else return null;
 		}
 		
 		@SuppressWarnings("unchecked")

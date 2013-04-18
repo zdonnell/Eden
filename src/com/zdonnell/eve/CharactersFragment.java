@@ -9,15 +9,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.CursorAdapter;
 import android.text.Html;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -27,14 +26,12 @@ import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.ImageService;
-import com.zdonnell.eve.api.account.Account;
 import com.zdonnell.eve.api.account.EveCharacter;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.QueuedSkill;
@@ -121,11 +118,12 @@ public class CharactersFragment extends Fragment {
 		characters = charDB.getEnabledCharactersAsArray();
 		updateSort(sortType);
 		
+		columns = calcColumns((Activity) context);
+		charGrid.setNumColumns(columns);
+
 		arrayAdapter = new CharacterArrayAdapter(context, R.layout.character_tile, characters);
 		charGrid.setAdapter(arrayAdapter);
 						
-		columns = calcColumns((Activity) context);
-		charGrid.setNumColumns(columns);
 		
 		return mainView;
 	}
@@ -184,8 +182,14 @@ public class CharactersFragment extends Fragment {
 		public View getView(final int position, View convertView, ViewGroup parent)
 		{
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			
-			if (convertView == null) convertView = inflater.inflate(layoutResId, parent, false);
+			if (convertView == null) 
+			{
+				convertView = inflater.inflate(layoutResId, null, false);
+				
+				/* handle view configuration */
+				int calculatedWidth = calculatedColumnWidths[position % columns];
+				convertView.setLayoutParams(new AbsListView.LayoutParams(calculatedWidth, calculatedColumnWidths[0]));
+			}
 			
 			/* get the character at the current position */
 			EveCharacter currentCharacter = getItem(position);
@@ -196,9 +200,7 @@ public class CharactersFragment extends Fragment {
 			final APICredentials credentials = new APICredentials(currentCharacter.keyID, currentCharacter.vCode);
 			APICharacter character = new APICharacter(credentials, characterID, context);
 			
-			/* handle view configuration */
-			int calculatedWidth = calculatedColumnWidths[position % columns];
-			convertView.setLayoutParams(new AbsListView.LayoutParams(calculatedWidth, calculatedColumnWidths[0]));
+			
 			
 			TextView charName = (TextView) convertView.findViewById(R.id.char_tile_name);
 			charName.setText(currentCharacter.name);
@@ -219,6 +221,8 @@ public class CharactersFragment extends Fragment {
 				@Override
 				public void onClick(View v) 
 				{
+					Log.d("CLICK CLICK", "CLICK LICK");
+					
 					Intent intent = new Intent(context, CharacterSheetActivity.class);
 					String[] CharacterInfo = new String[4];
 					CharacterInfo[0] = String.valueOf(characterID);
@@ -384,6 +388,7 @@ public class CharactersFragment extends Fragment {
 			totalColumnWidthUsed += roundedColumnWidth;
 			
 			if (x == columns - 1 && totalColumnWidthUsed != widthForColumns) calculatedColumnWidths[x] += 1;
+			Log.d("COLUMN WIDTH: ", "COLUMN WIDTH #" + (x + 1) + ": " +  calculatedColumnWidths[x]);
 		}
 		
 		return columns;
