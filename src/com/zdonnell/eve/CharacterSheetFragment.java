@@ -227,7 +227,6 @@ public class CharacterSheetFragment extends Fragment {
      */
 	public void setCharacter(APICharacter character, int corpID) 
 	{
-    	long startTime = System.currentTimeMillis();		
 		final ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
 		//final ImageView corpLogo = (ImageView) rootView.findViewById(R.id.char_sheet_corpLogo);
 		
@@ -240,7 +239,7 @@ public class CharacterSheetFragment extends Fragment {
 			}
 		}, false, character.id());
 		    	
-    	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
+    	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>((BaseActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(ArrayList<QueuedSkill> pSkillQueue) 
@@ -250,7 +249,7 @@ public class CharacterSheetFragment extends Fragment {
 			}
     	});
     	
-    	character.getCharacterSheet(new APICallback<CharacterSheet>() 
+    	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(CharacterSheet rCharacterSheet) 
@@ -260,7 +259,7 @@ public class CharacterSheetFragment extends Fragment {
 			}
     	});
     	
-    	character.getCharacterInfo(new APICallback<CharacterInfo>() 
+    	character.getCharacterInfo(new APICallback<CharacterInfo>((BaseActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(CharacterInfo pCharacterInfo) 
@@ -279,9 +278,7 @@ public class CharacterSheetFragment extends Fragment {
 				obtainedCharacterInfoSheet();
 			}
     	});*/
-    	
-		Log.d("SET CHARACTER", "TIME: " + (System.currentTimeMillis() - startTime)); 
-	}
+   	}
 	
 	private void configureSkillQueueTimer()
 	{
@@ -301,7 +298,7 @@ public class CharacterSheetFragment extends Fragment {
 			
 			final int skillLevel = skillQueue.get(0).skillLevel;
 			
-			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>()
+			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((BaseActivity) getActivity())
 			{
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> updatedData) 

@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
@@ -22,6 +23,8 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 
 	private int mTitleRes;
 	protected ListFragment mFrag;
+	
+	private int itemsLoadingCount = 0;
 	
 	public BaseActivity(int titleRes) {
 		mTitleRes = titleRes;
@@ -63,7 +66,7 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 			toggle();
 			return true;
 		case R.id.refresh_loading:
-	        item.setActionView(R.layout.progress);
+			refresh();
 			break;
 		}
 		
@@ -97,13 +100,39 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 	
 	protected abstract void refresh();
 	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu)
+	{
+		MenuItem refreshIcon = menu.findItem(R.id.refresh_loading);
+		if (itemsLoadingCount > 0) refreshIcon.setActionView(R.layout.progress);
+		else refreshIcon.collapseActionView();
+		
+		return true;
+	}
+	
 	public void dataLoading()
 	{
 		
+		itemsLoadingCount++;
+		
+		Log.d("BASE ACTIVITY", "itemsLoadingCount: " + itemsLoadingCount);
+		
+		if (itemsLoadingCount == 1)
+		{
+			invalidateOptionsMenu();
+		}
 	}
 	
 	public void loadingFinished(boolean dataError)
 	{
 		
+		itemsLoadingCount--;
+		
+		Log.d("BASE ACTIVITY", "itemsLoadingCount: " + itemsLoadingCount);
+		
+		if (itemsLoadingCount == 0)
+		{
+			invalidateOptionsMenu();
+		}
 	}
 }

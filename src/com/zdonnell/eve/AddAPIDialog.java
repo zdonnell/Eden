@@ -128,7 +128,7 @@ public class AddAPIDialog extends DialogFragment
 		final Account newCreds = new Account(passedKeyID, passedVCode, getActivity());
 		loadedCredentials = new APICredentials(passedKeyID, passedVCode);
 		
-		newCreds.characters(new APICallback<ArrayList<EveCharacter>>() 
+		newCreds.characters(new APICallback<ArrayList<EveCharacter>>(null) 
 		{
 			@Override
 			public void onUpdate(ArrayList<EveCharacter> updatedData) 

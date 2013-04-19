@@ -105,7 +105,7 @@ public class ParentAssetsFragment extends Fragment {
     	}
     	else
     	{	
-	    	character.getAssetsList(new APICallback<AssetsEntity[]>()
+	    	character.getAssetsList(new APICallback<AssetsEntity[]>((BaseActivity) getActivity())
 	    	{
 				@Override
 				public void onUpdate(AssetsEntity[] locationArray) 
@@ -201,7 +201,7 @@ public class ParentAssetsFragment extends Fragment {
     	if (currentStationInfo != null) childFragment.obtainedStationInfo();
     	else
     	{
-    		new StaticData(context).getStationInfo(new APICallback<SparseArray<StationInfo>>() 
+    		new StaticData(context).getStationInfo(new APICallback<SparseArray<StationInfo>>((BaseActivity) getActivity()) 
 	    	{
 				@Override
 				public void onUpdate(SparseArray<StationInfo> stationInformation) 
@@ -237,7 +237,7 @@ public class ParentAssetsFragment extends Fragment {
     	}
     	else
     	{
-	    	new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>()
+	    	new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((BaseActivity) getActivity())
 	    	{
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> rTypeInfo) 
@@ -270,7 +270,7 @@ public class ParentAssetsFragment extends Fragment {
 		if (prices != null) childFragment.obtainedPrices();
 		else
 		{
-			PriceService.getInstance(context).getValues(marketTypeIDs, new APICallback<SparseArray<Float>>() 
+			PriceService.getInstance(context).getValues(marketTypeIDs, new APICallback<SparseArray<Float>>((BaseActivity) getActivity()) 
 			{
 				@Override
 				public void onUpdate(SparseArray<Float> updatedData) 

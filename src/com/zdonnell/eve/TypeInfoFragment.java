@@ -46,7 +46,7 @@ public class TypeInfoFragment extends Fragment {
 			}
 		}, false, typeID);
 		
-		new StaticData(inflater.getContext()).getTypeInfo(new APICallback<SparseArray<TypeInfo>>() 
+		new StaticData(inflater.getContext()).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((BaseActivity) getActivity()) 
 		{
 			@Override
 			public void onUpdate(SparseArray<TypeInfo> typeInfo) 
@@ -60,7 +60,7 @@ public class TypeInfoFragment extends Fragment {
 			}
 		}, typeID);
 		
-		PriceService.getInstance(inflater.getContext()).getValues(new Integer[] { typeID }, new APICallback<SparseArray<Float>>() 
+		PriceService.getInstance(inflater.getContext()).getValues(new Integer[] { typeID }, new APICallback<SparseArray<Float>>((BaseActivity) getActivity()) 
 		{
 			@Override
 			public void onUpdate(SparseArray<Float> prices) 

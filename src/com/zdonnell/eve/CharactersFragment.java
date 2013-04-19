@@ -307,7 +307,7 @@ public class CharactersFragment extends Fragment {
 			if (cachedTrainingTime.get(characterID) != null) cachedTrainingTime.get(characterID).updateTextView(timeRemainingTextView);
 			
 			/* else get the time remaining in the queue and setup a CountdownTimer for it */
-			else character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
+			else character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>((BaseActivity) getActivity()) 
 			{
 				@Override
 				public void onUpdate(ArrayList<QueuedSkill> updatedData) 
@@ -397,7 +397,7 @@ public class CharactersFragment extends Fragment {
 	
 	private void loadStationInfo()
 	{		
-		new Eve(context).getConquerableStations(new APICallback<SparseArray<StationInfo>>() {
+		new Eve(context).getConquerableStations(new APICallback<SparseArray<StationInfo>>((BaseActivity) getActivity()) {
 
 			@Override
 			public void onUpdate(SparseArray<StationInfo> stationInfo)

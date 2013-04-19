@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.api.APICallback;
@@ -112,7 +113,7 @@ public class WalletFragment extends Fragment {
     	}
     	
     	// Needed to set wallet balance
-    	character.getCharacterSheet(new APICallback<CharacterSheet>()
+    	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity())
     	{
 			@Override
 			public void onUpdate(CharacterSheet updatedData) 
@@ -122,7 +123,7 @@ public class WalletFragment extends Fragment {
     	});
     	
     	// Needed for the base description of wallet journal entry types
-    	new Eve(context).getRefTypes(new APICallback<SparseArray<String>>()
+    	new Eve(context).getRefTypes(new APICallback<SparseArray<String>>((BaseActivity) getActivity())
     	{
 			@Override
 			public void onUpdate(SparseArray<String> updatedData) 
@@ -183,7 +184,7 @@ public class WalletFragment extends Fragment {
     		return;
     	}
     	
-    	character.getWalletJournal(new APICallback<WalletEntry.Journal[]>() 
+    	character.getWalletJournal(new APICallback<WalletEntry.Journal[]>((BaseActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(WalletEntry.Journal[] updatedData) 
@@ -206,7 +207,7 @@ public class WalletFragment extends Fragment {
     		return;
     	}
     	
-    	character.getWalletTransactions(new APICallback<WalletEntry.Transaction[]>() 
+    	character.getWalletTransactions(new APICallback<WalletEntry.Transaction[]>((BaseActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(Transaction[] updatedData) 

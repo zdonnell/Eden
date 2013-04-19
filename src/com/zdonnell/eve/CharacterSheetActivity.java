@@ -123,7 +123,7 @@ public class CharacterSheetActivity extends BaseActivity
     	super.onCreateOptionsMenu(menu);
     	
     	MenuInflater menuInflater = getMenuInflater(); 
-    	//menuInflater.inflate(R.menu.character_sheet, menu);
+    	menuInflater.inflate(R.menu.character_sheet, menu);
     	
     	return true;
     }
@@ -134,7 +134,7 @@ public class CharacterSheetActivity extends BaseActivity
     	
 	    switch (item.getItemId())
 	    {
-	    case R.id.notification_toggle:
+	    /*case R.id.notification_toggle:
 	    	ImageService.getInstance(this).getPortraits(new IconObtainedCallback()
 	    	{
 				@Override
@@ -144,7 +144,7 @@ public class CharacterSheetActivity extends BaseActivity
 				}
 	    	}, true, assembledChar.id());
 	    	
-	    	break;
+	    	break;*/
 	    }
 		return true;
     }
@@ -184,7 +184,8 @@ public class CharacterSheetActivity extends BaseActivity
 
 	@Override
 	protected void refresh() {
-		// TODO Auto-generated method stub
+        ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar, Integer.valueOf(characterInfo[3]));
+
 		
 	}
 }

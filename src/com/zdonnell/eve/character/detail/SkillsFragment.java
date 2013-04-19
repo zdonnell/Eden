@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
@@ -93,7 +94,7 @@ public class SkillsFragment extends Fragment {
     	}
     	else
     	{
-	    	character.getCharacterSheet(new APICallback<CharacterSheet>() 
+	    	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity()) 
 	    	{
 				@Override
 				public void onUpdate(CharacterSheet updatedData) 
@@ -112,7 +113,7 @@ public class SkillsFragment extends Fragment {
     	}
     	else
     	{
-    		new Eve(context).getSkillTree(new APICallback<SkillGroup[]>() 
+    		new Eve(context).getSkillTree(new APICallback<SkillGroup[]>((BaseActivity) getActivity()) 
 	    	{
 				@Override
 				public void onUpdate(SkillGroup[] newSkillTree) 

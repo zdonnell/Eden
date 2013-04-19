@@ -21,11 +21,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.StaticTypeDatabase;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.helpers.TimeRemainingCountdown;
@@ -55,9 +55,7 @@ public class SkillQueueFragment extends Fragment {
     private ArrayList<QueuedSkill> skillQueue;
     
     private Context context;
-    
-    private StaticTypeDatabase typeDatabase;
-    
+        
     public SkillQueueFragment() {} 
     
     @Override
@@ -70,7 +68,6 @@ public class SkillQueueFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
     {
     	context = inflater.getContext();
-    	typeDatabase = new StaticTypeDatabase(context);
     	
     	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
     	
@@ -84,7 +81,7 @@ public class SkillQueueFragment extends Fragment {
     	
     	skillQueueList = (ListView) inflatedView.findViewById(R.id.char_detail_queue_list);
     	
-    	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>() 
+    	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>((BaseActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(ArrayList<QueuedSkill> skillQueue) 
@@ -183,7 +180,7 @@ public class SkillQueueFragment extends Fragment {
 			TextView skillLevel = (TextView) preparedView.findViewById(R.id.skill_level_text);			
 			skillLevel.setText("Level " + currentSkillQueue.get(position).skillLevel);
 						
-			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>()
+			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((BaseActivity) getActivity())
 			{
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> updatedData) 

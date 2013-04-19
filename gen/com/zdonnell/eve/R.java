@@ -307,13 +307,12 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int menu_frame=0x7f060068;
         public static final int menu_search=0x7f060081;
         public static final int menu_settings=0x7f06007f;
-        public static final int notification_toggle=0x7f060086;
         public static final int pager=0x7f060006;
         public static final int pager_title=0x7f060045;
         public static final int pager_title_strip=0x7f060007;
         public static final int progress=0x7f060069;
         public static final int queue_time_remaining_text=0x7f060028;
-        public static final int refresh_loading=0x7f060089;
+        public static final int refresh_loading=0x7f060086;
         public static final int right=0x7f060001;
         public static final int row_icon=0x7f060076;
         public static final int row_title=0x7f060077;

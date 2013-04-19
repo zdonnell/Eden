@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.api.APICallback;
@@ -70,7 +71,7 @@ public class AttributesFragment extends Fragment {
     	attributesListView = (ListView) inflatedView.findViewById(R.id.char_detail_attributes_list);
     	
     	/* Grab the character sheet to get the attribute info */
-    	character.getCharacterSheet(new APICallback<CharacterSheet>()
+    	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity())
     	{
 			@Override
 			public void onUpdate(CharacterSheet characterSheet) 

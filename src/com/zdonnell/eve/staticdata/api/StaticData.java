@@ -83,6 +83,7 @@ public class StaticData {
 				}
 								
 				/* Request the rest from the server, and let that AsyncTask finish the overall request */
+				onCompleteRequestCallback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
 				new StationServerRequest(storedTypes, onCompleteRequestCallback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, unobtainedTypeIDs);
 			}
 			/* All requested information was obtained from the database, tell the requesting
@@ -90,6 +91,7 @@ public class StaticData {
 			 */
 			else if (amountOfTypesNotFound == 0)
 			{
+				onCompleteRequestCallback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_VALID);
 				onCompleteRequestCallback.onUpdate(storedTypes);
 			}
 			
@@ -138,6 +140,7 @@ public class StaticData {
 				for (int id : unobtainedTypeIDs) Log.d("unobtainedTypeIDs", "unobtainedTypeIDs: " + id);
 								
 				/* Request the rest from the server, and let that AsyncTask finish the overall request */
+				onCompleteRequestCallback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
 				new StaticTypeServerRequest(storedTypes, onCompleteRequestCallback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, unobtainedTypeIDs);
 			}
 			/* All requested information was obtained from the database, tell the requesting
@@ -145,6 +148,7 @@ public class StaticData {
 			 */
 			else if (amountOfTypesNotFound == 0)
 			{
+				onCompleteRequestCallback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_VALID);
 				onCompleteRequestCallback.onUpdate(storedTypes);
 			}
 			
@@ -211,7 +215,10 @@ public class StaticData {
 				}
 				
 				onCompleteRequestCallback.onUpdate(stationSetFromDatabase);
+				onCompleteRequestCallback.updateState(APICallback.STATE_SERVER_RESPONSE_ACQUIRED);
 			}
+			else onCompleteRequestCallback.updateState(APICallback.STATE_SERVER_RESPONSE_FAILED);
+
 		}
 		
 		/**
@@ -314,11 +321,14 @@ public class StaticData {
 				}
 				
 				onCompleteRequestCallback.onUpdate(typeInfoSetFromDatabase);
+				onCompleteRequestCallback.updateState(APICallback.STATE_SERVER_RESPONSE_ACQUIRED);
 			}
 			else if (typeInfoSetFromDatabase.size() > 0)
 			{
 				onCompleteRequestCallback.onUpdate(typeInfoSetFromDatabase);
+				onCompleteRequestCallback.updateState(APICallback.STATE_SERVER_RESPONSE_ACQUIRED);
 			}
+			else onCompleteRequestCallback.updateState(APICallback.STATE_SERVER_RESPONSE_FAILED);
 			
 		}
 		

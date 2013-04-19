@@ -114,7 +114,7 @@ public class CharactersActivity extends BaseActivity {
 
 	@Override
 	protected void refresh() {
-		// TODO Auto-generated method stub
+		this.currentCharactersFragment.refreshChars();
 		
 	}
 }
