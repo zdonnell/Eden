@@ -1,0 +1,36 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+   
+    <item android:id="@+id/menu_search"
+          android:title="Search"
+          android:icon="@drawable/ic_menu_search"
+          android:showAsAction="always|collapseActionView"
+          android:actionViewClass="android.widget.SearchView" 
+          />
+    <item android:id="@+id/refresh_loading"
+         android:title="Refresh"
+         android:showAsAction="always|withText"
+         android:icon="@drawable/refresh"
+          
+   	/>
+    
+    <item android:id="@+id/sort_by"
+          android:title="Sort By"
+          android:showAsAction="ifRoom|withText"
+          android:icon="@drawable/sort"
+           />
+    <item android:id="@+id/layout_style"
+          android:title="Layout"
+          android:showAsAction="ifRoom|withText"
+          android:icon="@drawable/layout"
+           />
+    
+    <item android:id="@+id/wallet_type"
+          android:title="Show"
+          android:showAsAction="ifRoom|withText"
+           />
+     <item android:id="@+id/skill_list"
+          android:title="Show"
+          android:showAsAction="ifRoom|withText"
+           />
+</menu>

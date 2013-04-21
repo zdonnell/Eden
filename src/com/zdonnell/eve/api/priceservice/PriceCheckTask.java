@@ -101,6 +101,7 @@ public class PriceCheckTask extends AsyncTask<Integer, Integer, SparseArray<Floa
 			}
 		}
 		
+		callback.updateState(APICallback.STATE_SERVER_RESPONSE_ACQUIRED);
 		callback.onUpdate(values);
 	}
 	

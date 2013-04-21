@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.widget.LinearLayout;
 
 import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
@@ -104,7 +105,10 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 	public boolean onPrepareOptionsMenu(Menu menu)
 	{
 		MenuItem refreshIcon = menu.findItem(R.id.refresh_loading);
-		if (itemsLoadingCount > 0) refreshIcon.setActionView(R.layout.progress);
+		if (itemsLoadingCount > 0) 
+		{
+			refreshIcon.setActionView(R.layout.progress);
+		}
 		else refreshIcon.collapseActionView();
 		
 		return true;
@@ -112,11 +116,7 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 	
 	public void dataLoading()
 	{
-		
-		itemsLoadingCount++;
-		
-		Log.d("BASE ACTIVITY", "itemsLoadingCount: " + itemsLoadingCount);
-		
+		itemsLoadingCount++;		
 		if (itemsLoadingCount == 1)
 		{
 			invalidateOptionsMenu();
@@ -125,11 +125,7 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 	
 	public void loadingFinished(boolean dataError)
 	{
-		
-		itemsLoadingCount--;
-		
-		Log.d("BASE ACTIVITY", "itemsLoadingCount: " + itemsLoadingCount);
-		
+		itemsLoadingCount--;		
 		if (itemsLoadingCount == 0)
 		{
 			invalidateOptionsMenu();

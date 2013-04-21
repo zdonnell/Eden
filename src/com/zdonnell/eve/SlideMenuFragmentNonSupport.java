@@ -115,7 +115,7 @@ public class SlideMenuFragmentNonSupport extends ListFragment {
     	Server server = new Server(getActivity());
         final TextView serverStatus = (TextView) root.findViewById(R.id.server_status);
 		
-        server.status(new APICallback<String[]>((BaseActivity) getActivity()) 
+        server.status(new APICallback<String[]>(null) 
         {
 			@Override
 			public void onUpdate(String[] updatedData) {

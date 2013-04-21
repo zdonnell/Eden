@@ -236,7 +236,7 @@ public class CharacterDB {
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			
-			if (oldVersion == 1 && newVersion == 2)
+			if (oldVersion == 1)
 			{
 				db.execSQL("alter table " + CHAR_TABLE + " add column " + CHAR_TABLE_QUEUETIME + " integer;");
 			}

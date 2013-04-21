@@ -41,7 +41,7 @@ import com.zdonnell.eve.api.character.WalletEntry;
 import com.zdonnell.eve.api.character.WalletEntry.Transaction;
 import com.zdonnell.eve.eve.Eve;
 
-public class WalletFragment extends Fragment {
+public class WalletFragment extends DetailFragment {
     
 	public static final int TRANSACTION = 0;
 	public static final int JOURNAL = 1;
@@ -73,6 +73,8 @@ public class WalletFragment extends Fragment {
     
 	private NumberFormat formatter = NumberFormat.getInstance();
 	
+	TextView walletBalance;
+	
 	SharedPreferences prefs;
 
 
@@ -98,40 +100,11 @@ public class WalletFragment extends Fragment {
     	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
     	characterName = getArguments().getString("characterName");
     	
-    	final TextView walletBalance = (TextView) inflatedView.findViewById(R.id.char_detail_wallet_balance);
+    	walletBalance = (TextView) inflatedView.findViewById(R.id.char_detail_wallet_balance);
     	
     	walletListView = (ListView) inflatedView.findViewById(R.id.char_detail_wallet_listview);
     	
-    	switch (prefs.getInt("wallet_type", JOURNAL))
-    	{
-    	case JOURNAL: 
-    		loadInJournal();
-    		break;
-    	case TRANSACTION: 
-    		loadInTransactions();
-    		break;
-    	}
-    	
-    	// Needed to set wallet balance
-    	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity())
-    	{
-			@Override
-			public void onUpdate(CharacterSheet updatedData) 
-			{
-				walletBalance.setText(formatter.format(updatedData.getWalletBalance()) + " ISK");
-			}
-    	});
-    	
-    	// Needed for the base description of wallet journal entry types
-    	new Eve(context).getRefTypes(new APICallback<SparseArray<String>>((BaseActivity) getActivity())
-    	{
-			@Override
-			public void onUpdate(SparseArray<String> updatedData) 
-			{
-				refTypes = updatedData;
-				dataUpdated();
-			}
-    	});
+    	refresh();
     	    	
     	return inflatedView;
     }  
@@ -331,4 +304,39 @@ public class WalletFragment extends Fragment {
 			//}
 		}
     }
+
+	@Override
+	public void refresh() 
+	{
+		switch (prefs.getInt("wallet_type", JOURNAL))
+    	{
+    	case JOURNAL: 
+    		loadInJournal();
+    		break;
+    	case TRANSACTION: 
+    		loadInTransactions();
+    		break;
+    	}
+    	
+    	// Needed to set wallet balance
+    	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity())
+    	{
+			@Override
+			public void onUpdate(CharacterSheet updatedData) 
+			{
+				walletBalance.setText(formatter.format(updatedData.getWalletBalance()) + " ISK");
+			}
+    	});
+    	
+    	// Needed for the base description of wallet journal entry types
+    	new Eve(context).getRefTypes(new APICallback<SparseArray<String>>((BaseActivity) getActivity())
+    	{
+			@Override
+			public void onUpdate(SparseArray<String> updatedData) 
+			{
+				refTypes = updatedData;
+				dataUpdated();
+			}
+    	});
+	}
 }

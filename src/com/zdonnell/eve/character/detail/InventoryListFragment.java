@@ -104,6 +104,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	public void assetsUpdated(AssetsEntity[] assets) 
 	{			
 		this.currentItemList = assets;
+		Log.d("IListFragment", "GOT HERE");
 		if (isFragmentCreated) updateView();
 	}
 	
@@ -216,7 +217,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	private void updateView()
 	{
 		if (adapter == null)
-		{	
+		{				
 			itemCount.setText(currentItemList.length + " items");
 					
 			adapter = new InventoryArrayAdapter(context, stationRowResourceID, currentItemList);
@@ -226,6 +227,11 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			
 			initialLoadComplete = true;
 		}
+		else
+		{
+			adapter = new InventoryArrayAdapter(context, stationRowResourceID, currentItemList);
+			absListView.setAdapter(adapter);
+		}
 		
 		if (savedScrollPoint != null)
 		{
@@ -233,15 +239,6 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			else if (absListView instanceof GridView) ((GridView) absListView).setSelection(savedScrollPoint[0]);
 			savedScrollPoint = null;
 		}
-		
-		parentFragment.getActivity().runOnUiThread(new Runnable() 
-		{
-	        @Override
-	        public void run() 
-	        {
-	        	adapter.notifyDataSetChanged();
-	        }
-	    });
 	}
 	
 	private void calculatePrices(final AssetsEntity[] items)
@@ -253,7 +250,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			int typeID = items[i].attributes().typeID;
 			
 			/* The item is on the market, and has a price */
-			if (parentFragment.getTypeInfo().get(typeID).marketGroupID != -1)
+			if (parentFragment.getTypeInfo().get(typeID) != null && parentFragment.getTypeInfo().get(typeID).marketGroupID != -1)
 			{				
 				int currentTypeCount = typeIDsCount.get(typeID);
 				typeIDsCount.put(typeID, currentTypeCount + items[i].attributes().quantity);
@@ -290,7 +287,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			int typeID = entity.attributes().typeID;
 			
 			/* The item is on the market, and has a price */
-			if (parentFragment.getTypeInfo() != null && parentFragment.getTypeInfo().get(typeID).marketGroupID != -1)
+			if (parentFragment.getTypeInfo() != null && parentFragment.getTypeInfo().get(typeID) != null && parentFragment.getTypeInfo().get(typeID).marketGroupID != -1)
 			{				
 				int currentTypeCount = typeIDsCount.get(typeID);
 				typeIDsCount.put(typeID, currentTypeCount + entity.attributes().quantity);
@@ -411,7 +408,11 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			
 			typeNameMappings.put(text, typeID);
 			
-			if (typeNamesLoaded) text.setText(parentFragment.getTypeInfo().get(typeID).typeName);
+			if (typeNamesLoaded) 
+			{
+				if (parentFragment.getTypeInfo().get(typeID) != null) text.setText(parentFragment.getTypeInfo().get(typeID).typeName);
+				else text.setText("Type ID: " + typeID);
+			}
 			else text.setText(String.valueOf(typeID));
 			
 			if (displayType != LIST_COMPACT) configureIcon(icon, typeID);

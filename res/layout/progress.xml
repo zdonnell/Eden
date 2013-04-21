@@ -5,12 +5,14 @@ android:orientation="vertical"
 android:layout_width="match_parent"
 android:paddingLeft="14dp"
 android:paddingRight="14dp"
-android:layout_height="match_parent" android:weightSum="1">
+android:layout_gravity="center_vertical"
+android:layout_height="wrap_content">
 
 <ProgressBar android:id="@+id/progress" 
 style="?android:attr/progressBarStyleLarge"  
 android:layout_width="28dp" 
-android:layout_height="28dp">
+android:layout_height="28dp"
+android:layout_gravity="center_vertical">
 </ProgressBar>
 
 </LinearLayout>

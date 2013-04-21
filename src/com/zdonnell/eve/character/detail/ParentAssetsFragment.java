@@ -32,7 +32,7 @@ import com.zdonnell.eve.staticdata.api.StationInfo;
 import com.zdonnell.eve.staticdata.api.TypeInfo;
 
 @SuppressLint("ValidFragment")
-public class ParentAssetsFragment extends Fragment {
+public class ParentAssetsFragment extends DetailFragment {
     
     public final static int STATION = 0;
     public final static int ASSET = 1;
@@ -51,7 +51,7 @@ public class ParentAssetsFragment extends Fragment {
     
     public Stack<int[]> scrollPointStack = new Stack<int[]>();
 
-    private AssetsEntity[] currentAssets;
+    public AssetsEntity[] currentAssets;
     
     private AssetsEntity parentAsset;
     
@@ -66,9 +66,7 @@ public class ParentAssetsFragment extends Fragment {
     private CharacterDetailActivity parentActivity;
     
     private String searchFilter;
-    
-    private boolean stationInfoFullyLoaded = false, typeInfoFullyLoaded = false;
-    
+        
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
@@ -431,6 +429,8 @@ public class ParentAssetsFragment extends Fragment {
 		{
 			AssetsEntity.Item item = (AssetsEntity.Item) entity;
 			
+			if (typeInfo == null || typeInfo.get(item.attributes().typeID) == null) return false;
+			
 			if (typeInfo.get(item.attributes().typeID).typeName.toLowerCase().contains(searchFilter.toLowerCase())) return true;
 			if (item.containsAssets())
 			{
@@ -442,5 +442,42 @@ public class ParentAssetsFragment extends Fragment {
 		}
 		
 		return false;
+	}
+
+	@Override
+	public void refresh() 
+	{				
+		typeIDCounts = null;
+	    uniqueTypeIDs = null;
+	    parentStack = new Stack<AssetsEntity[]>();
+	    parentItemStack = new Stack<AssetsEntity>();
+	    scrollPointStack = new Stack<int[]>();
+	    parentAsset = null;
+	    currentStationInfo = new SparseArray<StationInfo>();
+	    typeInfo = new SparseArray<TypeInfo>();
+	    prices = new SparseArray<Float>();
+	    searchFilter = null;
+				
+		character.getAssetsList(new APICallback<AssetsEntity[]>((BaseActivity) getActivity())
+    	{
+			@Override
+			public void onUpdate(AssetsEntity[] locationArray) 
+			{
+				FragmentTransaction loadStationList = ParentAssetsFragment.this.getChildFragmentManager().beginTransaction();
+
+		    	childFragment = new StationListFragment();
+		    	childFragment.setParent(ParentAssetsFragment.this);
+		    	
+		    	loadStationList.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) childFragment);
+		    	loadStationList.commit();
+				
+				Arrays.sort(locationArray, new InventorySort.Count());
+				currentAssets = locationArray;
+				parentActivity.dataCache.cacheAssets(currentAssets);
+				
+				prepareAssets(locationArray);
+				childFragment.assetsUpdated(currentAssets);
+			}
+    	});
 	}
 }

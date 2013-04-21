@@ -77,7 +77,13 @@ public class InventorySort
 				int lhID = leftItem.attributes().typeID;
 				int rhID = rightItem.attributes().typeID;
 				
-				return typeNames.get(lhID).compareTo(typeNames.get(rhID));
+				String lhString = typeNames.get(lhID);
+				if (lhString == null) lhString = String.valueOf(lhID);
+				
+				String rhString = typeNames.get(rhID);
+				if (rhString == null) rhString = String.valueOf(rhID);
+				
+				return lhString.compareTo(rhString);
 			}
 			else
 			{

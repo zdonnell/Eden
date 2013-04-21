@@ -299,7 +299,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int fullscreen=0x7f060003;
         public static final int header_text=0x7f060044;
         public static final int imageView1=0x7f060043;
-        public static final int layout_style=0x7f060083;
+        public static final int layout_style=0x7f060084;
         public static final int left=0x7f060000;
         public static final int logo=0x7f060079;
         public static final int margin=0x7f060002;
@@ -312,7 +312,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int pager_title_strip=0x7f060007;
         public static final int progress=0x7f060069;
         public static final int queue_time_remaining_text=0x7f060028;
-        public static final int refresh_loading=0x7f060086;
+        public static final int refresh_loading=0x7f060082;
         public static final int right=0x7f060001;
         public static final int row_icon=0x7f060076;
         public static final int row_title=0x7f060077;
@@ -324,11 +324,11 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int sheetitem_list=0x7f060009;
         public static final int skill_level_indicator=0x7f06002a;
         public static final int skill_level_text=0x7f06002b;
-        public static final int skill_list=0x7f060084;
+        public static final int skill_list=0x7f060086;
         public static final int skill_queue_size_text=0x7f060027;
         public static final int skillqueue_detail_list_item_skillname=0x7f060029;
         public static final int slidingmenumain=0x7f060078;
-        public static final int sort_by=0x7f060082;
+        public static final int sort_by=0x7f060083;
         public static final int station_assets_list_item_count=0x7f060020;
         public static final int station_assets_list_item_icon=0x7f06001e;
         public static final int station_assets_list_item_name=0x7f06001f;
@@ -407,12 +407,14 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int activity_main_dual=0x7f0c0003;
         public static final int activity_main_strip=0x7f0c0004;
         public static final int activity_test=0x7f0c0005;
-        public static final int char_detail_assetsasset_actionbar_items=0x7f0c0006;
-        public static final int char_detail_assetsstation_actionbar_items=0x7f0c0007;
-        public static final int char_detail_skills_actionbar_items=0x7f0c0008;
-        public static final int char_detail_wallet_actionbar_items=0x7f0c0009;
-        public static final int character_sheet=0x7f0c000a;
-        public static final int characters_actionbar_items=0x7f0c000b;
+        public static final int char_detail=0x7f0c0006;
+        public static final int char_detail_assetsasset_actionbar_items=0x7f0c0007;
+        public static final int char_detail_assetsstation_actionbar_items=0x7f0c0008;
+        public static final int char_detail_skills_actionbar_items=0x7f0c0009;
+        public static final int char_detail_wallet_actionbar_items=0x7f0c000a;
+        public static final int character_sheet=0x7f0c000b;
+        public static final int characters_actionbar_items=0x7f0c000c;
+        public static final int type_info=0x7f0c000d;
     }
     public static final class string {
         /**  Account 

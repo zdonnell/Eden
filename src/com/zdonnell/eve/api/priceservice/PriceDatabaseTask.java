@@ -54,13 +54,15 @@ public class PriceDatabaseTask extends AsyncTask<Integer, Integer, SparseArray<F
 	protected void onPostExecute(SparseArray<Float> cachedPrices)
 	{								
 		/* If the returned SparseArray is of the same size as the Integer array then it contains all prices requested */
-		if (cachedPrices.size() == strippedTypeIDs.length) callback.onUpdate(cachedPrices);
+		if (cachedPrices.size() == strippedTypeIDs.length) 
+		{
+			callback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_VALID);
+			callback.onUpdate(cachedPrices);
+		}
 		else
 		{						
 			Integer[] nonCachedTypeIDs = new Integer[strippedTypeIDs.length - cachedPrices.size()];
-			
-			Log.d("Price Service", "Requesting prices for " + nonCachedTypeIDs.length + " types");
-			
+						
 			int index = 0;
 			for (int typeID : strippedTypeIDs)
 			{
@@ -74,6 +76,7 @@ public class PriceDatabaseTask extends AsyncTask<Integer, Integer, SparseArray<F
 				}
 			}
 			
+			callback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
 			new PriceCheckTask(callback, cachedPrices, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, nonCachedTypeIDs);
 		}	
 	}

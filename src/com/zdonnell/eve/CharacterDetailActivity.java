@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.character.detail.AttributesFragment;
+import com.zdonnell.eve.character.detail.DetailFragment;
 import com.zdonnell.eve.character.detail.InventoryListFragment;
 import com.zdonnell.eve.character.detail.InventorySort;
 import com.zdonnell.eve.character.detail.ParentAssetsFragment;
@@ -65,6 +66,8 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 	private String characterName;
 	
 	public CharacterDetailCache dataCache = new CharacterDetailCache();
+	
+	boolean hasLoaded = false;
 		
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
@@ -161,6 +164,12 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	
     	private WalletFragment walletFragment;
     	public WalletFragment walletFragment() { return walletFragment; }
+    	
+    	private SkillQueueFragment skillQueueFragment;
+    	public SkillQueueFragment skillQueueFragment() { return skillQueueFragment; }
+    	
+    	private AttributesFragment attributesFragment;
+    	public AttributesFragment attributesFragment() { return attributesFragment; }
     	    	
         public SectionsPagerAdapter(FragmentManager fm) { super(fm); }
 
@@ -181,10 +190,10 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         		fragment = skillsFragment = new SkillsFragment();
         		break;
         	case CharacterSheetFragment.SKILL_QUEUE:
-        		fragment = new SkillQueueFragment();
+        		fragment = skillQueueFragment = new SkillQueueFragment();
         		break;
         	case CharacterSheetFragment.ATTRIBUTES:
-        		fragment = new AttributesFragment();
+        		fragment = attributesFragment = new AttributesFragment();
         		break;
         	case CharacterSheetFragment.WALLET:
             	fragment = walletFragment = new WalletFragment();
@@ -198,7 +207,8 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         	}
         	     
         	fragment.setArguments(characterDetails);
-
+        	hasLoaded = true;
+        	
 			return fragment;
         }
 
@@ -251,69 +261,96 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     }
     
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu)
+    {
+    	super.onPrepareOptionsMenu(menu);
+    	
+    	MenuItem skillsDisplay = menu.findItem(R.id.skill_list);
+    	MenuItem walletType = menu.findItem(R.id.wallet_type);
+    	MenuItem assetsSortBy = menu.findItem(R.id.sort_by);
+    	MenuItem assetsLayoutStyle = menu.findItem(R.id.layout_style);
+    	MenuItem search = menu.findItem(R.id.menu_search);
+    	
+    	skillsDisplay.setVisible(false);
+    	walletType.setVisible(false);
+    	assetsSortBy.setVisible(false);
+    	assetsLayoutStyle.setVisible(false);
+    	search.setVisible(false);
+    	
+    	switch (mViewPager.getCurrentItem())
+	    {
+	    case CharacterSheetFragment.SKILLS:
+	    	skillsDisplay.setVisible(true);
+    		break;
+    	case CharacterSheetFragment.SKILL_QUEUE:
+    		break;
+    	case CharacterSheetFragment.ATTRIBUTES:
+    		break;
+    	case CharacterSheetFragment.WALLET:
+        	walletType.setVisible(true);
+    		break;
+    	case CharacterSheetFragment.ASSETS:
+    		assetsSortBy.setVisible(true);
+        	assetsLayoutStyle.setVisible(true);
+        	search.setVisible(true);
+    		break;
+	    }
+    	
+		return true;
+    }
+    
+    @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
     	super.onCreateOptionsMenu(menu);
     	
     	MenuInflater menuInflater = getMenuInflater();        	
         
-    	switch (mViewPager.getCurrentItem())
-        {
-        case CharacterSheetFragment.ASSETS:
-        	menuInflater.inflate(R.menu.char_detail_assetsasset_actionbar_items, menu);
-        		
-        	searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView(); 
-        	MenuItem searchViewMenuItem = menu.getItem(0);
-        	searchView.setOnQueryTextListener(new SearchQueryUpdatedListener());
-        	searchViewMenuItem.setOnActionExpandListener(new OnActionExpandListener(){
+    	menuInflater.inflate(R.menu.char_detail, menu);
+    		
+    	searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView(); 
+    	MenuItem searchViewMenuItem = menu.getItem(0);
+    	searchView.setOnQueryTextListener(new SearchQueryUpdatedListener());
+    	searchViewMenuItem.setOnActionExpandListener(new OnActionExpandListener(){
 
-				@Override
-				public boolean onMenuItemActionCollapse(MenuItem item) 
-				{
-					if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
-		            {
-		        		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
-		        		assetsFragment.updateSearchFilter(null);
-		            }
-					return true;
-				}
+			@Override
+			public boolean onMenuItemActionCollapse(MenuItem item) 
+			{
+				if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
+	            {
+	        		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
+	        		assetsFragment.updateSearchFilter(null);
+	            }
+				return true;
+			}
 
-				@Override
-				public boolean onMenuItemActionExpand(MenuItem item) 
-				{
-					searchOpenedAtLevel = mSectionsPagerAdapter.assetsFragment().parentStack.size();
-					return true;
-				}
-        		
-        	});
-        	            	
-        	searchView.setOnKeyListener(new OnKeyListener() 
-        	{
-				@Override
-				public boolean onKey(View view, int keyCode, KeyEvent arg2) 
-				{									
-					if (keyCode == KeyEvent.KEYCODE_BACK)
-			        {						
-						if (searchOpenedAtLevel < mSectionsPagerAdapter.assetsFragment().parentStack.size())
-			    		{
-			    			return false;
-			    		}
-			    		else return true;
-			        }
-					return true;
-				}
-        		
-        	});
+			@Override
+			public boolean onMenuItemActionExpand(MenuItem item) 
+			{
+				searchOpenedAtLevel = mSectionsPagerAdapter.assetsFragment().parentStack.size();
+				return true;
+			}
+    		
+    	});
+    	            	
+    	searchView.setOnKeyListener(new OnKeyListener() 
+    	{
+			@Override
+			public boolean onKey(View view, int keyCode, KeyEvent arg2) 
+			{									
+				if (keyCode == KeyEvent.KEYCODE_BACK)
+		        {						
+					if (searchOpenedAtLevel < mSectionsPagerAdapter.assetsFragment().parentStack.size())
+		    		{
+		    			return false;
+		    		}
+		    		else return true;
+		        }
+				return true;
+			}
+    		
+    	});
         	        	
-        	break;
-        case CharacterSheetFragment.SKILLS:
-        	menuInflater.inflate(R.menu.char_detail_skills_actionbar_items, menu);
-        	break;
-        case CharacterSheetFragment.WALLET:
-        	menuInflater.inflate(R.menu.char_detail_wallet_actionbar_items, menu);
-        	break;
-        }
-    	
     	return true;
     }
     
@@ -402,6 +439,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 		            	   if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
 			               {
 			               		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
+			               		Log.d("DIALOG FRAGMENT", "UPDATE SORT");
 			               		assetsFragment.updateSort(which);
 			               }
 		               }
@@ -458,14 +496,31 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 			if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
             {
         		ParentAssetsFragment assetsFragment = mSectionsPagerAdapter.assetsFragment();
-        		assetsFragment.updateSearchFilter(searchString);
+        		if (assetsFragment.currentAssets != null) assetsFragment.updateSearchFilter(searchString);
             }
 		}
     }
 
 	@Override
-	protected void refresh() {
-		// TODO Auto-generated method stub
-		
+	protected void refresh() 
+	{
+		switch (mViewPager.getCurrentItem())
+		{
+		case CharacterSheetFragment.ASSETS:
+			((DetailFragment) mSectionsPagerAdapter.assetsFragment()).refresh();
+			break;
+		case CharacterSheetFragment.ATTRIBUTES:
+			((DetailFragment) mSectionsPagerAdapter.attributesFragment()).refresh();
+			break;
+		case CharacterSheetFragment.SKILL_QUEUE:
+			((DetailFragment) mSectionsPagerAdapter.skillQueueFragment()).refresh();
+			break;
+		case CharacterSheetFragment.SKILLS:
+			((DetailFragment) mSectionsPagerAdapter.skillsFragment()).refresh();
+			break;
+		case CharacterSheetFragment.WALLET:
+			((DetailFragment) mSectionsPagerAdapter.walletFragment()).refresh();
+			break;
+		}
 	}
 }

@@ -34,7 +34,7 @@ import com.zdonnell.eve.api.character.Skill;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.eve.SkillInfo;
 
-public class SkillsFragment extends Fragment {
+public class SkillsFragment extends DetailFragment {
     
 	public static final int ALL_SKILLS = 0;
 	public static final int TRAINED_SKILLS = 1;
@@ -380,7 +380,7 @@ public class SkillsFragment extends Fragment {
 
 			groupName.setText(skillGroup.groupName());
 			
-			int totalSkillsCount = skillTree[groupPosition].containedSkills().length;
+			int totalSkillsCount = getSkillCount(groupPosition); 
 			int currentSkillsCount = 0;
 			for (SkillInfo info : skillGroup.containedSkills()) if (currentSkills.get(info.typeID()) != null) ++currentSkillsCount;
 			
@@ -393,6 +393,23 @@ public class SkillsFragment extends Fragment {
 			}
 			
 			groupSP.setText(formatter.format(groupSPCount) + " SP");
+		}
+		
+		private int getSkillCount(int modifiedPosition)
+		{
+			if (showAll) return skillTree[modifiedPosition].containedSkills().length;
+			else
+			{
+				for (int i = 0; i < skillTree.length; i++)
+				{
+					if (skillTreeTrainedSkills[modifiedPosition].groupID() == skillTree[i].groupID())
+					{
+						return skillTree[i].containedSkills().length;
+					}
+				}
+				
+				return 0;
+			}
 		}
 
 		@Override
@@ -437,4 +454,31 @@ public class SkillsFragment extends Fragment {
 			
 		}
     }
+
+	@Override
+	public void refresh() 
+	{   	
+		character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity()) 
+    	{
+			@Override
+			public void onUpdate(CharacterSheet updatedData) 
+			{
+				currentSkills = updatedData.getSkills();
+				parentActivity.dataCache.cacheCharacterSheet(updatedData);
+				updateSkillList();
+			}
+    	});
+		
+		new Eve(context).getSkillTree(new APICallback<SkillGroup[]>((BaseActivity) getActivity()) 
+    	{
+			@Override
+			public void onUpdate(SkillGroup[] newSkillTree) 
+			{
+				skillTree = newSkillTree;
+				parentActivity.dataCache.cacheSkillTree(newSkillTree);
+				updateSkillList();
+			}
+    	});
+
+	}
 }

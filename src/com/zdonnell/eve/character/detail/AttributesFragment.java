@@ -22,7 +22,7 @@ import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.CharacterSheet.AttributeEnhancer;
 
-public class AttributesFragment extends Fragment {
+public class AttributesFragment extends DetailFragment {
     
 	/**
 	 * List of drawable resources to use for the Attribute list icons
@@ -69,19 +69,7 @@ public class AttributesFragment extends Fragment {
     	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
     
     	attributesListView = (ListView) inflatedView.findViewById(R.id.char_detail_attributes_list);
-    	
-    	/* Grab the character sheet to get the attribute info */
-    	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity())
-    	{
-			@Override
-			public void onUpdate(CharacterSheet characterSheet) 
-			{
-				attributes = characterSheet.getAttributes();
-				implants = characterSheet.getAttributeEnhancers();
-				
-				attributesListView.setAdapter(new AttributesListAdapter(context, R.layout.char_detail_attributes_list_item, new Integer[5]));
-			}
-    	});
+    	refresh();
     	
     	return inflatedView;
     }    
@@ -148,5 +136,22 @@ public class AttributesFragment extends Fragment {
 			
 			return preparedView;
 		}
+	}
+
+	@Override
+	public void refresh() 
+	{
+		/* Grab the character sheet to get the attribute info */
+    	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity())
+    	{
+			@Override
+			public void onUpdate(CharacterSheet characterSheet) 
+			{
+				attributes = characterSheet.getAttributes();
+				implants = characterSheet.getAttributeEnhancers();
+				
+				attributesListView.setAdapter(new AttributesListAdapter(context, R.layout.char_detail_attributes_list_item, new Integer[5]));
+			}
+    	});
 	}
 }

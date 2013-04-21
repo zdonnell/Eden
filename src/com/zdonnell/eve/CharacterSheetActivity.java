@@ -62,11 +62,11 @@ public class CharacterSheetActivity extends BaseActivity
                 
         ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar, Integer.valueOf(characterInfo[3]));
                 
-        if (findViewById(R.id.sheetitem_detail_container) != null) 
+        /*if (findViewById(R.id.sheetitem_detail_container) != null) 
         {
             mTwoPane = true;
             ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setActivateOnItemClick(true);
-        }
+        }*/
         
     }
 

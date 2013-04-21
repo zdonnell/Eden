@@ -7,6 +7,8 @@ import com.zdonnell.eve.staticdata.api.StationInfo;
 
 import android.os.Bundle;
 import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuInflater;
 
 
 public class TypeInfoActivity extends BaseActivity {
@@ -41,11 +43,22 @@ public class TypeInfoActivity extends BaseActivity {
 		
 		setSlidingActionBarEnabled(true);
 	}
+	
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+    	super.onCreateOptionsMenu(menu);
+    	
+    	MenuInflater menuInflater = getMenuInflater(); 
+    	menuInflater.inflate(R.menu.type_info, menu);
+    	
+    	return true;
+    }
 
 	@Override
-	protected void refresh() {
-		// TODO Auto-generated method stub
-		
+	protected void refresh() 
+	{
+	
 	}
 	
 }

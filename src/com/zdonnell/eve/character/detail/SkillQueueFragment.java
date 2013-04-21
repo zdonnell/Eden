@@ -33,7 +33,7 @@ import com.zdonnell.eve.helpers.Tools;
 import com.zdonnell.eve.staticdata.api.StaticData;
 import com.zdonnell.eve.staticdata.api.TypeInfo;
 
-public class SkillQueueFragment extends Fragment {
+public class SkillQueueFragment extends DetailFragment {
     
     private static final int LIGHT = 0;
 	private static final int DARK = 1;
@@ -56,6 +56,10 @@ public class SkillQueueFragment extends Fragment {
     
     private Context context;
         
+    SkillQueueBar skillQueueBar;
+	TextView queueTimeRemaining;
+	TextView queueLength;
+    
     public SkillQueueFragment() {} 
     
     @Override
@@ -72,38 +76,16 @@ public class SkillQueueFragment extends Fragment {
     	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
     	
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_skillqueue, container, false);
-    	final SkillQueueBar skillQueueBar = new SkillQueueBar(inflater.getContext(), colors);
-    	final TextView queueTimeRemaining = (TextView) inflatedView.findViewById(R.id.queue_time_remaining_text);
-    	final TextView queueLength = (TextView) inflatedView.findViewById(R.id.skill_queue_size_text);
+    	skillQueueBar = new SkillQueueBar(inflater.getContext(), colors);
+    	queueTimeRemaining = (TextView) inflatedView.findViewById(R.id.queue_time_remaining_text);
+    	queueLength = (TextView) inflatedView.findViewById(R.id.skill_queue_size_text);
     	
     	inflatedView.addView(skillQueueBar, 0);
     	skillQueueBar.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Tools.dp2px(80, inflater.getContext())));
     	
     	skillQueueList = (ListView) inflatedView.findViewById(R.id.char_detail_queue_list);
     	
-    	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>((BaseActivity) getActivity()) 
-    	{
-			@Override
-			public void onUpdate(ArrayList<QueuedSkill> skillQueue) 
-			{
-				if (!skillQueue.isEmpty())
-				{
-					queueTimeRemaining.setVisibility(View.VISIBLE);
-					
-					skillQueueBar.setQueue(skillQueue);
-					long timeRemainingInQueue = Tools.timeUntilUTCTime(skillQueue.get(skillQueue.size() - 1).endTime);
-					new TimeRemainingCountdown(timeRemainingInQueue, 1000, queueTimeRemaining).start();
-					
-					queueLength.setText(skillQueue.size() + " Skill(s) in Queue");
-					
-					updateQueueList(skillQueue);
-				}
-				else
-				{
-					queueTimeRemaining.setVisibility(View.INVISIBLE);
-				}
-			}
-    	});
+    	refresh();
     	    	
     	return inflatedView;
     }
@@ -185,7 +167,8 @@ public class SkillQueueFragment extends Fragment {
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> updatedData) 
 				{
-					skillName.setText(updatedData.valueAt(0).typeName);
+					if (updatedData.valueAt(0) == null) skillName.setText("Skill ID: " + skillQueue[position].skillID);
+					else skillName.setText(updatedData.valueAt(0).typeName);
 				}
 			}, skillQueue[position].skillID);
 			
@@ -444,4 +427,32 @@ public class SkillQueueFragment extends Fragment {
             height = (int) (h * 1.1f);
         }
     }
+
+	@Override
+	public void refresh() 
+	{
+		character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>((BaseActivity) getActivity()) 
+    	{
+			@Override
+			public void onUpdate(ArrayList<QueuedSkill> skillQueue) 
+			{
+				if (!skillQueue.isEmpty())
+				{
+					queueTimeRemaining.setVisibility(View.VISIBLE);
+					
+					skillQueueBar.setQueue(skillQueue);
+					long timeRemainingInQueue = Tools.timeUntilUTCTime(skillQueue.get(skillQueue.size() - 1).endTime);
+					new TimeRemainingCountdown(timeRemainingInQueue, 1000, queueTimeRemaining).start();
+					
+					queueLength.setText(skillQueue.size() + " Skill(s) in Queue");
+					
+					updateQueueList(skillQueue);
+				}
+				else
+				{
+					queueTimeRemaining.setVisibility(View.INVISIBLE);
+				}
+			}
+    	});
+	}
 }
