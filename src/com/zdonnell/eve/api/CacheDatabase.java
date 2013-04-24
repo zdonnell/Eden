@@ -148,7 +148,17 @@ public class CacheDatabase {
 		
 		for (NameValuePair ID : uniqueIDs) actorIDString += ID.getValue();
 		
-		String cachedUntil = ResourceManager.buildDocument(rawResponse).getElementsByTagName("cachedUntil").item(0).getTextContent();
+		String cachedUntil = null;
+		
+		try 
+		{	
+			cachedUntil = ResourceManager.buildDocument(rawResponse).getElementsByTagName("cachedUntil").item(0).getTextContent();
+		}
+		catch (NullPointerException e) 
+		{ 
+			// Something was wrong with the cached response, if a cacheUntil time cannot be found we can't store it, just return
+			return;
+		}
 		
 		ContentValues values = new ContentValues();
 		values.put(TABLE_RESULT_URL, URL);
