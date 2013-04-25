@@ -21,30 +21,30 @@ public class SlideMenuFragmentNonSupport extends ListFragment {
 
 	private final static int CHARS = 0;
 	//private final static int CORPS = 1;
-	//private final static int ACCOUNTS = 2;
-	private final static int SETTINGS = 1;
+	private final static int ACCOUNTS = 1;
+	private final static int SETTINGS = 2;
 	
 	/**
 	 * Array of Strings for the menu item titles
 	 */
-	private static String[] mainMenuItems = new String[2];
+	private static String[] mainMenuItems = new String[3];
 	static
 	{
 		mainMenuItems[CHARS] = "Characters";
 		//mainMenuItems[CORPS] = "Corporations";
-		//mainMenuItems[ACCOUNTS] = "Accounts";
+		mainMenuItems[ACCOUNTS] = "Accounts";
 		mainMenuItems[SETTINGS] = "Settings";
 	}
 	
 	/**
 	 * Array of Resource IDs for the menu item icons
 	 */
-	private static int[] ItemImageResources = new int[2];
+	private static int[] ItemImageResources = new int[3];
 	static
 	{
 		ItemImageResources[CHARS] = R.drawable.characters_icon;
 		//ItemImageResources[CORPS] = R.drawable.corporations_icon;
-		//ItemImageResources[ACCOUNTS] = R.drawable.accounts_icon;
+		ItemImageResources[ACCOUNTS] = R.drawable.accounts_icon;
 		ItemImageResources[SETTINGS] = R.drawable.settings_icon;
 	}
 	
@@ -88,6 +88,9 @@ public class SlideMenuFragmentNonSupport extends ListFragment {
 					{
 					case CHARS:
 						intent = new Intent(getActivity(), CharactersActivity.class);
+						break;
+					case ACCOUNTS:
+						intent = new Intent(getActivity(), APIKeysActivity.class);
 						break;
 					case SETTINGS:
 						intent = new Intent(getActivity(), SettingsActivity.class);

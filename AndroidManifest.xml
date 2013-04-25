@@ -28,13 +28,8 @@
             android:label="@string/type_info" >
         </activity>
         <activity
-            android:name="com.zdonnell.eve.CharactersActivity"
-            android:label="@string/title_activity_main_strip" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:name="com.zdonnell.eve.APIKeysActivity"
+            android:label="@string/api_keys" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" >
                 </action>
@@ -52,6 +47,15 @@
                     android:host="api.eveonline.com"
                     android:scheme="eve" >
                 </data>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.zdonnell.eve.CharactersActivity"
+            android:label="@string/title_activity_main_strip" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity

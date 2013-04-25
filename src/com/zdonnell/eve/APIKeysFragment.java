@@ -2,33 +2,30 @@ package com.zdonnell.eve;
 
 import java.util.ArrayList;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.util.Log;
-import android.util.SparseArray;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
-
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.account.EveCharacter;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.SparseArray;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
-public class EditCharactersDialog extends DialogFragment 
+public class APIKeysFragment extends Fragment 
 {
+	private Context context;
+
 	ArrayList<APICredentials> apiCredsList;
 	
 	SparseArray<ArrayList<EveCharacter>> characters = new SparseArray<ArrayList<EveCharacter>>();
@@ -39,41 +36,21 @@ public class EditCharactersDialog extends DialogFragment
 	
 	ListView apiKeyList;
 	
-	public EditCharactersDialog()
-	{
-		
-	}
-	
 	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) 
-	{
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
+	{		
+		setRetainInstance(true);
+		context = inflater.getContext();
+
 		getData();
 		
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		LayoutInflater inflater = getActivity().getLayoutInflater();
-		
-		View root = inflater.inflate(R.layout.characters_edit_characters, null);
-		apiKeyList = (ListView) root.findViewById(R.id.characters_edit_characters_list);
+		View mainView = inflater.inflate(R.layout.api_keys_fragment, null);
+		apiKeyList = (ListView) mainView.findViewById(R.id.characters_edit_characters_list);
 		apiKeyList.setAdapter(new APIKeyListAdapter(getActivity(), R.layout.characters_edit_characters_list_item, apiCredsList, characters));
 		
-		Button doneButton = (Button) root.findViewById(R.id.characters_edit_characters_done_button);
-		doneButton.setOnClickListener(new View.OnClickListener() 
-		{	
-			@Override
-			public void onClick(View view) 
-			{
-				dismiss();
-				if (refreshRequired) ((CharactersActivity) getActivity()).refreshCharactersList();
-			}
-		});
-				
-		builder.setView(root)
-			.setTitle("Edit Characters")
-			.setMessage("Tap on a portrait to toggle monitoring of that character");    
-		
-	    return builder.create();
+		return mainView;
 	}
-	
+
 	private void getData()
 	{
 		charDB = new CharacterDB(getActivity());
@@ -110,7 +87,6 @@ public class EditCharactersDialog extends DialogFragment
 	
 	private void updateList()
 	{		
-		((CharactersActivity) getActivity()).refreshCharactersList();
 		refreshRequired = false;
 		
 		getData();
@@ -119,6 +95,11 @@ public class EditCharactersDialog extends DialogFragment
 		currentAdapter.clear();
 		currentAdapter.addAll(apiCredsList);
 		currentAdapter.notifyDataSetChanged();
+	}
+	
+	public void refresh()
+	{
+		updateList();
 	}
 	
 	private class APIKeyListAdapter extends ArrayAdapter<APICredentials>
