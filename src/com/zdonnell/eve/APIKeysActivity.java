@@ -18,8 +18,16 @@ import android.widget.CheckBox;
 
 public class APIKeysActivity extends BaseActivity {
 
+	/**
+	 * A reference to the current {@link Fragment} loaded in the activity
+	 * 
+	 * @see {@link #refresh()}
+	 */
 	private APIKeysFragment currentFragment;
 	
+	/**
+	 * reference to the default shared preferences, so the {@link AddKeyInfoDialog} display setting can be read and set.
+	 */
 	private SharedPreferences prefs;
 	
 	public APIKeysActivity(int titleRes)
@@ -38,11 +46,8 @@ public class APIKeysActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-		/**
-		 * Load the fragment into the activity
-		 */
+		// Load the fragment into the activity
 		setContentView(R.layout.content_frame);
-		
 		currentFragment = new APIKeysFragment();
 		
 		getSupportFragmentManager()
@@ -50,9 +55,21 @@ public class APIKeysActivity extends BaseActivity {
 		.replace(R.id.content_frame, currentFragment)
 		.commit();
 		
+		handleRecievedAPIKey();
+		
+		setSlidingActionBarEnabled(true);
+	}
+	
+	/**
+	 * Checks to see if the incoming Intent has provided a keyID/vCode combo
+	 * (i.e.) a user clicked a link in the form of eve://api.eveonline.com/?apiKey=KEYID&vCode=VCODE
+	 * <br><br>
+	 * If they have it will load an {@link AddAPIDialog} and pass it the key Info
+	 */
+	private void handleRecievedAPIKey()
+	{
 		Intent receivedIntent = getIntent();
 		Uri data = receivedIntent.getData();
-		
 		if (data != null)
 		{
 			int keyID = Integer.valueOf(data.getQueryParameter("keyID"));
@@ -60,8 +77,6 @@ public class APIKeysActivity extends BaseActivity {
 			
 	    	new AddAPIDialog().setKey(keyID, vCode).show(getSupportFragmentManager(), "Add Key Dialog");
 		}
-		
-		setSlidingActionBarEnabled(true);
 	}
 	
 	@Override
@@ -86,7 +101,7 @@ public class APIKeysActivity extends BaseActivity {
 			break;
 		/*  TODO reenable when CCP fixes "create predefined access mask key" link
 		 	case R.id.create_new_key:
-			Intent createNewKey = new Intent(Intent.ACTION_VIEW, Uri.parse("http://community.eveonline.com/support/api-key/CreatePredefined?accessMask=31850506"));
+			Intent createNewKey = new Intent(Intent.ACTION_VIEW, Uri.parse("http://community.eveonline.com/support/api-key/CreatePredefined?accessMask=" + R.string.default_access_mask));
 		    startActivity(createNewKey);			
 		    break;*/
 		case R.id.add_existing_key:
@@ -113,42 +128,46 @@ public class APIKeysActivity extends BaseActivity {
 		currentFragment.refresh();
 	}
 	
-	 @SuppressLint("ValidFragment")
-		private class AddKeyInfoDialog extends DialogFragment
-	    {
-			@Override
-	    	public Dialog onCreateDialog(Bundle savedInstanceState) 
-	    	{
-				View checkBoxView = View.inflate(getActivity(), R.layout.add_api_key_info_checkbox_layout, null);
-				final CheckBox checkBox = (CheckBox) checkBoxView.findViewById(R.id.add_api_key_info_checkbox);
-				
-				getActivity();
-				
-				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-	    	    builder.setTitle("Add Existing API Key")
-	    	           .setMessage("You will be redirected to the EVE Online website.  Once logged in you may add a key to Eden by pressing the 'Install' Button next to any key you have created.")
-	    	           .setCancelable(false)
-	    	           .setView(checkBoxView)
-	    	           .setPositiveButton("Proceed", new DialogInterface.OnClickListener() 
-	    	           {
-	    	               public void onClick(DialogInterface dialog, int id) 
-	    	               {
-	    	            	   Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse("https://support.eveonline.com/api/Key/ActivateInstallLinks"));
-	    	            	   startActivity(addExistingKey);  
-	    	            	   
-	    	            	   prefs.edit().putBoolean("show_add_api_key_info", !checkBox.isChecked()).commit();
-	    	       		   }
-	    	           })
-	    	           .setNegativeButton("Cancel", new DialogInterface.OnClickListener() 
-	    	           {
-	    	               public void onClick(DialogInterface dialog, int id) 
-	    	               {
-	    	                    dialog.cancel();
-	    	               }
-	    	           });
-	    	           
-	    	    return builder.create();
-	    	}
-	    }
-
+	@SuppressLint("ValidFragment")
+	/**
+	 * Dialog Builder to create a dialog explaining to users how they can install an API Key
+	 * once they are taken off to the EVE Online website
+	 * 
+	 * @author zachd
+	 *
+	 */
+	private class AddKeyInfoDialog extends DialogFragment
+    {
+		@Override
+    	public Dialog onCreateDialog(Bundle savedInstanceState) 
+    	{
+			View checkBoxView = View.inflate(getActivity(), R.layout.add_api_key_info_checkbox_layout, null);
+			final CheckBox checkBox = (CheckBox) checkBoxView.findViewById(R.id.add_api_key_info_checkbox);
+						
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    	    builder.setTitle("Add Existing API Key")
+    	           .setMessage("You will be redirected to the EVE Online website.  Once logged in you may add a key to Eden by pressing the 'Install' Button next to any key you have created.")
+    	           .setCancelable(false)
+    	           .setView(checkBoxView)
+    	           .setPositiveButton("Proceed", new DialogInterface.OnClickListener() 
+    	           {
+    	               public void onClick(DialogInterface dialog, int id) 
+    	               {
+    	            	   Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse("https://support.eveonline.com/api/Key/ActivateInstallLinks"));
+    	            	   startActivity(addExistingKey);  
+    	            	   
+    	            	   prefs.edit().putBoolean("show_add_api_key_info", !checkBox.isChecked()).commit();
+    	       		   }
+    	           })
+    	           .setNegativeButton("Cancel", new DialogInterface.OnClickListener() 
+    	           {
+    	               public void onClick(DialogInterface dialog, int id) 
+    	               {
+    	                    dialog.cancel();
+    	               }
+    	           });
+    	           
+    	    return builder.create();
+    	}
+    }
 }
