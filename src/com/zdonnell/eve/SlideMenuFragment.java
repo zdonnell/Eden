@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.server.Server;
+import com.zdonnell.eve.helpers.BasicOnTouchListener;
 
 public class SlideMenuFragment extends ListFragment {
 
@@ -77,6 +78,7 @@ public class SlideMenuFragment extends ListFragment {
 				convertView = LayoutInflater.from(getContext()).inflate(R.layout.row, null);
 			}
 			
+			convertView.setOnTouchListener(new BasicOnTouchListener());
 			convertView.setOnClickListener(new View.OnClickListener() 
 			{
 				@Override
@@ -101,6 +103,7 @@ public class SlideMenuFragment extends ListFragment {
 					}
 					
 					startActivity(intent);
+					((BaseActivity) getActivity()).toggle();
 				}
 			});
 			

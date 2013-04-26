@@ -56,14 +56,22 @@ public class APIKeysFragment extends Fragment
 	 */
 	private ListView apiKeyListView;
 	
+	/**
+	 * reference to the text view explaining how to toggle monitoring of characters
+	 */
+	private TextView togglePortraitExplanation;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
 	{
 		View rootLayoutView = inflater.inflate(R.layout.api_keys_fragment, null);
 		apiKeyListView = (ListView) rootLayoutView.findViewById(R.id.characters_edit_characters_list);
+		togglePortraitExplanation = (TextView) rootLayoutView.findViewById(R.id.toggle_portrait_text);
 		
 		getData();
 		apiKeyListView.setAdapter(new APIKeyListAdapter(getActivity(), R.layout.characters_edit_characters_list_item, apiCredsList, characters));
+		
+		if (apiCredsList.size() > 0) togglePortraitExplanation.setVisibility(View.VISIBLE);
 		
 		return rootLayoutView;
 	}
@@ -124,11 +132,8 @@ public class APIKeysFragment extends Fragment
 	private void updateList()
 	{				
 		getData();
-		
-		APIKeyListAdapter currentAdapter = (APIKeyListAdapter) apiKeyListView.getAdapter();
-		currentAdapter.clear();
-		currentAdapter.addAll(apiCredsList);
-		currentAdapter.notifyDataSetChanged();
+		togglePortraitExplanation.setVisibility(apiCredsList.size() > 0 ? View.VISIBLE : View.GONE);
+		apiKeyListView.setAdapter(new APIKeyListAdapter(getActivity(), R.layout.characters_edit_characters_list_item, apiCredsList, characters));
 	}
 	
 	/**

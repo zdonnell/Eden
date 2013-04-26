@@ -113,7 +113,7 @@ public class APIKeysActivity extends BaseActivity {
 			}
 			else
 			{
-				Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse("https://support.eveonline.com/api/Key/ActivateInstallLinks"));
+				Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse("http://community.eveonline.com/support/api-key"));
          	   	startActivity(addExistingKey);
 			}
 		    break;
@@ -153,7 +153,7 @@ public class APIKeysActivity extends BaseActivity {
     	           {
     	               public void onClick(DialogInterface dialog, int id) 
     	               {
-    	            	   Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse("https://support.eveonline.com/api/Key/ActivateInstallLinks"));
+    	            	   Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse("http://community.eveonline.com/support/api-key"));
     	            	   startActivity(addExistingKey);  
     	            	   
     	            	   prefs.edit().putBoolean("show_add_api_key_info", !checkBox.isChecked()).commit();
