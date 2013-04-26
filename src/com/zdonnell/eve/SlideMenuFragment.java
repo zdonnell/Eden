@@ -32,7 +32,7 @@ public class SlideMenuFragment extends ListFragment {
 	{
 		mainMenuItems[CHARS] = "Characters";
 		//mainMenuItems[CORPS] = "Corporations";
-		mainMenuItems[ACCOUNTS] = "Accounts";
+		mainMenuItems[ACCOUNTS] = "API Keys";
 		mainMenuItems[SETTINGS] = "Settings";
 	}
 	
