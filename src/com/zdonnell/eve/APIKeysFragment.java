@@ -6,6 +6,7 @@ import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.account.EveCharacter;
+import com.zdonnell.eve.helpers.BasicOnTouchListener;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -235,10 +236,11 @@ public class APIKeysFragment extends Fragment
 				@Override
 				public void onClick(View v) 
 				{
-					charDB.deleteCharactersByKeyID(keyID);
-					updateList();
+					((APIKeysActivity) getActivity()).showDeleteKeyDialog(keyID);
 				}
 			});	
+			
+			deleteIcon.setOnTouchListener(new BasicOnTouchListener());
 		}
 		
 		/**

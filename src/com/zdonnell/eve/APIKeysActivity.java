@@ -170,4 +170,53 @@ public class APIKeysActivity extends BaseActivity {
     	    return builder.create();
     	}
     }
+	
+	public void showDeleteKeyDialog(int keyID)
+	{
+		new ConfirmDeleteKeyDialog(keyID).show(getSupportFragmentManager(), "Delete Key Dialog");	
+	}
+	
+	@SuppressLint("ValidFragment")
+	/**
+	 * Dialog Builder to create a dialog warning users what happens when they delete a key
+	 * 
+	 * @author zachd
+	 *
+	 */
+	private class ConfirmDeleteKeyDialog extends DialogFragment
+    {
+		private int keyIDToDelete;
+		
+		public ConfirmDeleteKeyDialog(int keyID)
+		{
+			super();
+			this.keyIDToDelete = keyID;
+		}
+		
+		@Override
+    	public Dialog onCreateDialog(Bundle savedInstanceState) 
+    	{						
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+    	    builder.setTitle("Delete API Key")
+    	           .setMessage("All data associated with this key will be removed.  Are you sure you would like to delete this key?")
+    	           .setCancelable(false)
+    	           .setPositiveButton("Delete", new DialogInterface.OnClickListener() 
+    	           {
+    	               public void onClick(DialogInterface dialog, int id) 
+    	               {
+    	            	   new CharacterDB(getActivity()).deleteCharactersByKeyID(keyIDToDelete);
+    	            	   currentFragment.refresh();
+    	       		   }
+    	           })
+    	           .setNegativeButton("Cancel", new DialogInterface.OnClickListener() 
+    	           {
+    	               public void onClick(DialogInterface dialog, int id) 
+    	               {
+    	                    dialog.cancel();
+    	               }
+    	           });
+    	           
+    	    return builder.create();
+    	}
+    }
 }
