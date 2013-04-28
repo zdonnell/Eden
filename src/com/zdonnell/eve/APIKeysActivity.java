@@ -17,6 +17,10 @@ import android.view.View;
 import android.widget.CheckBox;
 
 public class APIKeysActivity extends BaseActivity {
+	/**
+	 * URL to install a new API key
+	 */
+	static final String INSTALL_NEW_KEY_URL = "https://support.eveonline.com/api/Key/ActivateInstallLinks";
 
 	/**
 	 * A reference to the current {@link Fragment} loaded in the activity
@@ -113,7 +117,7 @@ public class APIKeysActivity extends BaseActivity {
 			}
 			else
 			{
-				Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse("http://community.eveonline.com/support/api-key"));
+				Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse(INSTALL_NEW_KEY_URL));
          	   	startActivity(addExistingKey);
 			}
 		    break;
@@ -153,7 +157,7 @@ public class APIKeysActivity extends BaseActivity {
     	           {
     	               public void onClick(DialogInterface dialog, int id) 
     	               {
-    	            	   Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse("http://community.eveonline.com/support/api-key"));
+    	            	   Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse(INSTALL_NEW_KEY_URL));
     	            	   startActivity(addExistingKey);  
     	            	   
     	            	   prefs.edit().putBoolean("show_add_api_key_info", !checkBox.isChecked()).commit();
