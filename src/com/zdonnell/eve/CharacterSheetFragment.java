@@ -73,25 +73,12 @@ public class CharacterSheetFragment extends Fragment {
     	sheetItemImageIDs[ASSETS] = R.drawable.assets;
     }
     
-    /**
-     * Static array of the fragment classes to jump to when a sheet item is pressed
-     */
-    private final static Class<?>[] detailClass = new Class<?>[5];
-    static 
-    {
-    	detailClass[SKILLS] = CorporationsFragment.class;
-    	detailClass[SKILL_QUEUE] = CorporationsFragment.class;
-    	detailClass[ATTRIBUTES] = CorporationsFragment.class;
-    	detailClass[WALLET] = CorporationsFragment.class;
-    	detailClass[ASSETS] = CorporationsFragment.class;
-    }
-    
     private final static SheetItem[] items = new SheetItem[5];
     static
     {
     	for (int x = 0; x < 5; x++)
     	{
-    		items[x] = new SheetItem(sheetItems[x], sheetItemImageIDs[x], detailClass[x]);
+    		items[x] = new SheetItem(sheetItems[x], sheetItemImageIDs[x]);
     	}
     }
 
@@ -563,13 +550,11 @@ public class CharacterSheetFragment extends Fragment {
 	{
 		String text;
 		int imageID;
-		Class<?> fragmentClass;
 		
-		public SheetItem(String text, int imageID, Class<?> fragmentClass)
+		public SheetItem(String text, int imageID)
 		{
 			this.text = text;
 			this.imageID = imageID;
-			this.fragmentClass = fragmentClass;
 		}
 	}
 }
