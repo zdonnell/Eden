@@ -189,7 +189,7 @@ public class AddAPIDialog extends DialogFragment
 			public void onClick(View v) 
 			{
 				saveCharacters();
-				((CharactersActivity) getActivity()).refreshCharactersList();
+				((APIKeysActivity) getActivity()).refresh();
 				AddAPIDialog.this.dismiss();
 			}
 		});
@@ -198,9 +198,9 @@ public class AddAPIDialog extends DialogFragment
 		
 		if (passedKey)
 		{	
-			keyIDField.setText(String.valueOf(passedKeyID));
-			vCodeField.setText(passedVCode);
-			
+			keyIDField.setVisibility(View.GONE);
+			vCodeField.setVisibility(View.GONE);
+						
 			loadCharacters(dynamicContentArea);
 		}
 		

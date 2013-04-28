@@ -12,18 +12,6 @@
           android:showAsAction="ifRoom"
            />
     
-    <item android:id="@+id/add_characters"
-          android:title="Add"
-          android:showAsAction="always"
-                    android:icon="@drawable/add"
-          
-           />
-    <item android:id="@+id/edit_characters"
-          android:title="Edit"
-          android:showAsAction="ifRoom"
-                    android:icon="@drawable/edit"
-          
-           />
     <item android:id="@+id/refresh_loading"
           android:title="Refresh"
           android:showAsAction="always"

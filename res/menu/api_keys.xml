@@ -1,0 +1,33 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <!-- <item android:id="@+id/layout_style"
+          android:title="Layout"
+          android:showAsAction="ifRoom|withText"
+          android:icon="@drawable/layout"
+           /> -->
+    
+    <item android:id="@+id/add_characters"
+          android:title="Add"
+          android:showAsAction="always"
+                    android:icon="@drawable/add">
+                    <menu>
+	        <item
+	            android:id="@+id/add_existing_key"
+	            android:title="Add Existing API Key" />
+	        <!-- TODO reenable when CCP fixes "create predefined access mask key" link
+	        <item
+	            android:id="@+id/create_new_key"
+	            android:title="Create New Key" /> -->
+	        <item
+	            android:id="@+id/manual_key_entry"
+	            android:title="Manual Key Entry" />
+	    </menu>
+          
+           </item>
+    <item android:id="@+id/refresh_loading"
+          android:title="Refresh"
+          android:showAsAction="always"
+                    android:icon="@drawable/refresh"
+          
+           />
+</menu>

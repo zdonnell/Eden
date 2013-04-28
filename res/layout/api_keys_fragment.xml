@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" 
+    android:background="#151515">
+
+    <TextView
+        android:id="@+id/toggle_portrait_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="18dp"
+        android:textSize="16sp"
+        android:textColor="#777"
+        android:visibility="gone"
+        android:text="@string/toggle_portrait_explanation">
+    </TextView>
+    <ListView
+        android:id="@+id/characters_edit_characters_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:headerDividersEnabled="true"
+        android:divider="#222"
+    	android:dividerHeight="1dp" />
+</LinearLayout>
