@@ -28,7 +28,6 @@ import android.widget.TextView;
 import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.R;
-import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
@@ -39,6 +38,7 @@ import com.zdonnell.eve.api.character.AssetsEntity.Station;
 import com.zdonnell.eve.api.character.CharacterSheet.AttributeEnhancer;
 import com.zdonnell.eve.api.character.WalletEntry;
 import com.zdonnell.eve.api.character.WalletEntry.Transaction;
+import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.eve.Eve;
 
 public class WalletFragment extends DetailFragment {

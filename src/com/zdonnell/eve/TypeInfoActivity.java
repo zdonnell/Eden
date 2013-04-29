@@ -1,6 +1,6 @@
 package com.zdonnell.eve;
 
-import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.staticdata.api.StationDatabase;
 import com.zdonnell.eve.staticdata.api.StationInfo;

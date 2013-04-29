@@ -29,7 +29,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.apilink.APICallback;
 
 public class PriceCheckTask extends AsyncTask<Integer, Integer, SparseArray<Float>>
 {

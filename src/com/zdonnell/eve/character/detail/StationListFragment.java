@@ -22,12 +22,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.zdonnell.eve.R;
-import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.AssetsEntity.Station;
 import com.zdonnell.eve.api.priceservice.PriceService;
+import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.StandardOnTouchListener;
 import com.zdonnell.eve.staticdata.api.StaticData;

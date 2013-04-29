@@ -29,12 +29,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.account.EveCharacter;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.QueuedSkill;
+import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.helpers.TimeRemainingCountdown;
 import com.zdonnell.eve.helpers.Tools;

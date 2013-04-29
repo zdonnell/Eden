@@ -14,8 +14,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.zdonnell.eve.api.APICallback;
-import com.zdonnell.eve.api.server.Server;
+import com.beimin.eveapi.exception.ApiException;
+import com.beimin.eveapi.server.ServerStatusResponse;
+import com.zdonnell.eve.apilink.APICallback;
+import com.zdonnell.eve.apilink.APIExceptionCallback;
+import com.zdonnell.eve.apilink.server.Server;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 
 public class SlideMenuFragment extends ListFragment {
@@ -118,22 +121,27 @@ public class SlideMenuFragment extends ListFragment {
 	
 	private void setServerStatus(View root)
     {
-    	Server server = new Server(getActivity());
-        final TextView serverStatus = (TextView) root.findViewById(R.id.server_status);
-		
-        server.status(new APICallback<String[]>(null) 
+        final TextView serverStatusText = (TextView) root.findViewById(R.id.server_status);
+        
+        new Server(getActivity()).status(new APIExceptionCallback<ServerStatusResponse>((BaseActivity) getActivity()) 
         {
 			@Override
-			public void onUpdate(String[] updatedData) {
-				if (updatedData[0].equals("True")) 
+			public void onUpdate(ServerStatusResponse serverStatus) {
+				if (serverStatus.isServerOpen()) 
 				{
 					NumberFormat nf = NumberFormat.getInstance();
-					serverStatus.setText(Html.fromHtml("<B><FONT COLOR='#669900'>ONLINE</FONT></B> " + nf.format(Integer.parseInt(updatedData[1]))));
+					serverStatusText.setText(Html.fromHtml("<B><FONT COLOR='#669900'>ONLINE</FONT></B> " + nf.format(serverStatus.getOnlinePlayers())));
 				}
 				else
 				{
-					serverStatus.setText(Html.fromHtml("<B><FONT COLOR='#CC0000'>OFFLINE</FONT></B>"));
+					serverStatusText.setText(Html.fromHtml("<B><FONT COLOR='#CC0000'>OFFLINE</FONT></B>"));
 				}
+			}
+
+			@Override
+			public void onError(ServerStatusResponse response, ApiException exception) 
+			{
+				
 			}
 		}); 
     }

@@ -14,9 +14,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.priceservice.PriceService;
+import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.staticdata.api.StaticData;
 import com.zdonnell.eve.staticdata.api.TypeInfo;
 

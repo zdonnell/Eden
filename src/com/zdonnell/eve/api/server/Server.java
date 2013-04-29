@@ -4,10 +4,10 @@ import org.w3c.dom.Document;
 
 import android.content.Context;
 
-import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.ResourceManager;
 import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
+import com.zdonnell.eve.apilink.APICallback;
 
 public class Server extends APIObject {
 	

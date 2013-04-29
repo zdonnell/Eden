@@ -26,6 +26,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.zdonnell.eve.api.ResourceRequestMonitor.RequestNotActiveException;
+import com.zdonnell.eve.apilink.APICallback;
 
 /**
  * Class to handle the storage and correct access of API Resources

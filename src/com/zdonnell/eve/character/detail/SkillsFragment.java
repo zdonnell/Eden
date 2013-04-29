@@ -26,11 +26,11 @@ import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
-import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.Skill;
+import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.eve.SkillInfo;
 

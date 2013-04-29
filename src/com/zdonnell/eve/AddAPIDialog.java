@@ -19,12 +19,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.account.Account;
 import com.zdonnell.eve.api.account.EveCharacter;
+import com.zdonnell.eve.apilink.APICallback;
 
 public class AddAPIDialog extends DialogFragment 
 {

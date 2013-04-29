@@ -23,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.AssetsEntity;
@@ -31,6 +30,7 @@ import com.zdonnell.eve.api.character.CharacterInfo;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.api.character.Skill;
+import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.Tools;

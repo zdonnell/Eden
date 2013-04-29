@@ -16,11 +16,11 @@ import android.widget.TextView;
 import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
-import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.CharacterSheet.AttributeEnhancer;
+import com.zdonnell.eve.apilink.APICallback;
 
 public class AttributesFragment extends DetailFragment {
     

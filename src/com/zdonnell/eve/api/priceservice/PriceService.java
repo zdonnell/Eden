@@ -7,7 +7,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.zdonnell.eve.api.APICallback;
+import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.helpers.Tools;
 
 public class PriceService {

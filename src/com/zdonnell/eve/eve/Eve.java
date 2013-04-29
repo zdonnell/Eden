@@ -11,10 +11,10 @@ import android.content.Context;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.ResourceManager;
 import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
+import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.character.detail.SkillGroup;
 import com.zdonnell.eve.character.detail.SkillsSort;
 import com.zdonnell.eve.staticdata.api.StationInfo;

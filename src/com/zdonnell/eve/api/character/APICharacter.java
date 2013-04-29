@@ -12,13 +12,13 @@ import android.content.Context;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.zdonnell.eve.api.APICallback;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.ResourceManager;
 import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
 import com.zdonnell.eve.api.character.CharacterInfo.CurrentShipInfo;
 import com.zdonnell.eve.api.character.CharacterSheet.AttributeEnhancer;
+import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.helpers.Tools;
 
 public class APICharacter extends APIObject {
