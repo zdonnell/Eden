@@ -11,7 +11,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class Skills {
+public class SkillsData {
 
 	public final static String TABLE = "skills";
 	
@@ -28,7 +28,7 @@ public class Skills {
 	// a reference to the database used by this application/object
 	private SQLiteDatabase db;
 	
-	public Skills(Context context) 
+	public SkillsData(Context context) 
 	{
 		this.context = context;
 

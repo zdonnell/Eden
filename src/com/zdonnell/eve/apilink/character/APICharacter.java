@@ -3,6 +3,7 @@ package com.zdonnell.eve.apilink.character;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
 import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.exception.ApiException;
 import com.beimin.eveapi.server.ServerStatusParser;
@@ -19,8 +20,8 @@ public class APICharacter
 		this.context = context;
 	}
 	
-	public void status(APIExceptionCallback<ServerStatusResponse> callback)
+	public void getCharacterSheet(APIExceptionCallback<CharacterSheetResponse> callback)
 	{
-		new CharacterSheetTask(callback, apiAuth).execute(); 
+		new CharacterSheetTask(callback, apiAuth, context).execute(); 
 	}
 }

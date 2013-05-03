@@ -19,14 +19,14 @@ public class Database {
 	
 	private static void createSkillsTable(SQLiteDatabase db)
 	{
-		String newTableQueryString = "create table " + Skills.TABLE + " ("
-				+ Skills.COL_UNIQUE_ID + " integer autoincrement primary key not null," 
-				+ Skills.COL_CHAR_ID + " integer," 
-				+ Skills.COL_TYPEID + " integer,"
-				+ Skills.COL_SKILLPOINTS + " integer,"
-				+ Skills.COL_LEVEL + " integer,"
-				+ Skills.COL_UNPUBLISHED + " integer,"
-				+ "UNIQUE (" + Skills.COL_CHAR_ID + ", " + Skills.COL_TYPEID + ") ON CONFLICT REPLACE);";
+		String newTableQueryString = "create table " + SkillsData.TABLE + " ("
+				+ SkillsData.COL_UNIQUE_ID + " integer autoincrement primary key not null," 
+				+ SkillsData.COL_CHAR_ID + " integer," 
+				+ SkillsData.COL_TYPEID + " integer,"
+				+ SkillsData.COL_SKILLPOINTS + " integer,"
+				+ SkillsData.COL_LEVEL + " integer,"
+				+ SkillsData.COL_UNPUBLISHED + " integer,"
+				+ "UNIQUE (" + SkillsData.COL_CHAR_ID + ", " + SkillsData.COL_TYPEID + ") ON CONFLICT REPLACE);";
 
 		db.execSQL(newTableQueryString);
 	}
