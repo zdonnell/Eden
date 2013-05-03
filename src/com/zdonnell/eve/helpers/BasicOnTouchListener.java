@@ -1,9 +1,11 @@
 package com.zdonnell.eve.helpers;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -11,6 +13,7 @@ public class BasicOnTouchListener implements View.OnTouchListener
 {
 	int originalBackground;
 	
+	@SuppressLint("NewApi")
 	@Override
 	public boolean onTouch(View v, MotionEvent event) 
 	{
@@ -23,7 +26,7 @@ public class BasicOnTouchListener implements View.OnTouchListener
 			}
 			else
 			{
-				if (background instanceof ColorDrawable) originalBackground = ((ColorDrawable) v.getBackground()).getColor();
+				if (background instanceof ColorDrawable) originalBackground = 0;
 				else originalBackground = ((PaintDrawable) v.getBackground()).getPaint().getColor();
 			}
 			

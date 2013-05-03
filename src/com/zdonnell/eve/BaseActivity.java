@@ -12,9 +12,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.Window;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.Window;
 import android.widget.LinearLayout;
 
 import com.slidingmenu.lib.SlidingMenu;
@@ -56,7 +56,7 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 
 		// customize the ActionBar
 		if (Build.VERSION.SDK_INT >= 11) {
-			getActionBar().setDisplayHomeAsUpEnabled(true);
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 	}
 	
@@ -119,7 +119,7 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 		itemsLoadingCount++;		
 		if (itemsLoadingCount == 1)
 		{
-			invalidateOptionsMenu();
+			supportInvalidateOptionsMenu();
 		}
 	}
 	
@@ -128,7 +128,7 @@ public abstract class BaseActivity extends SlidingFragmentActivity {
 		itemsLoadingCount--;		
 		if (itemsLoadingCount == 0)
 		{
-			invalidateOptionsMenu();
+			supportInvalidateOptionsMenu();
 		}
 	}
 }

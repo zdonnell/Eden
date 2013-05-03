@@ -221,7 +221,9 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			itemCount.setText(currentItemList.length + " items");
 					
 			adapter = new InventoryArrayAdapter(context, stationRowResourceID, currentItemList);
-			absListView.setAdapter(adapter);
+			
+			if (absListView instanceof GridView) ((GridView) absListView).setAdapter(adapter);
+			else if (absListView instanceof ListView) ((ListView) absListView).setAdapter(adapter);
 		
 			if (parentFragment.getPrices() != null && parentFragment.getPrices().size() > 0) calculatePrices(currentItemList);
 			
@@ -230,7 +232,9 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 		else
 		{
 			adapter = new InventoryArrayAdapter(context, stationRowResourceID, currentItemList);
-			absListView.setAdapter(adapter);
+
+			if (absListView instanceof GridView) ((GridView) absListView).setAdapter(adapter);
+			else if (absListView instanceof ListView) ((ListView) absListView).setAdapter(adapter);
 		}
 		
 		if (savedScrollPoint != null)
@@ -475,7 +479,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 						
 						if (displayType == GRID)
 						{
-							float colWidthWithPadding = (float) absListView.getWidth() / (float) ((GridView) absListView).getNumColumns();
+							float colWidthWithPadding = (float) absListView.getWidth() / (float) 4;
 							int imageWidth = (int) (colWidthWithPadding - (absListView.getPaddingLeft() + absListView.getPaddingRight()));
 							
 							icon.setLayoutParams(new LinearLayout.LayoutParams(imageWidth, imageWidth));

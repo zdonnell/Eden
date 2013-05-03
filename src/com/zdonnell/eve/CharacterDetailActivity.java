@@ -1,10 +1,8 @@
 package com.zdonnell.eve;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -19,17 +17,19 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MenuItem.OnActionExpandListener;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.MenuItem.OnActionExpandListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.widget.ImageView;
-import android.widget.SearchView;
-import android.widget.SearchView.OnCloseListener;
-import android.widget.SearchView.OnQueryTextListener;
+import com.actionbarsherlock.widget.*;
+import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
+
 import android.widget.TextView;
 
 import com.zdonnell.eve.api.APICredentials;
@@ -43,7 +43,7 @@ import com.zdonnell.eve.character.detail.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.SkillsFragment;
 import com.zdonnell.eve.character.detail.WalletFragment;
 
-public class CharacterDetailActivity extends BaseActivity implements ActionBar.TabListener {
+public class CharacterDetailActivity extends BaseActivity {
 
     public CharacterDetailActivity(int titleRes) {
 		super(titleRes);
@@ -95,8 +95,10 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	String[] characterInfo = getIntent().getExtras().getStringArray("character");
     	assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
     
-        final ActionBar actionBar = getActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         activity = this;
+        
+        actionBar.setHomeButtonEnabled(true);
         
         characterName = new CharacterDB(getBaseContext()).getCharacterName(Integer.valueOf(characterInfo[0]));
         
@@ -123,7 +125,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                invalidateOptionsMenu();
+                supportInvalidateOptionsMenu();
 
             }
         });
@@ -131,21 +133,6 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     	LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);    	
         
         mViewPager.setCurrentItem(getIntent().getExtras().getInt("position"));
-    }
-	
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in the ViewPager.
-        mViewPager.setCurrentItem(tab.getPosition());
-        invalidateOptionsMenu();
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
     
 	/**
@@ -304,13 +291,13 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     {
     	super.onCreateOptionsMenu(menu);
     	
-    	MenuInflater menuInflater = getMenuInflater();        	
-        
+    	MenuInflater menuInflater = getSupportMenuInflater();        	
     	menuInflater.inflate(R.menu.char_detail, menu);
     		
     	searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView(); 
-    	MenuItem searchViewMenuItem = menu.getItem(0);
     	searchView.setOnQueryTextListener(new SearchQueryUpdatedListener());
+    	
+    	MenuItem searchViewMenuItem = menu.getItem(0);
     	searchViewMenuItem.setOnActionExpandListener(new OnActionExpandListener(){
 
 			@Override

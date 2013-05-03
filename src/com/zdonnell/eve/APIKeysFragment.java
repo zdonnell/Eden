@@ -257,7 +257,7 @@ public class APIKeysFragment extends Fragment
 		private void initializePortraitImageView(ImageView portrait, final Integer characterID)
 		{
 			portrait.setTag(characterID);
-			portrait.setAlpha(charOn.get(characterID) ? 1f : 0.25f);
+			portrait.setAlpha(charOn.get(characterID) ? 255 :63);
 			
 			portrait.setOnClickListener(new View.OnClickListener() 		
 			{		
@@ -268,7 +268,7 @@ public class APIKeysFragment extends Fragment
 					boolean charIsEnabled = !charOn.get(characterID);
 					charOn.put(characterID, charIsEnabled);
 					
-					((ImageView) v).setAlpha(charIsEnabled ? 1f : 0.25f);
+					((ImageView) v).setAlpha(charIsEnabled ? 255 :63);
 					charDB.setCharEnabled(characterID, charIsEnabled);
 				}
 			});

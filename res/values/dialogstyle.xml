@@ -2,7 +2,7 @@
  	<color name="darkgrey">#FF181818</color>
 	<color name="textgrey">#FFBBBBBB</color>
 
-	<style name="dialog_custom" parent="@android:style/Theme.Holo.Dialog">
+	<style name="dialog_custom">
 	    <item name="@android:background">@color/darkgrey</item>
 	    <item name="@android:textColor">@color/textgrey</item>        
 	</style>

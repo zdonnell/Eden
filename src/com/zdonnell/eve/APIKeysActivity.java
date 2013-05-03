@@ -10,9 +10,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+
 import android.view.View;
 import android.widget.CheckBox;
 
@@ -57,6 +58,7 @@ public class APIKeysActivity extends BaseActivity {
 		
 		handleRecievedAPIKey(getIntent());
 		
+        getSupportActionBar().setHomeButtonEnabled(true);
 		setSlidingActionBarEnabled(true);
 	}
 	
@@ -92,7 +94,7 @@ public class APIKeysActivity extends BaseActivity {
     {
     	super.onCreateOptionsMenu(menu);
     	
-    	MenuInflater menuInflater = getMenuInflater();        	
+    	MenuInflater menuInflater = getSupportMenuInflater();        	
         menuInflater.inflate(R.menu.api_keys, menu);
         
         return true;
@@ -173,7 +175,7 @@ public class APIKeysActivity extends BaseActivity {
 	
 	private void launchAddExistingKeyIntent()
 	{
-		Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse("http://community.eveonline.com/support/api-key"));
+		Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse("https://support.eveonline.com/api/Key/ActivateInstallLinks"));
 		startActivity(addExistingKey);  
 	}
 	

@@ -16,11 +16,6 @@ public class SquareLinearLayout extends LinearLayout {
 		super(context, attrs);
 	}
 
-	public SquareLinearLayout(Context context, AttributeSet attrs, int defStyle)
-	{
-		super(context, attrs, defStyle);
-	}
-
 	@Override
 	public void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	{

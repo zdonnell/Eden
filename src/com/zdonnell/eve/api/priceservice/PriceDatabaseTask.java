@@ -77,7 +77,7 @@ public class PriceDatabaseTask extends AsyncTask<Integer, Integer, SparseArray<F
 			}
 			
 			callback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
-			new PriceCheckTask(callback, cachedPrices, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, nonCachedTypeIDs);
+			new PriceCheckTask(callback, cachedPrices, context).execute(nonCachedTypeIDs);
 		}	
 	}
 }

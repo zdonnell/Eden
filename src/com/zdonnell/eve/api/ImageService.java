@@ -296,7 +296,7 @@ public class ImageService {
 					if (callback != null) callback.iconsObtained(bitmaps);
 					checkPendingRequests(bitmaps, type);
 				}
-			}, thumb).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, staticIconsToLoad);
+			}, thumb).execute(staticIconsToLoad);
 		}
 		else
 		{				
@@ -519,7 +519,7 @@ public class ImageService {
 				@Override
 				protected int sizeOf(Integer key, Bitmap value) 
 				{
-					return value.getByteCount();
+					return value.getRowBytes() * value.getHeight();
 				}
 		    };
 		}

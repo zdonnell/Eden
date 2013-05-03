@@ -1,19 +1,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     
-   
     <item android:id="@+id/menu_search"
           android:title="Search"
           android:icon="@drawable/ic_menu_search"
-          android:showAsAction="always|collapseActionView"
-          android:actionViewClass="android.widget.SearchView" 
+          android:showAsAction="ifRoom|collapseActionView"
+          android:actionViewClass="com.actionbarsherlock.widget.SearchView" 
           />
     <item android:id="@+id/refresh_loading"
          android:title="Refresh"
          android:showAsAction="always|withText"
          android:icon="@drawable/refresh"
-          
    	/>
-    
     <item android:id="@+id/sort_by"
           android:title="Sort By"
           android:showAsAction="ifRoom|withText"

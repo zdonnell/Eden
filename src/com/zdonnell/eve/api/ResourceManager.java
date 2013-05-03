@@ -80,7 +80,7 @@ public class ResourceManager {
 	{		
 		if (cacheDatabase.cacheExists(rw.resourceURL, rw.uniqueIDs)) 
 		{
-			new CacheDatabaseQuery(rw).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			new CacheDatabaseQuery(rw).execute();
 		}
 		else
 		{
@@ -169,7 +169,7 @@ public class ResourceManager {
 			if (cacheDatabase.cacheExpired(rw.resourceURL, rw.uniqueIDs)) 
 			{
 				rw.apiCallback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
-				new APIServerQuery(rw).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+				new APIServerQuery(rw).execute();
 			}
 			else rw.apiCallback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_VALID);
 		}

@@ -126,8 +126,8 @@ public class AttributesFragment extends DetailFragment {
 			}
 			else 
 			{
-				icon.setAlpha(0.3f);
-				implantName.setAlpha(0.5f);
+				icon.setAlpha((int) (0.3 * 255));
+				implantName.setTextColor(implantName.getTextColors().withAlpha(127));
 			}
 			
 			/* Set views to correct implant info */

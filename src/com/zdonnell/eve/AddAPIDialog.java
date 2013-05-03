@@ -255,8 +255,11 @@ public class AddAPIDialog extends DialogFragment
 						public void onClick(View arg0) 
 						{
 							loadCharAsEnabled[finalCharIndex] = !loadCharAsEnabled[finalCharIndex];
-							characterIcon.setAlpha(loadCharAsEnabled[finalCharIndex] ? 1f : 0.25f);
-							characterName.setAlpha(loadCharAsEnabled[finalCharIndex] ? 1f : 0.25f);
+							//characterIcon.setAlpha(loadCharAsEnabled[finalCharIndex] ? 1f : 0.25f);
+							//characterName.setAlpha(loadCharAsEnabled[finalCharIndex] ? 1f : 0.25f);
+							
+							characterIcon.setAlpha(loadCharAsEnabled[finalCharIndex] ? 255 : 63);
+							characterIcon.setAlpha(loadCharAsEnabled[finalCharIndex] ? 255 : 63);
 						}
 					});
 					

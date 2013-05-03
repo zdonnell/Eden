@@ -5,4 +5,14 @@
         <item name="android:activityCloseEnterAnimation">@anim/static_animation</item> When closing the current activity, this is the animation that is run on the next activity (which is entering the screen). 
         <item name="android:activityCloseExitAnimation">@anim/fade_out</item> When closing the current activity, this is the animation that is run on the current activity (which is exiting the screen). 
     </style>
+    
+ 	<style name="Theme.Styled" parent="Theme.Sherlock">
+	    <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
+	</style>
+	
+	<style name="Widget.Styled.ActionBar" parent="Widget.Sherlock.Light.ActionBar.Solid.Inverse">
+	    <item name="background">@drawable/ab_transparent_yelloworange</item>
+	    <item name="android:background">@drawable/ab_transparent_yelloworange</item>
+	</style>
+ 	
 </resources>

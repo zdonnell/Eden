@@ -278,9 +278,9 @@ public class SkillsFragment extends DetailFragment {
 				levelIndicator.setVisibility(View.GONE);
 				
 				skillIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.skills));
-				
-				skillName.setAlpha(0.45f);
-				spText.setAlpha(0.45f);
+								
+				skillName.setTextColor(skillName.getTextColors().withAlpha((int) (0.45 * 255)));
+				spText.setTextColor(spText.getTextColors().withAlpha((int) (0.45 * 255)));
 				
 				boolean preReqsMet = true;
 				for (SkillInfo.SkillPreReq preReq : skillInfo.requiredSkills())
@@ -310,8 +310,8 @@ public class SkillsFragment extends DetailFragment {
 					}
 				}
 				
-				skillName.setAlpha(1);
-				spText.setAlpha(1);
+				skillName.setTextColor(skillName.getTextColors().withAlpha(255));
+				spText.setTextColor(spText.getTextColors().withAlpha(255));
 				
 				spText.setText("SP: " + formatter.format(currentSkill.getSkillPoints()) + " / " + formatter.format(skillInfo.rank() * 256000));
 			}

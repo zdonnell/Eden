@@ -7,8 +7,8 @@ import com.zdonnell.eve.staticdata.api.StationInfo;
 
 import android.os.Bundle;
 import android.util.SparseArray;
-import android.view.Menu;
-import android.view.MenuInflater;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 
 
 public class TypeInfoActivity extends BaseActivity {
@@ -49,7 +49,7 @@ public class TypeInfoActivity extends BaseActivity {
     {
     	super.onCreateOptionsMenu(menu);
     	
-    	MenuInflater menuInflater = getMenuInflater(); 
+    	MenuInflater menuInflater = getSupportMenuInflater(); 
     	menuInflater.inflate(R.menu.type_info, menu);
     	
     	return true;

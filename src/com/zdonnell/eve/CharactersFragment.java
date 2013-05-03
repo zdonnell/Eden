@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -258,7 +260,6 @@ public class CharactersFragment extends Fragment {
 				{
 					portrait.setImageBitmap(bitmaps.valueAt(0));
 					viewCharacterMap.put(mainView, characterID);
-					if (mainView.getAlpha() == 0) mainView.setAlpha(1);
 				}
 			}, false, characterID);
 			
@@ -358,16 +359,27 @@ public class CharactersFragment extends Fragment {
 	 * @param context
 	 * @return number of columns
 	 */
+	@SuppressLint("NewApi")
 	private int calcColumns(Activity context) 
 	{	
 		Point screenDimensions = new Point(0, 0);
-		context.getWindowManager().getDefaultDisplay().getSize(screenDimensions);
+		
+		int width;
+		if (Build.VERSION.SDK_INT < 13)
+		{
+			width = context.getWindowManager().getDefaultDisplay().getWidth();
+			Log.d("TEST", "WIDTH: " + width);
+		}
+		else
+		{
+			context.getWindowManager().getDefaultDisplay().getSize(screenDimensions);
+			width = screenDimensions.x;
+		}
 		
 		DisplayMetrics metrics = new DisplayMetrics();
 		context.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 		
 		float logicalDensity = metrics.density;
-		int width = screenDimensions.x;
 		
 		float dp = (float) width / logicalDensity;
 		
@@ -377,7 +389,7 @@ public class CharactersFragment extends Fragment {
 		calculatedColumnWidths = new int[columns];
 		
 		int widthForSeperation = columns - 1;
-		double widthForColumns = screenDimensions.x - widthForSeperation;
+		double widthForColumns = width - widthForSeperation;
 		
 		int totalColumnWidthUsed = 0, roundedColumnWidth = 0;
 		
@@ -388,7 +400,6 @@ public class CharactersFragment extends Fragment {
 			totalColumnWidthUsed += roundedColumnWidth;
 			
 			if (x == columns - 1 && totalColumnWidthUsed != widthForColumns) calculatedColumnWidths[x] += 1;
-			Log.d("COLUMN WIDTH: ", "COLUMN WIDTH #" + (x + 1) + ": " +  calculatedColumnWidths[x]);
 		}
 		
 		return columns;

@@ -11,9 +11,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
 
 public class CharactersActivity extends BaseActivity {
@@ -53,6 +53,7 @@ public class CharactersActivity extends BaseActivity {
 	    	new AddAPIDialog().setKey(keyID, vCode).show(getSupportFragmentManager(), "Skill List Dialog");
 		}
 		
+		getSupportActionBar().setHomeButtonEnabled(true);
 		setSlidingActionBarEnabled(true);
 	}
 	
@@ -61,7 +62,7 @@ public class CharactersActivity extends BaseActivity {
     {
     	super.onCreateOptionsMenu(menu);
     	
-    	MenuInflater menuInflater = getMenuInflater();        	
+    	MenuInflater menuInflater = getSupportMenuInflater();        	
         menuInflater.inflate(R.menu.characters_actionbar_items, menu);
         
         return true;

@@ -2,6 +2,7 @@ package com.zdonnell.eve.staticdata.api;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -64,11 +65,12 @@ public class StaticTypeDatabase
 		{
 			int lengthOfRemaining = typeIDStrings.length - position; 
 			if (lengthOfRemaining > size) lengthOfRemaining = size;
-						
-			Log.d("TYPE DATABASE", "lenRemaining: " + lengthOfRemaining + ", typeIDStringslenth:" + typeIDStrings.length);
+									
+			List<String> typeIDStringsList = (List<String>) Arrays.asList(typeIDStrings);
+			List<String> segmentList = (List<String>) typeIDStringsList.subList(position, position + lengthOfRemaining);
 			
 			String[] segment = new String[lengthOfRemaining];
-			segment = Arrays.copyOfRange(typeIDStrings, position, position + lengthOfRemaining);
+			segmentList.toArray(segment);
 								
 			typeChunks.add(segment);
 			

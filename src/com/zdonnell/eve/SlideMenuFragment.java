@@ -95,7 +95,7 @@ public class SlideMenuFragment extends ListFragment {
 						intent = new Intent(getActivity(), APIKeysActivity.class);
 						break;
 					case SETTINGS:
-						intent = new Intent(getActivity(), SettingsActivity.class);
+						intent = new Intent(getActivity(), null);
 						break;
 					default:
 						intent = null;

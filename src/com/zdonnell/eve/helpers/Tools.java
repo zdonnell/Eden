@@ -7,9 +7,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
+import android.os.Build;
 import android.util.DisplayMetrics;
 
 public class Tools {
@@ -91,10 +93,21 @@ public class Tools {
 	 * @param columnMin
 	 * @return
 	 */
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	public static int columnCountBySize(Context context, float intendedColumnWidth, float viewWidth, int columnMin) 
 	{	
 		Point screenDimensions = new Point(0, 0);
-		((Activity) context).getWindowManager().getDefaultDisplay().getSize(screenDimensions);
+		
+		int width;
+		if (Build.VERSION.SDK_INT < 13)
+		{
+			width = ((Activity) context).getWindowManager().getDefaultDisplay().getWidth();
+		}
+		else
+		{
+			((Activity) context).getWindowManager().getDefaultDisplay().getSize(screenDimensions);
+			width = screenDimensions.x;
+		}
 		
 		DisplayMetrics metrics = new DisplayMetrics();
 		((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -109,7 +122,7 @@ public class Tools {
 		int[] calculatedColumnWidths = new int[columns];
 		
 		int widthForSeperation = columns - 1;
-		double widthForColumns = screenDimensions.x - widthForSeperation;
+		double widthForColumns = width - widthForSeperation;
 		
 		int totalColumnWidthUsed = 0, roundedColumnWidth = 0;
 		
