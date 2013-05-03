@@ -1,10 +1,12 @@
 package com.zdonnell.eve.apilink.server;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.beimin.eveapi.exception.ApiException;
 import com.beimin.eveapi.server.ServerStatusParser;
 import com.beimin.eveapi.server.ServerStatusResponse;
+import com.zdonnell.eve.apilink.CacheDatabase;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 
 public class ServerStatusTask extends AsyncTask<Void, Void, ServerStatusResponse>
@@ -17,14 +19,13 @@ public class ServerStatusTask extends AsyncTask<Void, Void, ServerStatusResponse
 	public ServerStatusTask(APIExceptionCallback<ServerStatusResponse> callback)
 	{
 		this.callback = callback;
-		callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID); // A cache check is not done for the server
 	}
 	
 	@Override
 	protected ServerStatusResponse doInBackground(Void... params)
 	{
-		ServerStatusParser parser = ServerStatusParser.getInstance();
-        ServerStatusResponse response = null;
+		ServerStatusParser parser = ServerStatusParser.getInstance();		
+		ServerStatusResponse response = null;
 		
         try { response = parser.getServerStatus(); }
 		catch (ApiException e) 
