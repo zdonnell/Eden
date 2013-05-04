@@ -24,7 +24,7 @@ public class CacheDatabase {
 
 	// These constants are specific to the database. They should be
 	// changed to suit your needs.
-	private final String DB_NAME = "cache_db";
+	private final String DB_NAME = "cache_db_new";
 	private final int DB_VERSION = 1;
 
 	public final static String TABLE_NAME = "cache_status";
@@ -69,6 +69,19 @@ public class CacheDatabase {
 			c.close();
 			return false;
 		}
+	}
+	
+	public boolean cacheExists(int requestHash)
+	{
+		Cursor c = db.query(TABLE_NAME, new String[] { TABLE_EXPIRE }, TABLE_ID + "=?", new String[] { String.valueOf(requestHash) }, null, null, null);
+		
+		boolean cacheExists;
+		if (c.moveToFirst()) cacheExists = true;
+		else cacheExists = false;
+		
+		c.close();
+		
+		return cacheExists;
 	}
 	
 	public void updateCache(int requestHash, Date cachedUntil) 

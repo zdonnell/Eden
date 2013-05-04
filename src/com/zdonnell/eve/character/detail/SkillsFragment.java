@@ -22,6 +22,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.beimin.eveapi.character.sheet.ApiSkill;
+import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
+import com.beimin.eveapi.core.ApiAuthorization;
+import com.beimin.eveapi.exception.ApiException;
 import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.R;
@@ -31,6 +35,7 @@ import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.Skill;
 import com.zdonnell.eve.apilink.APICallback;
+import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.eve.SkillInfo;
 
@@ -64,7 +69,7 @@ public class SkillsFragment extends DetailFragment {
     
     private SkillGroup[] skillTree;
     
-    private SparseArray<Skill> currentSkills;
+    private SparseArray<ApiSkill> currentSkills;
     
     private ExpandableListView skillsListView;
     
@@ -87,24 +92,35 @@ public class SkillsFragment extends DetailFragment {
     	
     	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
     	
-    	if (parentActivity.dataCache.getCharacterSheet() != null)
+    	/*if (parentActivity.dataCache.getCharacterSheet() != null)
     	{
     		currentSkills = parentActivity.dataCache.getCharacterSheet().getSkills();
 			updateSkillList();
     	}
     	else
-    	{
-	    	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity()) 
-	    	{
+    	{*/
+    		ApiAuthorization apiAuth = new ApiAuthorization(getArguments().getInt("keyID"), getArguments().getInt("characterID"), getArguments().getString("vCode"));
+    		new com.zdonnell.eve.apilink.character.APICharacter(context, apiAuth).getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>(parentActivity)
+    		{
 				@Override
-				public void onUpdate(CharacterSheet updatedData) 
-				{
-					currentSkills = updatedData.getSkills();
-					parentActivity.dataCache.cacheCharacterSheet(updatedData);
+				public void onUpdate(CharacterSheetResponse response) 
+				{	
+					SparseArray<ApiSkill> currentTempSkills = new SparseArray<ApiSkill>(response.getSkills().size());
+					for (ApiSkill s : response.getSkills())
+					{
+						currentTempSkills.put(s.getTypeID(), s);
+					}
+					currentSkills = currentTempSkills;
 					updateSkillList();
 				}
-	    	});
-    	}
+
+				@Override
+				public void onError(CharacterSheetResponse response, ApiException exception) 
+				{
+					
+				}
+    		});
+    	//}
     	
     	if (parentActivity.dataCache.getSkillTree() != null)
     	{
@@ -149,7 +165,7 @@ public class SkillsFragment extends DetailFragment {
         
         private SkillGroup[] skillTree, skillTreeTrainedSkills;
         
-        private SparseArray<Skill> currentSkills;
+        private SparseArray<ApiSkill> currentSkills;
                 
         private HashMap<String, Integer> attributeColors = new HashMap<String, Integer>(5);
         
@@ -162,7 +178,7 @@ public class SkillsFragment extends DetailFragment {
         private static final int groupLayoutID = R.layout.char_detail_skills_list_item;
         private static final int childLayoutID = R.layout.char_detail_skills_list_item_subskill;
 
-        public SkillsExpandedListAdapter(Context context, SkillGroup[] skillTree, SparseArray<Skill> currentSkills, int mode) 
+        public SkillsExpandedListAdapter(Context context, SkillGroup[] skillTree, SparseArray<ApiSkill> currentSkills, int mode) 
         {
             this.context = context;
             this.skillTree = skillTree;
@@ -296,11 +312,11 @@ public class SkillsFragment extends DetailFragment {
 				levelIndicator.setVisibility(View.VISIBLE);
 				levelIndicator.provideSkillInfo(currentSkills.get(skillInfo.typeID()), false, Color.rgb(75, 75, 75));
 		
-				Skill currentSkill = currentSkills.get(skillInfo.typeID());
+				ApiSkill currentSkill = currentSkills.get(skillInfo.typeID());
 				if (currentSkill.getLevel() == 5) skillIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.skill_finished_training));
 				else 
 				{
-					if (currentSkill.getSkillPoints() > baseSPAtLevel[currentSkill.getLevel()] * skillInfo.rank())
+					if (currentSkill.getSkillpoints() > baseSPAtLevel[currentSkill.getLevel()] * skillInfo.rank())
 					{
 						skillIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.skill_in_progress));
 					}
@@ -313,7 +329,7 @@ public class SkillsFragment extends DetailFragment {
 				skillName.setAlpha(1);
 				spText.setAlpha(1);
 				
-				spText.setText("SP: " + formatter.format(currentSkill.getSkillPoints()) + " / " + formatter.format(skillInfo.rank() * 256000));
+				spText.setText("SP: " + formatter.format(currentSkill.getSkillpoints()) + " / " + formatter.format(skillInfo.rank() * 256000));
 			}
 			
 		}
@@ -389,7 +405,7 @@ public class SkillsFragment extends DetailFragment {
 			int groupSPCount = 0;
 			for (SkillInfo info : skillGroup.containedSkills())
 			{
-				if (currentSkills.get(info.typeID()) != null) groupSPCount += currentSkills.get(info.typeID()).getSkillPoints();
+				if (currentSkills.get(info.typeID()) != null) groupSPCount += currentSkills.get(info.typeID()).getSkillpoints();
 			}
 			
 			groupSP.setText(formatter.format(groupSPCount) + " SP");
@@ -458,16 +474,27 @@ public class SkillsFragment extends DetailFragment {
 	@Override
 	public void refresh() 
 	{   	
-		character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity()) 
-    	{
+		ApiAuthorization apiAuth = new ApiAuthorization(getArguments().getInt("keyID"), getArguments().getInt("characterID"), getArguments().getString("vCode"));
+		new com.zdonnell.eve.apilink.character.APICharacter(context, apiAuth).getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>(parentActivity)
+		{
 			@Override
-			public void onUpdate(CharacterSheet updatedData) 
-			{
-				currentSkills = updatedData.getSkills();
-				parentActivity.dataCache.cacheCharacterSheet(updatedData);
+			public void onUpdate(CharacterSheetResponse response) 
+			{					
+				SparseArray<ApiSkill> currentTempSkills = new SparseArray<ApiSkill>(response.getSkills().size());
+				for (ApiSkill s : response.getSkills())
+				{
+					currentTempSkills.put(s.getTypeID(), s);
+				}
+				currentSkills = currentTempSkills;
 				updateSkillList();
 			}
-    	});
+
+			@Override
+			public void onError(CharacterSheetResponse response, ApiException exception) 
+			{
+				
+			}
+		});
 		
 		new Eve(context).getSkillTree(new APICallback<SkillGroup[]>((BaseActivity) getActivity()) 
     	{

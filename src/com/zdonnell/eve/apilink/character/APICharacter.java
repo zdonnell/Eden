@@ -15,9 +15,10 @@ public class APICharacter
 	private Context context;
 	private ApiAuth<?> apiAuth;
 	
-	public APICharacter(Context context, ApiAuth<?> auth)
+	public APICharacter(Context context, ApiAuth<?> apiAuth)
 	{
 		this.context = context;
+		this.apiAuth = apiAuth;
 	}
 	
 	public void getCharacterSheet(APIExceptionCallback<CharacterSheetResponse> callback)

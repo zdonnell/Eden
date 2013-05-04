@@ -20,7 +20,7 @@ public class Database {
 	private static void createSkillsTable(SQLiteDatabase db)
 	{
 		String newTableQueryString = "create table " + SkillsData.TABLE + " ("
-				+ SkillsData.COL_UNIQUE_ID + " integer autoincrement primary key not null," 
+				+ SkillsData.COL_UNIQUE_ID + " integer primary key not null," 
 				+ SkillsData.COL_CHAR_ID + " integer," 
 				+ SkillsData.COL_TYPEID + " integer,"
 				+ SkillsData.COL_SKILLPOINTS + " integer,"
