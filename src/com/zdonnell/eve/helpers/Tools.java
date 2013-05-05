@@ -137,4 +137,21 @@ public class Tools {
 		
 		return idsWithoutDups;
 	}
+	
+	/**
+	 * Formats a skill level to roman numerals
+	 */
+	public static String skillLevelToString(int skillLevel)
+	{
+		switch(skillLevel)
+		{
+			case 1: return "I";
+			case 2: return "II";
+			case 3: return "III";
+			case 4: return "IV";
+			case 5: return "V";
+		}
+		
+		throw new IllegalArgumentException("Invalid skill level specified");
+	}
 }

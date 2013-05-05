@@ -291,7 +291,7 @@ public class CharacterSheetFragment extends Fragment {
 				public void onUpdate(SparseArray<TypeInfo> updatedData) 
 				{
 					if (updatedData == null || updatedData.valueAt(0) == null) currentSkillView.setText("Skill ID: " + skillQueue.get(0).skillID);
-					else currentSkillView.setText(updatedData.valueAt(0).typeName);
+					else currentSkillView.setText(updatedData.valueAt(0).typeName + " " + Tools.skillLevelToString(skillLevel));
 				}
 			}, skillQueue.get(0).skillID);
 		}
