@@ -86,7 +86,7 @@ public class ResourceManager {
 		else
 		{
 			rw.apiCallback.updateState(APICallback.STATE_CACHED_RESPONSE_NOT_FOUND);
-			new APIServerQuery(rw).execute();
+			new APIServerQuery(rw).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		}
 	}
 	

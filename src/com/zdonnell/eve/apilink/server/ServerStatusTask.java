@@ -19,6 +19,9 @@ public class ServerStatusTask extends AsyncTask<Void, Void, ServerStatusResponse
 	public ServerStatusTask(APIExceptionCallback<ServerStatusResponse> callback)
 	{
 		this.callback = callback;
+		
+		// We don't cache server status, so just notify the callback that we didn't find any
+		callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_NOT_FOUND);
 	}
 	
 	@Override

@@ -62,7 +62,7 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 		
 		cacheValid = cacheDatabase.cacheValid(requestHash);
 		cacheExists = cacheDatabase.cacheExists(requestHash);
-		
+				
 		if (cacheValid)
 		{
 			return buildResponseFromDatabase();
@@ -75,10 +75,11 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 				cachedData = buildResponseFromDatabase();
 				publishProgress();
 			}
-			
+			else callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_NOT_FOUND);
+ 	
 			CharacterSheetParser parser = CharacterSheetParser.getInstance();		
 			CharacterSheetResponse response = null;
-			
+						
 	        try 
 	        { 
 	        	response = parser.getResponse(apiAuth);
@@ -91,7 +92,7 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 				apiExceptionOccured = true;
 				exception = e;
 			}
-	        
+	        	        
 	        return response;
 		}
 	}
@@ -123,7 +124,7 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 
 	@Override
 	protected void onProgressUpdate(Void... progress)
-	{
+	{		
 		callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
 		callback.onUpdate(cachedData);
 	}

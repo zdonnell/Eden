@@ -89,8 +89,8 @@ public class CacheDatabase {
 		ContentValues values = new ContentValues();
 		values.put(TABLE_ID, requestHash);
 		values.put(TABLE_EXPIRE, formatter.format(cachedUntil));
-
-		try { db.insert(TABLE_NAME, null, values); }
+		
+		try { db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE); }
 		catch(Exception e) { e.printStackTrace(); }
 	}
 
