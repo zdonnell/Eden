@@ -11,7 +11,6 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;

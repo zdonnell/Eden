@@ -10,7 +10,6 @@ import android.view.View;
 
 import com.beimin.eveapi.character.sheet.ApiSkill;
 import com.zdonnell.eve.api.character.QueuedSkill;
-import com.zdonnell.eve.api.character.Skill;
 import com.zdonnell.eve.helpers.Tools;
 
 public class SkillLevelIndicator extends View {

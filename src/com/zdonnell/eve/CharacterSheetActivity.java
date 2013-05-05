@@ -9,14 +9,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.ImageService;
-import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.character.detail.AttributesFragment;
 import com.zdonnell.eve.character.detail.ParentAssetsFragment;

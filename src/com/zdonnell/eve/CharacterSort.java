@@ -2,8 +2,6 @@ package com.zdonnell.eve;
 
 import java.util.Comparator;
 
-import android.util.SparseArray;
-
 import com.zdonnell.eve.api.account.EveCharacter;
 
 public class CharacterSort {

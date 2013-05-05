@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -37,12 +36,8 @@ import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.api.character.CharacterSheet;
-import com.zdonnell.eve.api.character.Skill;
-import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.eve.Eve;
-import com.zdonnell.eve.eve.SkillInfo;
 
 public class SkillsFragment extends DetailFragment {
     

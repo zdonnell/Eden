@@ -1,15 +1,8 @@
 package com.zdonnell.eve.database;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-
-import com.beimin.eveapi.eve.skilltree.ApiRequirement;
-import com.beimin.eveapi.eve.skilltree.ApiSkill;
-import com.beimin.eveapi.eve.skilltree.ApiSkillGroup;
-import com.beimin.eveapi.eve.skilltree.CharacterAttribute;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -17,6 +10,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.SparseArray;
+
+import com.beimin.eveapi.eve.skilltree.ApiRequirement;
+import com.beimin.eveapi.eve.skilltree.ApiSkill;
+import com.beimin.eveapi.eve.skilltree.ApiSkillGroup;
+import com.beimin.eveapi.eve.skilltree.CharacterAttribute;
 
 public class SkillTree {
 	

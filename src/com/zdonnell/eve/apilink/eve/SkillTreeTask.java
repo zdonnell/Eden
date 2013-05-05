@@ -1,8 +1,5 @@
 package com.zdonnell.eve.apilink.eve;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;

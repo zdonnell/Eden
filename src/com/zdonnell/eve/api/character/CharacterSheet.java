@@ -1,7 +1,5 @@
 package com.zdonnell.eve.api.character;
 
-import java.util.ArrayList;
-
 import android.util.SparseArray;
 
 /**

@@ -2,9 +2,7 @@ package com.zdonnell.eve.api.priceservice;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.zdonnell.eve.apilink.APICallback;

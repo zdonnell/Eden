@@ -1,6 +1,5 @@
 package com.zdonnell.eve.character.detail;
 
-import com.zdonnell.eve.api.character.Skill;
 import com.zdonnell.eve.eve.SkillInfo;
 
 public class SkillGroup {

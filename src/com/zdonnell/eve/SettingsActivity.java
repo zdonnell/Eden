@@ -1,8 +1,9 @@
 package com.zdonnell.eve;
 
+import java.util.List;
+
 import android.annotation.TargetApi;
 import android.app.Fragment;
-import android.app.ListFragment;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.media.Ringtone;
@@ -17,11 +18,8 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
-import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.MenuItem;
-
-import java.util.List;
 
 import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingPreferenceActivity;

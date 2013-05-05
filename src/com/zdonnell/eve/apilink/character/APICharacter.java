@@ -2,7 +2,6 @@ package com.zdonnell.eve.apilink.character;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
 import com.beimin.eveapi.core.ApiAuth;

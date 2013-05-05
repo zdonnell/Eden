@@ -8,10 +8,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Html;
-import android.util.Log;
 import android.util.SparseArray;
-import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,14 +20,9 @@ import android.widget.TextView;
 
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.api.ImageService;
-import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.AssetsEntity.Station;
-import com.zdonnell.eve.api.priceservice.PriceService;
-import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
-import com.zdonnell.eve.helpers.StandardOnTouchListener;
-import com.zdonnell.eve.staticdata.api.StaticData;
 import com.zdonnell.eve.staticdata.api.StationInfo;
 
 public class StationListFragment extends Fragment implements IAssetsSubFragment 

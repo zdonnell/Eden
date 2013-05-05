@@ -24,13 +24,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MenuItem.OnActionExpandListener;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
-import android.widget.ImageView;
 import android.widget.SearchView;
-import android.widget.SearchView.OnCloseListener;
 import android.widget.SearchView.OnQueryTextListener;
-import android.widget.TextView;
 
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
@@ -250,7 +246,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     		if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
     		{
     			if (searchOpenedAtLevel < mSectionsPagerAdapter.assetsFragment().parentStack.size() && !searchView.isIconified())
-	    		{    				
+    			{
     				mSectionsPagerAdapter.assetsFragment().backKeyPressed();
     				return true;
 	    		}

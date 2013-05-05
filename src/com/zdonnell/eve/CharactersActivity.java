@@ -1,8 +1,5 @@
 package com.zdonnell.eve;
 
-import com.zdonnell.eve.character.detail.InventorySort;
-import com.zdonnell.eve.character.detail.ParentAssetsFragment;
-
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -14,7 +11,6 @@ import android.support.v4.app.DialogFragment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
 
 public class CharactersActivity extends BaseActivity {
 

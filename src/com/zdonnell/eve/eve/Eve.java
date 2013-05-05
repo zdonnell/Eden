@@ -8,7 +8,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import android.content.Context;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.zdonnell.eve.api.APIObject;

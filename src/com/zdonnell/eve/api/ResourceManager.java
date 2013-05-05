@@ -23,7 +23,6 @@ import org.w3c.dom.Document;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.zdonnell.eve.api.ResourceRequestMonitor.RequestNotActiveException;
 import com.zdonnell.eve.apilink.APICallback;
