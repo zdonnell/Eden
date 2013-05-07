@@ -1,11 +1,7 @@
 package com.zdonnell.eve.apilink.eve;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.util.SparseArray;
 
 import com.beimin.eveapi.core.ApiPage;
@@ -150,10 +146,8 @@ public class SkillTreeTask extends AsyncTask<Void, Void, SkillTreeResponse> impl
 	{
 		SkillTreeResponse response = new SkillTreeResponse();
 		
-		long startTime = System.currentTimeMillis();
 		SkillTree skillTree = new SkillTree(context);
 		for (ApiSkillGroup group : skillTree.getSkillTree()) response.add(group);
-		Log.d("SKILL TREE", "TIME TO LOAD FROM DB: " + (System.currentTimeMillis() - startTime));
 		
 		return response;
 	}
