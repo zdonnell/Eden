@@ -1,10 +1,7 @@
 package com.zdonnell.eve.apilink.server;
 
 import android.content.Context;
-import android.os.AsyncTask;
 
-import com.beimin.eveapi.exception.ApiException;
-import com.beimin.eveapi.server.ServerStatusParser;
 import com.beimin.eveapi.server.ServerStatusResponse;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 

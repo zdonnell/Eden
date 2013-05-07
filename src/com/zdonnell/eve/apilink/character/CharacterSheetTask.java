@@ -4,7 +4,6 @@ import java.util.Set;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.beimin.eveapi.character.sheet.ApiSkill;
 import com.beimin.eveapi.character.sheet.CharacterSheetParser;

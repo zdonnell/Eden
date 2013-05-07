@@ -2,13 +2,6 @@ package com.zdonnell.eve;
 
 import java.util.ArrayList;
 
-import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.ImageService;
-import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
-import com.zdonnell.eve.api.account.EveCharacter;
-import com.zdonnell.eve.helpers.BasicOnTouchListener;
-
-import android.app.AlertDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -22,6 +15,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.zdonnell.eve.api.APICredentials;
+import com.zdonnell.eve.api.ImageService;
+import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
+import com.zdonnell.eve.api.account.EveCharacter;
+import com.zdonnell.eve.helpers.BasicOnTouchListener;
 
 /**
  * Fragment that displays API Keys and linked Characters

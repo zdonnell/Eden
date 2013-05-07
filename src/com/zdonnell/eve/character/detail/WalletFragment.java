@@ -1,24 +1,18 @@
 package com.zdonnell.eve.character.detail;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.text.Html;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,10 +26,7 @@ import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.CharacterSheet;
-import com.zdonnell.eve.api.character.AssetsEntity.Station;
-import com.zdonnell.eve.api.character.CharacterSheet.AttributeEnhancer;
 import com.zdonnell.eve.api.character.WalletEntry;
 import com.zdonnell.eve.api.character.WalletEntry.Transaction;
 import com.zdonnell.eve.apilink.APICallback;

@@ -5,7 +5,6 @@ import java.text.DecimalFormat;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.SparseArray;
 import android.view.LayoutInflater;

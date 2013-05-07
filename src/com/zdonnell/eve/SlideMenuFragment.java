@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.beimin.eveapi.exception.ApiException;
 import com.beimin.eveapi.server.ServerStatusResponse;
-import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.server.Server;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
