@@ -5,7 +5,6 @@ import android.util.SparseArray;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.WalletEntry;
-import com.zdonnell.eve.character.detail.SkillGroup;
 import com.zdonnell.eve.staticdata.api.StationInfo;
 import com.zdonnell.eve.staticdata.api.TypeInfo;
 
@@ -16,8 +15,6 @@ public class CharacterDetailCache {
 	private WalletEntry[] transactions = null;
 	
 	private CharacterSheet characterSheet = null;
-
-	private SkillGroup[] skillTree = null;
 	
 	private SparseArray<StationInfo> stationInfo = null;
     
@@ -32,7 +29,6 @@ public class CharacterDetailCache {
     	journalEntries = null;
     	transactions = null;
     	characterSheet = null;
-    	skillTree = null;
     	stationInfo = null;
         typeInfo = null;
         prices = null;
@@ -42,7 +38,6 @@ public class CharacterDetailCache {
 	public void cacheTransactions(WalletEntry[] transactions) { this.transactions = transactions; }
 	
 	public void cacheCharacterSheet(CharacterSheet characterSheet) { this.characterSheet = characterSheet; }
-	public void cacheSkillTree(SkillGroup[] skillTree) { this.skillTree = skillTree; }
 	
 	public void cacheStationInfo(SparseArray<StationInfo> stationInfo) { this.stationInfo = stationInfo; }
 	public void cacheTypeInfo(SparseArray<TypeInfo> typeInfo) { this.typeInfo = typeInfo; }
@@ -55,7 +50,6 @@ public class CharacterDetailCache {
 	public WalletEntry[] getTransactions() { return transactions; }
 	
 	public CharacterSheet getCharacterSheet() { return characterSheet; }
-	public SkillGroup[] getSkillTree() { return skillTree; }
 	
 	public SparseArray<StationInfo> getStationInfo() { return stationInfo; }
 	public SparseArray<TypeInfo> getTypeInfo() { return typeInfo; }

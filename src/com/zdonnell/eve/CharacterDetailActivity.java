@@ -39,9 +39,9 @@ import com.zdonnell.eve.character.detail.DetailFragment;
 import com.zdonnell.eve.character.detail.InventoryListFragment;
 import com.zdonnell.eve.character.detail.InventorySort;
 import com.zdonnell.eve.character.detail.ParentAssetsFragment;
-import com.zdonnell.eve.character.detail.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.WalletFragment;
-import com.zdonnell.eve.ui.character.detail.skills.SkillsFragment;
+import com.zdonnell.eve.character.detail.queue.SkillQueueFragment;
+import com.zdonnell.eve.character.detail.skills.SkillsFragment;
 
 public class CharacterDetailActivity extends BaseActivity implements ActionBar.TabListener {
 

@@ -11,6 +11,7 @@ public class Database {
 	{
 		createSkillsTable(db);
 		createSkillTreeTable(db);
+		createSkillQueueTable(db);
 	}
 	
 	public static void onUpdate(SQLiteDatabase db, int oldVersion, int newVersion)
@@ -46,6 +47,23 @@ public class Database {
 				+ SkillTree.COL_SKILL_GROUP_ID + " integer,"
 				+ SkillTree.COL_SKILL_GROUP_NAME + " text,"				
 				+ "UNIQUE (" + SkillTree.COL_SKILL_TYPE_ID + ") ON CONFLICT REPLACE);";
+
+		db.execSQL(newTableQueryString);
+	}
+	
+	private static void createSkillQueueTable(SQLiteDatabase db)
+	{		
+		String newTableQueryString = "create table " + SkillQueueData.TABLE + " ("
+				+ SkillQueueData.COL_UNIQUE_ID + " integer primary key not null," 
+				+ SkillQueueData.COL_CHAR_ID + " integer," 
+				+ SkillQueueData.COL_TYPEID + " integer,"
+				+ SkillQueueData.COL_START_SP + " integer,"
+				+ SkillQueueData.COL_END_SP + " integer,"
+				+ SkillQueueData.COL_LEVEL + " integer,"
+				+ SkillQueueData.COL_START_TIME + " text,"
+				+ SkillQueueData.COL_END_TIME + " text,"
+				+ SkillQueueData.COL_POSITION + " integer,"				
+				+ "UNIQUE (" + SkillQueueData.COL_CHAR_ID + ", " + SkillQueueData.COL_POSITION + ") ON CONFLICT REPLACE);";
 
 		db.execSQL(newTableQueryString);
 	}

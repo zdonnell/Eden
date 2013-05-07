@@ -1,4 +1,4 @@
-package com.zdonnell.eve.ui.character.detail.skills;
+package com.zdonnell.eve.character.detail.skills;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -334,7 +334,6 @@ public class SkillsFragment extends DetailFragment {
 		{
 			TextView skillName = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_skillname);
 			TextView spText = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_skillsptext);
-			TextView timeUntilNextLevel = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_skillTimeRemaining);
 			TextView primAttribute = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_subitem_primAttr);
 			TextView secAttribute = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_subitem_secAttr);
 			
