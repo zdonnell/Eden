@@ -1,4 +1,4 @@
-package com.zdonnell.eve.character.detail;
+package com.zdonnell.eve.ui.character.detail.skills;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -7,12 +7,9 @@ import java.util.Set;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,19 +28,19 @@ import com.beimin.eveapi.eve.skilltree.ApiSkillGroup;
 import com.beimin.eveapi.eve.skilltree.CharacterAttribute;
 import com.beimin.eveapi.eve.skilltree.SkillTreeResponse;
 import com.beimin.eveapi.exception.ApiException;
-import com.zdonnell.eve.BaseActivity;
-import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
-import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.api.character.CharacterSheet;
-import com.zdonnell.eve.api.character.Skill;
-import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.eve.Eve;
-import com.zdonnell.eve.eve.SkillInfo;
+import com.zdonnell.eve.character.detail.DetailFragment;
+import com.zdonnell.eve.character.detail.SkillLevelIndicator;
 
+/**
+ * This Fragment is used to display the Skills List for a character.
+ * 
+ * @author Zach
+ *
+ */
 public class SkillsFragment extends DetailFragment {
     
 	public static final int ALL_SKILLS = 0;
@@ -64,159 +61,184 @@ public class SkillsFragment extends DetailFragment {
 		baseSPAtLevel[3] = 8000;
 		baseSPAtLevel[4] = 45255;
 		baseSPAtLevel[5] = 256000;
-	}
+	}      
     
-    private APICharacter character;
-    
-    private CharacterDetailActivity parentActivity;  
-    
-    private Context context;
-    
+	/**
+	 * The unmodified Skill Tree
+	 */
     private ApiSkillGroup[] skillTree;
     
-    private SparseArray<ApiSkill> currentSkills;
+    /**
+     * The current characters skills, indexed by skill typeID.
+     */
+    private SparseArray<ApiSkill> charactersSkills;
     
+    /**
+     * The main view presenting the skill list.
+     */
     private ExpandableListView skillsListView;
     
-    private SharedPreferences prefs;
-
-    private int mode = 1;
+    /**
+     * The mode to use to display the skills. 
+     * @see {@link #ALL_SKILLS}
+     * @see {@link #TRAINED_SKILLS}
+     */
+    private int skillsDisplayMode = TRAINED_SKILLS;
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
     {    	
-    	context = inflater.getContext();
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_skills, container, false);
-    	
-    	parentActivity = (CharacterDetailActivity) getActivity();
-    	
     	skillsListView = (ExpandableListView) inflatedView.findViewById(R.id.char_detail_skills_list);
-    	prefs = context.getSharedPreferences("eden_skills_preferences", Context.MODE_PRIVATE);
-    	mode = prefs.getInt("skill_display", TRAINED_SKILLS);
     	
-    	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
+    	skillsDisplayMode = sharedPreferences.getInt("skill_display", TRAINED_SKILLS);
     	
-    	/*if (parentActivity.dataCache.getCharacterSheet() != null)
-    	{
-    		currentSkills = parentActivity.dataCache.getCharacterSheet().getSkills();
-			updateSkillList();
-    	}
-    	else
-    	{*/
-    		ApiAuthorization apiAuth = new ApiAuthorization(getArguments().getInt("keyID"), getArguments().getInt("characterID"), getArguments().getString("vCode"));
-    		
-    		final long startTime = System.currentTimeMillis();
-    		new com.zdonnell.eve.apilink.character.APICharacter(context, apiAuth).getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>(parentActivity)
-    		{
-				@Override
-				public void onUpdate(CharacterSheetResponse response) 
-				{	
-					long time = System.currentTimeMillis() - startTime;
-					Log.d("CHARACTER SHEET", "LOAD TIME: " + time);
-					
-					SparseArray<ApiSkill> currentTempSkills = new SparseArray<ApiSkill>(response.getSkills().size());
-					for (ApiSkill s : response.getSkills())
-					{
-						currentTempSkills.put(s.getTypeID(), s);
-					}
-					currentSkills = currentTempSkills;
-					updateSkillList();
-				}
-
-				@Override
-				public void onError(CharacterSheetResponse response, ApiException exception) 
+    	loadData();
+    	
+    	return inflatedView;
+    }  
+    
+    @Override
+	public void loadData() 
+	{   
+    	// Load in Character Sheet to get Character Skills
+		ApiAuthorization apiAuth = new ApiAuthorization(getArguments().getInt("keyID"), getArguments().getInt("characterID"), getArguments().getString("vCode"));
+		new com.zdonnell.eve.apilink.character.APICharacter(context, apiAuth).getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>(parentActivity)
+		{
+			@Override
+			public void onUpdate(CharacterSheetResponse response) 
+			{					
+				SparseArray<ApiSkill> currentTempSkills = new SparseArray<ApiSkill>(response.getSkills().size());
+				for (ApiSkill s : response.getSkills())
 				{
-					
+					currentTempSkills.put(s.getTypeID(), s);
 				}
-    		});
-    	//}
-    	
-    	/*if (parentActivity.dataCache.getSkillTree() != null)
-    	{
-    		skillTree = parentActivity.dataCache.getSkillTree();
-			updateSkillList();
-    	}
-    	else
-    	{*/
-    	final long startTime2 = System.currentTimeMillis();
-		new Eve(context).skillTree(new APIExceptionCallback<SkillTreeResponse>((BaseActivity) context)
+				charactersSkills = currentTempSkills;
+				updateSkillList();
+			}
+
+			@Override
+			public void onError(CharacterSheetResponse response, ApiException exception) 
+			{
+				// TODO add UI element notifying user of error
+			}
+		});
+		
+		// Load in the Skill Tree
+		new Eve(context).skillTree(new APIExceptionCallback<SkillTreeResponse>(parentActivity)
 		{
 			@Override
 			public void onUpdate(SkillTreeResponse response) 
 			{
-				long time = System.currentTimeMillis() - startTime;
-				Log.d("SKILL TREE", "LOAD TIME: " + time);
-				
 				Set<ApiSkillGroup> apiSkillGroups = response.getAll();
 				skillTree = new ApiSkillGroup[apiSkillGroups.size()];
-
 				apiSkillGroups.toArray(skillTree);
+				
 				updateSkillList();
 			}
 
 			@Override
 			public void onError(SkillTreeResponse response, ApiException exception) 
 			{
-				
+				// TODO add UI element notifying user of error
 			}
 		});
-    	//}
-    	
-    	return inflatedView;
-    }   
+	}
     
+    /**
+     * This method will tell the ListView to use a new {@link SkillsExpandedListAdapter}.
+     */
     private void updateSkillList()
     {
-    	if (currentSkills != null && skillTree != null)
+    	if (charactersSkills != null && skillTree != null)
     	{
-    		skillsListView.setAdapter(new SkillsExpandedListAdapter(context, skillTree, currentSkills, mode));
+    		skillsListView.setAdapter(new SkillsExpandedListAdapter(context, skillTree, charactersSkills, skillsDisplayMode));
     	}
     }
     
-    public void updateSkillDisplay(int mode)
+    /**
+     * Updates the skill listing display based on the mode provided
+     * 
+     * @param mode {@link #ALL_SKILLS} or {@link #TRAINED_SKILLS}
+     */
+    public void updateSkillDisplayMode(int mode)
     {
-    	this.mode = mode;
-    	prefs.edit().putInt("skill_display", mode).commit();
+    	skillsDisplayMode = mode;
+    	sharedPreferences.edit().putInt("skill_display", mode).commit();
     	updateSkillList();
     }
     
+    /**
+     * Adapter to bind skill data to an {@link ExpandableListView}
+     * 
+     * @author Zach
+     *
+     */
     private class SkillsExpandedListAdapter implements ExpandableListAdapter
     {
         private Context context;
-        
-        private ApiSkillGroup[] skillTree, skillTreeTrainedSkills;
-        
-        private SparseArray<ApiSkill> currentSkills;
-                
-        private HashMap<CharacterAttribute, Integer> attributeColors = new HashMap<CharacterAttribute, Integer>(5);
-        private HashMap<CharacterAttribute, String> attributeLetter = new HashMap<CharacterAttribute, String>(5);
-        
-		private NumberFormat formatter = NumberFormat.getInstance();
-		
-		private boolean showAll = false;
-        
+        private NumberFormat formatter = NumberFormat.getInstance();
 		private LayoutInflater inflater;
         
         private static final int groupLayoutID = R.layout.char_detail_skills_list_item;
         private static final int childLayoutID = R.layout.char_detail_skills_list_item_subskill;
+        
+        /**
+         * Map that links an attribute type to it's color representation
+         */
+        private HashMap<CharacterAttribute, Integer> attributeColors = new HashMap<CharacterAttribute, Integer>(5);
+        
+        /**
+         * Map that links an attribute type to it's color 
+         */
+        private HashMap<CharacterAttribute, String> attributeLetter = new HashMap<CharacterAttribute, String>(5);
+       
+        /**
+         * An Array of {@link ApiSkillGroup} representing the entire set of Skills In EVE.
+         */
+        private ApiSkillGroup[] skillTree;
+        
+        /**
+         * A Modified version of {@link skillTree} only containing groups that have skills trained
+         * according to {@link #characterSkills}
+         */
+        private ApiSkillGroup[] skillTreeTrainedSkills;
+        
+        /**
+         * @see {@link SkillsFragment#charactersSkills}
+         */
+        private SparseArray<ApiSkill> characterSkills;
 
-        public SkillsExpandedListAdapter(Context context, ApiSkillGroup[] skillTree, SparseArray<ApiSkill> currentSkills, int mode) 
+		/**
+		 * Flags whether the Adapter should show all skills or only trained skills
+		 */
+		private boolean showAll = false;
+		
+        /**
+         * Constructor
+         * 
+         * @param context
+         * @param skillTree The master list of skills that the character's skills should be referenced against
+         * @param characterSkills The current character's skills
+         * @param skillsDisplayMode {@link SkillsFragment#ALL_SKILLS} or {@link SkillsFragment#TRAINED_SKILLS}
+         */
+        public SkillsExpandedListAdapter(Context context, ApiSkillGroup[] skillTree, SparseArray<ApiSkill> characterSkills, int skillsDisplayMode) 
         {
             this.context = context;
             this.skillTree = skillTree;
-            this.currentSkills = currentSkills;
-            this.showAll = (mode == 0);
-            
-            prepareSkillsets();
+            this.characterSkills = characterSkills;
+            this.showAll = (skillsDisplayMode == 0);
             
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             
+            prepareSkillsets();
+                        
+            // Fill Attribute Maps
             attributeColors.put(CharacterAttribute.INTELLIGENCE, Color.rgb(60, 109, 133));
             attributeColors.put(CharacterAttribute.MEMORY, Color.rgb(140, 104, 158));
             attributeColors.put(CharacterAttribute.CHARISMA, Color.rgb(188, 158, 69));
             attributeColors.put(CharacterAttribute.PERCEPTION, Color.rgb(60, 140, 101));
             attributeColors.put(CharacterAttribute.WILLPOWER, Color.rgb(210, 144, 104));
-            
             attributeLetter.put(CharacterAttribute.INTELLIGENCE, "I");
             attributeLetter.put(CharacterAttribute.MEMORY, "M");
             attributeLetter.put(CharacterAttribute.CHARISMA, "C");
@@ -224,23 +246,30 @@ public class SkillsFragment extends DetailFragment {
             attributeLetter.put(CharacterAttribute.WILLPOWER, "W");
         }
         
+        /**
+         * Takes the characters current skills and compares them to the Skill Tree to see what groups in the
+         * Skill Tree have no skills trained for the given character.  A modified skill tree with reduced groups is created
+         * for use with display mode: {@link SkillsFragment#TRAINABLE_SKILLS}
+         * 
+         * @see {@link #skillTreeTrainedSkills}
+         */
         private void prepareSkillsets()
         {
         	ArrayList<ApiSkillGroup> groupsWithSkillsTrained = new ArrayList<ApiSkillGroup>();
-        	for (ApiSkillGroup group : skillTree)
+        	for (ApiSkillGroup skillGroup : skillTree)
         	{
         		ArrayList<com.beimin.eveapi.eve.skilltree.ApiSkill> trainedSkills = new ArrayList<com.beimin.eveapi.eve.skilltree.ApiSkill>();
         		
-        		for (com.beimin.eveapi.eve.skilltree.ApiSkill info : group.getSkills())
+        		for (com.beimin.eveapi.eve.skilltree.ApiSkill skillInfo : skillGroup.getSkills())
         		{
-        			if (currentSkills.get(info.getTypeID()) != null) trainedSkills.add(info);
+        			if (characterSkills.get(skillInfo.getTypeID()) != null) trainedSkills.add(skillInfo);
         		}
         		
         		if (!trainedSkills.isEmpty())
         		{	
         			ApiSkillGroup newGroup = new ApiSkillGroup();
-        			newGroup.setGroupID(group.getGroupID());
-        			newGroup.setGroupName(group.getGroupName());
+        			newGroup.setGroupID(skillGroup.getGroupID());
+        			newGroup.setGroupName(skillGroup.getGroupName());
         			for (com.beimin.eveapi.eve.skilltree.ApiSkill skill : trainedSkills) newGroup.add(skill);
         			
         			groupsWithSkillsTrained.add(newGroup);
@@ -321,7 +350,7 @@ public class SkillsFragment extends DetailFragment {
 			primAttribute.setText(attributeLetter.get(skillInfo.getPrimaryAttribute()));
 			secAttribute.setText(attributeLetter.get(skillInfo.getSecondaryAttribute()));
 			
-			if (currentSkills.get(skillInfo.getTypeID()) == null) 
+			if (characterSkills.get(skillInfo.getTypeID()) == null) 
 			{
 				levelIndicator.setVisibility(View.GONE);
 				
@@ -333,7 +362,7 @@ public class SkillsFragment extends DetailFragment {
 				boolean preReqsMet = true;
 				for (ApiRequirement preReq : skillInfo.getRequiredSkills())
 				{
-					if (currentSkills.get(preReq.getTypeID()) == null || currentSkills.get(preReq.getTypeID()).getLevel() < preReq.getSkillLevel()) preReqsMet = false;
+					if (characterSkills.get(preReq.getTypeID()) == null || characterSkills.get(preReq.getTypeID()).getLevel() < preReq.getSkillLevel()) preReqsMet = false;
 				}
 				
 				if (preReqsMet) spText.setText("You meet the requirements to train this skill");
@@ -342,9 +371,9 @@ public class SkillsFragment extends DetailFragment {
 			else 
 			{
 				levelIndicator.setVisibility(View.VISIBLE);
-				levelIndicator.provideSkillInfo(currentSkills.get(skillInfo.getTypeID()), false, Color.rgb(75, 75, 75));
+				levelIndicator.provideSkillInfo(characterSkills.get(skillInfo.getTypeID()), false, Color.rgb(75, 75, 75));
 		
-				ApiSkill currentSkill = currentSkills.get(skillInfo.getTypeID());
+				ApiSkill currentSkill = characterSkills.get(skillInfo.getTypeID());
 				if (currentSkill.getLevel() == 5) skillIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.skill_finished_training));
 				else 
 				{
@@ -420,6 +449,13 @@ public class SkillsFragment extends DetailFragment {
 			return preparedView;
 		}
 		
+		/**
+		 * Loads in 
+		 * 
+		 * @param skillGroup
+		 * @param preparedView
+		 * @param groupPosition
+		 */
 		protected void prepareGroup(final ApiSkillGroup skillGroup, View preparedView, int groupPosition)
 		{
 			TextView groupName = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_groupName);
@@ -432,7 +468,7 @@ public class SkillsFragment extends DetailFragment {
 			int currentSkillsCount = 0;
 			for (com.beimin.eveapi.eve.skilltree.ApiSkill skill : skillGroup.getSkills())
 			{
-				if (currentSkills.get(skill.getTypeID()) != null) ++currentSkillsCount;
+				if (characterSkills.get(skill.getTypeID()) != null) ++currentSkillsCount;
 			}
 			
 			skillCount.setText("Skills: " + currentSkillsCount + " of " + totalSkillsCount);
@@ -440,7 +476,7 @@ public class SkillsFragment extends DetailFragment {
 			int groupSPCount = 0;
 			for (com.beimin.eveapi.eve.skilltree.ApiSkill skill : skillGroup.getSkills())
 			{
-				if (currentSkills.get(skill.getTypeID()) != null) groupSPCount += currentSkills.get(skill.getTypeID()).getSkillpoints();
+				if (characterSkills.get(skill.getTypeID()) != null) groupSPCount += characterSkills.get(skill.getTypeID()).getSkillpoints();
 			}
 			
 			groupSP.setText(formatter.format(groupSPCount) + " SP");
@@ -505,49 +541,4 @@ public class SkillsFragment extends DetailFragment {
 			
 		}
     }
-
-	@Override
-	public void refresh() 
-	{   	
-		ApiAuthorization apiAuth = new ApiAuthorization(getArguments().getInt("keyID"), getArguments().getInt("characterID"), getArguments().getString("vCode"));
-		new com.zdonnell.eve.apilink.character.APICharacter(context, apiAuth).getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>(parentActivity)
-		{
-			@Override
-			public void onUpdate(CharacterSheetResponse response) 
-			{					
-				SparseArray<ApiSkill> currentTempSkills = new SparseArray<ApiSkill>(response.getSkills().size());
-				for (ApiSkill s : response.getSkills())
-				{
-					currentTempSkills.put(s.getTypeID(), s);
-				}
-				currentSkills = currentTempSkills;
-				updateSkillList();
-			}
-
-			@Override
-			public void onError(CharacterSheetResponse response, ApiException exception) 
-			{
-				
-			}
-		});
-		
-		new Eve(context).skillTree(new APIExceptionCallback<SkillTreeResponse>((BaseActivity) context)
-		{
-			@Override
-			public void onUpdate(SkillTreeResponse response) 
-			{
-				Set<ApiSkillGroup> apiSkillGroups = response.getAll();
-				skillTree = new ApiSkillGroup[apiSkillGroups.size()];
-
-				apiSkillGroups.toArray(skillTree);
-				updateSkillList();
-			}
-
-			@Override
-			public void onError(SkillTreeResponse response, ApiException exception) 
-			{
-				
-			}
-		});
-	}
 }

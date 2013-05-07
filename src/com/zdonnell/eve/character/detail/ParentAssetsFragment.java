@@ -445,7 +445,7 @@ public class ParentAssetsFragment extends DetailFragment {
 	}
 
 	@Override
-	public void refresh() 
+	public void loadData() 
 	{				
 		typeIDCounts = null;
 	    uniqueTypeIDs = null;

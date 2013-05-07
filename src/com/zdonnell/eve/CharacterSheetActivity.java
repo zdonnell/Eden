@@ -21,8 +21,8 @@ import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.character.detail.AttributesFragment;
 import com.zdonnell.eve.character.detail.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.SkillQueueFragment;
-import com.zdonnell.eve.character.detail.SkillsFragment;
 import com.zdonnell.eve.character.detail.WalletFragment;
+import com.zdonnell.eve.ui.character.detail.skills.SkillsFragment;
 
 public class CharacterSheetActivity extends BaseActivity
         implements CharacterSheetFragment.Callbacks {

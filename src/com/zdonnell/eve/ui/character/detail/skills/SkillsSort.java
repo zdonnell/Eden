@@ -1,6 +1,8 @@
-package com.zdonnell.eve.character.detail;
+package com.zdonnell.eve.ui.character.detail.skills;
 
 import java.util.Comparator;
+
+import com.zdonnell.eve.character.detail.SkillGroup;
 import com.zdonnell.eve.eve.SkillInfo;
 
 public class SkillsSort 

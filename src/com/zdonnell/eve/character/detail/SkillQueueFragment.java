@@ -85,7 +85,7 @@ public class SkillQueueFragment extends DetailFragment {
     	
     	skillQueueList = (ListView) inflatedView.findViewById(R.id.char_detail_queue_list);
     	
-    	refresh();
+    	loadData();
     	    	
     	return inflatedView;
     }
@@ -429,7 +429,7 @@ public class SkillQueueFragment extends DetailFragment {
     }
 
 	@Override
-	public void refresh() 
+	public void loadData() 
 	{
 		character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>((BaseActivity) getActivity()) 
     	{

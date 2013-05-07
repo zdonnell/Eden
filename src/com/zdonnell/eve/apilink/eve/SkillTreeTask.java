@@ -135,6 +135,8 @@ public class SkillTreeTask extends AsyncTask<Void, Void, SkillTreeResponse> impl
 		for (int i = 0; i < correctedSkillGroups.size(); i++) response.add(correctedSkillGroups.valueAt(i));
 	}
 
+	
+	
 	@Override
 	public int requestTypeHash() 
 	{

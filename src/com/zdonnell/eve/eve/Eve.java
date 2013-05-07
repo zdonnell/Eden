@@ -16,8 +16,8 @@ import com.zdonnell.eve.api.ResourceManager;
 import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
 import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.character.detail.SkillGroup;
-import com.zdonnell.eve.character.detail.SkillsSort;
 import com.zdonnell.eve.staticdata.api.StationInfo;
+import com.zdonnell.eve.ui.character.detail.skills.SkillsSort;
 
 public class Eve extends APIObject {
 	

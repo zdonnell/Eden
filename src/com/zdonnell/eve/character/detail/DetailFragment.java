@@ -36,6 +36,8 @@ public abstract class DetailFragment extends Fragment {
     @Override
     public void onAttach(Activity activity)
     {
+    	super.onAttach(activity);
+    	
     	parentActivity = (BaseActivity) activity;
     	context = activity.getApplicationContext();
     	

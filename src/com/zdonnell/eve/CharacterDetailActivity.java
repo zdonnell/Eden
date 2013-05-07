@@ -40,8 +40,8 @@ import com.zdonnell.eve.character.detail.InventoryListFragment;
 import com.zdonnell.eve.character.detail.InventorySort;
 import com.zdonnell.eve.character.detail.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.SkillQueueFragment;
-import com.zdonnell.eve.character.detail.SkillsFragment;
 import com.zdonnell.eve.character.detail.WalletFragment;
+import com.zdonnell.eve.ui.character.detail.skills.SkillsFragment;
 
 public class CharacterDetailActivity extends BaseActivity implements ActionBar.TabListener {
 
@@ -414,7 +414,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 		               {
 		            	   if (mViewPager.getCurrentItem() == CharacterSheetFragment.SKILLS)
 			               {
-			               		mSectionsPagerAdapter.skillsFragment().updateSkillDisplay(which);
+			               		mSectionsPagerAdapter.skillsFragment().updateSkillDisplayMode(which);
 			               }
 		               }
 		           }
@@ -507,19 +507,19 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 		switch (mViewPager.getCurrentItem())
 		{
 		case CharacterSheetFragment.ASSETS:
-			((DetailFragment) mSectionsPagerAdapter.assetsFragment()).refresh();
+			((DetailFragment) mSectionsPagerAdapter.assetsFragment()).loadData();
 			break;
 		case CharacterSheetFragment.ATTRIBUTES:
-			((DetailFragment) mSectionsPagerAdapter.attributesFragment()).refresh();
+			((DetailFragment) mSectionsPagerAdapter.attributesFragment()).loadData();
 			break;
 		case CharacterSheetFragment.SKILL_QUEUE:
-			((DetailFragment) mSectionsPagerAdapter.skillQueueFragment()).refresh();
+			((DetailFragment) mSectionsPagerAdapter.skillQueueFragment()).loadData();
 			break;
 		case CharacterSheetFragment.SKILLS:
-			((DetailFragment) mSectionsPagerAdapter.skillsFragment()).refresh();
+			((DetailFragment) mSectionsPagerAdapter.skillsFragment()).loadData();
 			break;
 		case CharacterSheetFragment.WALLET:
-			((DetailFragment) mSectionsPagerAdapter.walletFragment()).refresh();
+			((DetailFragment) mSectionsPagerAdapter.walletFragment()).loadData();
 			break;
 		}
 	}

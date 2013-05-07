@@ -69,7 +69,7 @@ public class AttributesFragment extends DetailFragment {
     	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
     
     	attributesListView = (ListView) inflatedView.findViewById(R.id.char_detail_attributes_list);
-    	refresh();
+    	loadData();
     	
     	return inflatedView;
     }    
@@ -139,7 +139,7 @@ public class AttributesFragment extends DetailFragment {
 	}
 
 	@Override
-	public void refresh() 
+	public void loadData() 
 	{
 		/* Grab the character sheet to get the attribute info */
     	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity())

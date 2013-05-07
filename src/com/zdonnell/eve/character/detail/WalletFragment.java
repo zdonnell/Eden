@@ -104,7 +104,7 @@ public class WalletFragment extends DetailFragment {
     	
     	walletListView = (ListView) inflatedView.findViewById(R.id.char_detail_wallet_listview);
     	
-    	refresh();
+    	loadData();
     	    	
     	return inflatedView;
     }  
@@ -306,7 +306,7 @@ public class WalletFragment extends DetailFragment {
     }
 
 	@Override
-	public void refresh() 
+	public void loadData() 
 	{
 		switch (prefs.getInt("wallet_type", JOURNAL))
     	{
