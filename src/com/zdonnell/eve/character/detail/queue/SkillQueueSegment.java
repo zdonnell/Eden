@@ -1,7 +1,5 @@
 package com.zdonnell.eve.character.detail.queue;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,6 +7,7 @@ import android.graphics.Paint;
 import android.view.View;
 
 import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
+import com.zdonnell.eve.R;
 import com.zdonnell.eve.helpers.Tools;
 
 public class SkillQueueSegment extends View
@@ -21,17 +20,20 @@ public class SkillQueueSegment extends View
 	
 	private int manual_padding = 10;
 		
-	private ArrayList<ApiSkillQueueItem> skillQueue;
+	private ApiSkillQueueItem skillInQueue;
 	
 	private int skillNumber;
 	
 	int[] colors;
 	
-	public SkillQueueSegment(Context context, int[] colors) 
+	public SkillQueueSegment(Context context) 
 	{
 		super(context);
-		this.colors = colors;
-				
+
+		colors = new int[2];
+		colors[0] = getResources().getColor(R.color.primary_accent_color);
+		colors[1] = getResources().getColor(R.color.secondary_accent_color);
+		
 		manual_padding = Tools.dp2px(10, context);
 		
 		paint.setStyle(Paint.Style.FILL);
@@ -42,9 +44,9 @@ public class SkillQueueSegment extends View
 	 * 
 	 * @param skillQueue
 	 */
-	public void setQueue(ArrayList<ApiSkillQueueItem> skillQueue, int skillNumber)
+	public void setQueue(ApiSkillQueueItem skillInQueue, int skillNumber)
 	{
-		this.skillQueue = skillQueue;
+		this.skillInQueue = skillInQueue;
 		this.skillNumber = skillNumber;
 				
 		invalidate();
@@ -62,8 +64,8 @@ public class SkillQueueSegment extends View
 		
 		long timeUntilStart, timeUntilEnd;
 		
-		timeUntilStart = Tools.timeUntilUTCTime(skillQueue.get(skillNumber).getStartTime());
-		timeUntilEnd = Tools.timeUntilUTCTime(skillQueue.get(skillNumber).getEndTime());
+		timeUntilStart = Tools.timeUntilUTCTime(skillInQueue.getStartTime());
+		timeUntilEnd = Tools.timeUntilUTCTime(skillInQueue.getEndTime());
 		
 		if (timeUntilStart < 0) timeUntilStart = 0;
 		

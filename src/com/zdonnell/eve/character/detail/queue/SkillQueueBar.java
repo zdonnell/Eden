@@ -12,6 +12,7 @@ import android.graphics.Typeface;
 import android.view.View;
 
 import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
+import com.zdonnell.eve.R;
 import com.zdonnell.eve.helpers.Tools;
 
 public class SkillQueueBar extends View
@@ -34,11 +35,14 @@ public class SkillQueueBar extends View
 	
 	private int[] colors;
 	
-	public SkillQueueBar(Context context, int[] colors) 
+	public SkillQueueBar(Context context) 
 	{
 		super(context);
-		this.colors = colors;
 		this.context = context;
+		
+		colors = new int[2];
+		colors[0] = getResources().getColor(R.color.primary_accent_color);
+		colors[1] = getResources().getColor(R.color.secondary_accent_color);
 		
 		manual_padding = Tools.dp2px(10, context);
 		
