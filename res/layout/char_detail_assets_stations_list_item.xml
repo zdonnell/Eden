@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:padding="4dp"
+    android:background="#151515"
     android:orientation="horizontal">
     <com.zdonnell.eve.character.detail.SquareLinearLayout
 	    android:id="@+id/char_detail_assets_station_item_typeIconBorder"

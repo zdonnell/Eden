@@ -286,7 +286,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 				}
 			});
 			
-			//itemView.setOnTouchListener(new BasicOnTouchListener());
+			itemView.setOnTouchListener(new BasicOnTouchListener());
 						
 			return itemView;
 		}

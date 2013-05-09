@@ -22,11 +22,11 @@ public class BasicOnTouchListener implements View.OnTouchListener
 			Drawable background = v.getBackground();
 			if (background == null)
 			{
-				originalBackground = -1;
+				originalBackground = Color.parseColor("#151515");;
 			}
 			else
 			{
-				if (background instanceof ColorDrawable) originalBackground = 0;
+				if (background instanceof ColorDrawable) originalBackground = Color.parseColor("#151515");
 				else originalBackground = ((PaintDrawable) v.getBackground()).getPaint().getColor();
 			}
 			
