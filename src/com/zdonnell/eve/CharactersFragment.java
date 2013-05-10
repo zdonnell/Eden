@@ -316,7 +316,6 @@ public class CharactersFragment extends Fragment {
 					queueTimesRemaining.put(characterID, timeUntilQueueEmpty);
 					charDB.setCharQueueTime(characterID, timeUntilQueueEmpty);
 					
-					
 					if (timeUntilQueueEmpty > 24 * 60 * 60 * 1000) 
 					{
 						timeRemainingTextView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + Tools.millisToEveFormatString(timeUntilQueueEmpty) + "</FONT>"));
@@ -326,27 +325,6 @@ public class CharactersFragment extends Fragment {
 						timeRemainingTextView.setText(Html.fromHtml("<FONT COLOR='#FFBB33'>" + Tools.millisToEveFormatString(timeUntilQueueEmpty) + "</FONT>"));
 					}
 					else timeRemainingTextView.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
-					
-					/* characterQueueUpdated.put(characterID, true);
-					if (characterQueueUpdated.size() == characters.length)
-					{
-						characterQueueUpdated.clear();
-						if (reSortOnQueueUpdates) updateSort(sortType);
-					}
-					
-					if (timeRemainingTextView.getTag() != null)
-					{
-						cachedTrainingTime.get((Integer) timeRemainingTextView.getTag()).updateTextView(null);
-					}
-					timeRemainingTextView.setTag(characterID);
-					
-					if (cachedTrainingTime.get(characterID) == null)
-					{
-						TimeRemainingCountdown timer = new TimeRemainingCountdown(timeUntilQueueEmpty, 1000, timeRemainingTextView);					
-						cachedTrainingTime.put(characterID, timer);
-						timer.start();
-					}
-					else cachedTrainingTime.get(characterID).updateTextView(timeRemainingTextView); */
 				}
 			});
 		}

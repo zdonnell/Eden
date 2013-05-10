@@ -10,8 +10,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.beimin.eveapi.account.characters.EveCharacter;
 import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.account.EveCharacter;
 
 public class CharacterDB {
 	// the Activity or Application that is creating an object from this class.
@@ -51,10 +51,10 @@ public class CharacterDB {
 	public void addCharacter(EveCharacter character, APICredentials credentials, boolean enabled) {
 		// this is a key value pair holder used by android's SQLite functions
 		ContentValues values = new ContentValues();
-		values.put(CHAR_TABLE_NAME, character.name);
-		values.put(CHAR_TABLE_EVEID, character.charID);
-		values.put(CHAR_TABLE_CORPNAME, character.corpName);
-		values.put(CHAR_TABLE_CORPID, character.corpID);
+		values.put(CHAR_TABLE_NAME, character.getName());
+		values.put(CHAR_TABLE_EVEID, character.getCharacterID());
+		values.put(CHAR_TABLE_CORPNAME, character.getCorporationName());
+		values.put(CHAR_TABLE_CORPID, character.getCorporationID());
 		values.put(CHAR_TABLE_KEYID, credentials.keyID);
 		values.put(CHAR_TABLE_VCODE, credentials.verificationCode);
 		values.put(CHAR_TABLE_ENABLED, enabled ? "1" : "0");
