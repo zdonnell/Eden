@@ -11,13 +11,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.beimin.eveapi.account.characters.EveCharacter;
-<<<<<<< HEAD
 import com.beimin.eveapi.core.ApiAuthorization;
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.apilink.account.EdenEveCharacter;
-=======
-import com.zdonnell.eve.api.APICredentials;
->>>>>>> 09dd6c283ea5e978003857d09b9133785cee76d6
 
 public class CharacterDB {
 	// the Activity or Application that is creating an object from this class.
