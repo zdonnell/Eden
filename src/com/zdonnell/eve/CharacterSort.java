@@ -2,7 +2,8 @@ package com.zdonnell.eve;
 
 import java.util.Comparator;
 
-import com.zdonnell.eve.api.account.EveCharacter;
+import com.beimin.eveapi.account.characters.EveCharacter;
+import com.zdonnell.eve.apilink.account.EdenEveCharacter;
 
 public class CharacterSort {
 	
@@ -25,14 +26,14 @@ public class CharacterSort {
 		@Override
 		public int compare(EveCharacter lhs, EveCharacter rhs) 
 		{
-			return lhs.name.compareTo(rhs.name);
+			return lhs.getName().compareTo(rhs.getName());
 		}
 	}
 	
-	public static class TrainingTimeRemaining implements Comparator<EveCharacter>
-	{	
+	public static class TrainingTimeRemaining implements Comparator<EdenEveCharacter>
+	{		
 		@Override
-		public int compare(EveCharacter lhs, EveCharacter rhs)
+		public int compare(EdenEveCharacter lhs, EdenEveCharacter rhs)
 		{
 			Long lhsTimeRemaining = lhs.getQueueTimeRemaining();
 			Long rhsTimeRemaining = rhs.getQueueTimeRemaining();

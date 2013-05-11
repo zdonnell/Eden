@@ -18,7 +18,6 @@ import android.text.Html;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,10 +30,10 @@ import android.widget.TextView;
 
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.ImageService;
-import com.zdonnell.eve.api.account.EveCharacter;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.apilink.APICallback;
+import com.zdonnell.eve.apilink.account.EdenEveCharacter;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.helpers.TimeRemainingCountdown;
 import com.zdonnell.eve.helpers.Tools;
@@ -42,8 +41,6 @@ import com.zdonnell.eve.staticdata.api.StationDatabase;
 import com.zdonnell.eve.staticdata.api.StationInfo;
 
 public class CharactersFragment extends Fragment {
-
-	private static final int CURRENT_ID_DISPLAYED = 1;
 	
 	HashMap<View, Integer> viewCharacterMap = new HashMap<View, Integer>();
 	
@@ -80,7 +77,7 @@ public class CharactersFragment extends Fragment {
 	 */
 	private SparseArray<TimeRemainingCountdown> cachedTrainingTime = new SparseArray<TimeRemainingCountdown>(10);
 		
-	private EveCharacter[] characters;
+	private EdenEveCharacter[] characters;
 	
 	private CharacterArrayAdapter arrayAdapter;
 	
@@ -89,10 +86,6 @@ public class CharactersFragment extends Fragment {
 	private int sortType;
 	
 	private SharedPreferences prefs;
-	
-	private boolean reSortOnQueueUpdates = false;
-	
-	private SparseBooleanArray characterQueueUpdated = new SparseBooleanArray();
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
@@ -106,9 +99,7 @@ public class CharactersFragment extends Fragment {
 		
 		prefs = context.getSharedPreferences("eden", Context.MODE_PRIVATE);
 		sortType = prefs.getInt("sort type", CharacterSort.ALPHA);
-		
-		if (sortType == CharacterSort.QUEUETIME || sortType == CharacterSort.QUEUETIME_REVERSE) reSortOnQueueUpdates = true;
-		
+				
 		loadStationInfo();
 		
 		/* Setup the GridView properties and link with the CursorAdapater */
@@ -168,11 +159,11 @@ public class CharactersFragment extends Fragment {
 		setUserVisibleHint(true);
 	}
 
-	private class CharacterArrayAdapter extends ArrayAdapter<EveCharacter>
+	private class CharacterArrayAdapter extends ArrayAdapter<EdenEveCharacter>
 	{
 		private int layoutResId;
 		
-		public CharacterArrayAdapter(Context context, int textViewResourceId, EveCharacter[] objects) 
+		public CharacterArrayAdapter(Context context, int textViewResourceId, EdenEveCharacter[] objects) 
 		{
 			super(context, textViewResourceId, objects);
 			layoutResId = textViewResourceId;
@@ -192,18 +183,16 @@ public class CharactersFragment extends Fragment {
 			}
 			
 			/* get the character at the current position */
-			EveCharacter currentCharacter = getItem(position);
+			EdenEveCharacter currentCharacter = getItem(position);
 			
 			/* Establish some basic values / info for use later */
-			final int characterID = currentCharacter.charID;
-			final int corpID = currentCharacter.corpID;	
-			final APICredentials credentials = new APICredentials(currentCharacter.keyID, currentCharacter.vCode);
+			final int characterID = (int) currentCharacter.getCharacterID();
+			final int corpID = (int) currentCharacter.getCorporationID();	
+			final APICredentials credentials = new APICredentials(currentCharacter.getApiAuth().getKeyID(), currentCharacter.getApiAuth().getVCode());
 			APICharacter character = new APICharacter(credentials, characterID, context);
 			
-			
-			
 			TextView charName = (TextView) convertView.findViewById(R.id.char_tile_name);
-			charName.setText(currentCharacter.name);
+			charName.setText(currentCharacter.getName());
 			
 			Integer viewsLastID = viewCharacterMap.get(convertView);
 			if (viewsLastID == null || viewCharacterMap.get(convertView) != characterID)
@@ -246,9 +235,7 @@ public class CharactersFragment extends Fragment {
 		 */
 		private void loadPortrait(final View mainView, int position, final int characterID)
 		{
-			final ImageView portrait = (ImageView) mainView.findViewById(R.id.char_image);
-			Integer currentID = (Integer) mainView.getTag();
-			
+			final ImageView portrait = (ImageView) mainView.findViewById(R.id.char_image);			
 			portrait.setImageBitmap(null);
 
 			imageService.getPortraits(new ImageService.IconObtainedCallback() 
@@ -316,7 +303,6 @@ public class CharactersFragment extends Fragment {
 					queueTimesRemaining.put(characterID, timeUntilQueueEmpty);
 					charDB.setCharQueueTime(characterID, timeUntilQueueEmpty);
 					
-					
 					if (timeUntilQueueEmpty > 24 * 60 * 60 * 1000) 
 					{
 						timeRemainingTextView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + Tools.millisToEveFormatString(timeUntilQueueEmpty) + "</FONT>"));
@@ -326,27 +312,6 @@ public class CharactersFragment extends Fragment {
 						timeRemainingTextView.setText(Html.fromHtml("<FONT COLOR='#FFBB33'>" + Tools.millisToEveFormatString(timeUntilQueueEmpty) + "</FONT>"));
 					}
 					else timeRemainingTextView.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
-					
-					/* characterQueueUpdated.put(characterID, true);
-					if (characterQueueUpdated.size() == characters.length)
-					{
-						characterQueueUpdated.clear();
-						if (reSortOnQueueUpdates) updateSort(sortType);
-					}
-					
-					if (timeRemainingTextView.getTag() != null)
-					{
-						cachedTrainingTime.get((Integer) timeRemainingTextView.getTag()).updateTextView(null);
-					}
-					timeRemainingTextView.setTag(characterID);
-					
-					if (cachedTrainingTime.get(characterID) == null)
-					{
-						TimeRemainingCountdown timer = new TimeRemainingCountdown(timeUntilQueueEmpty, 1000, timeRemainingTextView);					
-						cachedTrainingTime.put(characterID, timer);
-						timer.start();
-					}
-					else cachedTrainingTime.get(characterID).updateTextView(timeRemainingTextView); */
 				}
 			});
 		}

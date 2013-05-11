@@ -10,8 +10,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.beimin.eveapi.account.characters.EveCharacter;
+import com.beimin.eveapi.core.ApiAuthorization;
 import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.account.EveCharacter;
+import com.zdonnell.eve.apilink.account.EdenEveCharacter;
 
 public class CharacterDB {
 	// the Activity or Application that is creating an object from this class.
@@ -51,10 +53,10 @@ public class CharacterDB {
 	public void addCharacter(EveCharacter character, APICredentials credentials, boolean enabled) {
 		// this is a key value pair holder used by android's SQLite functions
 		ContentValues values = new ContentValues();
-		values.put(CHAR_TABLE_NAME, character.name);
-		values.put(CHAR_TABLE_EVEID, character.charID);
-		values.put(CHAR_TABLE_CORPNAME, character.corpName);
-		values.put(CHAR_TABLE_CORPID, character.corpID);
+		values.put(CHAR_TABLE_NAME, character.getName());
+		values.put(CHAR_TABLE_EVEID, character.getCharacterID());
+		values.put(CHAR_TABLE_CORPNAME, character.getCorporationName());
+		values.put(CHAR_TABLE_CORPID, character.getCorporationID());
 		values.put(CHAR_TABLE_KEYID, credentials.keyID);
 		values.put(CHAR_TABLE_VCODE, credentials.verificationCode);
 		values.put(CHAR_TABLE_ENABLED, enabled ? "1" : "0");
@@ -117,7 +119,7 @@ public class CharacterDB {
 		return cursor;
 	}
 	
-	public EveCharacter[] getEnabledCharactersAsArray() 
+	public EdenEveCharacter[] getEnabledCharactersAsArray() 
 	{
 
 		// this is a database call that creates a "cursor" object.
@@ -135,15 +137,24 @@ public class CharacterDB {
 			e.printStackTrace();
 		}
 		
-		ArrayList<EveCharacter> charArrayList = new ArrayList<EveCharacter>(cursor.getCount());
+		ArrayList<EdenEveCharacter> charArrayList = new ArrayList<EdenEveCharacter>(cursor.getCount());
 		while (cursor.moveToNext())
 		{
-			EveCharacter newChar = new EveCharacter(cursor.getString(1), cursor.getInt(0), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getString(5));
+			EdenEveCharacter newChar = new EdenEveCharacter();
+			
+			newChar.setCharacterID(cursor.getInt(0));
+			newChar.setName(cursor.getString(1));
+			newChar.setCorporationID(cursor.getInt(3));
+			newChar.setCorporationName(cursor.getString(2));
+			
+			ApiAuthorization apiAuth = new ApiAuthorization(cursor.getInt(4), cursor.getString(5));
+			newChar.setApiAuth(apiAuth);
 			newChar.setQueueTimeRemaining(cursor.getLong(6));
+			
 			charArrayList.add(newChar);
 		}
 		
-		EveCharacter[] charArray = new EveCharacter[charArrayList.size()];
+		EdenEveCharacter[] charArray = new EdenEveCharacter[charArrayList.size()];
 		charArrayList.toArray(charArray);
 		
 		cursor.close();
