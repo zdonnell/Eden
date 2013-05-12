@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,18 +27,25 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.zdonnell.eve.api.APICredentials;
+import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
+import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
+import com.beimin.eveapi.exception.ApiException;
 import com.zdonnell.eve.api.ImageService;
-import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.apilink.APICallback;
+import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.account.EdenEveCharacter;
+import com.zdonnell.eve.apilink.character.APICharacter;
 import com.zdonnell.eve.eve.Eve;
-import com.zdonnell.eve.helpers.TimeRemainingCountdown;
 import com.zdonnell.eve.helpers.Tools;
 import com.zdonnell.eve.staticdata.api.StationDatabase;
 import com.zdonnell.eve.staticdata.api.StationInfo;
 
+/**
+ * Fragment to display the list currently active characters
+ * 
+ * @author Zach
+ *
+ */
 public class CharactersFragment extends Fragment {
 	
 	HashMap<View, Integer> viewCharacterMap = new HashMap<View, Integer>();
@@ -70,17 +76,9 @@ public class CharactersFragment extends Fragment {
 	 * Reference to the ImageService singleton, handles acquisition of character portraits and corp logos.
 	 */
 	private ImageService imageService;
-	
-	/**
-	 * This SparseArray keeps track of what TextView a given characterID is currently using for the queue timer.
-	 * This is needed because the CountdownTimer may continue to update a view that is now being reused for a different character.
-	 */
-	private SparseArray<TimeRemainingCountdown> cachedTrainingTime = new SparseArray<TimeRemainingCountdown>(10);
 		
 	private EdenEveCharacter[] characters;
-	
-	private CharacterArrayAdapter arrayAdapter;
-	
+		
 	private GridView charGrid;
 	
 	private int sortType;
@@ -106,16 +104,12 @@ public class CharactersFragment extends Fragment {
 		View mainView = (View) inflater.inflate(R.layout.characters_fragment, container, false);
 		charGrid = (GridView) mainView.findViewById(R.id.charGrid);		
 		
-		characters = charDB.getEnabledCharactersAsArray();
-		updateSort(sortType);
-		
 		columns = calcColumns((Activity) context);
 		charGrid.setNumColumns(columns);
-
-		arrayAdapter = new CharacterArrayAdapter(context, R.layout.character_tile, characters);
-		charGrid.setAdapter(arrayAdapter);
-						
 		
+		characters = charDB.getEnabledCharactersAsArray();
+		updateSort(sortType);
+						
 		return mainView;
 	}
 	
@@ -148,8 +142,7 @@ public class CharactersFragment extends Fragment {
 		}
 		
 		viewCharacterMap.clear();
-		arrayAdapter = new CharacterArrayAdapter(context, R.layout.character_tile, characters);
-		charGrid.setAdapter(arrayAdapter);
+		charGrid.setAdapter(new CharacterArrayAdapter(context, R.layout.character_tile, characters));
 	}
 
 	@Override
@@ -183,13 +176,11 @@ public class CharactersFragment extends Fragment {
 			}
 			
 			/* get the character at the current position */
-			EdenEveCharacter currentCharacter = getItem(position);
+			final EdenEveCharacter currentCharacter = getItem(position);
 			
 			/* Establish some basic values / info for use later */
 			final int characterID = (int) currentCharacter.getCharacterID();
 			final int corpID = (int) currentCharacter.getCorporationID();	
-			final APICredentials credentials = new APICredentials(currentCharacter.getApiAuth().getKeyID(), currentCharacter.getApiAuth().getVCode());
-			APICharacter character = new APICharacter(credentials, characterID, context);
 			
 			TextView charName = (TextView) convertView.findViewById(R.id.char_tile_name);
 			charName.setText(currentCharacter.getName());
@@ -199,7 +190,7 @@ public class CharactersFragment extends Fragment {
 			{
 				loadPortrait(convertView, position, characterID);
 				loadCorpLogo(convertView, position, corpID);				
-				setupQueueTimeRemaining(character, convertView);	
+				setupQueueTimeRemaining(currentCharacter, convertView);	
 				
 				viewCharacterMap.put(convertView, characterID);
 			}
@@ -209,14 +200,12 @@ public class CharactersFragment extends Fragment {
 			{	
 				@Override
 				public void onClick(View v) 
-				{
-					Log.d("CLICK CLICK", "CLICK LICK");
-					
+				{					
 					Intent intent = new Intent(context, CharacterSheetActivity.class);
 					String[] CharacterInfo = new String[4];
 					CharacterInfo[0] = String.valueOf(characterID);
-					CharacterInfo[1] = String.valueOf(credentials.keyID);
-					CharacterInfo[2] = credentials.verificationCode;
+					CharacterInfo[1] = String.valueOf(currentCharacter.getApiAuth().getKeyID());
+					CharacterInfo[2] = currentCharacter.getApiAuth().getVCode();
 					CharacterInfo[3] = String.valueOf(corpID);
 					
 					intent.putExtra("character", CharacterInfo);
@@ -277,31 +266,27 @@ public class CharactersFragment extends Fragment {
 		}
 		
 		/**
-		 * Handles getting the time remaining in the queue, and linking the correct timer to the TextView
-		 * 
-		 * TODO explain more about the link involving {@link CharactersFragment#cachedTrainingTime}
-		 * 
+		 * Handles getting the time remaining in the queue
+		 *  
 		 * @param character
 		 * @param mainView
 		 */
-		private void setupQueueTimeRemaining(APICharacter character, View mainView)
+		private void setupQueueTimeRemaining(final EdenEveCharacter character, View mainView)
 		{
-			final int characterID = character.id();
 			final TextView timeRemainingTextView = (TextView) mainView.findViewById(R.id.char_tile_training);			
 			timeRemainingTextView.setText("");
-			
-			/* if the character already has an established timer, tell it to update the new TextView */
-			if (cachedTrainingTime.get(characterID) != null) cachedTrainingTime.get(characterID).updateTextView(timeRemainingTextView);
-			
-			/* else get the time remaining in the queue and setup a CountdownTimer for it */
-			else character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>((BaseActivity) getActivity()) 
+						
+			new APICharacter(context, character.getApiAuth()).getSkillQueue(new APIExceptionCallback<SkillQueueResponse>((BaseActivity) getActivity()) 
 			{
 				@Override
-				public void onUpdate(ArrayList<QueuedSkill> updatedData) 
-				{	
-					long timeUntilQueueEmpty = updatedData.isEmpty() ? 0 : Tools.timeUntilUTCTime(updatedData.get(updatedData.size() - 1).endTime);
-					queueTimesRemaining.put(characterID, timeUntilQueueEmpty);
-					charDB.setCharQueueTime(characterID, timeUntilQueueEmpty);
+				public void onUpdate(SkillQueueResponse response) 
+				{
+					ArrayList<ApiSkillQueueItem> skillQueueList = new ArrayList<ApiSkillQueueItem>();
+					skillQueueList.addAll(response.getAll());
+					
+					long timeUntilQueueEmpty = skillQueueList.isEmpty() ? 0 : Tools.timeUntilUTCTime(skillQueueList.get(skillQueueList.size() - 1).getEndTime());
+					queueTimesRemaining.put((int) character.getCharacterID(), timeUntilQueueEmpty);
+					charDB.setCharQueueTime((int) character.getCharacterID(), timeUntilQueueEmpty);
 					
 					if (timeUntilQueueEmpty > 24 * 60 * 60 * 1000) 
 					{
@@ -312,6 +297,12 @@ public class CharactersFragment extends Fragment {
 						timeRemainingTextView.setText(Html.fromHtml("<FONT COLOR='#FFBB33'>" + Tools.millisToEveFormatString(timeUntilQueueEmpty) + "</FONT>"));
 					}
 					else timeRemainingTextView.setText(Html.fromHtml("<FONT COLOR='#FF4444'>Skill Queue Empty</FONT>"));
+				}
+
+				@Override
+				public void onError(SkillQueueResponse response, ApiException exception) 
+				{
+					
 				}
 			});
 		}
@@ -353,7 +344,6 @@ public class CharactersFragment extends Fragment {
 			totalColumnWidthUsed += roundedColumnWidth;
 			
 			if (x == columns - 1 && totalColumnWidthUsed != widthForColumns) calculatedColumnWidths[x] += 1;
-			Log.d("COLUMN WIDTH: ", "COLUMN WIDTH #" + (x + 1) + ": " +  calculatedColumnWidths[x]);
 		}
 		
 		return columns;

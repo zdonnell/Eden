@@ -11,8 +11,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.beimin.eveapi.account.characters.EveCharacter;
+import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.core.ApiAuthorization;
-import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.apilink.account.EdenEveCharacter;
 
 public class CharacterDB {
@@ -40,7 +40,6 @@ public class CharacterDB {
 	public final static String CHAR_TABLE_ENABLED = "char_enabled";
 	public final static String CHAR_TABLE_QUEUETIME = "char_queuetime";
 
-
 	public CharacterDB(Context context) {
 		this.context = context;
 
@@ -48,17 +47,16 @@ public class CharacterDB {
 		CustomSQLiteOpenHelper helper = new CustomSQLiteOpenHelper(context);
 		this.db = helper.getWritableDatabase();
 	}
-
 	
-	public void addCharacter(EveCharacter character, APICredentials credentials, boolean enabled) {
+	public void addCharacter(EveCharacter character, ApiAuth<?> apiAuth, boolean enabled) {
 		// this is a key value pair holder used by android's SQLite functions
 		ContentValues values = new ContentValues();
 		values.put(CHAR_TABLE_NAME, character.getName());
 		values.put(CHAR_TABLE_EVEID, character.getCharacterID());
 		values.put(CHAR_TABLE_CORPNAME, character.getCorporationName());
 		values.put(CHAR_TABLE_CORPID, character.getCorporationID());
-		values.put(CHAR_TABLE_KEYID, credentials.keyID);
-		values.put(CHAR_TABLE_VCODE, credentials.verificationCode);
+		values.put(CHAR_TABLE_KEYID, apiAuth.getKeyID());
+		values.put(CHAR_TABLE_VCODE, apiAuth.getVCode());
 		values.put(CHAR_TABLE_ENABLED, enabled ? "1" : "0");
 		values.put(CHAR_TABLE_QUEUETIME, 0);
 
@@ -75,7 +73,6 @@ public class CharacterDB {
 
 	public Cursor allCharacters() 
 	{
-
 		// this is a database call that creates a "cursor" object.
 		// the cursor object store the information collected from the
 		// database and is used to iterate through the data.
@@ -98,7 +95,6 @@ public class CharacterDB {
 	
 	public Cursor getEnabledCharacters() 
 	{
-
 		// this is a database call that creates a "cursor" object.
 		// the cursor object store the information collected from the
 		// database and is used to iterate through the data.
@@ -121,7 +117,6 @@ public class CharacterDB {
 	
 	public EdenEveCharacter[] getEnabledCharactersAsArray() 
 	{
-
 		// this is a database call that creates a "cursor" object.
 		// the cursor object store the information collected from the
 		// database and is used to iterate through the data.
@@ -147,7 +142,7 @@ public class CharacterDB {
 			newChar.setCorporationID(cursor.getInt(3));
 			newChar.setCorporationName(cursor.getString(2));
 			
-			ApiAuthorization apiAuth = new ApiAuthorization(cursor.getInt(4), cursor.getString(5));
+			ApiAuthorization apiAuth = new ApiAuthorization(cursor.getInt(4), cursor.getInt(0), cursor.getString(5));
 			newChar.setApiAuth(apiAuth);
 			newChar.setQueueTimeRemaining(cursor.getLong(6));
 			

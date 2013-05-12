@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.beimin.eveapi.account.characters.CharactersResponse;
 import com.beimin.eveapi.account.characters.EveCharacter;
+import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.core.ApiAuthorization;
 import com.beimin.eveapi.exception.ApiException;
 import com.zdonnell.eve.api.APICredentials;
@@ -130,7 +131,7 @@ public class AddAPIDialog extends DialogFragment
 	
 	private Button getCharsButton, addCharsButton;
 	
-	APICredentials loadedCredentials;
+	private ApiAuth<?> apiAuth;
 	
 	public AddAPIDialog setKey(int keyID, String vCode)
 	{
@@ -209,7 +210,7 @@ public class AddAPIDialog extends DialogFragment
 		// All characters are set to "enabled" status
 		loadCharAsEnabled[0] = loadCharAsEnabled[1] = loadCharAsEnabled[2] = true;
 		
-		ApiAuthorization apiAuth = new ApiAuthorization(keyID, vCode);
+		apiAuth = new ApiAuthorization(keyID, vCode);
 		new Account(apiAuth).getCharacters(new APIExceptionCallback<CharactersResponse>(null) 
 		{
 			@Override
@@ -273,7 +274,7 @@ public class AddAPIDialog extends DialogFragment
 		
 		for (int i = 0; i < 3; i++)
 		{
-			if (loadedCharacters[i] != null) charDB.addCharacter(loadedCharacters[i], loadedCredentials, loadCharAsEnabled[i]);
+			if (loadedCharacters[i] != null) charDB.addCharacter(loadedCharacters[i], apiAuth, loadCharAsEnabled[i]);
 		}
 	}
 }
