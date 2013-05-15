@@ -2,6 +2,7 @@ package com.zdonnell.eve;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Set;
 
 import android.app.Activity;
 import android.content.Context;
@@ -21,13 +22,15 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.beimin.eveapi.character.sheet.ApiSkill;
+import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
 import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
 import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
+import com.beimin.eveapi.eve.character.CharacterInfoResponse;
 import com.beimin.eveapi.exception.ApiException;
 import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.character.CharacterInfo;
 import com.zdonnell.eve.api.character.CharacterSheet;
-import com.zdonnell.eve.api.character.Skill;
 import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.character.APICharacter;
@@ -92,8 +95,8 @@ public class CharacterSheetFragment extends Fragment {
         
     private ImageService imageService;
     private ArrayList<ApiSkillQueueItem> skillQueue;
-    private CharacterSheet characterSheet;
-    private CharacterInfo characterInfo;
+    private CharacterSheetResponse characterSheet;
+    private CharacterInfoResponse characterInfo;
         
     private static SparseArray<String> skillLevelMap = new SparseArray<String>(5);
     static 
@@ -244,13 +247,19 @@ public class CharacterSheetFragment extends Fragment {
     	});
     	
     	// get character's info
-    	character.getCharacterInfo(new APICallback<CharacterInfo>((BaseActivity) getActivity()) 
+    	character.getCharacterInfo(new APIExceptionCallback<CharacterInfoResponse>((BaseActivity) getActivity()) 
     	{
 			@Override
-			public void onUpdate(CharacterInfo pCharacterInfo) 
+			public void onUpdate(CharacterInfoResponse response) 
 			{
-				characterInfo = pCharacterInfo;
+				characterInfo = response;
 				obtainedCharacterInfoSheet();
+			}
+
+			@Override
+			public void onError(CharacterInfoResponse response, ApiException exception) 
+			{
+				
 			}
     	});
    	}
@@ -342,14 +351,17 @@ public class CharacterSheetFragment extends Fragment {
 			NumberFormat formatter = NumberFormat.getInstance();
 			
 			TextView characterSPView = (TextView) rootView.findViewById(R.id.current_sp);
-			characterSPView.setText(formatter.format(characterInfo.getSP()) + " SP");
+			characterSPView.setText(formatter.format(characterInfo.getSkillPoints()) + " SP");
 						
-			TextView cloneNameView = (TextView) rootView.findViewById(R.id.current_clone);
-			if (characterInfo.getSP() > characterSheet.getCloneSkillPoints())
+			/*
+			 * TODO enable clone info when eveapi supports clone info
+			 * 
+			 * TextView cloneNameView = (TextView) rootView.findViewById(R.id.current_clone);
+			if (characterInfo.getSkillPoints() > characterSheet.getCloneSkillPoints())
 			{
 				cloneNameView.setText(Html.fromHtml("<FONT COLOR='#FF4444'>" + formatter.format(characterSheet.getCloneSkillPoints()) + " SP</FONT>"));
 			}
-			else cloneNameView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + formatter.format(characterSheet.getCloneSkillPoints()) + " SP</FONT>"));
+			else cloneNameView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + formatter.format(characterSheet.getCloneSkillPoints()) + " SP</FONT>")); */
 			
 			setSubTexts();
 		}
@@ -365,14 +377,10 @@ public class CharacterSheetFragment extends Fragment {
 		/* Skills */
 		if (subTexts[SKILLS] != null && characterSheet != null)
 		{
-			SparseArray<Skill> skills = characterSheet.getSkills();
+			Set<ApiSkill> skills = characterSheet.getSkills();
 			
 			int level5count = 0;
-			for (int i = 0; i < skills.size(); ++i) 
-			{
-				Skill skill = skills.valueAt(i);
-				if (skill.getLevel() == 5) level5count++;
-			}
+			for (ApiSkill skill : skills) if (skill.getLevel() == 5) level5count++;
 			
 			subTexts[SKILLS].setText(skills.size() + " Skills Trained (" + level5count + " at Level V)");
 		}
@@ -397,7 +405,7 @@ public class CharacterSheetFragment extends Fragment {
 		/* Wallet */
 		if (subTexts[WALLET] != null && characterSheet != null) 
 		{
-			subTexts[WALLET].setText("Balance: " + formatter.format(characterSheet.getWalletBalance()) + " ISK");
+			subTexts[WALLET].setText("Balance: " + formatter.format(characterInfo.getAccountBalance()) + " ISK");
 		}
 
 		/* Assets */
