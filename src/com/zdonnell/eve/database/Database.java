@@ -12,11 +12,35 @@ public class Database {
 		createSkillsTable(db);
 		createSkillTreeTable(db);
 		createSkillQueueTable(db);
+		createCharacterInfoTable(db);
 	}
 	
 	public static void onUpdate(SQLiteDatabase db, int oldVersion, int newVersion)
 	{
 		
+	}
+	
+	private static void createCharacterInfoTable(SQLiteDatabase db)
+	{
+		String newTableQueryString = "create table " + CharacterInfoData.TABLE + " ("
+				
+				+ CharacterInfoData.COL_CHARACTER_ID + " integer primary key not null," 
+				+ CharacterInfoData.COL_RACE + " text," 
+				+ CharacterInfoData.COL_BLOODLINE + " text,"
+				+ CharacterInfoData.COL_WALLET_BALLANCE + " real,"
+				+ CharacterInfoData.COL_SKILLPOINTS + " integer,"
+				+ CharacterInfoData.COL_SHIP_NAME + " text,"
+				+ CharacterInfoData.COL_SHIP_TYPEID + " integer,"
+				+ CharacterInfoData.COL_CORP_DATE + " text,"
+				+ CharacterInfoData.COL_ALLIANCE_ID + " integer,"
+				+ CharacterInfoData.COL_ALLIANCE + " text,"		
+				+ CharacterInfoData.COL_ALLIANCE_DATE + " text,"				
+				+ CharacterInfoData.COL_LAST_KNOWN_LOC + " text,"				
+				+ CharacterInfoData.COL_SEC_STATUS + " real,"				
+
+				+ "UNIQUE (" + CharacterInfoData.COL_CHARACTER_ID + ") ON CONFLICT REPLACE);";
+
+		db.execSQL(newTableQueryString);
 	}
 	
 	private static void createSkillsTable(SQLiteDatabase db)

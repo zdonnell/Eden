@@ -19,6 +19,11 @@ public class APICharacter
 		this.apiAuth = apiAuth;
 	}
 	
+	public ApiAuth<?> getApiAuth()
+	{
+		return apiAuth;
+	}
+	
 	public void getCharacterSheet(APIExceptionCallback<CharacterSheetResponse> callback)
 	{
 		new CharacterSheetTask(callback, apiAuth, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); 

@@ -2,7 +2,6 @@ package com.zdonnell.eve;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.app.Activity;
 import android.content.Context;
@@ -22,14 +21,16 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
+import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
+import com.beimin.eveapi.exception.ApiException;
 import com.zdonnell.eve.api.ImageService;
-import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.CharacterInfo;
 import com.zdonnell.eve.api.character.CharacterSheet;
-import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.api.character.Skill;
 import com.zdonnell.eve.apilink.APICallback;
+import com.zdonnell.eve.apilink.APIExceptionCallback;
+import com.zdonnell.eve.apilink.character.APICharacter;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.Tools;
 import com.zdonnell.eve.staticdata.api.StaticData;
@@ -88,20 +89,15 @@ public class CharacterSheetFragment extends Fragment {
     private View rootView;
     
     private Context context;
-    
-    private boolean updatedView;
-    
+        
     private ImageService imageService;
-    private APICharacter character;
-    private ArrayList<QueuedSkill> skillQueue;
+    private ArrayList<ApiSkillQueueItem> skillQueue;
     private CharacterSheet characterSheet;
     private CharacterInfo characterInfo;
-    
-    private AssetsEntity[] assets;
-    
-    private static HashMap<Integer, String> skillLevelMap = new HashMap<Integer, String>();
-    
-    static {
+        
+    private static SparseArray<String> skillLevelMap = new SparseArray<String>(5);
+    static 
+    {
     	skillLevelMap.put(1, "I");
     	skillLevelMap.put(2, "II");
     	skillLevelMap.put(3, "III");
@@ -109,7 +105,7 @@ public class CharacterSheetFragment extends Fragment {
     	skillLevelMap.put(5, "V");
     }
     
-    private TextView skillTimeRemaining, skillInTraining;
+    private TextView skillTimeRemaining;
     
     private ListView listView;
 
@@ -124,12 +120,9 @@ public class CharacterSheetFragment extends Fragment {
         }
     };
 
-    public CharacterSheetFragment() { }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-  
     	context = inflater.getContext();
     	imageService = ImageService.getInstance(context);
     	
@@ -138,7 +131,6 @@ public class CharacterSheetFragment extends Fragment {
     	
     	LinearLayout headerText = (LinearLayout) inflater.inflate(R.layout.char_sheet_header_text, container, false);
     	skillTimeRemaining = (TextView) rootView.findViewById(R.id.current_skill_time);
-    	skillInTraining = (TextView) rootView.findViewById(R.id.current_skill);
     	
     	listView.addHeaderView(headerText, null, false);  	
     	listView.setAdapter(new CharacterSheetAdapater(context, R.layout.character_sheet_item, items));
@@ -208,13 +200,12 @@ public class CharacterSheetFragment extends Fragment {
 
     /**
      * A call made to load up character information.  Should be called immediately after the fragment has been inflated.
+     * 
      * @param characterID
      */
-	public void setCharacter(APICharacter character, int corpID) 
+	public void setCharacter(APICharacter character) 
 	{
 		final ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
-		//final ImageView corpLogo = (ImageView) rootView.findViewById(R.id.char_sheet_corpLogo);
-		
 		imageService.getPortraits(new ImageService.IconObtainedCallback() 
 		{
 			@Override
@@ -222,18 +213,26 @@ public class CharacterSheetFragment extends Fragment {
 			{
 				portrait.setImageBitmap(bitmaps.valueAt(0));
 			}
-		}, false, character.id());
-		    	
-    	character.getSkillQueue(new APICallback<ArrayList<QueuedSkill>>((BaseActivity) getActivity()) 
-    	{
+		}, false, character.getApiAuth().getCharacterID().intValue());
+		
+		// get character's skill queue
+		character.getSkillQueue(new APIExceptionCallback<SkillQueueResponse>((BaseActivity) getActivity())
+		{
 			@Override
-			public void onUpdate(ArrayList<QueuedSkill> pSkillQueue) 
+			public void onUpdate(SkillQueueResponse response) 
 			{
-				skillQueue = pSkillQueue;
-				configureSkillQueueTimer();
+				skillQueue.clear();
+				skillQueue.addAll(response.getAll());
 			}
-    	});
+
+			@Override
+			public void onError(SkillQueueResponse response, ApiException exception) 
+			{
+				
+			}
+		});
     	
+		// get character's character sheet
     	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity()) 
     	{
 			@Override
@@ -244,6 +243,7 @@ public class CharacterSheetFragment extends Fragment {
 			}
     	});
     	
+    	// get character's info
     	character.getCharacterInfo(new APICallback<CharacterInfo>((BaseActivity) getActivity()) 
     	{
 			@Override
@@ -253,16 +253,6 @@ public class CharacterSheetFragment extends Fragment {
 				obtainedCharacterInfoSheet();
 			}
     	});
-    	
-    	/*character.getAssetsList(new APICallback<AssetsEntity[]>() 
-    	{
-			@Override
-			public void onUpdate(AssetsEntity[] pAssets) 
-			{
-				assets = pAssets;
-				obtainedCharacterInfoSheet();
-			}
-    	});*/
    	}
 	
 	private void configureSkillQueueTimer()
@@ -276,22 +266,20 @@ public class CharacterSheetFragment extends Fragment {
 			long timeUntilSkillFinish = 0;
 			try 
 			{
-				timeUntilSkillFinish = Tools.timeUntilUTCTime(skillQueue.get(0).endTime);
+				timeUntilSkillFinish = Tools.timeUntilUTCTime(skillQueue.get(0).getEndTime());
 				new SkillTimeRemainingCountdown(timeUntilSkillFinish, 1000, skillTimeRemaining).start();
 			} 
 			catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
-			
-			final int skillLevel = skillQueue.get(0).skillLevel;
-			
+						
 			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((BaseActivity) getActivity())
 			{
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> updatedData) 
 				{
-					if (updatedData == null || updatedData.valueAt(0) == null) currentSkillView.setText("Skill ID: " + skillQueue.get(0).skillID);
+					if (updatedData == null || updatedData.valueAt(0) == null) currentSkillView.setText("Skill ID: " + skillQueue.get(0).getTypeID());
 					else currentSkillView.setText(updatedData.valueAt(0).typeName);
 				}
-			}, skillQueue.get(0).skillID);
+			}, skillQueue.get(0).getTypeID());
 		}
 		else
 		{
@@ -302,13 +290,11 @@ public class CharacterSheetFragment extends Fragment {
 	
 	private class CharacterSheetAdapater extends ArrayAdapter<SheetItem>
 	{
-		SheetItem[] items;
 		int resourceID;
 		
 		public CharacterSheetAdapater(Context context, int viewResourceID, SheetItem[] items) 
 		{
 			super(context, viewResourceID, items);
-			this.items = items;
 			this.resourceID = viewResourceID;
 		}
 		
@@ -347,7 +333,7 @@ public class CharacterSheetFragment extends Fragment {
 	/**
 	 * Method handles most of the dynamic data display.  Due to information
 	 * needing to be obtained from the {@link CharacterSheet} and {@link CharacterInfo}
-	 * resources, no action will be taken until both are displayed.
+	 * resources, no action will be taken until both are obtained.
 	 */
 	private void obtainedCharacterInfoSheet()
 	{
@@ -397,8 +383,8 @@ public class CharacterSheetFragment extends Fragment {
 			if (skillQueue.isEmpty()) subTexts[SKILL_QUEUE].setText("Skill Queue Empty");
 			else
 			{
-				QueuedSkill lastSkill = skillQueue.get(skillQueue.size() - 1);
-				long timeUntilQueueFinished = Tools.timeUntilUTCTime(lastSkill.endTime);
+				ApiSkillQueueItem lastSkill = skillQueue.get(skillQueue.size() - 1);
+				long timeUntilQueueFinished = Tools.timeUntilUTCTime(lastSkill.getEndTime());
 				String formattedTimeRemaining = Tools.millisToEveFormatString(timeUntilQueueFinished);
 				
 				subTexts[SKILL_QUEUE].setText(skillQueue.size() + " Skill(s) in Queue (" + formattedTimeRemaining + ")");
@@ -415,92 +401,22 @@ public class CharacterSheetFragment extends Fragment {
 		}
 
 		/* Assets */
-		/* if (subTexts[ASSETS] != null && assets != null && assets.length > 0) 
-		{
-			ArrayList<Integer> uniqueIDList = new ArrayList<Integer>();
-			getUniqueAssetsTypeIDs(assets, uniqueIDList);
-			
-			Integer[] uniqueTypeIDs = new Integer[uniqueIDList.size()];
-			uniqueIDList.toArray(uniqueTypeIDs);
-			
-			PriceService.getInstance(context).getValues(uniqueTypeIDs, new APICallback<SparseArray<Float>>() 
-			{
-				@Override
-				public void onUpdate(SparseArray<Float> priceValues) 
-				{
-					subTexts[ASSETS].setText(getAssetsCount(assets) + " items (" + priceValues.size() + " ISK)");
-				}
-			});
-		} */
-	}
-	
-	private void getUniqueAssetsTypeIDs(AssetsEntity[] assets, ArrayList<Integer> returnedList)
-	{		
-		for (AssetsEntity entity : assets)
-		{
-			if (entity.containsAssets())
-			{
-				ArrayList<AssetsEntity> containedAssetsList = entity.getContainedAssets();
-				AssetsEntity[] containedAssetsArray = new AssetsEntity[containedAssetsList.size()];
-				containedAssetsList.toArray(containedAssetsArray);
-				
-				getUniqueAssetsTypeIDs(containedAssetsArray, returnedList);
-			}
-			
-			if (entity instanceof AssetsEntity.Item)
-			{
-				AssetsEntity.Item item = (AssetsEntity.Item) entity;
-				int typeID = item.attributes().typeID;
-				
-				if (!returnedList.contains(typeID)) returnedList.add(typeID);
-			}
-		}
-	}
-	
-	private int getAssetsCount(AssetsEntity[] assets)
-	{
-		int assetsCount = 0;
 		
-		for (AssetsEntity entity : assets)
-		{
-			if (entity instanceof AssetsEntity.Station)
-			{
-				AssetsEntity.Station station = (AssetsEntity.Station) entity;
-
-				if (station.containsAssets())
-				{
-					ArrayList<AssetsEntity> containedAssetsList = station.getContainedAssets();
-					AssetsEntity[] containedAssetsArray = new AssetsEntity[containedAssetsList.size()];
-					containedAssetsList.toArray(containedAssetsArray);
-							
-					assetsCount += getAssetsCount(containedAssetsArray);
-				}
-			}
-			else if (entity instanceof AssetsEntity.Item)
-			{
-				AssetsEntity.Item item = (AssetsEntity.Item) entity;
-				
-				assetsCount++;
-
-				if (item.containsAssets())
-				{
-					ArrayList<AssetsEntity> containedAssetsList = item.getContainedAssets();
-					AssetsEntity[] containedAssetsArray = new AssetsEntity[containedAssetsList.size()];
-					containedAssetsList.toArray(containedAssetsArray);
-							
-					assetsCount += getAssetsCount(containedAssetsArray);
-				}
-			}
-		}
-		
-		return assetsCount;
 	}
 	
+	/**
+	 * This class takes a supplied {@link TextView} and a length of time to count down and updates the TextView
+	 * accordingly.
+	 * 
+	 * @author zachd
+	 *
+	 */
 	private class SkillTimeRemainingCountdown extends CountDownTimer
 	{
 		private TextView view;
 		
-		public SkillTimeRemainingCountdown(long millisInFuture, long countDownInterval, TextView view) {
+		public SkillTimeRemainingCountdown(long millisInFuture, long countDownInterval, TextView view) 
+		{
 			super(millisInFuture, countDownInterval);
 			this.view = view;
 		}
@@ -520,7 +436,7 @@ public class CharacterSheetFragment extends Fragment {
 			 */
 			for (int x = 0; x < skillQueue.size(); x++)
 			{
-				long timeUntilSkillCompletion = Tools.timeUntilUTCTime(skillQueue.get(x).endTime); 
+				long timeUntilSkillCompletion = Tools.timeUntilUTCTime(skillQueue.get(x).getEndTime()); 
 				
 				if (timeUntilSkillCompletion > 0) 
 				{
