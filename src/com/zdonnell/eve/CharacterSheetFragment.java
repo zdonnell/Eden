@@ -94,7 +94,7 @@ public class CharacterSheetFragment extends Fragment
     private Context context;
         
     private ImageService imageService;
-    private ArrayList<ApiSkillQueueItem> skillQueue;
+    private ArrayList<ApiSkillQueueItem> skillQueue = new ArrayList<ApiSkillQueueItem>();
     private CharacterSheetResponse characterSheet;
     private CharacterInfoResponse characterInfo;
         
@@ -226,6 +226,7 @@ public class CharacterSheetFragment extends Fragment
 			{
 				skillQueue.clear();
 				skillQueue.addAll(response.getAll());
+				configureSkillQueueTimer();
 			}
 
 			@Override
@@ -236,13 +237,19 @@ public class CharacterSheetFragment extends Fragment
 		});
     	
 		// get character's character sheet
-    	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity()) 
+    	character.getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>((BaseActivity) getActivity()) 
     	{
 			@Override
-			public void onUpdate(CharacterSheet rCharacterSheet) 
+			public void onUpdate(CharacterSheetResponse rCharacterSheet) 
 			{
 				characterSheet = rCharacterSheet;
 				obtainedCharacterInfoSheet();
+			}
+
+			@Override
+			public void onError(CharacterSheetResponse response, ApiException exception) 
+			{
+				
 			}
     	});
     	

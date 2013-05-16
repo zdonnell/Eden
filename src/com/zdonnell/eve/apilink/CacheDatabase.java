@@ -84,12 +84,15 @@ public class CacheDatabase {
 	
 	public void updateCache(int requestHash, Date cachedUntil) 
 	{	
-		ContentValues values = new ContentValues();
-		values.put(TABLE_ID, requestHash);
-		values.put(TABLE_EXPIRE, formatter.format(cachedUntil));
-		
-		try { db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE); }
-		catch(Exception e) { e.printStackTrace(); }
+		if (cachedUntil != null)
+		{
+			ContentValues values = new ContentValues();
+			values.put(TABLE_ID, requestHash);
+			values.put(TABLE_EXPIRE, formatter.format(cachedUntil));
+			
+			try { db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE); }
+			catch(Exception e) { e.printStackTrace(); }
+		}
 	}
 
 	private class CustomSQLiteOpenHelper extends SQLiteOpenHelper 
