@@ -67,7 +67,9 @@ public class CharacterInfoData {
 		insertValues.put(COL_CORP_DATE, formatter.format(characterInfo.getCorporationDate()));
 		insertValues.put(COL_ALLIANCE_ID, characterInfo.getAllianceID());
 		insertValues.put(COL_ALLIANCE, characterInfo.getAlliance());
-		insertValues.put(COL_ALLIANCE_DATE, formatter.format(characterInfo.getAllianceDate()));
+		
+		if (characterInfo.getAllianceDate() != null) insertValues.put(COL_ALLIANCE_DATE, formatter.format(characterInfo.getAllianceDate()));
+		
 		insertValues.put(COL_LAST_KNOWN_LOC, characterInfo.getLastKnownLocation());
 		insertValues.put(COL_SEC_STATUS, characterInfo.getSecurityStatus());
 				

@@ -6,7 +6,6 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
@@ -28,13 +27,14 @@ import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
 import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
 import com.beimin.eveapi.eve.character.CharacterInfoResponse;
 import com.beimin.eveapi.exception.ApiException;
-import com.zdonnell.eve.api.ImageService;
+import com.squareup.picasso.Picasso;
 import com.zdonnell.eve.api.character.CharacterInfo;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.character.APICharacter;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
+import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.helpers.Tools;
 import com.zdonnell.eve.staticdata.api.StaticData;
 import com.zdonnell.eve.staticdata.api.TypeInfo;
@@ -93,7 +93,6 @@ public class CharacterSheetFragment extends Fragment
     
     private Context context;
         
-    private ImageService imageService;
     private ArrayList<ApiSkillQueueItem> skillQueue = new ArrayList<ApiSkillQueueItem>();
     private CharacterSheetResponse characterSheet;
     private CharacterInfoResponse characterInfo;
@@ -127,7 +126,6 @@ public class CharacterSheetFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
     	context = inflater.getContext();
-    	imageService = ImageService.getInstance(context);
     	
     	rootView = inflater.inflate(R.layout.character_sheet, container, false);
     	listView = (ListView) rootView.findViewById(R.id.char_sheet_list);
@@ -209,14 +207,9 @@ public class CharacterSheetFragment extends Fragment
 	public void setCharacter(APICharacter character) 
 	{
 		final ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
-		imageService.getPortraits(new ImageService.IconObtainedCallback() 
-		{
-			@Override
-			public void iconsObtained(SparseArray<Bitmap> bitmaps) 
-			{
-				portrait.setImageBitmap(bitmaps.valueAt(0));
-			}
-		}, false, character.getApiAuth().getCharacterID().intValue());
+		int characterID = character.getApiAuth().getCharacterID().intValue();
+		
+		Picasso.with(context).load(ImageURL.forChar(characterID)).into(portrait);
 		
 		// get character's skill queue
 		character.getSkillQueue(new APIExceptionCallback<SkillQueueResponse>((BaseActivity) getActivity())

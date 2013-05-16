@@ -11,5 +11,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/eveapi-5.1.2-javadoc.jar"/>
 	<classpathentry kind="lib" path="libs/eveapi-5.1.2-sources.jar"/>
+	<classpathentry kind="lib" path="libs/picasso-1.0.1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,12 +29,13 @@ import android.widget.TextView;
 import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
 import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
 import com.beimin.eveapi.exception.ApiException;
-import com.zdonnell.eve.api.ImageService;
+import com.squareup.picasso.Picasso;
 import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.account.EdenEveCharacter;
 import com.zdonnell.eve.apilink.character.APICharacter;
 import com.zdonnell.eve.eve.Eve;
+import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.helpers.Tools;
 import com.zdonnell.eve.staticdata.api.StationDatabase;
 import com.zdonnell.eve.staticdata.api.StationInfo;
@@ -71,11 +71,6 @@ public class CharactersFragment extends Fragment {
 	 * Reference to the current context
 	 */
 	private Context context;
-	
-	/**
-	 * Reference to the ImageService singleton, handles acquisition of character portraits and corp logos.
-	 */
-	private ImageService imageService;
 		
 	private EdenEveCharacter[] characters;
 		
@@ -92,7 +87,6 @@ public class CharactersFragment extends Fragment {
 		
 		/* setup some Fragment wide objects */
 		context = inflater.getContext();
-		imageService = ImageService.getInstance(context);
 		charDB = new CharacterDB(context);
 		
 		prefs = context.getSharedPreferences("eden", Context.MODE_PRIVATE);
@@ -227,16 +221,7 @@ public class CharactersFragment extends Fragment {
 			final ImageView portrait = (ImageView) mainView.findViewById(R.id.char_image);			
 			portrait.setImageBitmap(null);
 
-			imageService.getPortraits(new ImageService.IconObtainedCallback() 
-			{	
-				@Override
-				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
-				{
-					portrait.setImageBitmap(bitmaps.valueAt(0));
-					viewCharacterMap.put(mainView, characterID);
-					if (mainView.getAlpha() == 0) mainView.setAlpha(1);
-				}
-			}, false, characterID);
+			Picasso.with(context).load(ImageURL.forChar(characterID)).into(portrait);
 			
 			/* Set the correct size for the ImageView */
 			int width = mainView.getLayoutParams().width;
@@ -254,15 +239,7 @@ public class CharactersFragment extends Fragment {
 		{
 			final ImageView corpLogo = (ImageView) mainView.findViewById(R.id.corp_image);
 			
-			imageService.getCorpLogos(new ImageService.IconObtainedCallback() 
-			{	
-				@Override
-				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
-				{
-					corpLogo.setImageBitmap(bitmaps.valueAt(0));
-					corpLogo.setTag(bitmaps.keyAt(0));
-				}
-			}, true, corpID);
+			Picasso.with(context).load(ImageURL.forCorp(corpID)).into(corpLogo);
 		}
 		
 		/**

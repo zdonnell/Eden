@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.api.ImageService;
@@ -31,6 +32,7 @@ import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.AssetsEntity.Item;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
+import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.staticdata.api.StationInfo;
 import com.zdonnell.eve.staticdata.api.TypeInfo;
 
@@ -140,15 +142,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			if (parentStationInfo != null)
 			{
 				parentAssetName.setText(parentStationInfo.stationName);
-				
-				ImageService.getInstance(context).getTypes(new ImageService.IconObtainedCallback() 
-				{
-					@Override
-					public void iconsObtained(SparseArray<Bitmap> bitmaps) 
-					{
-						parentAssetIcon.setImageBitmap(bitmaps.valueAt(0));
-					}
-				}, false, parentStationInfo.stationTypeID);
+				Picasso.with(getActivity()).load(ImageURL.forType(parentStationInfo.stationTypeID)).into(parentAssetIcon);
 			}
 		}
 		else if (parent instanceof AssetsEntity.Item)
@@ -158,14 +152,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			
 			if (parentItemInfo != null) parentAssetName.setText(parentItemInfo.typeName);
 
-			ImageService.getInstance(context).getTypes(new ImageService.IconObtainedCallback() 
-			{
-				@Override
-				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
-				{
-					parentAssetIcon.setImageBitmap(bitmaps.valueAt(0));
-				}
-			}, false, parentItem.attributes().typeID);
+			Picasso.with(getActivity()).load(ImageURL.forType(parentItem.attributes().typeID)).into(parentAssetIcon);
 		}
 	}
 	
