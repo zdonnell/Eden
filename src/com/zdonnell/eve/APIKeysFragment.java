@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
@@ -16,11 +15,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.ImageService;
-import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.account.EveCharacter;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
+import com.zdonnell.eve.helpers.ImageURL;
 
 /**
  * Fragment that displays API Keys and linked Characters
@@ -281,22 +280,12 @@ public class APIKeysFragment extends Fragment
 		 * @param keyID the ID of API Key that the provided characters belong to
 		 */
 		private void setCharacterPortraits(final ImageView[] portraits, final Integer[] charIDs, final int keyID)
-		{
-			ImageService.getInstance(getContext()).getPortraits(new IconObtainedCallback()
+		{			
+			for (int i = 0; i < charIDs.length; ++i)
 			{
-				@Override
-				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
-				{
-					for (int i = 0; i < characters.get(keyID).size(); ++i)
-					{
-						portraits[i].setVisibility(View.VISIBLE);						
-						if (i < 3 && portraits[i].getTag().equals(charIDs[i])) 
-						{
-							portraits[i].setImageBitmap(bitmaps.get(charIDs[i]));
-						}
-					}
-				}
-			}, true, charIDs);
+				portraits[i].setVisibility(View.VISIBLE);
+				Picasso.with(getContext()).load(ImageURL.forChar(charIDs[i])).into(portraits[i]);
+			}
 		}
 	}
 }

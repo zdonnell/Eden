@@ -15,8 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
-import com.slidingmenu.lib.SlidingMenu;
-import com.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 public abstract class BaseActivity extends SlidingFragmentActivity {
 

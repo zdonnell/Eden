@@ -7,10 +7,8 @@ import java.util.HashMap;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
@@ -27,8 +25,6 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
-import com.zdonnell.eve.api.ImageService;
-import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.AssetsEntity.Item;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
@@ -100,7 +96,6 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	public void assetsUpdated(AssetsEntity[] assets) 
 	{			
 		this.currentItemList = assets;
-		Log.d("IListFragment", "GOT HERE");
 		if (isFragmentCreated) updateView();
 	}
 	
@@ -445,25 +440,15 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			icon.setTag(typeID);
 			icon.setImageBitmap(null);
 			
-			ImageService.getInstance(context).getTypes(new IconObtainedCallback() 
+			Picasso.with(context).load(ImageURL.forType(typeID)).into(icon);
+			
+			if (displayType == GRID)
 			{
-				@Override
-				public void iconsObtained(SparseArray<Bitmap> bitmaps) 
-				{
-					if (((Integer) icon.getTag()).intValue() == typeID)
-					{											
-						icon.setImageBitmap(bitmaps.get(typeID));	
-						
-						if (displayType == GRID)
-						{
-							float colWidthWithPadding = (float) absListView.getWidth() / (float) ((GridView) absListView).getNumColumns();
-							int imageWidth = (int) (colWidthWithPadding - (absListView.getPaddingLeft() + absListView.getPaddingRight()));
-							
-							icon.setLayoutParams(new LinearLayout.LayoutParams(imageWidth, imageWidth));
-						}
-					}
-				}
-			}, false, typeID);
+				float colWidthWithPadding = (float) absListView.getWidth() / (float) ((GridView) absListView).getNumColumns();
+				int imageWidth = (int) (colWidthWithPadding - (absListView.getPaddingLeft() + absListView.getPaddingRight()));
+				
+				icon.setLayoutParams(new LinearLayout.LayoutParams(imageWidth, imageWidth));
+			}
 		}
 	}
 

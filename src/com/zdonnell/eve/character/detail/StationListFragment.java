@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
@@ -18,11 +17,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.zdonnell.eve.R;
-import com.zdonnell.eve.api.ImageService;
 import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.AssetsEntity.Station;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
+import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.staticdata.api.StationInfo;
 
 public class StationListFragment extends Fragment implements IAssetsSubFragment 
@@ -241,14 +241,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 				
 				stationNameTextView.setText(stationName);
 				
-				ImageService.getInstance(context).getTypes(new ImageService.IconObtainedCallback() 
-				{
-					@Override
-					public void iconsObtained(SparseArray<Bitmap> bitmaps) 
-					{
-						icon.setImageBitmap(bitmaps.valueAt(0));
-					}
-				}, false, stationTypeID);
+				Picasso.with(getContext()).load(ImageURL.forType(stationTypeID)).into(icon);
 			}
 			else
 			{
@@ -309,17 +302,6 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 				textView.setText(currentStationInfo.get(stationID).stationName);
 			}
 		}     
-		
-		
-		public void obtainedStationIcons(SparseArray<Bitmap> iconsByStationTypeID)
-		{
-			for (ImageView icon : stationIconMappings.keySet())
-			{
-				int stationID = stationIconMappings.get(icon);
-				int stationTypeID = currentStationInfo.get(stationID).stationTypeID;
-				icon.setImageBitmap(iconsByStationTypeID.get(stationTypeID));
-			}
-		}
 	}
 
 	@Override
@@ -372,26 +354,6 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	{
 		currentStationInfo = parentFragment.getStationInfo();
 		if (adapter != null) adapter.obtainedStationInfo();
-		
-		ArrayList<Integer> uniqueStationTypeIDsList = new ArrayList<Integer>();
-		
-		for (int i = 0; i < currentStationInfo.size(); ++i)
-		{
-			int stationTypeID = currentStationInfo.valueAt(i).stationTypeID;
-			if (!uniqueStationTypeIDsList.contains(stationTypeID)) uniqueStationTypeIDsList.add(stationTypeID);
-		}
-		
-		Integer[] uniqueStationTypeIDs = new Integer[uniqueStationTypeIDsList.size()];
-		uniqueStationTypeIDsList.toArray(uniqueStationTypeIDs);
-		
-		ImageService.getInstance(context).getTypes(new ImageService.IconObtainedCallback() 
-		{
-			@Override
-			public void iconsObtained(SparseArray<Bitmap> bitmaps) 
-			{
-				if (adapter != null) adapter.obtainedStationIcons(bitmaps);
-			}
-		}, false, uniqueStationTypeIDs);
 	}
 
 	@Override

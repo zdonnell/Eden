@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.SparseArray;
@@ -19,18 +18,18 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
 import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.ImageService;
-import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
 import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.WalletEntry;
 import com.zdonnell.eve.api.character.WalletEntry.Transaction;
 import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.eve.Eve;
+import com.zdonnell.eve.helpers.ImageURL;
 
 public class WalletFragment extends DetailFragment {
     
@@ -102,26 +101,14 @@ public class WalletFragment extends DetailFragment {
     
     public void fillImageViews()
     {
-    	Integer[] typeIDs = new Integer[visibleViews.values().size()];
-        int index = 0;
-    	for (Integer typeID : visibleViews.values())
-        {
-    		typeIDs[index] = typeID;
-        	++index;
-        }
-    	
-    	ImageService.getInstance(context).getTypes(new IconObtainedCallback() 
-    	{
-			@Override
-			public void iconsObtained(SparseArray<Bitmap> bitmaps) 
+		for (ImageView icon : visibleViews.keySet())
+		{
+			Integer imageTypeID = (Integer) icon.getTag();
+			if (imageTypeID != null)
 			{
-				for (ImageView icon : visibleViews.keySet())
-				{
-					Integer imageTypeID = (Integer) icon.getTag();
-					if (imageTypeID != null) icon.setImageBitmap(bitmaps.get(imageTypeID));
-				}
+				Picasso.with(context).load(ImageURL.forType(imageTypeID)).into(icon);
 			}
-    	}, false, typeIDs);
+		}
     }
     
     public void updateWalletType(int type)
@@ -281,18 +268,8 @@ public class WalletFragment extends DetailFragment {
 			typeIcon.setImageBitmap(null);
 			typeIcon.setTag(Integer.valueOf(entry.typeID()));
 			visibleViews.put(typeIcon, entry.typeID());
-			
-			//if (scrollState != AbsListView.OnScrollListener.SCROLL_STATE_FLING)
-			//{
-				ImageService.getInstance(context).getTypes(new IconObtainedCallback()
-				{
-					@Override
-					public void iconsObtained(SparseArray<Bitmap> bitmaps) 
-					{
-						if ((Integer) typeIcon.getTag() == bitmaps.keyAt(0)) typeIcon.setImageBitmap(bitmaps.valueAt(0));
-					}	
-				}, false, entry.typeID());
-			//}
+
+			Picasso.with(context).load(ImageURL.forType(entry.typeID())).into(typeIcon);
 		}
     }
 
