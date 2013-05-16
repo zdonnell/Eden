@@ -39,8 +39,8 @@ import com.zdonnell.eve.helpers.Tools;
 import com.zdonnell.eve.staticdata.api.StaticData;
 import com.zdonnell.eve.staticdata.api.TypeInfo;
 
-public class CharacterSheetFragment extends Fragment {
-
+public class CharacterSheetFragment extends Fragment 
+{
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     
     public final static int SKILLS = 0;

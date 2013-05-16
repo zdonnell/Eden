@@ -15,6 +15,7 @@ import com.beimin.eveapi.exception.ApiException;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.CacheDatabase;
 import com.zdonnell.eve.apilink.IApiTask;
+import com.zdonnell.eve.database.CharacterSheetData;
 import com.zdonnell.eve.database.SkillsData;
 
 /**
@@ -84,6 +85,7 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 	        	response = parser.getResponse(apiAuth);
 	        	cacheDatabase.updateCache(requestHash, response.getCachedUntil());
 	        	
+	        	new CharacterSheetData(context).setCharacterSheet(response);
 	        	new SkillsData(context).storeSkills((int) response.getCharacterID(), response.getSkills());
 	        }
 			catch (ApiException e) 
@@ -137,7 +139,7 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 	@Override
 	public CharacterSheetResponse buildResponseFromDatabase() 
 	{
-		CharacterSheetResponse response = new CharacterSheetResponse();
+		CharacterSheetResponse response = new CharacterSheetData(context).getCharacterSheet(apiAuth.getCharacterID().intValue());
 		
 		// Get skills
 		SkillsData skillsData = new SkillsData(context);

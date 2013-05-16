@@ -13,11 +13,34 @@ public class Database {
 		createSkillTreeTable(db);
 		createSkillQueueTable(db);
 		createCharacterInfoTable(db);
+		createCharacterSheetTable(db);
 	}
 	
 	public static void onUpdate(SQLiteDatabase db, int oldVersion, int newVersion)
 	{
 		
+	}
+	
+	private static void createCharacterSheetTable(SQLiteDatabase db)
+	{	
+		String newTableQueryString = "create table " + CharacterSheetData.TABLE + " ("
+				
+				+ CharacterSheetData.COL_CHARACTER_ID + " integer primary key not null," 
+				+ CharacterSheetData.COL_NAME + " text,"
+				+ CharacterSheetData.COL_RACE + " text,"
+				+ CharacterSheetData.COL_DOB + " text,"
+				+ CharacterSheetData.COL_BLOODLINE + " text,"
+				+ CharacterSheetData.COL_ANCESTRY + " text,"
+				+ CharacterSheetData.COL_GENDER + " text,"
+				+ CharacterSheetData.COL_CORP_NAME + " text,"
+				+ CharacterSheetData.COL_CORP_ID + " integer,"
+				+ CharacterSheetData.COL_ALLIANCE_ID + " integer,"
+				+ CharacterSheetData.COL_ALLIANCE + " text,"		
+				+ CharacterSheetData.COL_BALANCE + " real,"			
+
+				+ "UNIQUE (" + CharacterSheetData.COL_CHARACTER_ID + ") ON CONFLICT REPLACE);";
+
+		db.execSQL(newTableQueryString);
 	}
 	
 	private static void createCharacterInfoTable(SQLiteDatabase db)
