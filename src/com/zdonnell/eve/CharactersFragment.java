@@ -221,7 +221,7 @@ public class CharactersFragment extends Fragment {
 			final ImageView portrait = (ImageView) mainView.findViewById(R.id.char_image);			
 			portrait.setImageBitmap(null);
 
-			Picasso.with(context).load(ImageURL.forChar(characterID)).into(portrait);
+			Picasso.with(context).load(ImageURL.forChar(characterID)).placeholder(R.drawable.unkown_portrait).into(portrait);
 			
 			/* Set the correct size for the ImageView */
 			int width = mainView.getLayoutParams().width;

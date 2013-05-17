@@ -232,7 +232,7 @@ public class AddAPIDialog extends DialogFragment
 					
 					characterName.setText(character.getName());
 					
-					Picasso.with(AddAPIDialog.this.getActivity()).load(ImageURL.forChar((int) character.getCharacterID())).into(characterIcon);
+					Picasso.with(AddAPIDialog.this.getActivity()).load(ImageURL.forChar((int) character.getCharacterID())).placeholder(R.drawable.unkown_portrait).into(characterIcon);
 					
 					characterTile.setOnClickListener(new View.OnClickListener() 
 					{

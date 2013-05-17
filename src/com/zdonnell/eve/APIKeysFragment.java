@@ -284,7 +284,7 @@ public class APIKeysFragment extends Fragment
 			for (int i = 0; i < charIDs.length; ++i)
 			{
 				portraits[i].setVisibility(View.VISIBLE);
-				Picasso.with(getContext()).load(ImageURL.forChar(charIDs[i])).into(portraits[i]);
+				Picasso.with(getContext()).load(ImageURL.forChar(charIDs[i])).placeholder(R.drawable.unkown_portrait).into(portraits[i]);
 			}
 		}
 	}
