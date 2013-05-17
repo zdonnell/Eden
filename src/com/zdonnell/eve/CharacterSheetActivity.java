@@ -49,7 +49,8 @@ public class CharacterSheetActivity extends BaseActivity implements CharacterShe
         ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar);
         
         getActionBar().setTitle(new CharacterDB(this).getCharacterName(assembledChar.getApiAuth().getCharacterID().intValue()));
-                     
+        getActionBar().setSubtitle(new CharacterDB(this).getCorpName(assembledChar.getApiAuth().getCharacterID().intValue()));      
+        
         /*if (findViewById(R.id.sheetitem_detail_container) != null) 
         {
             mTwoPane = true;

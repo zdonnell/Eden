@@ -352,7 +352,7 @@ public class CharacterSheetFragment extends Fragment
 			
 			TextView characterSPView = (TextView) rootView.findViewById(R.id.current_sp);
 			characterSPView.setText(formatter.format(characterInfo.getSkillPoints()) + " SP");
-						
+									
 			/*
 			 * TODO enable clone info when eveapi supports clone info
 			 * 

@@ -161,9 +161,20 @@ public class CharacterDB {
 	public String getCharacterName(int characterID)
 	{
 		String query = "SELECT " + CHAR_TABLE_NAME + " FROM " + CHAR_TABLE + " WHERE " + CHAR_TABLE_EVEID + "=?";
+				
+		Cursor c = db.rawQuery(query, new String[]{ String.valueOf(characterID) });
 		
-		Log.d("TEST VALUE", "IS: " + String.valueOf(characterID));
+		String name = "";
+		if (c.moveToFirst()) name = c.getString(0);
+		c.close();
 		
+		return name;
+	}
+	
+	public String getCorpName(int characterID)
+	{
+		String query = "SELECT " + CHAR_TABLE_CORPNAME + " FROM " + CHAR_TABLE + " WHERE " + CHAR_TABLE_EVEID + "=?";
+				
 		Cursor c = db.rawQuery(query, new String[]{ String.valueOf(characterID) });
 		
 		String name = "";
