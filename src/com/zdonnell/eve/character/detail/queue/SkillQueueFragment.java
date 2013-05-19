@@ -196,7 +196,7 @@ public class SkillQueueFragment extends DetailFragment {
 
 			// Configure Skill Level Indicator View
 			SkillLevelIndicator skillLevelIndicator = (SkillLevelIndicator) mainView.findViewById(R.id.skill_level_indicator);
-			skillLevelIndicator.provideSkillInfo(queuedSkill, getPosition(queuedSkill) == 0, R.color.primary_accent_color);
+			skillLevelIndicator.provideSkillInfo(queuedSkill, getPosition(queuedSkill) == 0, context.getResources().getColor(R.color.primary_accent_color));
 		}
 		
 		/**
