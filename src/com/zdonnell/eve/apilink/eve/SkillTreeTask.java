@@ -83,6 +83,13 @@ public class SkillTreeTask extends AsyncTask<Void, Void, SkillTreeResponse> impl
 	}
 	
 	@Override
+	protected void onProgressUpdate(Void... progress)
+	{		
+		callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
+		callback.onUpdate(cachedData);
+	}
+	
+	@Override
 	protected void onPostExecute(SkillTreeResponse response) 
 	{
 		// We can arrive here one of two ways, if the cache was still valid, or if it was invalid
@@ -130,7 +137,7 @@ public class SkillTreeTask extends AsyncTask<Void, Void, SkillTreeResponse> impl
 			}
 		}
 		
-		// Add the corrected groups to a new SkillTreeResponse
+		// Clear the "unfixed" groups, and add back the fixed ones
 		response.getAll().clear();
 		for (int i = 0; i < correctedSkillGroups.size(); i++) response.add(correctedSkillGroups.valueAt(i));
 	}

@@ -42,9 +42,7 @@ public class ParentAssetsFragment extends DetailFragment {
     private Context context;
     
     private SparseIntArray typeIDCounts;
-    
-    private Integer[] uniqueTypeIDs;
-                    
+                        
     public Stack<AssetsEntity[]> parentStack = new Stack<AssetsEntity[]>();
     
     public Stack<AssetsEntity> parentItemStack = new Stack<AssetsEntity>();
@@ -52,9 +50,7 @@ public class ParentAssetsFragment extends DetailFragment {
     public Stack<int[]> scrollPointStack = new Stack<int[]>();
 
     public AssetsEntity[] currentAssets;
-    
-    private AssetsEntity parentAsset;
-    
+        
     private IAssetsSubFragment childFragment;
         
     private SparseArray<StationInfo> currentStationInfo = new SparseArray<StationInfo>();
@@ -135,9 +131,7 @@ public class ParentAssetsFragment extends DetailFragment {
    	}
     
     public void updateChild(AssetsEntity[] newAssetsSet, int type, boolean isBack, boolean isSearchUpdate)
-    {    	    	    	
-		SharedPreferences prefs = context.getSharedPreferences("eden_assets_preferences", Context.MODE_PRIVATE);
-    	
+    {    	    	    	    	
     	FragmentTransaction loadNextAssets = this.getChildFragmentManager().beginTransaction();
     	IAssetsSubFragment nextFragment = null;
     	
@@ -448,11 +442,9 @@ public class ParentAssetsFragment extends DetailFragment {
 	public void loadData() 
 	{				
 		typeIDCounts = null;
-	    uniqueTypeIDs = null;
 	    parentStack = new Stack<AssetsEntity[]>();
 	    parentItemStack = new Stack<AssetsEntity>();
 	    scrollPointStack = new Stack<int[]>();
-	    parentAsset = null;
 	    currentStationInfo = new SparseArray<StationInfo>();
 	    typeInfo = new SparseArray<TypeInfo>();
 	    prices = new SparseArray<Float>();

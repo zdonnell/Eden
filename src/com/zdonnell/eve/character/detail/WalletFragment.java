@@ -56,9 +56,7 @@ public class WalletFragment extends DetailFragment {
     private SparseArray<String> refTypes;
     
     private String characterName;
-    
-    private int scrollState;
-    
+        
     private HashMap<ImageView, Integer> visibleViews = new HashMap<ImageView, Integer>();
     
 	private NumberFormat formatter = NumberFormat.getInstance();

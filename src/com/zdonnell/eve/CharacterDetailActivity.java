@@ -30,12 +30,12 @@ import android.widget.SearchView.OnQueryTextListener;
 
 import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.character.detail.AttributesFragment;
 import com.zdonnell.eve.character.detail.DetailFragment;
 import com.zdonnell.eve.character.detail.InventoryListFragment;
 import com.zdonnell.eve.character.detail.InventorySort;
 import com.zdonnell.eve.character.detail.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.WalletFragment;
+import com.zdonnell.eve.character.detail.attributes.AttributesFragment;
 import com.zdonnell.eve.character.detail.queue.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.skills.SkillsFragment;
 

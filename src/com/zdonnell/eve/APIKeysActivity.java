@@ -173,7 +173,7 @@ public class APIKeysActivity extends BaseActivity {
 	
 	private void launchAddExistingKeyIntent()
 	{
-		Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse("http://community.eveonline.com/support/api-key"));
+		Intent addExistingKey = new Intent(Intent.ACTION_VIEW, Uri.parse("https://support.eveonline.com/api/Key/ActivateInstallLinks"));
 		startActivity(addExistingKey);  
 	}
 	

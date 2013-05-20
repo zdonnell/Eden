@@ -7,9 +7,7 @@ package com.zdonnell.eve.api.character;
  *
  */
 public class CharacterInfo {
-	
-	private int characterID;
-	
+		
 	private int skillPoints;
 	
 	private CurrentShipInfo curShip;
@@ -17,11 +15,6 @@ public class CharacterInfo {
 	private double securityStatus;
 	
 	private String location;
-	
-	public CharacterInfo(int characterID)
-	{
-		this.characterID = characterID;
-	}
 	
 	// Setters
 	public void setCurShipInfo(CurrentShipInfo curShip) { this.curShip = curShip; }

@@ -19,8 +19,6 @@ public class Eve extends APIObject {
 	public static final int CONQ_STATIONS = 1;
 	public static final int REF_TYPES = 2;
 	
-	private Context context;
-
 	public static final String[] xmlURLs = new String[3];
 	static
 	{
@@ -32,9 +30,7 @@ public class Eve extends APIObject {
 	private ResourceManager resourceManager ;
 	
 	public Eve(Context context)
-	{
-		this.context = context;
-		
+	{		
 		super.setCredentials(credentials);
 		resourceManager = ResourceManager.getInstance(context);
 	}

@@ -5,6 +5,7 @@ import java.util.Set;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.beimin.eveapi.character.sheet.ApiAttributeEnhancer;
 import com.beimin.eveapi.character.sheet.ApiSkill;
 import com.beimin.eveapi.character.sheet.CharacterSheetParser;
 import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
@@ -15,6 +16,7 @@ import com.beimin.eveapi.exception.ApiException;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.CacheDatabase;
 import com.zdonnell.eve.apilink.IApiTask;
+import com.zdonnell.eve.database.AttributesData;
 import com.zdonnell.eve.database.CharacterSheetData;
 import com.zdonnell.eve.database.SkillsData;
 
@@ -87,6 +89,7 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 	        	
 	        	new CharacterSheetData(context).setCharacterSheet(response);
 	        	new SkillsData(context).storeSkills((int) response.getCharacterID(), response.getSkills());
+	        	new AttributesData(context).setImplants((int) response.getCharacterID(), response.getAttributeEnhancers());
 	        }
 			catch (ApiException e) 
 			{
@@ -140,6 +143,10 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 	public CharacterSheetResponse buildResponseFromDatabase() 
 	{
 		CharacterSheetResponse response = new CharacterSheetData(context).getCharacterSheet(apiAuth.getCharacterID().intValue());
+		
+		// Get attributes
+		Set<ApiAttributeEnhancer> implants = new AttributesData(context).getImplants(apiAuth.getCharacterID().intValue());
+		for (ApiAttributeEnhancer enhancer : implants) response.addAttributeEnhancer(enhancer);
 		
 		// Get skills
 		SkillsData skillsData = new SkillsData(context);

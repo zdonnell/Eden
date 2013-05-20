@@ -1,4 +1,4 @@
-package com.zdonnell.eve.character.detail;
+package com.zdonnell.eve.character.detail.attributes;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,13 +11,17 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.beimin.eveapi.character.sheet.ApiAttributeEnhancer;
+import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
+import com.beimin.eveapi.core.ApiAuth;
+import com.beimin.eveapi.core.ApiAuthorization;
+import com.beimin.eveapi.exception.ApiException;
 import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.R;
-import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterSheet;
-import com.zdonnell.eve.api.character.CharacterSheet.AttributeEnhancer;
-import com.zdonnell.eve.apilink.APICallback;
+import com.zdonnell.eve.apilink.APIExceptionCallback;
+import com.zdonnell.eve.apilink.character.APICharacter;
+import com.zdonnell.eve.character.detail.DetailFragment;
 
 public class AttributesFragment extends DetailFragment {
     
@@ -44,7 +48,7 @@ public class AttributesFragment extends DetailFragment {
     /**
      * Array of implants / augmentations
      */
-    private AttributeEnhancer[] implants = new AttributeEnhancer[5];
+    private ApiAttributeEnhancer[] implants = new ApiAttributeEnhancer[5];
         
     private Context context;
     
@@ -63,8 +67,9 @@ public class AttributesFragment extends DetailFragment {
     	context = inflater.getContext();
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_attributes, container, false);
     	
-    	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
-    
+    	ApiAuth<?> apiAuth = new ApiAuthorization(getArguments().getInt("keyID"), getArguments().getInt("characterID"), getArguments().getString("vCode"));
+    	character = new APICharacter(context, apiAuth);
+    	
     	attributesListView = (ListView) inflatedView.findViewById(R.id.char_detail_attributes_list);
     	loadData();
     	
@@ -118,8 +123,8 @@ public class AttributesFragment extends DetailFragment {
 			/* If there is an implant in the current slot, update some things */
 			if (implants[position] != null)
 			{
-				implantName.setText(implants[position].augmentatorName);
-				attributeValue += implants[position].augmentatorValue;
+				implantName.setText(implants[position].getAugmentatorName());
+				attributeValue += implants[position].getAugmentatorValue();
 			}
 			else 
 			{
@@ -138,17 +143,36 @@ public class AttributesFragment extends DetailFragment {
 	@Override
 	public void loadData() 
 	{
-		/* Grab the character sheet to get the attribute info */
-    	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity())
-    	{
+		character.getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>((BaseActivity) getActivity())
+		{
 			@Override
-			public void onUpdate(CharacterSheet characterSheet) 
+			public void onUpdate(CharacterSheetResponse response) 
 			{
-				attributes = characterSheet.getAttributes();
-				implants = characterSheet.getAttributeEnhancers();
+				for (int i = 0; i < 5; i++) implants[i] = null;
+				
+				for (ApiAttributeEnhancer enhancer : response.getAttributeEnhancers())
+				{
+					if (enhancer.getAttribute().equals("intelligence")) implants[0] = enhancer;
+					if (enhancer.getAttribute().equals("memory")) implants[1] = enhancer;
+					if (enhancer.getAttribute().equals("charisma")) implants[2] = enhancer;
+					if (enhancer.getAttribute().equals("perception")) implants[3] = enhancer;
+					if (enhancer.getAttribute().equals("willpower")) implants[4] = enhancer;
+				}
+			
+				attributes[0] = response.getIntelligence();
+				attributes[1] = response.getMemory();
+				attributes[2] = response.getCharisma();
+				attributes[3] = response.getPerception();
+				attributes[4] = response.getWillpower();
 				
 				attributesListView.setAdapter(new AttributesListAdapter(context, R.layout.char_detail_attributes_list_item, new Integer[5]));
 			}
-    	});
+
+			@Override
+			public void onError(CharacterSheetResponse response, ApiException exception) 
+			{
+				
+			}
+		});
 	}
 }

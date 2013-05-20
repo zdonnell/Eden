@@ -14,7 +14,7 @@ public class CharactersTask extends AsyncTask<Void, Void, CharactersResponse>
 	
 	private boolean apiExceptionOccured = false;
 	private ApiException exception;
-	private ApiAuth apiAuth;
+	private ApiAuth<?> apiAuth;
 	
 	public CharactersTask(APIExceptionCallback<CharactersResponse> callback, ApiAuth<?> apiAuth)
 	{

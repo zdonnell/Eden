@@ -14,11 +14,27 @@ public class Database {
 		createSkillQueueTable(db);
 		createCharacterInfoTable(db);
 		createCharacterSheetTable(db);
+		createCharacterAttributesTable(db);
 	}
 	
 	public static void onUpdate(SQLiteDatabase db, int oldVersion, int newVersion)
 	{
 		
+	}
+	
+	private static void createCharacterAttributesTable(SQLiteDatabase db)
+	{	
+		String newTableQueryString = "create table " + AttributesData.TABLE + " ("
+				
+				+ AttributesData.COL_UNIQUE_ID + " integer primary key not null," 
+				+ AttributesData.COL_CHAR_ID + " integer," 
+				+ AttributesData.COL_IMPLANT_NAME + " text,"
+				+ AttributesData.COL_IMPLANT_BONUS + " integer,"
+				+ AttributesData.COL_IMPLANT_SLOT + " integer,"			
+
+				+ "UNIQUE (" + AttributesData.COL_CHAR_ID + "," + AttributesData.COL_IMPLANT_SLOT + ") ON CONFLICT REPLACE);";
+
+		db.execSQL(newTableQueryString);
 	}
 	
 	private static void createCharacterSheetTable(SQLiteDatabase db)
@@ -36,7 +52,13 @@ public class Database {
 				+ CharacterSheetData.COL_CORP_ID + " integer,"
 				+ CharacterSheetData.COL_ALLIANCE_ID + " integer,"
 				+ CharacterSheetData.COL_ALLIANCE + " text,"		
-				+ CharacterSheetData.COL_BALANCE + " real,"			
+				+ CharacterSheetData.COL_BALANCE + " real,"	
+				
+				+ CharacterSheetData.COL_INTELLIGENCE + " integer,"
+				+ CharacterSheetData.COL_MEMORY + " integer,"
+				+ CharacterSheetData.COL_CHARISMA + " integer,"
+				+ CharacterSheetData.COL_PERCEPTION + " integer,"		
+				+ CharacterSheetData.COL_WILLPOWER + " integer,"	
 
 				+ "UNIQUE (" + CharacterSheetData.COL_CHARACTER_ID + ") ON CONFLICT REPLACE);";
 

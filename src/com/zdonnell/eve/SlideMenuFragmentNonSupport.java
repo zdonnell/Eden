@@ -122,7 +122,7 @@ public class SlideMenuFragmentNonSupport extends ListFragment {
     {
         final TextView serverStatusText = (TextView) root.findViewById(R.id.server_status);
         
-        new Server(getActivity()).status(new APIExceptionCallback<ServerStatusResponse>((BaseActivity) getActivity()) 
+        new Server().status(new APIExceptionCallback<ServerStatusResponse>((BaseActivity) getActivity()) 
         {
 			@Override
 			public void onUpdate(ServerStatusResponse serverStatus) {

@@ -24,7 +24,6 @@ import org.w3c.dom.Document;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.zdonnell.eve.api.ResourceRequestMonitor.RequestNotActiveException;
 import com.zdonnell.eve.apilink.APICallback;
 
 /**
@@ -40,9 +39,7 @@ public class ResourceManager {
 	
 	/* SQLite database to stored cached API resources */
 	private CacheDatabase cacheDatabase;
-	
-	private static Context context;
-	
+		
 	/**
 	 * Singleton access method
 	 * 
@@ -55,8 +52,6 @@ public class ResourceManager {
 		{
 			instance = new ResourceManager();
 			instance.cacheDatabase = new CacheDatabase(newContext);
-			
-			context = newContext;
 		}
 		return instance;
 	}
@@ -75,7 +70,6 @@ public class ResourceManager {
 	 * 
 	 * @param rw a {@link APIRequestWrapper} to bundle the request arguments
 	 */
-	@SuppressWarnings("unchecked")	
 	public void get(APIRequestWrapper rw)
 	{		
 		if (cacheDatabase.cacheExists(rw.resourceURL, rw.uniqueIDs)) 
@@ -185,14 +179,9 @@ public class ResourceManager {
 	private class APIServerQuery extends AsyncTask<String, Integer, Document> {
 
 		APIRequestWrapper rw;
-		
-		ResourceRequestMonitor.Request request;
-		
+				
 		public APIServerQuery(APIRequestWrapper rw) 
-		{ 
-			request = new ResourceRequestMonitor.Request(0, this);
-			ResourceRequestMonitor.getInstance(context).registerRequest(request);
-						
+		{ 			
 			this.rw = rw;
 		}
 		
@@ -226,10 +215,7 @@ public class ResourceManager {
 		@SuppressWarnings("unchecked")
 		@Override
 		protected void onPostExecute(Document queriedResource)
-		{
-			try { ResourceRequestMonitor.getInstance(context).requestCompleted(request); } 
-			catch (RequestNotActiveException e) { e.printStackTrace(); }
-			
+		{	
 			if (queriedResource != null) 
 			{
 				rw.apiCallback.onUpdate(rw.parser.parse(queriedResource));

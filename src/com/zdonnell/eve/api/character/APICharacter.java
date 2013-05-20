@@ -215,7 +215,7 @@ public class APICharacter extends APIObject {
 		@Override
 		public CharacterInfo parse(Document document) {
 			
-			CharacterInfo characterInfo = new CharacterInfo(characterID);
+			CharacterInfo characterInfo = new CharacterInfo();
 			
 			double secStatus = Double.parseDouble(document.getElementsByTagName("securityStatus").item(0).getTextContent());
 			characterInfo.setSecStatus(secStatus);

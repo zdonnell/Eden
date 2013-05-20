@@ -12,8 +12,6 @@ import android.util.SparseArray;
 
 public class PriceDatabase {
 
-	private Context context;
-
 	private SQLiteDatabase db;
 
 	private final String DB_NAME = "price_db";
@@ -27,8 +25,6 @@ public class PriceDatabase {
 
 	public PriceDatabase(Context context) 
 	{
-		this.context = context;
-
 		CustomSQLiteOpenHelper helper = new CustomSQLiteOpenHelper(context);
 		this.db = helper.getWritableDatabase();
 	}

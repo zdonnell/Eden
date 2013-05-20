@@ -2,6 +2,7 @@ package com.zdonnell.eve.database;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -31,6 +32,12 @@ public class CharacterSheetData {
 	public final static String COL_ALLIANCE = "character_alliance";
 	public final static String COL_BALANCE = "character_balance";
 	
+	public final static String COL_INTELLIGENCE = "character_intel";
+	public final static String COL_MEMORY = "character_memory";
+	public final static String COL_CHARISMA = "character_charisma";
+	public final static String COL_PERCEPTION = "character_perception";
+	public final static String COL_WILLPOWER = "character_willpower";
+	
 	// the Activity or Application that is creating an object from this class.
 	Context context;
 
@@ -46,7 +53,7 @@ public class CharacterSheetData {
 		CustomSQLiteOpenHelper helper = new CustomSQLiteOpenHelper(context);
 		this.db = helper.getWritableDatabase();
 		
-		formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 	}
 	
 	/**
@@ -69,6 +76,12 @@ public class CharacterSheetData {
 		insertValues.put(COL_ALLIANCE_ID, characterSheet.getAllianceID());
 		insertValues.put(COL_ALLIANCE, characterSheet.getAllianceName());
 		insertValues.put(COL_BALANCE, characterSheet.getBalance());
+		
+		insertValues.put(COL_INTELLIGENCE, characterSheet.getIntelligence());
+		insertValues.put(COL_MEMORY, characterSheet.getMemory());
+		insertValues.put(COL_CHARISMA, characterSheet.getCharisma());
+		insertValues.put(COL_PERCEPTION, characterSheet.getPerception());
+		insertValues.put(COL_WILLPOWER, characterSheet.getWillpower());
 				
 		db.insertWithOnConflict(TABLE, null, insertValues, SQLiteDatabase.CONFLICT_REPLACE);
 	}
@@ -101,6 +114,12 @@ public class CharacterSheetData {
 			characterSheet.setAllianceID(c.getLong(c.getColumnIndex(COL_ALLIANCE_ID)));
 			characterSheet.setAllianceName(c.getString(c.getColumnIndex(COL_ALLIANCE)));
 			characterSheet.setBalance(c.getDouble(c.getColumnIndex(COL_BALANCE)));
+			
+			characterSheet.setIntelligence(c.getInt(c.getColumnIndex(COL_INTELLIGENCE)));
+			characterSheet.setMemory(c.getInt(c.getColumnIndex(COL_MEMORY)));
+			characterSheet.setCharisma(c.getInt(c.getColumnIndex(COL_CHARISMA)));
+			characterSheet.setPerception(c.getInt(c.getColumnIndex(COL_PERCEPTION)));
+			characterSheet.setWillpower(c.getInt(c.getColumnIndex(COL_WILLPOWER)));
 		}
 		
 		c.close();

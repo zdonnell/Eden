@@ -9,9 +9,9 @@ import android.view.MenuInflater;
 import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.core.ApiAuthorization;
 import com.zdonnell.eve.apilink.character.APICharacter;
-import com.zdonnell.eve.character.detail.AttributesFragment;
 import com.zdonnell.eve.character.detail.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.WalletFragment;
+import com.zdonnell.eve.character.detail.attributes.AttributesFragment;
 import com.zdonnell.eve.character.detail.queue.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.skills.SkillsFragment;
 

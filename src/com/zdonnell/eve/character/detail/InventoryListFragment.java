@@ -64,9 +64,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	 * Array of stations
 	 */
 	private AssetsEntity[] currentItemList;
-	
-	private SparseArray<String> currentTypeNames = new SparseArray<String>();
-	
+		
 	/**
 	 * The main list view for the station list layout
 	 */
