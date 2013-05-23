@@ -66,7 +66,7 @@ public class CharacterSheetData {
 		
 		insertValues.put(COL_CHARACTER_ID, characterSheet.getCharacterID());
 		insertValues.put(COL_NAME, characterSheet.getName());
-		insertValues.put(COL_RACE, characterSheet.getRace().name());
+		//insertValues.put(COL_RACE, characterSheet.getRace().name()); TODO figure out why eve race breaks
 		insertValues.put(COL_DOB, formatter.format(characterSheet.getDateOfBirth()));
 		insertValues.put(COL_BLOODLINE, characterSheet.getBloodLine().name());
 		insertValues.put(COL_ANCESTRY, characterSheet.getAncestry().name());
@@ -101,7 +101,7 @@ public class CharacterSheetData {
 		{
 			characterSheet.setCharacterID(c.getLong(c.getColumnIndex(COL_CHARACTER_ID)));
 			characterSheet.setName(c.getString(c.getColumnIndex(COL_NAME)));
-			characterSheet.setRace(stringToEveRace(c.getString(c.getColumnIndex(COL_RACE))));
+			//characterSheet.setRace(stringToEveRace(c.getString(c.getColumnIndex(COL_RACE)))); TODO Fix eve race.
 			
 			try { characterSheet.setDateOfBirth(formatter.parse(c.getString(c.getColumnIndex(COL_DOB)))); } 
 			catch (ParseException e) { e.printStackTrace(); }
@@ -133,6 +133,7 @@ public class CharacterSheetData {
 	 * @param raceString
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private EveRace stringToEveRace(String raceString)
 	{
 		for (EveRace race : EveRace.values())
