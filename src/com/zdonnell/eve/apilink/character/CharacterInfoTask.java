@@ -2,6 +2,7 @@ package com.zdonnell.eve.apilink.character;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.core.ApiPage;
@@ -65,6 +66,8 @@ public class CharacterInfoTask extends AsyncTask<Void, Void, CharacterInfoRespon
 		}
 		else
 		{
+			Log.d("TEST", "LOADING CHARACTER INFO FROM SERVER");
+			
 			// The cache is out of date (invalid) but load it anyway while we contact the API server
 			if (cacheExists) 
 			{
@@ -78,7 +81,7 @@ public class CharacterInfoTask extends AsyncTask<Void, Void, CharacterInfoRespon
 						
 	        try 
 	        { 
-	        	response = parser.getResponse(apiAuth);
+	        	response = parser.getResponse(apiAuth);	        	
 	        	cacheDatabase.updateCache(requestHash, response.getCachedUntil());
 	        	
 	        	new CharacterInfoData(context).setCharacterInfo(response);

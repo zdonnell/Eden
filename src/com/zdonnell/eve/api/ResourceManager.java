@@ -23,6 +23,7 @@ import org.w3c.dom.Document;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.zdonnell.eve.apilink.APICallback;
 
@@ -121,6 +122,8 @@ public class ResourceManager {
 		Document xmlDoc = null;
 		DocumentBuilderFactory factory;
 		DocumentBuilder domBuilder;
+		
+		Log.d("RESPONSE XML STRING", xmlString);
 				
 		factory = DocumentBuilderFactory.newInstance();
 		

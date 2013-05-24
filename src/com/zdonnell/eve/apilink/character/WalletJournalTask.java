@@ -5,10 +5,9 @@ import java.util.Set;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.beimin.eveapi.character.sheet.ApiAttributeEnhancer;
-import com.beimin.eveapi.character.sheet.ApiSkill;
-import com.beimin.eveapi.character.sheet.CharacterSheetParser;
-import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
+import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
+import com.beimin.eveapi.character.skill.queue.SkillQueueParser;
+import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
 import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.core.ApiPage;
 import com.beimin.eveapi.core.ApiPath;
@@ -16,9 +15,7 @@ import com.beimin.eveapi.exception.ApiException;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.CacheDatabase;
 import com.zdonnell.eve.apilink.IApiTask;
-import com.zdonnell.eve.database.AttributesData;
-import com.zdonnell.eve.database.CharacterSheetData;
-import com.zdonnell.eve.database.SkillsData;
+import com.zdonnell.eve.database.SkillQueueData;
 
 /**
  * AsyncTask to retrieve character sheet information and provide it to the specified callback
@@ -26,11 +23,11 @@ import com.zdonnell.eve.database.SkillsData;
  * @author Zach
  *
  */
-public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResponse> implements IApiTask<CharacterSheetResponse>
+public class WalletJournalTask extends AsyncTask<Void, Void, SkillQueueResponse> implements IApiTask<SkillQueueResponse>
 {	
 	private CacheDatabase cacheDatabase;
 	
-	private APIExceptionCallback<CharacterSheetResponse> callback;
+	private APIExceptionCallback<SkillQueueResponse> callback;
 	private ApiAuth<?> apiAuth;
 	private Context context;
 	
@@ -39,7 +36,7 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 	
 	private boolean cacheExists = false, cacheValid = false;
 	
-	private CharacterSheetResponse cachedData;
+	private SkillQueueResponse cachedData;
 		
 	/**
 	 * Constructor
@@ -48,7 +45,7 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 	 * @param apiAuth
 	 * @param context
 	 */
-	public CharacterSheetTask(APIExceptionCallback<CharacterSheetResponse> callback, ApiAuth<?> apiAuth, Context context)
+	public WalletJournalTask(APIExceptionCallback<SkillQueueResponse> callback, ApiAuth<?> apiAuth, Context context)
 	{
 		this.callback = callback;
 		this.apiAuth = apiAuth;
@@ -58,7 +55,7 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 	}
 	
 	@Override
-	protected CharacterSheetResponse doInBackground(Void... params)
+	protected SkillQueueResponse doInBackground(Void... params)
 	{
 		int requestHash = apiAuth.hashCode() + requestTypeHash();
 		
@@ -79,17 +76,15 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 			}
 			else callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_NOT_FOUND);
  	
-			CharacterSheetParser parser = CharacterSheetParser.getInstance();		
-			CharacterSheetResponse response = null;
+			SkillQueueParser parser = SkillQueueParser.getInstance();		
+			SkillQueueResponse response = null;
 						
 	        try 
 	        { 
-	        	response = parser.getResponse(apiAuth);	        	
-	        	cacheDatabase.updateCache(requestHash, response.getCachedUntil());
+	        	response = parser.getResponse(apiAuth);
 	        	
-	        	new CharacterSheetData(context).setCharacterSheet(response);
-	        	new SkillsData(context).storeSkills((int) response.getCharacterID(), response.getSkills());
-	        	new AttributesData(context).setImplants((int) response.getCharacterID(), response.getAttributeEnhancers());
+	        	cacheDatabase.updateCache(requestHash, response.getCachedUntil());
+	        	new SkillQueueData(context).setQueueSkills(apiAuth.getCharacterID().intValue(), response.getAll());
 	        }
 			catch (ApiException e) 
 			{
@@ -102,7 +97,7 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 	}
 	
 	@Override
-	protected void onPostExecute(CharacterSheetResponse response) 
+	protected void onPostExecute(SkillQueueResponse response) 
 	{	
 		// We can arrive here one of two ways, if the cache was still valid, or if it was invalid
 		// and a server response was acquired, check which it is.
@@ -136,22 +131,17 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 	@Override
 	public int requestTypeHash() 
 	{
-		return ApiPath.CHARACTER.getPath().concat(ApiPage.CHARACTER_SHEET.getPage()).hashCode();
+		return ApiPath.CHARACTER.getPath().concat(ApiPage.SKILL_QUEUE.getPage()).hashCode();
 	}
 
 	@Override
-	public CharacterSheetResponse buildResponseFromDatabase() 
+	public SkillQueueResponse buildResponseFromDatabase() 
 	{
-		CharacterSheetResponse response = new CharacterSheetData(context).getCharacterSheet(apiAuth.getCharacterID().intValue());
+		SkillQueueResponse response = new SkillQueueResponse();
 		
-		// Get attributes
-		Set<ApiAttributeEnhancer> implants = new AttributesData(context).getImplants(apiAuth.getCharacterID().intValue());
-		for (ApiAttributeEnhancer enhancer : implants) response.addAttributeEnhancer(enhancer);
-		
-		// Get skills
-		SkillsData skillsData = new SkillsData(context);
-		Set<ApiSkill> skills = skillsData.getSkills(apiAuth.getCharacterID().intValue());
-		for (ApiSkill s : skills) response.addSkill(s);
+		SkillQueueData skillQueueData = new SkillQueueData(context);
+		Set<ApiSkillQueueItem> queue = skillQueueData.getQueue(apiAuth.getCharacterID().intValue());
+		for (ApiSkillQueueItem queuedSkill : queue) response.add(queuedSkill);
 		
 		return response;
 	}

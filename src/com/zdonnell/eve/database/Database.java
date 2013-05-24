@@ -15,11 +15,38 @@ public class Database {
 		createCharacterInfoTable(db);
 		createCharacterSheetTable(db);
 		createCharacterAttributesTable(db);
+		
+		createCharacterWalletJournalTable(db);
 	}
 	
 	public static void onUpdate(SQLiteDatabase db, int oldVersion, int newVersion)
 	{
 		
+	}
+	
+	private static void createCharacterWalletJournalTable(SQLiteDatabase db)
+	{
+		String newTableQueryString = "create table " + WalletJournalData.TABLE + " ("
+				
+				+ WalletJournalData.COL_REF_ID + " integer primary key not null," 
+				+ WalletJournalData.COL_DATE + " text," 
+				+ WalletJournalData.COL_CHAR_ID + " integer," 
+				+ WalletJournalData.COL_REF_TYPE + " text,"
+				+ WalletJournalData.COL_OWNER_NAME1 + " text,"
+				+ WalletJournalData.COL_OWNER_ID1 + " integer,"
+				+ WalletJournalData.COL_OWNER_NAME2 + " text," 
+				+ WalletJournalData.COL_OWNER_ID2 + " integer,"
+				+ WalletJournalData.COL_ARG_NAME + " text,"
+				+ WalletJournalData.COL_ARG_ID + " integer,"		
+				+ WalletJournalData.COL_AMOUNT + " real," 
+				+ WalletJournalData.COL_BALANCE + " real,"
+				+ WalletJournalData.COL_REASON + " text,"
+				+ WalletJournalData.COL_TAX_RECEIVER_ID + " integer,"	
+				+ WalletJournalData.COL_TAX_AMOUNT + " real,"		
+
+				+ "UNIQUE (" + WalletJournalData.COL_REF_ID + ") ON CONFLICT REPLACE);";
+
+		db.execSQL(newTableQueryString);
 	}
 	
 	private static void createCharacterAttributesTable(SQLiteDatabase db)
