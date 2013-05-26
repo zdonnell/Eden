@@ -7,6 +7,7 @@ import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
 import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
 import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.eve.character.CharacterInfoResponse;
+import com.beimin.eveapi.shared.wallet.journal.WalletJournalResponse;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 
 public class APICharacter 
@@ -38,5 +39,10 @@ public class APICharacter
 	public void getSkillQueue(APIExceptionCallback<SkillQueueResponse> callback)
 	{
 		new SkillQueueTask(callback, apiAuth, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); 
+	}
+	
+	public void getWalletJournal(APIExceptionCallback<WalletJournalResponse> callback)
+	{
+		new WalletJournalTask(callback, apiAuth, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 }

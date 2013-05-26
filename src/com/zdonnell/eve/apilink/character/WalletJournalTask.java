@@ -1,21 +1,22 @@
 package com.zdonnell.eve.apilink.character;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
-import com.beimin.eveapi.character.skill.queue.SkillQueueParser;
-import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
+import com.beimin.eveapi.character.wallet.journal.WalletJournalParser;
 import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.core.ApiPage;
 import com.beimin.eveapi.core.ApiPath;
 import com.beimin.eveapi.exception.ApiException;
+import com.beimin.eveapi.shared.wallet.journal.ApiJournalEntry;
+import com.beimin.eveapi.shared.wallet.journal.WalletJournalResponse;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
-import com.zdonnell.eve.apilink.CacheDatabase;
 import com.zdonnell.eve.apilink.IApiTask;
-import com.zdonnell.eve.database.SkillQueueData;
+import com.zdonnell.eve.character.detail.wallet.WalletJournalSort;
+import com.zdonnell.eve.database.WalletJournalData;
 
 /**
  * AsyncTask to retrieve character sheet information and provide it to the specified callback
@@ -23,20 +24,19 @@ import com.zdonnell.eve.database.SkillQueueData;
  * @author Zach
  *
  */
-public class WalletJournalTask extends AsyncTask<Void, Void, SkillQueueResponse> implements IApiTask<SkillQueueResponse>
-{	
-	private CacheDatabase cacheDatabase;
-	
-	private APIExceptionCallback<SkillQueueResponse> callback;
+public class WalletJournalTask extends AsyncTask<Void, Void, WalletJournalResponse> implements IApiTask<WalletJournalResponse>
+{		
+	private APIExceptionCallback<WalletJournalResponse> callback;
 	private ApiAuth<?> apiAuth;
 	private Context context;
 	
 	private boolean apiExceptionOccured = false;
 	private ApiException exception;
 	
-	private boolean cacheExists = false, cacheValid = false;
-	
-	private SkillQueueResponse cachedData;
+	private final int batchSize = 2560;
+		
+	private WalletJournalResponse cachedData;
+	private WalletJournalData journalDatabase;
 		
 	/**
 	 * Constructor
@@ -45,105 +45,158 @@ public class WalletJournalTask extends AsyncTask<Void, Void, SkillQueueResponse>
 	 * @param apiAuth
 	 * @param context
 	 */
-	public WalletJournalTask(APIExceptionCallback<SkillQueueResponse> callback, ApiAuth<?> apiAuth, Context context)
+	public WalletJournalTask(APIExceptionCallback<WalletJournalResponse> callback, ApiAuth<?> apiAuth, Context context)
 	{
 		this.callback = callback;
 		this.apiAuth = apiAuth;
 		this.context = context;
 		
-		cacheDatabase = new CacheDatabase(context);
+		callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
+		journalDatabase = new WalletJournalData(context);
 	}
 	
 	@Override
-	protected SkillQueueResponse doInBackground(Void... params)
+	protected WalletJournalResponse doInBackground(Void... params)
 	{
-		int requestHash = apiAuth.hashCode() + requestTypeHash();
+		long newestRefID = journalDatabase.mostRecentRefID(apiAuth.getCharacterID().intValue());
 		
-		cacheValid = cacheDatabase.cacheValid(requestHash);
-		cacheExists = cacheDatabase.cacheExists(requestHash);
-				
-		if (cacheValid)
+		WalletJournalParser parser = WalletJournalParser.getInstance();		
+		WalletJournalResponse response = null;
+		
+		// There are at least some entries for this character, update the UI
+		// with the old stuff while we wait for the new to load from the server
+		if (newestRefID != 0)
 		{
-			return buildResponseFromDatabase();
-		}
-		else
-		{
-			// The cache is out of date (invalid) but load it anyway while we contact the API server
-			if (cacheExists) 
-			{
-				cachedData = buildResponseFromDatabase();
-				publishProgress();
-			}
-			else callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_NOT_FOUND);
- 	
-			SkillQueueParser parser = SkillQueueParser.getInstance();		
-			SkillQueueResponse response = null;
-						
-	        try 
-	        { 
-	        	response = parser.getResponse(apiAuth);
-	        	
-	        	cacheDatabase.updateCache(requestHash, response.getCachedUntil());
-	        	new SkillQueueData(context).setQueueSkills(apiAuth.getCharacterID().intValue(), response.getAll());
+			cachedData = buildResponseFromDatabase();
+			publishProgress();
+			
+        	long lastBatchFinalRefID = 0;
+			boolean ranOutOfEntries = false;
+        	
+			try 
+	        { 	     
+	        	do
+	        	{	    
+		        	response = parser.getWalletJournalResponse(apiAuth, lastBatchFinalRefID, batchSize);
+		        	if (response.getAll().size() == 0) ranOutOfEntries = true;
+		        	
+		        	for (ApiJournalEntry entry : response.getAll())
+		        	{
+		        		if (responseDoesNotContainRefID(cachedData, entry.getRefID())) cachedData.add(entry);
+		        	}
+		        	
+		        	if (!ranOutOfEntries) journalDatabase.insertJournalEntries(apiAuth.getCharacterID().intValue(), cachedData.getAll());
+	        	}
+	        	while (responseDoesNotContainRefID(response, newestRefID) && !ranOutOfEntries);
 	        }
 			catch (ApiException e) 
 			{
 				apiExceptionOccured = true;
 				exception = e;
 			}
-	        	        
-	        return response;
 		}
+		// There are no existing journal entries, start from scratch and request all available journal entries
+		else
+		{		
+			cachedData = new WalletJournalResponse();
+			
+	        try 
+	        { 	        	
+	        	int lastBatchActualSize = 0;
+	        	long lastBatchFinalRefID = 0;
+	        	
+	        	do
+	        	{	    	        		
+	        		response = parser.getWalletJournalResponse(apiAuth, lastBatchFinalRefID, batchSize);
+		        	
+		        	lastBatchActualSize = response.getAll().size();
+		        	lastBatchFinalRefID = getLastRefID(response.getAll());
+		        	
+		        	for (ApiJournalEntry entry : response.getAll()) cachedData.add(entry);
+		        	if (lastBatchActualSize > 0) journalDatabase.insertJournalEntries(apiAuth.getCharacterID().intValue(), cachedData.getAll());
+	        	}
+	        	while (lastBatchActualSize == batchSize);
+	        }
+			catch (ApiException e) 
+			{
+				apiExceptionOccured = true;
+				exception = e;
+			}
+		}
+		
+        return cachedData;
 	}
 	
 	@Override
-	protected void onPostExecute(SkillQueueResponse response) 
+	protected void onPostExecute(WalletJournalResponse response) 
 	{	
-		// We can arrive here one of two ways, if the cache was still valid, or if it was invalid
-		// and a server response was acquired, check which it is.
-		if (cacheValid)
+		if (apiExceptionOccured)
 		{
-			callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_ACQUIRED_VALID);
-			callback.onUpdate(response);
+			callback.updateState(APIExceptionCallback.STATE_SERVER_RESPONSE_FAILED);
+			callback.onError(cachedData, exception);
 		}
 		else
 		{
-			if (apiExceptionOccured) 
-			{
-				callback.updateState(APIExceptionCallback.STATE_SERVER_RESPONSE_FAILED);
-				callback.onError(response, exception);
-			}
-			else 
-			{
-				callback.updateState(APIExceptionCallback.STATE_SERVER_RESPONSE_ACQUIRED);
-				callback.onUpdate(response);
-			}
+			callback.updateState(APIExceptionCallback.STATE_SERVER_RESPONSE_ACQUIRED);
+			callback.onUpdate(cachedData);
 		}
     }
 
 	@Override
 	protected void onProgressUpdate(Void... progress)
 	{		
-		callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
 		callback.onUpdate(cachedData);
 	}
 	
 	@Override
 	public int requestTypeHash() 
 	{
-		return ApiPath.CHARACTER.getPath().concat(ApiPage.SKILL_QUEUE.getPage()).hashCode();
+		return ApiPath.CHARACTER.getPath().concat(ApiPage.WALLET_JOURNAL.getPage()).hashCode();
 	}
 
 	@Override
-	public SkillQueueResponse buildResponseFromDatabase() 
+	public WalletJournalResponse buildResponseFromDatabase() 
 	{
-		SkillQueueResponse response = new SkillQueueResponse();
+		WalletJournalResponse response = new WalletJournalResponse();
 		
-		SkillQueueData skillQueueData = new SkillQueueData(context);
-		Set<ApiSkillQueueItem> queue = skillQueueData.getQueue(apiAuth.getCharacterID().intValue());
-		for (ApiSkillQueueItem queuedSkill : queue) response.add(queuedSkill);
+		Set<ApiJournalEntry> entries = new WalletJournalData(context).getJournalEntries(apiAuth.getCharacterID().intValue());
+		for (ApiJournalEntry entry : entries) response.add(entry);
 		
 		return response;
+	}
+	
+	/**
+	 * Sorts the journal entries in the provide response by refID
+	 * and returns the oldest refID
+	 * 
+	 * @return the LastRefID (i.e. oldest chronologically)
+	 */
+	private long getLastRefID(Set<ApiJournalEntry> entries)
+	{
+		ApiJournalEntry[] entryArray = new ApiJournalEntry[entries.size()];
+		entries.toArray(entryArray);
+		
+		Arrays.sort(entryArray, new WalletJournalSort.RefID());
+		
+		return entryArray[entryArray.length - 1].getRefID();
+	}
+	
+	/**
+	 * Checks to see if the provided WalletJournalResponse contains an entry with a refID
+	 * matching that of the provided refID.
+	 * 
+	 * @param response
+	 * @param refID
+	 * @return True if the response does not contain the specified refID.
+	 */
+	private boolean responseDoesNotContainRefID(WalletJournalResponse response, long refID)
+	{
+		for (ApiJournalEntry entry : response.getAll())
+		{
+			if (entry.getRefID() == refID) return false;
+		}
+		
+		return true;
 	}
 }
 

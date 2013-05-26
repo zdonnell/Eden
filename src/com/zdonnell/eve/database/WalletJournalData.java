@@ -71,7 +71,7 @@ public class WalletJournalData {
 			insertValues.put(COL_REF_ID, entry.getRefID());
 			insertValues.put(COL_DATE, formatter.format(entry.getDate()));
 			insertValues.put(COL_CHAR_ID, characterID);
-			insertValues.put(COL_REF_TYPE, entry.getRefType().getArgID());
+			insertValues.put(COL_REF_TYPE, entry.getRefType().getId());
 			insertValues.put(COL_OWNER_NAME1, entry.getOwnerName1());
 			insertValues.put(COL_OWNER_ID1, entry.getOwnerID1());
 			insertValues.put(COL_OWNER_NAME2, entry.getOwnerName2());
@@ -156,7 +156,7 @@ public class WalletJournalData {
 	 */
 	public long mostRecentRefID(int characterID)
 	{
-		Cursor c = db.query(TABLE, new String[] { COL_REF_ID } , COL_CHAR_ID + " = ?", new String[] { String.valueOf(characterID) }, null, null, COL_REF_ID + " DESC", "LIMIT 1");
+		Cursor c = db.query(TABLE, new String[] { COL_REF_ID } , COL_CHAR_ID + " = ?", new String[] { String.valueOf(characterID) }, null, null, COL_REF_ID + " DESC", "1");
 		
 		if (c.moveToFirst()) return c.getLong(c.getColumnIndex(COL_REF_ID));
 		else return 0;

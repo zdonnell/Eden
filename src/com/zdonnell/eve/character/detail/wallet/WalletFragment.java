@@ -1,8 +1,9 @@
-package com.zdonnell.eve.character.detail;
+package com.zdonnell.eve.character.detail.wallet;
 
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Set;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,16 +19,23 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.beimin.eveapi.core.ApiAuth;
+import com.beimin.eveapi.core.ApiAuthorization;
+import com.beimin.eveapi.exception.ApiException;
+import com.beimin.eveapi.shared.wallet.journal.ApiJournalEntry;
+import com.beimin.eveapi.shared.wallet.journal.WalletJournalResponse;
 import com.squareup.picasso.Picasso;
 import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.WalletEntry;
 import com.zdonnell.eve.api.character.WalletEntry.Transaction;
 import com.zdonnell.eve.apilink.APICallback;
+import com.zdonnell.eve.apilink.APIExceptionCallback;
+import com.zdonnell.eve.apilink.character.APICharacter;
+import com.zdonnell.eve.character.detail.DetailFragment;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.helpers.ImageURL;
 
@@ -45,6 +53,8 @@ public class WalletFragment extends DetailFragment {
 	
 	private CharacterDetailActivity parentActivity;
 	
+    private com.zdonnell.eve.api.character.APICharacter oldCharacter;
+    
     private APICharacter character;
         
     private Context context;
@@ -65,7 +75,6 @@ public class WalletFragment extends DetailFragment {
 	
 	SharedPreferences prefs;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
@@ -85,7 +94,10 @@ public class WalletFragment extends DetailFragment {
     	formatter.setMaximumFractionDigits(2);
     	formatter.setMinimumFractionDigits(2);
 
-    	character = new APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
+    	ApiAuth<?> apiAuth = new ApiAuthorization(getArguments().getInt("keyID"), (long) getArguments().getInt("characterID"), getArguments().getString("vCode"));
+    	character = new APICharacter(context, apiAuth);
+    	
+    	oldCharacter = new com.zdonnell.eve.api.character.APICharacter(new APICredentials(getArguments().getInt("keyID"), getArguments().getString("vCode")), getArguments().getInt("characterID"), context);
     	characterName = getArguments().getString("characterName");
     	
     	walletBalance = (TextView) inflatedView.findViewById(R.id.char_detail_wallet_balance);
@@ -133,7 +145,27 @@ public class WalletFragment extends DetailFragment {
     		return;
     	}
     	
-    	character.getWalletJournal(new APICallback<WalletEntry.Journal[]>((BaseActivity) getActivity()) 
+    	character.getWalletJournal(new APIExceptionCallback<WalletJournalResponse>((BaseActivity) getActivity())
+    	{
+			@Override
+			public void onUpdate(WalletJournalResponse response) 
+			{
+				Set<ApiJournalEntry> entrySet = response.getAll();
+				ApiJournalEntry[] entryArray = new ApiJournalEntry[entrySet.size()];
+				entrySet.toArray(entryArray);
+				
+				Arrays.sort(entryArray, new WalletJournalSort.DateTime());
+				walletListView.setAdapter(new WalletJournalAdapter(context, entryArray, characterName));
+			}
+
+			@Override
+			public void onError(WalletJournalResponse response, ApiException exception) 
+			{
+				
+			}
+    	});
+    	
+    	/*oldCharacter.getWalletJournal(new APICallback<WalletEntry.Journal[]>((BaseActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(WalletEntry.Journal[] updatedData) 
@@ -144,7 +176,7 @@ public class WalletFragment extends DetailFragment {
 				parentActivity.dataCache.cacheJournalEntries(updatedData);
 				dataUpdated();
 			}
-    	});
+    	});*/
     }
     
     public void loadInTransactions()
@@ -156,13 +188,13 @@ public class WalletFragment extends DetailFragment {
     		return;
     	}
     	
-    	character.getWalletTransactions(new APICallback<WalletEntry.Transaction[]>((BaseActivity) getActivity()) 
+    	oldCharacter.getWalletTransactions(new APICallback<WalletEntry.Transaction[]>((BaseActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(Transaction[] updatedData) 
 			{
 				walletEntries = updatedData;
-				Arrays.sort(walletEntries, new WalletSort.DateTime());
+				//Arrays.sort(walletEntries, new WalletJournalSort.DateTime());
 				
 				parentActivity.dataCache.cacheTransactions(updatedData);
 				dataUpdated();
@@ -230,8 +262,7 @@ public class WalletFragment extends DetailFragment {
 			amount.setTextColor(entry.amount() < 0 ? RED : GREEN);
 			amount.setText(formatter.format(entry.amount()) + " ISK");
 			
-			balance.setText(formatter.format(entry.balance()) + " ISK");
-
+			balance.setText(formatter.format(entry.balance()) + " ISK");  
 		}
 		
 		private String generateDescription(WalletEntry.Journal entry)
@@ -285,7 +316,7 @@ public class WalletFragment extends DetailFragment {
     	}
     	
     	// Needed to set wallet balance
-    	character.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity())
+    	oldCharacter.getCharacterSheet(new APICallback<CharacterSheet>((BaseActivity) getActivity())
     	{
 			@Override
 			public void onUpdate(CharacterSheet updatedData) 
