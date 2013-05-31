@@ -95,8 +95,8 @@ public class WalletJournalTask extends AsyncTask<Void, Void, WalletJournalRespon
 				exception = e;
 			}
 		}
-		// There are no existing journal entries, start from scratch and request all available journal entries
-		else
+		
+		else // There are no existing journal entries, start from scratch and request all available journal entries
 		{		
 			cachedData = new WalletJournalResponse();
 			
