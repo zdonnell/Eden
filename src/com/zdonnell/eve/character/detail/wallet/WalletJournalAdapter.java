@@ -41,7 +41,7 @@ public class WalletJournalAdapter extends ArrayAdapter<ApiJournalEntry>
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent)
 	{				
-		/* Determine if we recyle the old view, or inflate a new one */
+		// Determine if we recycle the old view, or inflate a new one
 		if (convertView == null) convertView = (LinearLayout) inflater.inflate(layout, parent, false);
 		
 		prepareEntry(convertView, getItem(position));

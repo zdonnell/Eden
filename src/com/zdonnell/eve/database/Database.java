@@ -17,11 +17,35 @@ public class Database {
 		createCharacterAttributesTable(db);
 		
 		createCharacterWalletJournalTable(db);
+		createCharacterWalletTransactionTable(db);
 	}
 	
 	public static void onUpdate(SQLiteDatabase db, int oldVersion, int newVersion)
 	{
 		
+	}
+	
+	private static void createCharacterWalletTransactionTable(SQLiteDatabase db)
+	{
+		String newTableQueryString = "create table " + WalletTransactionData.TABLE + " ("
+				
+				+ WalletTransactionData.COL_ID + " integer primary key not null," 
+				+ WalletTransactionData.COL_DATE + " text," 
+				+ WalletTransactionData.COL_CHAR_ID + " integer," 
+				+ WalletTransactionData.COL_QUANTITY + " integer,"
+				+ WalletTransactionData.COL_TYPENAME + " text,"
+				+ WalletTransactionData.COL_TYPEID + " integer,"
+				+ WalletTransactionData.COL_PRICE + " real," 
+				+ WalletTransactionData.COL_CLIENTID + " integer,"
+				+ WalletTransactionData.COL_CLIENTNAME + " text,"
+				+ WalletTransactionData.COL_STATION_ID + " integer,"		
+				+ WalletTransactionData.COL_STATION_NAME + " text," 
+				+ WalletTransactionData.COL_TRANSACTIONTYPE + " text,"
+				+ WalletTransactionData.COL_TRANSACTIONFOR + " text,"		
+
+				+ "UNIQUE (" + WalletTransactionData.COL_ID + ") ON CONFLICT REPLACE);";
+
+		db.execSQL(newTableQueryString);
 	}
 	
 	private static void createCharacterWalletJournalTable(SQLiteDatabase db)

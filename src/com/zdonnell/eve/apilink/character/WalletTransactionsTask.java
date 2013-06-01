@@ -6,17 +6,17 @@ import java.util.Set;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.beimin.eveapi.character.wallet.journal.WalletJournalParser;
+import com.beimin.eveapi.character.wallet.transactions.WalletTransactionsParser;
 import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.core.ApiPage;
 import com.beimin.eveapi.core.ApiPath;
 import com.beimin.eveapi.exception.ApiException;
-import com.beimin.eveapi.shared.wallet.journal.ApiJournalEntry;
-import com.beimin.eveapi.shared.wallet.journal.WalletJournalResponse;
+import com.beimin.eveapi.shared.wallet.transactions.ApiWalletTransaction;
+import com.beimin.eveapi.shared.wallet.transactions.WalletTransactionsResponse;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.IApiTask;
 import com.zdonnell.eve.character.detail.wallet.WalletSort;
-import com.zdonnell.eve.database.WalletJournalData;
+import com.zdonnell.eve.database.WalletTransactionData;
 
 /**
  * AsyncTask to retrieve wallet journal information and provide it to the specified callback
@@ -24,9 +24,9 @@ import com.zdonnell.eve.database.WalletJournalData;
  * @author Zach
  *
  */
-public class WalletJournalTask extends AsyncTask<Void, Void, WalletJournalResponse> implements IApiTask<WalletJournalResponse>
+public class WalletTransactionsTask extends AsyncTask<Void, Void, WalletTransactionsResponse> implements IApiTask<WalletTransactionsResponse>
 {		
-	private APIExceptionCallback<WalletJournalResponse> callback;
+	private APIExceptionCallback<WalletTransactionsResponse> callback;
 	private ApiAuth<?> apiAuth;
 	private Context context;
 	
@@ -35,8 +35,8 @@ public class WalletJournalTask extends AsyncTask<Void, Void, WalletJournalRespon
 	
 	private final int batchSize = 2560; // Number of rows to grab each iteration. (max ccp allows is 2560).
 		
-	private WalletJournalResponse cachedData;
-	private WalletJournalData journalDatabase;
+	private WalletTransactionsResponse cachedData;
+	private WalletTransactionData transactionsDatabase;
 		
 	/**
 	 * Constructor
@@ -45,23 +45,23 @@ public class WalletJournalTask extends AsyncTask<Void, Void, WalletJournalRespon
 	 * @param apiAuth
 	 * @param context
 	 */
-	public WalletJournalTask(APIExceptionCallback<WalletJournalResponse> callback, ApiAuth<?> apiAuth, Context context)
+	public WalletTransactionsTask(APIExceptionCallback<WalletTransactionsResponse> callback, ApiAuth<?> apiAuth, Context context)
 	{
 		this.callback = callback;
 		this.apiAuth = apiAuth;
 		this.context = context;
 		
 		callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
-		journalDatabase = new WalletJournalData(context);
+		transactionsDatabase = new WalletTransactionData(context);
 	}
 	
 	@Override
-	protected WalletJournalResponse doInBackground(Void... params)
+	protected WalletTransactionsResponse doInBackground(Void... params)
 	{
-		long newestRefID = journalDatabase.mostRecentRefID(apiAuth.getCharacterID().intValue());
+		long newestRefID = transactionsDatabase.mostRecentID(apiAuth.getCharacterID().intValue());
 		
-		WalletJournalParser parser = WalletJournalParser.getInstance();		
-		WalletJournalResponse response = null;
+		WalletTransactionsParser parser = WalletTransactionsParser.getInstance();		
+		WalletTransactionsResponse response = null;
 		
 		// There are at least some entries for this character, update the UI
 		// with the old stuff while we wait for the new to load from the server
@@ -77,17 +77,17 @@ public class WalletJournalTask extends AsyncTask<Void, Void, WalletJournalRespon
 	        { 	     
 	        	do
 	        	{	    
-		        	response = parser.getWalletJournalResponse(apiAuth, lastBatchFinalRefID, batchSize);
+		        	response = parser.getTransactionsResponse(apiAuth, lastBatchFinalRefID, batchSize);
 		        	if (response.getAll().size() == 0) ranOutOfEntries = true;
 		        	
-		        	for (ApiJournalEntry entry : response.getAll())
+		        	for (ApiWalletTransaction entry : response.getAll())
 		        	{
-		        		if (responseDoesNotContainRefID(cachedData, entry.getRefID())) cachedData.add(entry);
+		        		if (responseDoesNotContainID(cachedData, entry.getTransactionID())) cachedData.add(entry);
 		        	}
 		        	
-		        	if (!ranOutOfEntries) journalDatabase.insertJournalEntries(apiAuth.getCharacterID().intValue(), cachedData.getAll());
+		        	if (!ranOutOfEntries) transactionsDatabase.insertJournalEntries(apiAuth.getCharacterID().intValue(), cachedData.getAll());
 	        	}
-	        	while (responseDoesNotContainRefID(response, newestRefID) && !ranOutOfEntries);
+	        	while (responseDoesNotContainID(response, newestRefID) && !ranOutOfEntries);
 	        }
 			catch (ApiException e) 
 			{
@@ -98,7 +98,7 @@ public class WalletJournalTask extends AsyncTask<Void, Void, WalletJournalRespon
 		// There are no existing journal entries, start from scratch and request all available journal entries
 		else
 		{		
-			cachedData = new WalletJournalResponse();
+			cachedData = new WalletTransactionsResponse();
 			
 	        try 
 	        { 	        	
@@ -107,13 +107,13 @@ public class WalletJournalTask extends AsyncTask<Void, Void, WalletJournalRespon
 	        	
 	        	do
 	        	{	    	        		
-	        		response = parser.getWalletJournalResponse(apiAuth, lastBatchFinalRefID, batchSize);
+	        		response = parser.getTransactionsResponse(apiAuth, lastBatchFinalRefID, batchSize);
 		        	
 		        	lastBatchActualSize = response.getAll().size();
-		        	lastBatchFinalRefID = getLastRefID(response.getAll());
+		        	lastBatchFinalRefID = getLastID(response.getAll());
 		        	
-		        	for (ApiJournalEntry entry : response.getAll()) cachedData.add(entry);
-		        	if (lastBatchActualSize > 0) journalDatabase.insertJournalEntries(apiAuth.getCharacterID().intValue(), cachedData.getAll());
+		        	for (ApiWalletTransaction entry : response.getAll()) cachedData.add(entry);
+		        	if (lastBatchActualSize > 0) transactionsDatabase.insertJournalEntries(apiAuth.getCharacterID().intValue(), cachedData.getAll());
 	        	}
 	        	while (lastBatchActualSize == batchSize); // Loop through older and older entries until there are less than requested 
 	        }
@@ -128,7 +128,7 @@ public class WalletJournalTask extends AsyncTask<Void, Void, WalletJournalRespon
 	}
 	
 	@Override
-	protected void onPostExecute(WalletJournalResponse response) 
+	protected void onPostExecute(WalletTransactionsResponse response) 
 	{	
 		if (apiExceptionOccured)
 		{
@@ -155,45 +155,45 @@ public class WalletJournalTask extends AsyncTask<Void, Void, WalletJournalRespon
 	}
 
 	@Override
-	public WalletJournalResponse buildResponseFromDatabase() 
+	public WalletTransactionsResponse buildResponseFromDatabase() 
 	{
-		WalletJournalResponse response = new WalletJournalResponse();
+		WalletTransactionsResponse response = new WalletTransactionsResponse();
 		
-		Set<ApiJournalEntry> entries = new WalletJournalData(context).getJournalEntries(apiAuth.getCharacterID().intValue());
-		for (ApiJournalEntry entry : entries) response.add(entry);
+		Set<ApiWalletTransaction> entries = new WalletTransactionData(context).getJournalEntries(apiAuth.getCharacterID().intValue());
+		for (ApiWalletTransaction entry : entries) response.add(entry);
 		
 		return response;
 	}
 	
 	/**
-	 * Sorts the journal entries in the provide response by refID
-	 * and returns the oldest refID
+	 * Sorts the transactions in the provide response by transactionID
+	 * and returns the oldest ID
 	 * 
 	 * @return the LastRefID (i.e. oldest chronologically)
 	 */
-	private long getLastRefID(Set<ApiJournalEntry> entries)
+	private long getLastID(Set<ApiWalletTransaction> transactions)
 	{
-		ApiJournalEntry[] entryArray = new ApiJournalEntry[entries.size()];
-		entries.toArray(entryArray);
+		ApiWalletTransaction[] transactionsArray = new ApiWalletTransaction[transactions.size()];
+		transactions.toArray(transactionsArray);
 		
-		Arrays.sort(entryArray, new WalletSort.Journal.RefID());
+		Arrays.sort(transactionsArray, new WalletSort.Transactions.ID());
 		
-		return entryArray[entryArray.length - 1].getRefID();
+		return transactionsArray[transactionsArray.length - 1].getTransactionID();
 	}
 	
 	/**
-	 * Checks to see if the provided WalletJournalResponse contains an entry with a refID
-	 * matching that of the provided refID.
+	 * Checks to see if the provided WalletTransactionsResponse contains an entry with a transaction ID
+	 * matching that of the provided ID.
 	 * 
 	 * @param response
 	 * @param refID
 	 * @return True if the response does not contain the specified refID.
 	 */
-	private boolean responseDoesNotContainRefID(WalletJournalResponse response, long refID)
+	private boolean responseDoesNotContainID(WalletTransactionsResponse response, long transactionID)
 	{
-		for (ApiJournalEntry entry : response.getAll())
+		for (ApiWalletTransaction entry : response.getAll())
 		{
-			if (entry.getRefID() == refID) return false;
+			if (entry.getTransactionID() == transactionID) return false;
 		}
 		
 		return true;
