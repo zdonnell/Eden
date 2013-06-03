@@ -11,7 +11,7 @@ import com.zdonnell.eve.api.APIObject;
 import com.zdonnell.eve.api.ResourceManager;
 import com.zdonnell.eve.api.ResourceManager.APIRequestWrapper;
 import com.zdonnell.eve.apilink.APICallback;
-import com.zdonnell.eve.staticdata.api.StationInfo;
+import com.zdonnell.eve.staticdata.StationInfo;
 
 public class Eve extends APIObject {
 	

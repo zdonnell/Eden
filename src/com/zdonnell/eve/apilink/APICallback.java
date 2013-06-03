@@ -1,7 +1,6 @@
 package com.zdonnell.eve.apilink;
 
 import com.zdonnell.eve.BaseActivity;
-import com.zdonnell.eve.api.APIObject;
 
 /**
  * Extend this class to provide instructions for an {@link APIObject} request

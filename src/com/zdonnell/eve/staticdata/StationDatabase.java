@@ -1,4 +1,4 @@
-package com.zdonnell.eve.staticdata.api;
+package com.zdonnell.eve.staticdata;
 
 import android.content.ContentValues;
 import android.content.Context;

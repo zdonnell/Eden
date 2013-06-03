@@ -1,4 +1,4 @@
-package com.zdonnell.eve.api.priceservice;
+package com.zdonnell.eve.priceservice;
 
 import android.content.Context;
 import android.content.SharedPreferences;

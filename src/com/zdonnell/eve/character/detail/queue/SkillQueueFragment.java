@@ -23,15 +23,14 @@ import com.beimin.eveapi.exception.ApiException;
 import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
-import com.zdonnell.eve.api.character.QueuedSkill;
 import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.character.detail.DetailFragment;
 import com.zdonnell.eve.character.detail.SkillLevelIndicator;
 import com.zdonnell.eve.helpers.TimeRemainingCountdown;
 import com.zdonnell.eve.helpers.Tools;
-import com.zdonnell.eve.staticdata.api.StaticData;
-import com.zdonnell.eve.staticdata.api.TypeInfo;
+import com.zdonnell.eve.staticdata.StaticData;
+import com.zdonnell.eve.staticdata.TypeInfo;
 
 /**
  * This Fragment is used to display the Skill Queue of a Character

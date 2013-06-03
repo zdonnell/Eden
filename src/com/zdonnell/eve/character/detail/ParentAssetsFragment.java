@@ -3,66 +3,114 @@ package com.zdonnell.eve.character.detail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Set;
 import java.util.Stack;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.util.SparseArray;
-import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
+import com.beimin.eveapi.core.ApiAuth;
+import com.beimin.eveapi.core.ApiAuthorization;
+import com.beimin.eveapi.exception.ApiException;
+import com.beimin.eveapi.shared.assetlist.AssetListResponse;
+import com.beimin.eveapi.shared.assetlist.EveAsset;
 import com.zdonnell.eve.BaseActivity;
-import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.R;
-import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.api.character.AssetsEntity;
-import com.zdonnell.eve.api.priceservice.PriceService;
 import com.zdonnell.eve.apilink.APICallback;
-import com.zdonnell.eve.staticdata.api.StaticData;
-import com.zdonnell.eve.staticdata.api.StationInfo;
-import com.zdonnell.eve.staticdata.api.TypeInfo;
+import com.zdonnell.eve.apilink.APIExceptionCallback;
+import com.zdonnell.eve.apilink.character.APICharacter;
+import com.zdonnell.eve.apilink.character.AssetsEntity;
+import com.zdonnell.eve.priceservice.PriceService;
+import com.zdonnell.eve.staticdata.StaticData;
+import com.zdonnell.eve.staticdata.StationInfo;
+import com.zdonnell.eve.staticdata.TypeInfo;
 
-@SuppressLint("ValidFragment")
-public class ParentAssetsFragment extends DetailFragment {
-    
+/**
+ * This Fragment serves as the root assets element.
+ * 
+ * @author Zach
+ *
+ */
+public class ParentAssetsFragment extends DetailFragment 
+{    
     public final static int STATION = 0;
     public final static int ASSET = 1;
-	
+		
+    /**
+     * API Object for requesting assets
+     */
 	private APICharacter character;
-        
-    private Context context;
-    
-    private SparseIntArray typeIDCounts;
-                        
+                                    
+	/**
+	 * Stack of Asset sets that represent each level of assets the 
+	 * user has traversed.  Calling {@link Stack#pop} would return
+	 * and remove the last set of assets viewed before the current.
+	 */
     public Stack<AssetsEntity[]> parentStack = new Stack<AssetsEntity[]>();
     
-    public Stack<AssetsEntity> parentItemStack = new Stack<AssetsEntity>();
+    /**
+     * Stack of AssetEntities that representing the hierarchy of
+     * assets that were opened.  Calling {@link Stack#pop} would return
+     * the AssetEntity that contains the currently viewed assets.
+     */
+    Stack<AssetsEntity> parentItemStack = new Stack<AssetsEntity>();
     
-    public Stack<int[]> scrollPointStack = new Stack<int[]>();
+    /**
+     * Stack of int arrays used to restore the position of the list
+     * when the user backs up a level.
+     * 
+     * @see ListView#setSelectionFromTop
+     * @see IAssetsSubFragment#setScrollPoint(int[])
+     */
+    Stack<int[]> scrollPointStack = new Stack<int[]>();
 
+    /**
+     * Reference to the currently displayed Asset Set.  This is used
+     * when the sorting is updated, and reset with the new sorted version.
+     */
     public AssetsEntity[] currentAssets;
         
+    /**
+     * Reference to the nested Fragment currently displaying the assets.
+     * 
+     * @see StationListFragment
+     * @see InventoryListFragment
+     */
     private IAssetsSubFragment childFragment;
-        
+    
+    /**
+     * Collection of Info for stations.  This data is used by the {@link #childFragment}
+     */
     private SparseArray<StationInfo> currentStationInfo = new SparseArray<StationInfo>();
     
+    /**
+     * Collection of Info for items.  This data is used by the {@link #childFragment}
+     */
     private SparseArray<TypeInfo> typeInfo = new SparseArray<TypeInfo>();
     
+    /**
+     * Collection of prices for items.  This data is used by the {@link #childFragment}
+     */
     private SparseArray<Float> prices = new SparseArray<Float>();
     
-    private CharacterDetailActivity parentActivity;
-    
+    /**
+     * If the search view is open, this String will be set to the current text in the
+     * search view
+     * 
+     * @see #updateSearchFilter(String)
+     */
     private String searchFilter;
         
+    
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
@@ -71,65 +119,53 @@ public class ParentAssetsFragment extends DetailFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
-    {
-    	context = inflater.getContext();
-    	
+    {    	
     	int keyID = getArguments().getInt("keyID");
     	String vCode = getArguments().getString("vCode");
     	int characterID = getArguments().getInt("characterID");
-    	character = new APICharacter(new APICredentials(keyID, vCode), characterID, context);
     	
-    	parentActivity = (CharacterDetailActivity) getActivity();
-    	
+    	ApiAuth<?> apiAuth = new ApiAuthorization(keyID, characterID, vCode);
+    	character = new APICharacter(context, apiAuth);
+    	    	
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets_childfragment_frame, container, false);
 
-    	FragmentTransaction loadStationList = this.getChildFragmentManager().beginTransaction();
-
-    	childFragment = new StationListFragment();
-    	childFragment.setParent(this);
-    	
-    	loadStationList.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) childFragment);
-    	loadStationList.commit();
-    	 
-    	currentAssets = parentActivity.dataCache.getAssets();
-    	if (currentAssets != null)
-    	{
-    		prepareAssets(currentAssets);
-			childFragment.assetsUpdated(currentAssets);
-    	}
-    	else
-    	{	
-	    	character.getAssetsList(new APICallback<AssetsEntity[]>((BaseActivity) getActivity())
-	    	{
-				@Override
-				public void onUpdate(AssetsEntity[] locationArray) 
-				{
-					Arrays.sort(locationArray, new InventorySort.Count());
-					currentAssets = locationArray;
-					parentActivity.dataCache.cacheAssets(currentAssets);
-					
-					prepareAssets(locationArray);
-					childFragment.assetsUpdated(currentAssets);
-				}
-	    	});
-    	}
+    	loadData();
     	
     	return inflatedView;
     }
     
-    public void setCurrentParent(AssetsEntity asset) { parentItemStack.push(asset); }
+    /**
+     * Sets the specified asset as the parent of the current level.
+     * (i.e. the container of the assets currently being viewed)
+     * 
+     * @param asset the parent asset.
+     */
+    public void setCurrentParent(AssetsEntity asset) 
+    { 
+    	parentItemStack.push(asset);
+    }
+    
+    /**
+     * gets the current parent asset
+     * 
+     * @return
+     */
     public AssetsEntity getCurrentParent() 
     { 
-    	try 
-    	{
-    		return parentItemStack.peek(); 
-    	}
-    	catch (Exception e)
-    	{
-    		return null;
-    	}
+    	try { return parentItemStack.peek(); }
+    	catch (Exception e) { return null; }
    	}
     
+    /**
+     * Called when the assets "screen" needs to change.  This will load in a Fragment of either Station
+     * Or Asset Items type.  This can be used to go forward (clicking into an asset) or backward (when the back
+     * button is pressed) into parent assets.
+     * 
+     * @param newAssetsSet
+     * @param type
+     * @param isBack
+     * @param isSearchUpdate
+     */
     public void updateChild(AssetsEntity[] newAssetsSet, int type, boolean isBack, boolean isSearchUpdate)
     {    	    	    	    	
     	FragmentTransaction loadNextAssets = this.getChildFragmentManager().beginTransaction();
@@ -165,11 +201,18 @@ public class ParentAssetsFragment extends DetailFragment {
     	loadNextAssets.commit();
 	}
     
+    /**
+     * Filters out locations that are "in space" from the list and then uses the list
+     * to get the station and type info for all items.
+     * 
+     * @param locations
+     */
     private void prepareAssets(AssetsEntity[] locations)
     {
-    	/* Get the station IDs and get the info for them first */
     	ArrayList<Integer> stationIDsList = new ArrayList<Integer>(locations.length);
     	
+    	// This will filter out items that aren't in a station
+    	// TODO enable support for in space items
     	for (AssetsEntity entity : locations)
     	{
     		AssetsEntity.Station station = (AssetsEntity.Station) entity;
@@ -179,75 +222,67 @@ public class ParentAssetsFragment extends DetailFragment {
     	Integer[] stationIDs = new Integer[stationIDsList.size()];
     	stationIDsList.toArray(stationIDs);
     	
-    	getStationItems(stationIDs);
-    	getTypeItems(locations);
+    	getStationInfo(stationIDs);
+    	getTypeInfo(locations);
     }
     
-    private void getStationItems(final Integer[] stationIDs)
+    /**
+     * Given a list of stations IDs, obtains the static data information for them
+     * 
+     * @param stationIDs
+     * @see ParentAssetsFragment#currentStationInfo
+     */
+    private void getStationInfo(final Integer[] stationIDs)
     {
-    	/* Start by getting the information for the Stations
-    	 * This will get us the Station Names and the typeIDs for the station icons
-    	 */
-    	currentStationInfo = parentActivity.dataCache.getStationInfo();
-    	
-    	if (currentStationInfo != null) childFragment.obtainedStationInfo();
-    	else
+		new StaticData(context).getStationInfo(new APICallback<SparseArray<StationInfo>>((BaseActivity) getActivity()) 
     	{
-    		new StaticData(context).getStationInfo(new APICallback<SparseArray<StationInfo>>((BaseActivity) getActivity()) 
-	    	{
-				@Override
-				public void onUpdate(SparseArray<StationInfo> stationInformation) 
-				{
-					/* set this so sub fragments can pull from it later */
-					parentActivity.dataCache.cacheStationInfo(stationInformation);
-					currentStationInfo = stationInformation;
-					childFragment.obtainedStationInfo();
-				}
-	    	}, stationIDs);
-    	}
+			@Override
+			public void onUpdate(SparseArray<StationInfo> stationInformation) 
+			{
+				currentStationInfo = stationInformation;
+				childFragment.obtainedStationInfo();
+			}
+    	}, stationIDs);
     }
     
-    private void getTypeItems(AssetsEntity[] locations)
+    /**
+     * Given the entire list of assets, obtains the static data type information
+     * for all possible items.
+     * 
+     * @param locations
+     * @see #typeInfo
+     */
+    private void getTypeInfo(AssetsEntity[] locations)
     {    	
     	ArrayList<Integer> uniqueTypeIDsList = new ArrayList<Integer>();
-    	typeIDCounts = new SparseIntArray();
     	
-    	for (AssetsEntity entity : locations)
-    	{
-    		countAssets(entity, uniqueTypeIDsList);
-    	}
+    	for (AssetsEntity entity : locations) findUniqueTypeIDs(entity, uniqueTypeIDsList);
     	
     	Integer[] uniqueTypeIDs = new Integer[uniqueTypeIDsList.size()];
     	uniqueTypeIDsList.toArray(uniqueTypeIDs);
     	
-    	typeInfo = parentActivity.dataCache.getTypeInfo();
-    	
-    	if (typeInfo != null)
+    	new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((BaseActivity) getActivity())
     	{
-    		obtainedTypeInfo(typeInfo);
-			childFragment.obtainedTypeInfo();
-    	}
-    	else
-    	{
-	    	new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((BaseActivity) getActivity())
-	    	{
-				@Override
-				public void onUpdate(SparseArray<TypeInfo> rTypeInfo) 
-				{
-					typeInfo = rTypeInfo;
-					obtainedTypeInfo(rTypeInfo);
-					parentActivity.dataCache.cacheTypeInfo(rTypeInfo);
-					childFragment.obtainedTypeInfo();
-				}
-	    	}, uniqueTypeIDs);
-    	}
+			@Override
+			public void onUpdate(SparseArray<TypeInfo> rTypeInfo) 
+			{
+				typeInfo = rTypeInfo;
+				getPriceInformation(rTypeInfo);
+				childFragment.obtainedTypeInfo();
+			}
+    	}, uniqueTypeIDs);
     }
     
-    private void obtainedTypeInfo(SparseArray<TypeInfo> typeInfo)
-    {
-		childFragment.obtainedTypeInfo();
-		
-		/* With the type info obtained, grab prices for the valid typeIDs */
+    /**
+     * Gets prices for the SparseArray of items provided, filtering out
+     * items that are not on the market.
+     * 
+     * @param typeInfo
+     * @see #prices
+     */
+    private void getPriceInformation(SparseArray<TypeInfo> typeInfo)
+    {		
+		// Filter out typeIDs that are not in the market
 		ArrayList<Integer> marketTypeIDsList = new ArrayList<Integer>();
 		for (int i = 0; i < typeInfo.size(); ++i)
 		{
@@ -256,66 +291,43 @@ public class ParentAssetsFragment extends DetailFragment {
 		
 		Integer[] marketTypeIDs = new Integer[marketTypeIDsList.size()];
 		marketTypeIDsList.toArray(marketTypeIDs);
-		
-		prices = parentActivity.dataCache.getPrices();
-		
-		if (prices != null) childFragment.obtainedPrices();
-		else
+				
+		PriceService.getInstance(context).getValues(marketTypeIDs, new APICallback<SparseArray<Float>>((BaseActivity) getActivity()) 
 		{
-			PriceService.getInstance(context).getValues(marketTypeIDs, new APICallback<SparseArray<Float>>((BaseActivity) getActivity()) 
+			@Override
+			public void onUpdate(SparseArray<Float> updatedData) 
 			{
-				@Override
-				public void onUpdate(SparseArray<Float> updatedData) 
-				{
-					prices = updatedData;
-					parentActivity.dataCache.cachePrices(updatedData);
-					childFragment.obtainedPrices();
-				}
-			});
-		}
+				prices = updatedData;
+				childFragment.obtainedPrices();
+			}
+		});
     }
     
-    private void countAssets(AssetsEntity entity, ArrayList<Integer> uniqueTypeIDsList)
+    /**
+     * Finds the unique TypeIDs in the provided asset and each of it's children
+     * 
+     * @param entity the assets item to start checking through
+     * @param uniqueTypeIDsList an ArrayList that the function will use to insert unique values into
+     */
+    private void findUniqueTypeIDs(AssetsEntity entity, ArrayList<Integer> uniqueTypeIDsList)
     {
     	if (entity instanceof AssetsEntity.Item)
     	{
     		int typeID = entity.attributes().typeID;
-    		int quantity = entity.attributes().quantity;
-    		
     		if (!uniqueTypeIDsList.contains(typeID)) uniqueTypeIDsList.add(typeID);
-    		typeIDCounts.put(typeID, typeIDCounts.get(typeID) + quantity);
     	}
     	
     	if (entity.containsAssets())
     	{
-    		for (AssetsEntity childEntity : entity.getContainedAssets()) countAssets(childEntity, uniqueTypeIDsList);
-    	}
-    }
-   
-    public void sortAssets(int sortType, AssetsEntity[] assets)
-    {
-    	switch (sortType)
-    	{
-    	case InventorySort.COUNT:
-    		Arrays.sort(assets, new InventorySort.Count());
-    		break;
-    	case InventorySort.COUNT_REVERSE:
-    		Arrays.sort(assets, Collections.reverseOrder(new InventorySort.Count()));
-    		break;
-    	case InventorySort.ALPHA:
-    		Arrays.sort(assets, new InventorySort.Alpha(childFragment.getNames()));
-    		break;
-    	case InventorySort.ALPHA_REVERSE:
-    		Arrays.sort(assets, Collections.reverseOrder(new InventorySort.Alpha(childFragment.getNames())));
-    		break;
-    	case InventorySort.VALUE:
-    		Arrays.sort(assets, new InventorySort.Value(childFragment.getValues()));
-    		break;
-    	case InventorySort.VALUE_REVERSE:
-     		break;
+    		for (AssetsEntity childEntity : entity.getContainedAssets()) findUniqueTypeIDs(childEntity, uniqueTypeIDsList);
     	}
     }
     
+    /**
+     * Sorts the current asset list, and updates the sort preferences.
+     * 
+     * @param sortType
+     */
     public void updateSort(int sortType)
     {
 		SharedPreferences prefs = context.getSharedPreferences("eden_assets_preferences", Context.MODE_PRIVATE);
@@ -351,28 +363,25 @@ public class ParentAssetsFragment extends DetailFragment {
     	childFragment.updateLayoutStyle(layoutType);
     }
     
+    /**
+     * Used to notify the current {@link #childFragment} that the search
+     * string has changed, refresh with the new parameters
+     * 
+     * @param searchQuery the new string to use as the filter
+     */
     public void updateSearchFilter(String searchQuery)
     {
     	searchFilter = searchQuery;
     	updateChild(currentAssets, assetsType(), false, true);
     }
-    
-    public SparseArray<StationInfo> getStationInfo()
-    {
-    	return currentStationInfo;
-    }
-    
-    public SparseArray<TypeInfo> getTypeInfo()
-    {
-    	return typeInfo;
-    }
-    
-    public SparseArray<Float> getPrices()
-    {
-    	return prices;
-    }
-    
 
+    /**
+     * Called to handle back key presses.  If the back key is pressed while at the station
+     * listing, the back press will be handled as normal by the system.  However if the user
+     * is in a nested set of assets, the back press will take us up one level.
+     * 
+     * @return
+     */
 	public boolean backKeyPressed() 
 	{
 		if (!parentStack.empty()) 
@@ -381,20 +390,21 @@ public class ParentAssetsFragment extends DetailFragment {
 			parentItemStack.pop();
 			updateChild(assets, parentStack.isEmpty() ? STATION : ASSET, true, false);
 			childFragment.setScrollPoint(scrollPointStack.pop());
-			
-			Log.d("BACK KEY PRESSED", "PRESSED");
-			
+						
 			return true;
     	}
 		
 		return false;
 	}
 	
-	public int assetsType()
-	{
-		return (currentAssets[0] instanceof AssetsEntity.Station ? STATION : ASSET);
-	}
-	
+	/**
+	 * Searches the provided assets and provides a filtered list of assets
+	 * with names matching the current search string.
+	 * 
+	 * @param assetsToSearch
+	 * @return a set of the filtered assets, or an empty set if no assets contained the
+	 * search string
+	 */
 	private AssetsEntity[] searchAssets(AssetsEntity[] assetsToSearch)
 	{
 		ArrayList<AssetsEntity> containingAssets = new ArrayList<AssetsEntity>();
@@ -410,6 +420,16 @@ public class ParentAssetsFragment extends DetailFragment {
 		return filteredAssets;
 	}
 	
+	/**
+	 * Checks to see if the currently specified search string is found in the provided
+	 * asset or any of it's children
+	 * 
+	 * @param entity the asset item to check
+	 * @return true if the current asset type name or any of it's children's type name
+	 * contains the search string. 
+	 * 
+	 * @see #searchFilter
+	 */
 	private boolean containsSearchString(AssetsEntity entity)
 	{
 		if (entity instanceof AssetsEntity.Station)
@@ -441,7 +461,6 @@ public class ParentAssetsFragment extends DetailFragment {
 	@Override
 	public void loadData() 
 	{				
-		typeIDCounts = null;
 	    parentStack = new Stack<AssetsEntity[]>();
 	    parentItemStack = new Stack<AssetsEntity>();
 	    scrollPointStack = new Stack<int[]>();
@@ -449,12 +468,14 @@ public class ParentAssetsFragment extends DetailFragment {
 	    typeInfo = new SparseArray<TypeInfo>();
 	    prices = new SparseArray<Float>();
 	    searchFilter = null;
-				
-		character.getAssetsList(new APICallback<AssetsEntity[]>((BaseActivity) getActivity())
-    	{
+	    
+	    character.getAssets(new APIExceptionCallback<AssetListResponse>((BaseActivity) getActivity())
+	    {
 			@Override
-			public void onUpdate(AssetsEntity[] locationArray) 
+			public void onUpdate(AssetListResponse response) 
 			{
+				AssetsEntity[] locationArray = eveApiResponseToEdenData(response);
+				
 				FragmentTransaction loadStationList = ParentAssetsFragment.this.getChildFragmentManager().beginTransaction();
 
 		    	childFragment = new StationListFragment();
@@ -465,11 +486,80 @@ public class ParentAssetsFragment extends DetailFragment {
 				
 				Arrays.sort(locationArray, new InventorySort.Count());
 				currentAssets = locationArray;
-				parentActivity.dataCache.cacheAssets(currentAssets);
 				
 				prepareAssets(locationArray);
 				childFragment.assetsUpdated(currentAssets);
 			}
-    	});
+
+			@Override
+			public void onError(AssetListResponse response, ApiException exception) 
+			{
+				
+			}
+	    });
 	}
+	
+	/**
+	 * Takes the {@link AssetListResponse} provided by eveapi and converts it to
+	 * the format Eden used pre-eveapi integration.
+	 * 
+	 * @param response
+	 * @return
+	 */
+	private AssetsEntity[] eveApiResponseToEdenData(AssetListResponse response)
+	{
+		SparseArray<ArrayList<AssetsEntity>> arrangedAssets = new SparseArray<ArrayList<AssetsEntity>>();
+		Set<EveAsset<EveAsset<?>>> rawAssetSet = response.getAll();
+		
+		for (EveAsset<EveAsset<?>> asset : rawAssetSet)
+		{
+			ArrayList<AssetsEntity> assetsAtLocation = arrangedAssets.get(asset.getLocationID().intValue(), new ArrayList<AssetsEntity>());
+			assetsAtLocation.add(convertAsset(asset));
+		}
+		
+		AssetsEntity[] locationArray = new AssetsEntity[arrangedAssets.size()];
+		for (int i = 0; i < arrangedAssets.size(); ++i)
+		{
+			int locationID = arrangedAssets.keyAt(i);
+			ArrayList<AssetsEntity> assetsAtLocation = arrangedAssets.valueAt(i);
+			
+			locationArray[i] = new AssetsEntity.Station(assetsAtLocation, locationID);
+		}
+		
+		return locationArray;
+	}
+	
+	/**
+	 * Converts an eveapi {@link EveAsset} to Eden's native {@link AssetsEntity} including
+	 * any contained assets.
+	 * 
+	 * @param asset
+	 * @return
+	 */
+	private AssetsEntity convertAsset(EveAsset<?> asset)
+	{
+		ArrayList<AssetsEntity> convertedChildAssets = new ArrayList<AssetsEntity>();
+		
+		for (EveAsset<?> nestedAsset : asset.getAssets()) convertedChildAssets.add(convertAsset(nestedAsset));
+		if (convertedChildAssets.isEmpty()) convertedChildAssets = null;
+		
+		AssetsEntity.AssetAttributes assetAttributes = new AssetsEntity.AssetAttributes();
+		assetAttributes.flag = asset.getFlag();
+		assetAttributes.locationID = asset.getLocationID().intValue();
+		assetAttributes.quantity = asset.getQuantity();
+		assetAttributes.singleton = asset.getSingleton();
+		assetAttributes.typeID = asset.getTypeID();
+		
+		AssetsEntity.Item convertedAsset = new AssetsEntity.Item(convertedChildAssets, assetAttributes);
+		
+		return convertedAsset;
+	}
+	
+	public int assetsType() { return (currentAssets[0] instanceof AssetsEntity.Station ? STATION : ASSET); }
+	
+	public SparseArray<StationInfo> getStationInfo() { return currentStationInfo; }
+    
+    public SparseArray<TypeInfo> getTypeInfo() { return typeInfo; }
+    
+    public SparseArray<Float> getPrices() { return prices; }
 }

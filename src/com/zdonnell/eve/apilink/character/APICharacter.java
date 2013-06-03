@@ -7,6 +7,7 @@ import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
 import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
 import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.eve.character.CharacterInfoResponse;
+import com.beimin.eveapi.shared.assetlist.AssetListResponse;
 import com.beimin.eveapi.shared.wallet.journal.WalletJournalResponse;
 import com.beimin.eveapi.shared.wallet.transactions.WalletTransactionsResponse;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
@@ -50,5 +51,10 @@ public class APICharacter
 	public void getWalletTransactions(APIExceptionCallback<WalletTransactionsResponse> callback)
 	{
 		new WalletTransactionsTask(callback, apiAuth, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+	
+	public void getAssets(APIExceptionCallback<AssetListResponse> callback)
+	{
+		new AssetsTask(callback, apiAuth, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 }

@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import android.util.SparseArray;
 
-import com.zdonnell.eve.api.character.AssetsEntity;
+import com.zdonnell.eve.apilink.character.AssetsEntity;
 
 public class InventorySort 
 {

@@ -19,11 +19,11 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.zdonnell.eve.R;
-import com.zdonnell.eve.api.character.AssetsEntity;
-import com.zdonnell.eve.api.character.AssetsEntity.Station;
+import com.zdonnell.eve.apilink.character.AssetsEntity;
+import com.zdonnell.eve.apilink.character.AssetsEntity.Station;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.ImageURL;
-import com.zdonnell.eve.staticdata.api.StationInfo;
+import com.zdonnell.eve.staticdata.StationInfo;
 
 public class StationListFragment extends Fragment implements IAssetsSubFragment 
 {

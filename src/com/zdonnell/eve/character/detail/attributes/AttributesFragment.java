@@ -18,24 +18,29 @@ import com.beimin.eveapi.core.ApiAuthorization;
 import com.beimin.eveapi.exception.ApiException;
 import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.R;
-import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.character.APICharacter;
 import com.zdonnell.eve.character.detail.DetailFragment;
 
 public class AttributesFragment extends DetailFragment {
     
+	public static final int MEMORY = 0;
+	public static final int WILLPOWER = 1;
+	public static final int PERCEPTION = 2;
+	public static final int CHARISMA = 3;
+	public static final int INTELLIGENCE = 4;
+	
 	/**
 	 * List of drawable resources to use for the Attribute list icons
 	 */
-    private static int[] icons = new int[5];
+	private static int[] icons = new int[5];
     static
     {
-    	icons[CharacterSheet.MEMORY] = R.drawable.memory_icon;
-    	icons[CharacterSheet.WILLPOWER] = R.drawable.willpower_icon;
-    	icons[CharacterSheet.PERCEPTION] = R.drawable.perception_icon;
-    	icons[CharacterSheet.CHARISMA] = R.drawable.charisma_icon;
-    	icons[CharacterSheet.INTELLIGENCE] = R.drawable.intelligence_icon;
+    	icons[MEMORY] = R.drawable.memory_icon;
+    	icons[WILLPOWER] = R.drawable.willpower_icon;
+    	icons[PERCEPTION] = R.drawable.perception_icon;
+    	icons[CHARISMA] = R.drawable.charisma_icon;
+    	icons[INTELLIGENCE] = R.drawable.intelligence_icon;
     }
     
     private APICharacter character;

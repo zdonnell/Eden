@@ -29,16 +29,14 @@ import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
 import com.beimin.eveapi.eve.character.CharacterInfoResponse;
 import com.beimin.eveapi.exception.ApiException;
 import com.squareup.picasso.Picasso;
-import com.zdonnell.eve.api.character.CharacterInfo;
-import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.character.APICharacter;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.helpers.Tools;
-import com.zdonnell.eve.staticdata.api.StaticData;
-import com.zdonnell.eve.staticdata.api.TypeInfo;
+import com.zdonnell.eve.staticdata.StaticData;
+import com.zdonnell.eve.staticdata.TypeInfo;
 
 public class CharacterSheetFragment extends Fragment 
 {

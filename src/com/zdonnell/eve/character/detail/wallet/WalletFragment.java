@@ -80,7 +80,6 @@ public class WalletFragment extends DetailFragment {
     	characterName = getArguments().getString("characterName");
     	
     	walletBalance = (TextView) inflatedView.findViewById(R.id.char_detail_wallet_balance);
-    	
     	walletListView = (ListView) inflatedView.findViewById(R.id.char_detail_wallet_listview);
     	
     	loadData();

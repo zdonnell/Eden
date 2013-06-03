@@ -2,11 +2,11 @@ package com.zdonnell.eve;
 
 import android.util.SparseArray;
 
-import com.zdonnell.eve.api.character.AssetsEntity;
 import com.zdonnell.eve.api.character.CharacterSheet;
 import com.zdonnell.eve.api.character.WalletEntry;
-import com.zdonnell.eve.staticdata.api.StationInfo;
-import com.zdonnell.eve.staticdata.api.TypeInfo;
+import com.zdonnell.eve.apilink.character.AssetsEntity;
+import com.zdonnell.eve.staticdata.StationInfo;
+import com.zdonnell.eve.staticdata.TypeInfo;
 
 public class CharacterDetailCache {
 

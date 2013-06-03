@@ -13,11 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.zdonnell.eve.api.priceservice.PriceService;
 import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.helpers.ImageURL;
-import com.zdonnell.eve.staticdata.api.StaticData;
-import com.zdonnell.eve.staticdata.api.TypeInfo;
+import com.zdonnell.eve.priceservice.PriceService;
+import com.zdonnell.eve.staticdata.StaticData;
+import com.zdonnell.eve.staticdata.TypeInfo;
 
 public class TypeInfoFragment extends Fragment {	
 	

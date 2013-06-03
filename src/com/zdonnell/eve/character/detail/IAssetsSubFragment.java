@@ -2,7 +2,7 @@ package com.zdonnell.eve.character.detail;
 
 import android.util.SparseArray;
 
-import com.zdonnell.eve.api.character.AssetsEntity;
+import com.zdonnell.eve.apilink.character.AssetsEntity;
 
 public interface IAssetsSubFragment 
 {

@@ -25,12 +25,12 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
-import com.zdonnell.eve.api.character.AssetsEntity;
-import com.zdonnell.eve.api.character.AssetsEntity.Item;
+import com.zdonnell.eve.apilink.character.AssetsEntity;
+import com.zdonnell.eve.apilink.character.AssetsEntity.Item;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.ImageURL;
-import com.zdonnell.eve.staticdata.api.StationInfo;
-import com.zdonnell.eve.staticdata.api.TypeInfo;
+import com.zdonnell.eve.staticdata.StationInfo;
+import com.zdonnell.eve.staticdata.TypeInfo;
 
 public class InventoryListFragment extends Fragment implements IAssetsSubFragment 
 {

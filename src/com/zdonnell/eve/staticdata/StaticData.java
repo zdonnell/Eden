@@ -1,4 +1,4 @@
-package com.zdonnell.eve.staticdata.api;
+package com.zdonnell.eve.staticdata;
 
 import java.io.IOException;
 

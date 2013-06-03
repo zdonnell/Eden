@@ -37,8 +37,8 @@ import com.zdonnell.eve.apilink.character.APICharacter;
 import com.zdonnell.eve.eve.Eve;
 import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.helpers.Tools;
-import com.zdonnell.eve.staticdata.api.StationDatabase;
-import com.zdonnell.eve.staticdata.api.StationInfo;
+import com.zdonnell.eve.staticdata.StationDatabase;
+import com.zdonnell.eve.staticdata.StationInfo;
 
 /**
  * Fragment to display the list currently active characters
