@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +16,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.beimin.eveapi.account.characters.EveCharacter;
+import com.beimin.eveapi.core.ApiAuth;
+import com.beimin.eveapi.core.ApiAuthorization;
 import com.squareup.picasso.Picasso;
-import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.account.EveCharacter;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.ImageURL;
 
@@ -34,7 +36,7 @@ public class APIKeysFragment extends Fragment
 	/**
 	 * List of all {@link APICredentials} 
 	 */
-	private ArrayList<APICredentials> apiCredsList;
+	private ArrayList<ApiAuth<?>> apiCredsList;
 	
 	/**
 	 * {@link SparseArray} of {@link ArrayList} of {@link EveCharacter}
@@ -85,7 +87,7 @@ public class APIKeysFragment extends Fragment
 		charDB = new CharacterDB(getActivity());
 		
 		characters.clear();
-		apiCredsList = new ArrayList<APICredentials>();
+		apiCredsList = new ArrayList<ApiAuth<?>>();
 		
 		Cursor c = charDB.allCharacters();
 		while (c.moveToNext())
@@ -95,10 +97,14 @@ public class APIKeysFragment extends Fragment
 			int apiKey = c.getInt(c.getColumnIndex(CharacterDB.CHAR_TABLE_KEYID));
 			String vCode = c.getString(c.getColumnIndex(CharacterDB.CHAR_TABLE_VCODE));
 			
-			if (!doesAPIKeyExistInList(apiKey, vCode, apiCredsList)) apiCredsList.add(new APICredentials(apiKey, vCode));
+			if (!doesAPIKeyExistInList(apiKey, vCode, apiCredsList)) apiCredsList.add(new ApiAuthorization(apiKey, vCode));
 
 			if (characters.get(apiKey) == null) characters.put(apiKey, new ArrayList<EveCharacter>());
-			characters.get(apiKey).add(new EveCharacter(charName, charID, null, 0, 0, null));
+			
+			EveCharacter character = new EveCharacter();
+			character.setCharacterID(charID);
+			character.setName(charName);
+			characters.get(apiKey).add(character);
 		}
 		c.close();
 	}
@@ -113,11 +119,11 @@ public class APIKeysFragment extends Fragment
 	 * @param apiCredsList the list to check against
 	 * @return True if the key/vCode pair exists in the provided API Credentials list.
 	 */
-	private boolean doesAPIKeyExistInList(int apiKey, String vCode, ArrayList<APICredentials> apiCredsList)
+	private boolean doesAPIKeyExistInList(int apiKey, String vCode, ArrayList<ApiAuth<?>> apiCredsList)
 	{
-		for (APICredentials c : apiCredsList)
+		for (ApiAuth<?> c : apiCredsList)
 		{
-			if (c.keyID == apiKey && c.verificationCode.equals(vCode)) return true;
+			if (c.getKeyID() == apiKey && c.getVCode().equals(vCode)) return true;
 		}
 		
 		return false;
@@ -148,7 +154,7 @@ public class APIKeysFragment extends Fragment
 	 * @author zachd
 	 *
 	 */
-	private class APIKeyListAdapter extends ArrayAdapter<APICredentials>
+	private class APIKeyListAdapter extends ArrayAdapter<ApiAuth<?>>
 	{
 		/**
 		 * reference the layoutID to use for individual ListView rows
@@ -166,7 +172,7 @@ public class APIKeysFragment extends Fragment
 		/**
 		 * Stores whether a given character is currently monitored or "on"
 		 */
-		SparseArray<Boolean> charOn = new SparseArray<Boolean>();
+		SparseBooleanArray charOn = new SparseBooleanArray();
 		
 		/**
 		 * Constructor
@@ -178,7 +184,7 @@ public class APIKeysFragment extends Fragment
 		 * 
 		 * @see {@link #characters}
 		 */
-		public APIKeyListAdapter(Context context, int textViewResourceId, ArrayList<APICredentials> keys, SparseArray<ArrayList<EveCharacter>> characters) 
+		public APIKeyListAdapter(Context context, int textViewResourceId, ArrayList<ApiAuth<?>> keys, SparseArray<ArrayList<EveCharacter>> characters) 
 		{
 			super(context, textViewResourceId, keys);
 			this.characters = characters;
@@ -195,10 +201,10 @@ public class APIKeysFragment extends Fragment
 				convertView.setOnClickListener(null);
 			}
 			
-			int keyID = getItem(position).keyID;
+			int keyID = getItem(position).getKeyID();
 			
 			TextView apiKeyText = (TextView) convertView.findViewById(R.id.characters_edit_characters_list_item_apikey);
-			apiKeyText.setText(String.valueOf(getItem(position).keyID));
+			apiKeyText.setText(String.valueOf(getItem(position).getKeyID()));
 			
 			ImageView deleteImage = (ImageView) convertView.findViewById(R.id.characters_edit_characters_list_item_delete_icon);
 			setupDeleteIcon(deleteImage, keyID);
@@ -215,7 +221,7 @@ public class APIKeysFragment extends Fragment
 			final Integer[] charIDs = new Integer[characters.get(keyID).size()];
 			for (int i = 0; i < characters.get(keyID).size(); ++i)
 			{
-				charIDs[i] = characters.get(keyID).get(i).charID;
+				charIDs[i] = (int) characters.get(keyID).get(i).getCharacterID();
 				charOn.put(charIDs[i], charDB.isCharEnabled(charIDs[i]));
 								
 				initializePortraitImageView(portraits[i], charIDs[i]);

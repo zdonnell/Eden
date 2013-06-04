@@ -28,8 +28,6 @@ import android.view.View.OnKeyListener;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 
-import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.character.APICharacter;
 import com.zdonnell.eve.character.detail.DetailFragment;
 import com.zdonnell.eve.character.detail.InventoryListFragment;
 import com.zdonnell.eve.character.detail.InventorySort;
@@ -52,15 +50,11 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 	}
     
     private int searchOpenedAtLevel;
-
-	private APICharacter assembledChar;
 		
 	public SearchView searchView;
 	
 	private String characterName;
-	
-	public CharacterDetailCache dataCache = new CharacterDetailCache();
-	
+		
 	boolean hasLoaded = false;
 		
     /**
@@ -85,11 +79,10 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         setContentView(R.layout.character_detail);
          
     	setSlidingActionBarEnabled(true);
-    	
-    	String[] characterInfo = getIntent().getExtras().getStringArray("character");
-    	assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
-    
+    	    
         final ActionBar actionBar = getActionBar();
+        
+    	String[] characterInfo = getIntent().getExtras().getStringArray("character");
         
         CharacterDB charDB = new CharacterDB(getBaseContext());
         characterName = charDB.getCharacterName(Integer.valueOf(characterInfo[0]));
@@ -172,10 +165,12 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         {
         	Fragment fragment;
         	
+        	String[] characterInfo = getIntent().getExtras().getStringArray("character");
+        	
         	Bundle characterDetails = new Bundle();
-        	characterDetails.putInt("keyID", assembledChar.getCredentials().keyID);
-        	characterDetails.putString("vCode", assembledChar.getCredentials().verificationCode);
-        	characterDetails.putInt("characterID", assembledChar.id());
+        	characterDetails.putInt("keyID", Integer.valueOf(characterInfo[1]));
+        	characterDetails.putString("vCode", characterInfo[2]);
+        	characterDetails.putInt("characterID", Integer.valueOf(characterInfo[0]));
         	characterDetails.putString("characterName", characterName);
         	
         	switch (i)

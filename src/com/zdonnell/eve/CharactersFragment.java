@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,13 +29,14 @@ import android.widget.TextView;
 
 import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
 import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
+import com.beimin.eveapi.eve.conquerablestationlist.ApiStation;
+import com.beimin.eveapi.eve.conquerablestationlist.StationListResponse;
 import com.beimin.eveapi.exception.ApiException;
 import com.squareup.picasso.Picasso;
-import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.account.EdenEveCharacter;
 import com.zdonnell.eve.apilink.character.APICharacter;
-import com.zdonnell.eve.eve.Eve;
+import com.zdonnell.eve.apilink.eve.Eve;
 import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.helpers.Tools;
 import com.zdonnell.eve.staticdata.StationDatabase;
@@ -329,13 +331,30 @@ public class CharactersFragment extends Fragment {
 	
 	private void loadStationInfo()
 	{		
-		new Eve(context).getConquerableStations(new APICallback<SparseArray<StationInfo>>((BaseActivity) getActivity()) {
+		new Eve(context).conqStationsList(new APIExceptionCallback<StationListResponse>((BaseActivity) getActivity())
+		{
+			@Override
+			public void onUpdate(StationListResponse response) 
+			{				
+				Map<Integer, ApiStation> eveapiStationMap = response.getStations();
+				SparseArray<StationInfo> edenStationInfoSet = new SparseArray<StationInfo>(eveapiStationMap.size());
+			
+				for (ApiStation station : eveapiStationMap.values())
+				{
+					StationInfo edenStation = new StationInfo();
+					edenStation.stationID = station.getStationID();
+					edenStation.stationName = station.getStationName();
+					edenStation.stationTypeID = station.getStationTypeID();
+					
+					edenStationInfoSet.put(edenStation.stationID, edenStation);
+				}
+				
+				new InsertStationInfoAsyncTask(context, edenStationInfoSet).execute();	
+			}
 
 			@Override
-			public void onUpdate(SparseArray<StationInfo> stationInfo)
-			{
-				new InsertStationInfoAsyncTask(context, stationInfo).execute();	
-			}
+			public void onError(StationListResponse response, ApiException exception) { /* TODO */ }
+			
 		});
 	}
 	

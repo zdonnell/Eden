@@ -4,6 +4,7 @@ import java.util.Set;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.beimin.eveapi.character.assetlist.AssetListParser;
 import com.beimin.eveapi.core.ApiAuth;
@@ -83,7 +84,7 @@ public class AssetsTask extends AsyncTask<Void, Void, AssetListResponse> impleme
 	        try 
 	        { 
 	        	response = parser.getResponse(apiAuth);
-	        	
+	        		        	
 	        	cacheDatabase.updateCache(requestHash, response.getCachedUntil());
 	        	assetsDatabase.setAssets(apiAuth.getCharacterID().intValue(), response.getAll());
 	        }
@@ -100,15 +101,23 @@ public class AssetsTask extends AsyncTask<Void, Void, AssetListResponse> impleme
 	@Override
 	protected void onPostExecute(AssetListResponse response) 
 	{	
-		if (apiExceptionOccured)
+		if (cacheValid)
 		{
-			callback.updateState(APIExceptionCallback.STATE_SERVER_RESPONSE_FAILED);
-			callback.onError(cachedData, exception);
+			callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_ACQUIRED_VALID);
+			callback.onUpdate(response);
 		}
 		else
 		{
-			callback.updateState(APIExceptionCallback.STATE_SERVER_RESPONSE_ACQUIRED);
-			callback.onUpdate(cachedData);
+			if (apiExceptionOccured)
+			{
+				callback.updateState(APIExceptionCallback.STATE_SERVER_RESPONSE_FAILED);
+				callback.onError(response, exception);
+			}
+			else
+			{
+				callback.updateState(APIExceptionCallback.STATE_SERVER_RESPONSE_ACQUIRED);
+				callback.onUpdate(response);
+			}
 		}
     }
 
@@ -127,10 +136,14 @@ public class AssetsTask extends AsyncTask<Void, Void, AssetListResponse> impleme
 	@Override
 	public AssetListResponse buildResponseFromDatabase() 
 	{
+		long startTimeMillis = System.currentTimeMillis();
+		
 		AssetListResponse response = new AssetListResponse();
 		
 		Set<EveAsset<EveAsset<?>>> assets = assetsDatabase.getAssets(apiAuth.getCharacterID().intValue());
 		for (EveAsset<EveAsset<?>> asset : assets) response.add(asset);
+		
+		Log.d("TIME TO lOAD ASSETS", (System.currentTimeMillis() - startTimeMillis) + " ms");
 		
 		return response;
 	}

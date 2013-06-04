@@ -23,7 +23,6 @@ import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.core.ApiAuthorization;
 import com.beimin.eveapi.exception.ApiException;
 import com.squareup.picasso.Picasso;
-import com.zdonnell.eve.api.APICredentials;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.account.Account;
 import com.zdonnell.eve.helpers.ImageURL;
@@ -113,9 +112,7 @@ public class AddAPIDialog extends DialogFragment
 			button.setEnabled(valid);
 		}
 	}
-	
-	APICredentials[] keys;
-	
+		
 	SparseArray<ArrayList<EveCharacter>> characters = new SparseArray<ArrayList<EveCharacter>>();
 		
 	boolean refreshRequired = false, passedKey = false;

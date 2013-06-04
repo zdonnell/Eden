@@ -3,6 +3,7 @@ package com.zdonnell.eve.character.detail;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 import java.util.Stack;
 
@@ -445,7 +446,7 @@ public class ParentAssetsFragment extends DetailFragment
 			
 			if (typeInfo == null || typeInfo.get(item.attributes().typeID) == null) return false;
 			
-			if (typeInfo.get(item.attributes().typeID).typeName.toLowerCase().contains(searchFilter.toLowerCase())) return true;
+			if (typeInfo.get(item.attributes().typeID).typeName.toLowerCase(Locale.US).contains(searchFilter.toLowerCase(Locale.US))) return true;
 			if (item.containsAssets())
 			{
 				for (AssetsEntity childEntity : entity.getContainedAssets())
@@ -510,11 +511,12 @@ public class ParentAssetsFragment extends DetailFragment
 	{
 		SparseArray<ArrayList<AssetsEntity>> arrangedAssets = new SparseArray<ArrayList<AssetsEntity>>();
 		Set<EveAsset<EveAsset<?>>> rawAssetSet = response.getAll();
-		
+				
 		for (EveAsset<EveAsset<?>> asset : rawAssetSet)
-		{
+		{			
 			ArrayList<AssetsEntity> assetsAtLocation = arrangedAssets.get(asset.getLocationID().intValue(), new ArrayList<AssetsEntity>());
 			assetsAtLocation.add(convertAsset(asset));
+			arrangedAssets.put(asset.getLocationID().intValue(), assetsAtLocation);
 		}
 		
 		AssetsEntity[] locationArray = new AssetsEntity[arrangedAssets.size()];
@@ -522,7 +524,7 @@ public class ParentAssetsFragment extends DetailFragment
 		{
 			int locationID = arrangedAssets.keyAt(i);
 			ArrayList<AssetsEntity> assetsAtLocation = arrangedAssets.valueAt(i);
-			
+						
 			locationArray[i] = new AssetsEntity.Station(assetsAtLocation, locationID);
 		}
 		
@@ -555,7 +557,11 @@ public class ParentAssetsFragment extends DetailFragment
 		return convertedAsset;
 	}
 	
-	public int assetsType() { return (currentAssets[0] instanceof AssetsEntity.Station ? STATION : ASSET); }
+	public int assetsType() 
+	{ 
+		if (currentAssets.length == 0) return STATION;
+		else return (currentAssets[0] instanceof AssetsEntity.Station ? STATION : ASSET);
+	}
 	
 	public SparseArray<StationInfo> getStationInfo() { return currentStationInfo; }
     

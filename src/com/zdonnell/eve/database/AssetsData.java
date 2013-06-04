@@ -51,7 +51,7 @@ public class AssetsData {
 		// Clearing out all the assets from the database is easier than checking row by row to see
 		// which assets still exist in the newest API response
 		db.delete(TABLE, COL_CHAR_ID + " = ?", new String[] { String.valueOf(characterID) });
-		
+
 		db.beginTransaction();
 		
 		for (EveAsset<EveAsset<?>> assetItem : assets) insertAsset(assetItem, characterID, null);
@@ -68,7 +68,7 @@ public class AssetsData {
 	 * @param parentItemID
 	 */
 	private void insertAsset(EveAsset<?> assetItem, int characterID, Long parentItemID)
-	{
+	{		
 		ContentValues insertValues = new ContentValues();
 		
 		insertValues.put(COL_ID, assetItem.getItemID());
@@ -95,7 +95,7 @@ public class AssetsData {
 	public Set<EveAsset<EveAsset<?>>> getAssets(int characterID)
 	{
 		Set<EveAsset<EveAsset<?>>> assets = new LinkedHashSet<EveAsset<EveAsset<?>>>();
-		
+				
 		Cursor c = db.query(TABLE, null, COL_CHAR_ID + " = ? AND " + COL_PARENT_ID + " IS NULL", new String[] { String.valueOf(characterID) }, null, null, null);		
 		
 		for (EveAsset<EveAsset<?>> childAsset : buildAssets(c)) assets.add(childAsset);
