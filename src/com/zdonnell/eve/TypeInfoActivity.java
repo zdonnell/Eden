@@ -5,7 +5,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 
 
-public class TypeInfoActivity extends BaseActivity {
+public class TypeInfoActivity extends NavDrawerActivity {
 
 	public TypeInfoActivity() 
 	{
@@ -28,14 +28,10 @@ public class TypeInfoActivity extends BaseActivity {
 		/**
 		 * Load the fragment into the activity
 		 */
-		setContentView(R.layout.content_frame);
 		getSupportFragmentManager()
 		.beginTransaction()
 		.replace(R.id.content_frame, fragment)
 		.commit();
-		
-		
-		setSlidingActionBarEnabled(true);
 	}
 	
 	@Override

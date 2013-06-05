@@ -20,7 +20,7 @@ import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
 import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
 import com.beimin.eveapi.core.ApiAuthorization;
 import com.beimin.eveapi.exception.ApiException;
-import com.zdonnell.eve.BaseActivity;
+import com.zdonnell.eve.ILoadingActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.apilink.APICallback;
@@ -212,7 +212,7 @@ public class SkillQueueFragment extends DetailFragment {
 			
 			// Skill Name Text
 			final TextView skillName = (TextView) mainView.findViewById(R.id.skillqueue_detail_list_item_skillname);
-			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((BaseActivity) getActivity())
+			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
 			{
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> updatedData) 

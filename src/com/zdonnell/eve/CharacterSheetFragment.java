@@ -212,7 +212,7 @@ public class CharacterSheetFragment extends Fragment
 		
 		final long starttime1 = System.currentTimeMillis();
 		// get character's skill queue
-		character.getSkillQueue(new APIExceptionCallback<SkillQueueResponse>((BaseActivity) getActivity())
+		character.getSkillQueue(new APIExceptionCallback<SkillQueueResponse>((ILoadingActivity) getActivity())
 		{
 			@Override
 			public void onUpdate(SkillQueueResponse response) 
@@ -233,7 +233,7 @@ public class CharacterSheetFragment extends Fragment
     	
 		final long starttime = System.currentTimeMillis();
 		// get character's character sheet
-    	character.getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>((BaseActivity) getActivity()) 
+    	character.getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>((ILoadingActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(CharacterSheetResponse rCharacterSheet) 
@@ -254,7 +254,7 @@ public class CharacterSheetFragment extends Fragment
 		final long starttime2 = System.currentTimeMillis();
 
     	// get character's info
-    	character.getCharacterInfo(new APIExceptionCallback<CharacterInfoResponse>((BaseActivity) getActivity()) 
+    	character.getCharacterInfo(new APIExceptionCallback<CharacterInfoResponse>((ILoadingActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(CharacterInfoResponse response) 
@@ -273,7 +273,7 @@ public class CharacterSheetFragment extends Fragment
     	});
     	
     	/*com.zdonnell.eve.api.character.APICharacter testchar = new com.zdonnell.eve.api.character.APICharacter(new APICredentials(character.getApiAuth().getKeyID(), character.getApiAuth().getVCode()), character.getApiAuth().getCharacterID().intValue(), context);
-    	testchar.getCharacterInfo(new APICallback<CharacterInfo>((BaseActivity) getActivity()){
+    	testchar.getCharacterInfo(new APICallback<CharacterInfo>((ILoadingActivity) getActivity()){
 
 			@Override
 			public void onUpdate(CharacterInfo updatedData) {
@@ -302,7 +302,7 @@ public class CharacterSheetFragment extends Fragment
 			} 
 			catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
 						
-			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((BaseActivity) getActivity())
+			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
 			{
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> updatedData) 

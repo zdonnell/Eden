@@ -1,6 +1,6 @@
 package com.zdonnell.eve.apilink;
 
-import com.zdonnell.eve.BaseActivity;
+import com.zdonnell.eve.ILoadingActivity;
 
 /**
  * Extend this class to provide instructions for an {@link APIObject} request
@@ -19,7 +19,7 @@ public abstract class APICallback<T>
 	public static final int STATE_SERVER_RESPONSE_ACQUIRED = 3;
 	public static final int STATE_SERVER_RESPONSE_FAILED = 4;
 	
-	private BaseActivity requestingActivity;
+	private ILoadingActivity requestingActivity;
 	
 	/**
 	 * This value is an internal counter to keep track of where we are in the
@@ -27,7 +27,7 @@ public abstract class APICallback<T>
 	 */
 	private int stateInt;
 	
-	public APICallback(BaseActivity activity)
+	public APICallback(ILoadingActivity activity)
 	{
 		requestingActivity = activity;
 		if (activity != null) initializeCallback();

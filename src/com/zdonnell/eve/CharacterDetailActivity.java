@@ -37,7 +37,7 @@ import com.zdonnell.eve.character.detail.queue.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.skills.SkillsFragment;
 import com.zdonnell.eve.character.detail.wallet.WalletFragment;
 
-public class CharacterDetailActivity extends BaseActivity implements ActionBar.TabListener {
+public class CharacterDetailActivity extends NavDrawerActivity implements ActionBar.TabListener {
 
     public CharacterDetailActivity(int titleRes) {
 		super(titleRes);
@@ -77,9 +77,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     {
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.character_detail);
-         
-    	setSlidingActionBarEnabled(true);
-    	    
+             	    
         final ActionBar actionBar = getActionBar();
         
     	String[] characterInfo = getIntent().getExtras().getStringArray("character");
@@ -99,7 +97,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         this.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager = (ViewPager) findViewById(R.id.content_frame);
         mViewPagerTitleStrip = (PagerTitleStrip) findViewById(R.id.pager_title);
         mViewPagerTitleStrip.setNonPrimaryAlpha(0.3f);
         mViewPagerTitleStrip.setTextSpacing((int) (displayMetrics.widthPixels/4f));

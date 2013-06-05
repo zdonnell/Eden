@@ -16,7 +16,7 @@ import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
 import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.core.ApiAuthorization;
 import com.beimin.eveapi.exception.ApiException;
-import com.zdonnell.eve.BaseActivity;
+import com.zdonnell.eve.ILoadingActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.character.APICharacter;
@@ -148,7 +148,7 @@ public class AttributesFragment extends DetailFragment {
 	@Override
 	public void loadData() 
 	{
-		character.getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>((BaseActivity) getActivity())
+		character.getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>((ILoadingActivity) getActivity())
 		{
 			@Override
 			public void onUpdate(CharacterSheetResponse response) 

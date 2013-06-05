@@ -24,4 +24,7 @@
     <string name="toggle_portrait_explanation">Tap on a portrait to toggle monitoring of that character</string>
     <string name="show_add_api_key_info_again_message">Do not show this message again</string>
     
+    <string name="drawer_open">Open the Drawer</string>
+    <string name="drawer_close">Close the Drawer</string>
+    
 </resources>

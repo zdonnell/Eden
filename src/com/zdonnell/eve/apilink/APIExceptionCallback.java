@@ -1,7 +1,7 @@
 package com.zdonnell.eve.apilink;
 
 import com.beimin.eveapi.exception.ApiException;
-import com.zdonnell.eve.BaseActivity;
+import com.zdonnell.eve.ILoadingActivity;
 
 public abstract class APIExceptionCallback<T> {
 
@@ -11,7 +11,7 @@ public abstract class APIExceptionCallback<T> {
 	public static final int STATE_SERVER_RESPONSE_ACQUIRED = 3;
 	public static final int STATE_SERVER_RESPONSE_FAILED = 4;
 	
-	private BaseActivity requestingActivity;
+	private ILoadingActivity requestingActivity;
 	
 	/**
 	 * This value is an internal counter to keep track of where we are in the
@@ -19,11 +19,11 @@ public abstract class APIExceptionCallback<T> {
 	 */
 	private int stateInt;
 	
-	public APIExceptionCallback(BaseActivity activity)
+	public APIExceptionCallback(ILoadingActivity activity)
 	{
 		requestingActivity = activity;
 		if (activity != null) initializeCallback();
-	}	
+	}
 	
 	private void initializeCallback()
 	{

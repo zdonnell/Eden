@@ -24,7 +24,7 @@ import com.beimin.eveapi.core.ApiAuthorization;
 import com.beimin.eveapi.exception.ApiException;
 import com.beimin.eveapi.shared.assetlist.AssetListResponse;
 import com.beimin.eveapi.shared.assetlist.EveAsset;
-import com.zdonnell.eve.BaseActivity;
+import com.zdonnell.eve.ILoadingActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
@@ -245,7 +245,7 @@ public class ParentAssetsFragment extends DetailFragment
      */
     private void getStationInfo(final Integer[] stationIDs)
     {
-		new StaticData(context).getStationInfo(new APICallback<SparseArray<StationInfo>>((BaseActivity) getActivity()) 
+		new StaticData(context).getStationInfo(new APICallback<SparseArray<StationInfo>>((ILoadingActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(SparseArray<StationInfo> stationInformation) 
@@ -272,7 +272,7 @@ public class ParentAssetsFragment extends DetailFragment
     	Integer[] uniqueTypeIDs = new Integer[uniqueTypeIDsList.size()];
     	uniqueTypeIDsList.toArray(uniqueTypeIDs);
     	
-    	new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((BaseActivity) getActivity())
+    	new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
     	{
 			@Override
 			public void onUpdate(SparseArray<TypeInfo> rTypeInfo) 
@@ -303,7 +303,7 @@ public class ParentAssetsFragment extends DetailFragment
 		Integer[] marketTypeIDs = new Integer[marketTypeIDsList.size()];
 		marketTypeIDsList.toArray(marketTypeIDs);
 				
-		PriceService.getInstance(context).getValues(marketTypeIDs, new APICallback<SparseArray<Float>>((BaseActivity) getActivity()) 
+		PriceService.getInstance(context).getValues(marketTypeIDs, new APICallback<SparseArray<Float>>((ILoadingActivity) getActivity()) 
 		{
 			@Override
 			public void onUpdate(SparseArray<Float> updatedData) 
@@ -480,7 +480,7 @@ public class ParentAssetsFragment extends DetailFragment
 	    prices = new SparseArray<Float>();
 	    searchFilter = null;
 	    
-	    character.getAssets(new APIExceptionCallback<AssetListResponse>((BaseActivity) getActivity())
+	    character.getAssets(new APIExceptionCallback<AssetListResponse>((ILoadingActivity) getActivity())
 	    {
 			@Override
 			public void onUpdate(AssetListResponse response) 

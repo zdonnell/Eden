@@ -16,7 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 
-public class APIKeysActivity extends BaseActivity {
+public class APIKeysActivity extends NavDrawerActivity {
 
 	/**
 	 * A reference to the current {@link Fragment} loaded in the activity
@@ -47,7 +47,6 @@ public class APIKeysActivity extends BaseActivity {
 		prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
 		// Load the fragment into the activity
-		setContentView(R.layout.content_frame);
 		currentFragment = new APIKeysFragment();
 		
 		getSupportFragmentManager()
@@ -56,8 +55,6 @@ public class APIKeysActivity extends BaseActivity {
 		.commit();
 		
 		handleRecievedAPIKey(getIntent());
-		
-		setSlidingActionBarEnabled(true);
 	}
 	
 	/**
@@ -101,9 +98,6 @@ public class APIKeysActivity extends BaseActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case android.R.id.home:
-			toggle();
-			return true;
 		case R.id.manual_key_entry:
 	    	new AddAPIDialog().show(getSupportFragmentManager(), "Add Key Dialog");
 			break;

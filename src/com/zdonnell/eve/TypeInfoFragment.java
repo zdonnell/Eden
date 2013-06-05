@@ -39,7 +39,7 @@ public class TypeInfoFragment extends Fragment {
 		
 		Picasso.with(getActivity()).load(ImageURL.forType(typeID)).into(typeIcon);
 		
-		new StaticData(inflater.getContext()).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((BaseActivity) getActivity()) 
+		new StaticData(inflater.getContext()).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity()) 
 		{
 			@Override
 			public void onUpdate(SparseArray<TypeInfo> typeInfo) 
@@ -53,7 +53,7 @@ public class TypeInfoFragment extends Fragment {
 			}
 		}, typeID);
 		
-		PriceService.getInstance(inflater.getContext()).getValues(new Integer[] { typeID }, new APICallback<SparseArray<Float>>((BaseActivity) getActivity()) 
+		PriceService.getInstance(inflater.getContext()).getValues(new Integer[] { typeID }, new APICallback<SparseArray<Float>>((ILoadingActivity) getActivity()) 
 		{
 			@Override
 			public void onUpdate(SparseArray<Float> prices) 

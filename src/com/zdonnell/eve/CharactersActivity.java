@@ -12,7 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-public class CharactersActivity extends BaseActivity {
+public class CharactersActivity extends NavDrawerActivity {
 
 	private CharactersFragment currentCharactersFragment;
 	
@@ -26,11 +26,6 @@ public class CharactersActivity extends BaseActivity {
 	{
 		super.onCreate(savedInstanceState);
 
-		/**
-		 * Load the fragment into the activity
-		 */
-		setContentView(R.layout.content_frame);
-		
 		currentCharactersFragment = new CharactersFragment();
 		
 		getSupportFragmentManager()
@@ -49,7 +44,6 @@ public class CharactersActivity extends BaseActivity {
 	    	new AddAPIDialog().setKey(keyID, vCode).show(getSupportFragmentManager(), "Skill List Dialog");
 		}
 		
-		setSlidingActionBarEnabled(true);
 	}
 	
 	@Override

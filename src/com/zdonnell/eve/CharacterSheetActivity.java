@@ -15,7 +15,7 @@ import com.zdonnell.eve.character.detail.queue.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.skills.SkillsFragment;
 import com.zdonnell.eve.character.detail.wallet.WalletFragment;
 
-public class CharacterSheetActivity extends BaseActivity implements CharacterSheetFragment.Callbacks 
+public class CharacterSheetActivity extends NavDrawerActivity implements CharacterSheetFragment.Callbacks 
 {
 	public CharacterSheetActivity(int titleRes) 
 	{
@@ -39,14 +39,12 @@ public class CharacterSheetActivity extends BaseActivity implements CharacterShe
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.activity_sheetitem_list);
-        
-		setSlidingActionBarEnabled(true);
-		
+        		
 		characterInfo = getIntent().getExtras().getStringArray("character");
         
         ApiAuth<?> apiAuth = new ApiAuthorization(Integer.valueOf(characterInfo[1]), Long.valueOf(characterInfo[0]), characterInfo[2]);
         assembledChar = new APICharacter(getBaseContext(), apiAuth);
-        ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar);
+        ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame)).setCharacter(assembledChar);
         
         getActionBar().setTitle(new CharacterDB(this).getCharacterName(assembledChar.getApiAuth().getCharacterID().intValue()));
         getActionBar().setSubtitle(new CharacterDB(this).getCorpName(assembledChar.getApiAuth().getCharacterID().intValue()));      
@@ -122,6 +120,6 @@ public class CharacterSheetActivity extends BaseActivity implements CharacterShe
 	@Override
 	protected void refresh() 
 	{
-        ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.sheetitem_list)).setCharacter(assembledChar);
+        ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame)).setCharacter(assembledChar);
 	}
 }

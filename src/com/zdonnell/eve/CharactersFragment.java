@@ -255,7 +255,7 @@ public class CharactersFragment extends Fragment {
 			final TextView timeRemainingTextView = (TextView) mainView.findViewById(R.id.char_tile_training);			
 			timeRemainingTextView.setText("");
 						
-			new APICharacter(context, character.getApiAuth()).getSkillQueue(new APIExceptionCallback<SkillQueueResponse>((BaseActivity) getActivity()) 
+			new APICharacter(context, character.getApiAuth()).getSkillQueue(new APIExceptionCallback<SkillQueueResponse>((ILoadingActivity) getActivity()) 
 			{
 				@Override
 				public void onUpdate(SkillQueueResponse response) 
@@ -331,7 +331,7 @@ public class CharactersFragment extends Fragment {
 	
 	private void loadStationInfo()
 	{		
-		new Eve(context).conqStationsList(new APIExceptionCallback<StationListResponse>((BaseActivity) getActivity())
+		new Eve(context).conqStationsList(new APIExceptionCallback<StationListResponse>((NavDrawerActivity) getActivity())
 		{
 			@Override
 			public void onUpdate(StationListResponse response) 

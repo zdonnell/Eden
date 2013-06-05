@@ -21,9 +21,6 @@ import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingPreferenceActivity;
-
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
@@ -35,7 +32,7 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingPreferenceActivity;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends SlidingPreferenceActivity {
+public class SettingsActivity extends PreferenceActivity {
 	/**
 	 * Determines whether to always show the simplified settings UI, where
 	 * settings are presented in a single list. When false, settings are shown
@@ -51,7 +48,6 @@ public class SettingsActivity extends SlidingPreferenceActivity {
 	    switch (item.getItemId())
 	    {
 	    case android.R.id.home:
-			toggle();
 			return true;
 	    }
 	    return true;
@@ -62,24 +58,7 @@ public class SettingsActivity extends SlidingPreferenceActivity {
 	{
 		super.onCreate(savedInstanceState);
 		
-		// set the Behind View
-			setBehindContentView(R.layout.menu_frame);
-			android.app.FragmentTransaction t = getFragmentManager().beginTransaction();
-			mFrag = new SlideMenuFragmentNonSupport();
-			t.replace(R.id.menu_frame, mFrag);
-			t.commit();
-
-			// customize the SlidingMenu
-			SlidingMenu sm = getSlidingMenu();
-			sm.setShadowWidthRes(R.dimen.shadow_width);
-			sm.setShadowDrawable(R.drawable.shadow);
-			sm.setBehindOffsetRes(R.dimen.actionbar_home_width);
-			sm.setFadeDegree(0.75f);
-
-			// customize the ActionBar
-			if (Build.VERSION.SDK_INT >= 11) {
-				getActionBar().setDisplayHomeAsUpEnabled(true);
-			}
+	
 	}
 	
 	@Override
@@ -94,6 +73,7 @@ public class SettingsActivity extends SlidingPreferenceActivity {
 	 * device configuration dictates that a simplified, single-pane UI should be
 	 * shown.
 	 */
+	@SuppressWarnings("deprecation")
 	private void setupSimplePreferencesScreen() {
 		if (!isSimplePreferences(this)) {
 			return;

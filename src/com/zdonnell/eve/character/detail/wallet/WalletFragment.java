@@ -22,8 +22,7 @@ import com.beimin.eveapi.shared.wallet.journal.ApiJournalEntry;
 import com.beimin.eveapi.shared.wallet.journal.WalletJournalResponse;
 import com.beimin.eveapi.shared.wallet.transactions.ApiWalletTransaction;
 import com.beimin.eveapi.shared.wallet.transactions.WalletTransactionsResponse;
-import com.zdonnell.eve.BaseActivity;
-import com.zdonnell.eve.CharacterDetailActivity;
+import com.zdonnell.eve.ILoadingActivity;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.character.APICharacter;
@@ -67,7 +66,7 @@ public class WalletFragment extends DetailFragment {
     	context = inflater.getContext();
     	prefs = context.getSharedPreferences("eden_wallet_preferences", Context.MODE_PRIVATE);
     	
-    	parentActivity = (CharacterDetailActivity) getActivity();
+    	parentActivity = (ILoadingActivity) getActivity();
     	
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_wallet, container, false);
     	
@@ -104,7 +103,7 @@ public class WalletFragment extends DetailFragment {
     
     public void loadInJournal()
     {
-    	character.getWalletJournal(new APIExceptionCallback<WalletJournalResponse>((BaseActivity) getActivity())
+    	character.getWalletJournal(new APIExceptionCallback<WalletJournalResponse>((ILoadingActivity) getActivity())
     	{
 			@Override
 			public void onUpdate(WalletJournalResponse response) 
@@ -127,7 +126,7 @@ public class WalletFragment extends DetailFragment {
     
     public void loadInTransactions()
     {
-    	character.getWalletTransactions(new APIExceptionCallback<WalletTransactionsResponse>((BaseActivity) getActivity())
+    	character.getWalletTransactions(new APIExceptionCallback<WalletTransactionsResponse>((ILoadingActivity) getActivity())
     	{
 			@Override
 			public void onUpdate(WalletTransactionsResponse response) 
@@ -161,7 +160,7 @@ public class WalletFragment extends DetailFragment {
     		break;
     	}
     	
-    	character.getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>((BaseActivity) getActivity())
+    	character.getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>((ILoadingActivity) getActivity())
     	{
 			@Override
 			public void onUpdate(CharacterSheetResponse response) 

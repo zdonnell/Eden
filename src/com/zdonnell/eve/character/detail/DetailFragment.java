@@ -5,9 +5,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 
-import com.zdonnell.eve.BaseActivity;
 import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.CharacterSheetActivity;
+import com.zdonnell.eve.ILoadingActivity;
 
 /**
  * This is a base {@link Fragment} which all Character Detail Fragments should extend
@@ -21,7 +21,7 @@ public abstract class DetailFragment extends Fragment {
 	 * Reference to the parent activity.  This will either be {@link CharacterDetailActivity} or {@link CharacterSheetActivity}
 	 * depending on layout configuration.
 	 */
-    protected BaseActivity parentActivity; 
+    protected ILoadingActivity parentActivity; 
     
     /**
      * Reference to the context of the application.
@@ -38,7 +38,7 @@ public abstract class DetailFragment extends Fragment {
     {
     	super.onAttach(activity);
     	
-    	parentActivity = (BaseActivity) activity;
+    	parentActivity = (ILoadingActivity) activity;
     	context = activity.getApplicationContext();
     	
     	sharedPreferences = context.getSharedPreferences("eden_chardetail_preferences", Context.MODE_PRIVATE);
