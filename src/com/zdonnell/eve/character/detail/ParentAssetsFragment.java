@@ -130,6 +130,14 @@ public class ParentAssetsFragment extends DetailFragment
     	    	
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets_childfragment_frame, container, false);
 
+    	FragmentTransaction loadStationList = ParentAssetsFragment.this.getChildFragmentManager().beginTransaction();
+
+    	childFragment = new StationListFragment();
+    	childFragment.setParent(ParentAssetsFragment.this);
+    	
+    	loadStationList.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) childFragment);
+    	loadStationList.commit();
+    	
     	loadData();
     	
     	return inflatedView;
@@ -477,13 +485,16 @@ public class ParentAssetsFragment extends DetailFragment
 			{
 				AssetsEntity[] locationArray = eveApiResponseToEdenData(response);
 				
-				FragmentTransaction loadStationList = ParentAssetsFragment.this.getChildFragmentManager().beginTransaction();
+				if (childFragment instanceof InventoryListFragment)
+				{
+					FragmentTransaction loadStationList = ParentAssetsFragment.this.getChildFragmentManager().beginTransaction();
 
-		    	childFragment = new StationListFragment();
-		    	childFragment.setParent(ParentAssetsFragment.this);
-		    	
-		    	loadStationList.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) childFragment);
-		    	loadStationList.commit();
+			    	childFragment = new StationListFragment();
+			    	childFragment.setParent(ParentAssetsFragment.this);
+			    	
+			    	loadStationList.replace(R.id.char_detail_assets_childfragment_layoutFrame, (Fragment) childFragment);
+			    	loadStationList.commit();
+				}
 				
 				Arrays.sort(locationArray, new InventorySort.Count());
 				currentAssets = locationArray;
@@ -547,7 +558,10 @@ public class ParentAssetsFragment extends DetailFragment
 		
 		AssetsEntity.AssetAttributes assetAttributes = new AssetsEntity.AssetAttributes();
 		assetAttributes.flag = asset.getFlag();
-		assetAttributes.locationID = asset.getLocationID().intValue();
+		
+		Long locID = asset.getLocationID();
+		if (locID != null) assetAttributes.locationID = locID.intValue();
+		
 		assetAttributes.quantity = asset.getQuantity();
 		assetAttributes.singleton = asset.getSingleton();
 		assetAttributes.typeID = asset.getTypeID();

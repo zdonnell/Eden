@@ -110,7 +110,7 @@ public class WalletJournalTask extends AsyncTask<Void, Void, WalletJournalRespon
 	        		response = parser.getWalletJournalResponse(apiAuth, lastBatchFinalRefID, batchSize);
 		        	
 		        	lastBatchActualSize = response.getAll().size();
-		        	lastBatchFinalRefID = getLastRefID(response.getAll());
+		        	if (lastBatchActualSize > 0) lastBatchFinalRefID = getLastRefID(response.getAll());
 		        	
 		        	for (ApiJournalEntry entry : response.getAll()) cachedData.add(entry);
 		        	if (lastBatchActualSize > 0) journalDatabase.insertJournalEntries(apiAuth.getCharacterID().intValue(), cachedData.getAll());

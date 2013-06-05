@@ -1,7 +1,10 @@
 package com.zdonnell.eve.database;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import android.content.ContentValues;
@@ -90,33 +93,27 @@ public class AssetsData {
 	}
 	
 	/**
-
+	 * Returns a collection of the characters Eve Assets in the correct nested hierarchy
+	 * 
+	 * @param characterID
+	 * @return
 	 */
-	public Set<EveAsset<EveAsset<?>>> getAssets(int characterID)
+	public Collection<EveAsset<EveAsset<?>>> getAssets(int characterID)
 	{
-		Set<EveAsset<EveAsset<?>>> assets = new LinkedHashSet<EveAsset<EveAsset<?>>>();
+		Set<EveAsset<EveAsset<?>>> groupedAssets = new LinkedHashSet<EveAsset<EveAsset<?>>>();
+		Map<Long, ArrayList<EveAsset<EveAsset<?>>>> childAssets = new HashMap<Long, ArrayList<EveAsset<EveAsset<?>>>>();
 				
-		Cursor c = db.query(TABLE, null, COL_CHAR_ID + " = ? AND " + COL_PARENT_ID + " IS NULL", new String[] { String.valueOf(characterID) }, null, null, null);		
-		
-		for (EveAsset<EveAsset<?>> childAsset : buildAssets(c)) assets.add(childAsset);
-		
-		c.close();
-		
-		return assets;
-	}
-	
-	private Set<EveAsset<EveAsset<?>>> buildAssets(Cursor c)
-	{
-		Set<EveAsset<EveAsset<?>>> assets = new LinkedHashSet<EveAsset<EveAsset<?>>>();
-		
+		Cursor c = db.query(TABLE, null, COL_CHAR_ID + " = ?", new String[] { String.valueOf(characterID) }, null, null, null);		
+				
 		int id_index = c.getColumnIndex(COL_ID);
 		int loc_id_index = c.getColumnIndex(COL_LOC_ID);
 		int type_id_index = c.getColumnIndex(COL_TYPE_ID);
+		int parent_index = c.getColumnIndex(COL_PARENT_ID);
 		int quantity_index = c.getColumnIndex(COL_QUANTITY);
 		int flag_index = c.getColumnIndex(COL_FLAG);
 		int singleton_index = c.getColumnIndex(COL_SINGLETON);
 		int raw_quantity_index = c.getColumnIndex(COL_RAW_QUANTITY);
-		
+			
 		while (c.moveToNext())
 		{
 			EveAsset<EveAsset<?>> asset = new EveAsset<EveAsset<?>>();
@@ -129,15 +126,49 @@ public class AssetsData {
 			asset.setSingleton(c.getInt(singleton_index) == 1);
 			asset.setRawQuantity(c.getInt(raw_quantity_index));
 			
-			Cursor c2 = db.query(TABLE, null, COL_PARENT_ID + " = ?", new String[] { String.valueOf(asset.getItemID()) }, null, null, null);
-			for (EveAsset<EveAsset<?>> childAsset : buildAssets(c2)) asset.addAsset(childAsset);
-			c2.close();
+			Long parentID = c.getLong(parent_index);
 			
-			assets.add(asset);
+			// If there is no parent ID, put it in the final root level set of assets
+			if (parentID == 0) groupedAssets.add(asset);
+			
+			// Else put it in a list of assets mapped by it's parent ID to dig through on a second pass.
+			else 
+			{
+				ArrayList<EveAsset<EveAsset<?>>> assetsInParent = childAssets.get(parentID);
+				if (assetsInParent == null) assetsInParent = new ArrayList<EveAsset<EveAsset<?>>>();
+				
+				assetsInParent.add(asset);
+				childAssets.put(parentID, assetsInParent);
+			}
 		}
+			
+		for (EveAsset<EveAsset<?>> asset : groupedAssets) findChildren(asset, childAssets);
+				
+		c.close();
 		
-		return assets;
+		return groupedAssets;
 	}
+	
+	/**
+	 * Finds the children of a Given asset in a set of asset lists and adds them to the provided
+	 * asset.
+	 * 
+	 * @param asset an EveAsset for which to find the child assets of.
+	 * @param childAssetLists A collection of Lists representing contained assets, mapped by the asset ID they belong to
+	 */
+	private void findChildren(EveAsset<EveAsset<?>> asset, Map<Long, ArrayList<EveAsset<EveAsset<?>>>> childAssetLists)
+	{
+		if (childAssetLists.get(asset.getItemID()) == null) return;
+		else
+		{
+			for (EveAsset<EveAsset<?>> childAsset : childAssetLists.get(asset.getItemID()))
+			{
+				findChildren(childAsset, childAssetLists);
+				asset.add(childAsset);
+			}
+		}
+	}
+	
 	
 	private class CustomSQLiteOpenHelper extends SQLiteOpenHelper {
 		

@@ -1,10 +1,9 @@
 package com.zdonnell.eve.apilink.character;
 
-import java.util.Set;
+import java.util.Collection;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.beimin.eveapi.character.assetlist.AssetListParser;
 import com.beimin.eveapi.core.ApiAuth;
@@ -51,7 +50,6 @@ public class AssetsTask extends AsyncTask<Void, Void, AssetListResponse> impleme
 		this.callback = callback;
 		this.apiAuth = apiAuth;
 		
-		callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
 		cacheDatabase = new CacheDatabase(context);
 		assetsDatabase = new AssetsData(context);
 	}
@@ -135,16 +133,12 @@ public class AssetsTask extends AsyncTask<Void, Void, AssetListResponse> impleme
 
 	@Override
 	public AssetListResponse buildResponseFromDatabase() 
-	{
-		long startTimeMillis = System.currentTimeMillis();
-		
+	{		
 		AssetListResponse response = new AssetListResponse();
 		
-		Set<EveAsset<EveAsset<?>>> assets = assetsDatabase.getAssets(apiAuth.getCharacterID().intValue());
+		Collection<EveAsset<EveAsset<?>>> assets = assetsDatabase.getAssets(apiAuth.getCharacterID().intValue());
 		for (EveAsset<EveAsset<?>> asset : assets) response.add(asset);
-		
-		Log.d("TIME TO lOAD ASSETS", (System.currentTimeMillis() - startTimeMillis) + " ms");
-		
+				
 		return response;
 	}
 }
