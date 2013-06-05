@@ -2,6 +2,7 @@ package com.zdonnell.eve.character.detail.skills;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -278,6 +279,8 @@ public class SkillsFragment extends DetailFragment {
         	
         	skillTreeTrainedSkills = new ApiSkillGroup[groupsWithSkillsTrained.size()];
         	groupsWithSkillsTrained.toArray(skillTreeTrainedSkills);
+        	
+        	Arrays.sort(skillTreeTrainedSkills, new SkillsSort.SkillGroupAlpha());
         }
 
         
@@ -291,14 +294,24 @@ public class SkillsFragment extends DetailFragment {
 		public Object getChild(int groupPosition, int childPosition) 
 		{
 			ApiSkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
-			return skillTreeType[groupPosition].getSkills().toArray()[childPosition];
+			com.beimin.eveapi.eve.skilltree.ApiSkill[] groupSkills = new com.beimin.eveapi.eve.skilltree.ApiSkill[skillTreeType[groupPosition].getSkills().size()];
+			skillTreeType[groupPosition].getSkills().toArray(groupSkills);
+			
+			Arrays.sort(groupSkills, new SkillsSort.SkillInfoAlpha());
+			
+			return groupSkills[childPosition];
 		}
 
 		@Override
 		public long getChildId(int groupPosition, int childPosition) 
 		{
 			ApiSkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
-			com.beimin.eveapi.eve.skilltree.ApiSkill childSkill = (com.beimin.eveapi.eve.skilltree.ApiSkill) skillTreeType[groupPosition].getSkills().toArray()[childPosition];
+			com.beimin.eveapi.eve.skilltree.ApiSkill[] groupSkills = new com.beimin.eveapi.eve.skilltree.ApiSkill[skillTreeType[groupPosition].getSkills().size()];
+			skillTreeType[groupPosition].getSkills().toArray(groupSkills);
+			
+			Arrays.sort(groupSkills, new SkillsSort.SkillInfoAlpha());
+			
+			com.beimin.eveapi.eve.skilltree.ApiSkill childSkill = groupSkills[childPosition];
 			
 			return childSkill.getTypeID();
 		}
