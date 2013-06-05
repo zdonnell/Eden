@@ -4,12 +4,10 @@ import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,12 +17,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.zdonnell.eve.api.APICallback;
-import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.ImageService;
-import com.zdonnell.eve.api.ImageService.IconObtainedCallback;
-import com.zdonnell.eve.api.account.Account;
-import com.zdonnell.eve.api.account.EveCharacter;
+import com.beimin.eveapi.account.characters.CharactersResponse;
+import com.beimin.eveapi.account.characters.EveCharacter;
+import com.beimin.eveapi.core.ApiAuth;
+import com.beimin.eveapi.core.ApiAuthorization;
+import com.beimin.eveapi.exception.ApiException;
+import com.squareup.picasso.Picasso;
+import com.zdonnell.eve.apilink.APIExceptionCallback;
+import com.zdonnell.eve.apilink.account.Account;
+import com.zdonnell.eve.helpers.ImageURL;
 
 public class AddAPIDialog extends DialogFragment 
 {
@@ -111,18 +112,14 @@ public class AddAPIDialog extends DialogFragment
 			button.setEnabled(valid);
 		}
 	}
-	
-	APICredentials[] keys;
-	
+		
 	SparseArray<ArrayList<EveCharacter>> characters = new SparseArray<ArrayList<EveCharacter>>();
-	
-	CharacterDB charDB;
-	
+		
 	boolean refreshRequired = false, passedKey = false;
 	
-	int passedKeyID;
+	int keyID;
 	
-	String passedVCode;
+	String vCode;
 	
 	boolean[] loadCharAsEnabled = new boolean[3];
 	
@@ -130,17 +127,12 @@ public class AddAPIDialog extends DialogFragment
 	
 	private Button getCharsButton, addCharsButton;
 	
-	APICredentials loadedCredentials;
-	
-	public AddAPIDialog()
-	{
-		
-	}
+	private ApiAuth<?> apiAuth;
 	
 	public AddAPIDialog setKey(int keyID, String vCode)
 	{
-		passedKeyID = keyID;
-		passedVCode = vCode;
+		this.keyID = keyID;
+		this.vCode = vCode;
 		
 		passedKey = true;
 		
@@ -171,8 +163,8 @@ public class AddAPIDialog extends DialogFragment
 			@Override
 			public void onClick(View v)
 			{
-				passedKeyID = Integer.parseInt(keyIDField.getText().toString());
-				passedVCode = vCodeField.getText().toString();
+				keyID = Integer.parseInt(keyIDField.getText().toString());
+				vCode = vCodeField.getText().toString();
 				
 				keyIDField.setEnabled(false);
 				vCodeField.setEnabled(false);
@@ -193,9 +185,7 @@ public class AddAPIDialog extends DialogFragment
 				AddAPIDialog.this.dismiss();
 			}
 		});
-		
-		charDB = new CharacterDB(getActivity());
-		
+				
 		if (passedKey)
 		{	
 			keyIDField.setVisibility(View.GONE);
@@ -213,18 +203,17 @@ public class AddAPIDialog extends DialogFragment
 	{
 		dynamicContentArea.removeAllViews();
 		
+		// All characters are set to "enabled" status
 		loadCharAsEnabled[0] = loadCharAsEnabled[1] = loadCharAsEnabled[2] = true;
 		
-		final Account newCreds = new Account(passedKeyID, passedVCode, getActivity());
-		loadedCredentials = new APICredentials(passedKeyID, passedVCode);
-		
-		newCreds.characters(new APICallback<ArrayList<EveCharacter>>(null) 
+		apiAuth = new ApiAuthorization(keyID, vCode);
+		new Account(apiAuth).getCharacters(new APIExceptionCallback<CharactersResponse>(null) 
 		{
 			@Override
-			public void onUpdate(ArrayList<EveCharacter> updatedData) 
-			{				
+			public void onUpdate(CharactersResponse response) 
+			{
 				int charIndex = 0;
-				for (EveCharacter character : updatedData) 
+				for (EveCharacter character : response.getAll()) 
 				{
 					getCharsButton.setVisibility(View.GONE);
 					addCharsButton.setVisibility(View.VISIBLE);
@@ -238,16 +227,9 @@ public class AddAPIDialog extends DialogFragment
 					final ImageView characterIcon = (ImageView) characterTile.findViewById(R.id.characters_add_characters_character_tile_image);
 					final TextView characterName = (TextView) characterTile.findViewById(R.id.characters_add_characters_character_tile_name);
 					
-					characterName.setText(character.name);
+					characterName.setText(character.getName());
 					
-					ImageService.getInstance(getActivity()).getPortraits(new IconObtainedCallback() 
-					{
-						@Override
-						public void iconsObtained(SparseArray<Bitmap> bitmaps) 
-						{
-							characterIcon.setImageBitmap(bitmaps.valueAt(0));
-						}						
-					}, true, character.charID);
+					Picasso.with(AddAPIDialog.this.getActivity()).load(ImageURL.forChar((int) character.getCharacterID())).placeholder(R.drawable.unkown_portrait).into(characterIcon);
 					
 					characterTile.setOnClickListener(new View.OnClickListener() 
 					{
@@ -263,14 +245,25 @@ public class AddAPIDialog extends DialogFragment
 					++charIndex;
 				}
 			}
+
+			@Override
+			public void onError(CharactersResponse response, ApiException exception) 
+			{
+				// TODO add UI indication that response failed
+			}
 		});
 	}
 	
+	/**
+	 * Saves all characters to the characters database
+	 */
 	public void saveCharacters()
 	{
+		CharacterDB charDB = new CharacterDB(getActivity());
+		
 		for (int i = 0; i < 3; i++)
 		{
-			if (loadedCharacters[i] != null) charDB.addCharacter(loadedCharacters[i], loadedCredentials, loadCharAsEnabled[i]);
+			if (loadedCharacters[i] != null) charDB.addCharacter(loadedCharacters[i], apiAuth, loadCharAsEnabled[i]);
 		}
 	}
 }

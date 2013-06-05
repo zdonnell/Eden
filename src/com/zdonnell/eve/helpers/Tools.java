@@ -46,7 +46,24 @@ public class Tools {
 	}
 	
 	/**
-	 * Converts a tiem value into the specified String representation
+	 * Check and see how much time until the UTC Time string provided
+	 * 
+	 * @param UTCString the time to check against in the format yyyy-MM-dd HH:mm:ss
+	 * @return the time until the UTC Time specified in milliseconds
+	 * @throws ParseException
+	 */
+	public static long timeUntilUTCTime(Date time)
+	{
+		Calendar now = Calendar.getInstance();
+		Calendar then =  Calendar.getInstance();
+		
+		then.setTime(time);
+		
+		return (then.getTimeInMillis() - now.getTimeInMillis());
+	}
+	
+	/**
+	 * Converts a time value into the specified String representation
 	 * 
 	 * @param millis the time in milliseconds to format
 	 * @return a string representation of the time, fomatted xxd xxh xxm xxs

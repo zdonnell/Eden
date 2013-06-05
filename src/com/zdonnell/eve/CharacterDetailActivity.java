@@ -1,11 +1,12 @@
 package com.zdonnell.eve;
 
+import java.util.Locale;
+
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -18,30 +19,23 @@ import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MenuItem.OnActionExpandListener;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
-import android.widget.ImageView;
 import android.widget.SearchView;
-import android.widget.SearchView.OnCloseListener;
 import android.widget.SearchView.OnQueryTextListener;
-import android.widget.TextView;
 
-import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.character.APICharacter;
-import com.zdonnell.eve.character.detail.AttributesFragment;
 import com.zdonnell.eve.character.detail.DetailFragment;
-import com.zdonnell.eve.character.detail.InventoryListFragment;
 import com.zdonnell.eve.character.detail.InventorySort;
-import com.zdonnell.eve.character.detail.ParentAssetsFragment;
-import com.zdonnell.eve.character.detail.SkillQueueFragment;
-import com.zdonnell.eve.character.detail.SkillsFragment;
-import com.zdonnell.eve.character.detail.WalletFragment;
+import com.zdonnell.eve.character.detail.assets.InventoryListFragment;
+import com.zdonnell.eve.character.detail.assets.ParentAssetsFragment;
+import com.zdonnell.eve.character.detail.attributes.AttributesFragment;
+import com.zdonnell.eve.character.detail.queue.SkillQueueFragment;
+import com.zdonnell.eve.character.detail.skills.SkillsFragment;
+import com.zdonnell.eve.character.detail.wallet.WalletFragment;
 
 public class CharacterDetailActivity extends BaseActivity implements ActionBar.TabListener {
 
@@ -56,17 +50,11 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 	}
     
     private int searchOpenedAtLevel;
-
-	private APICharacter assembledChar;
-	
-	private CharacterDetailActivity activity;
-	
+		
 	public SearchView searchView;
 	
 	private String characterName;
-	
-	public CharacterDetailCache dataCache = new CharacterDetailCache();
-	
+		
 	boolean hasLoaded = false;
 		
     /**
@@ -91,17 +79,18 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         setContentView(R.layout.character_detail);
          
     	setSlidingActionBarEnabled(true);
-    	
-    	String[] characterInfo = getIntent().getExtras().getStringArray("character");
-    	assembledChar = new APICharacter(new APICredentials(Integer.valueOf(characterInfo[1]), characterInfo[2]), Integer.valueOf(characterInfo[0]), getBaseContext());
-    
+    	    
         final ActionBar actionBar = getActionBar();
-        activity = this;
         
-        characterName = new CharacterDB(getBaseContext()).getCharacterName(Integer.valueOf(characterInfo[0]));
+    	String[] characterInfo = getIntent().getExtras().getStringArray("character");
+        
+        CharacterDB charDB = new CharacterDB(getBaseContext());
+        characterName = charDB.getCharacterName(Integer.valueOf(characterInfo[0]));
+        String corpName = charDB.getCorpName(Integer.valueOf(characterInfo[0]));
         
         actionBar.setTitle(characterName);
-                
+        actionBar.setSubtitle(corpName);
+        
         // Create the adapter that will return a fragment for each of the three primary sections
         // of the app.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -127,8 +116,6 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 
             }
         });
-
-    	LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);    	
         
         mViewPager.setCurrentItem(getIntent().getExtras().getInt("position"));
     }
@@ -178,10 +165,12 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         {
         	Fragment fragment;
         	
+        	String[] characterInfo = getIntent().getExtras().getStringArray("character");
+        	
         	Bundle characterDetails = new Bundle();
-        	characterDetails.putInt("keyID", assembledChar.getCredentials().keyID);
-        	characterDetails.putString("vCode", assembledChar.getCredentials().verificationCode);
-        	characterDetails.putInt("characterID", assembledChar.id());
+        	characterDetails.putInt("keyID", Integer.valueOf(characterInfo[1]));
+        	characterDetails.putString("vCode", characterInfo[2]);
+        	characterDetails.putInt("characterID", Integer.valueOf(characterInfo[0]));
         	characterDetails.putString("characterName", characterName);
         	
         	switch (i)
@@ -220,7 +209,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
         @Override
         public CharSequence getPageTitle(int position) 
         {
-            return CharacterSheetFragment.sheetItems[position].toUpperCase();
+            return CharacterSheetFragment.sheetItems[position].toUpperCase(Locale.US);
         }
     }
     
@@ -250,7 +239,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
     		if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
     		{
     			if (searchOpenedAtLevel < mSectionsPagerAdapter.assetsFragment().parentStack.size() && !searchView.isIconified())
-	    		{    				
+    			{
     				mSectionsPagerAdapter.assetsFragment().backKeyPressed();
     				return true;
 	    		}
@@ -414,7 +403,7 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 		               {
 		            	   if (mViewPager.getCurrentItem() == CharacterSheetFragment.SKILLS)
 			               {
-			               		mSectionsPagerAdapter.skillsFragment().updateSkillDisplay(which);
+			               		mSectionsPagerAdapter.skillsFragment().updateSkillDisplayMode(which);
 			               }
 		               }
 		           }
@@ -507,19 +496,19 @@ public class CharacterDetailActivity extends BaseActivity implements ActionBar.T
 		switch (mViewPager.getCurrentItem())
 		{
 		case CharacterSheetFragment.ASSETS:
-			((DetailFragment) mSectionsPagerAdapter.assetsFragment()).refresh();
+			((DetailFragment) mSectionsPagerAdapter.assetsFragment()).loadData();
 			break;
 		case CharacterSheetFragment.ATTRIBUTES:
-			((DetailFragment) mSectionsPagerAdapter.attributesFragment()).refresh();
+			((DetailFragment) mSectionsPagerAdapter.attributesFragment()).loadData();
 			break;
 		case CharacterSheetFragment.SKILL_QUEUE:
-			((DetailFragment) mSectionsPagerAdapter.skillQueueFragment()).refresh();
+			((DetailFragment) mSectionsPagerAdapter.skillQueueFragment()).loadData();
 			break;
 		case CharacterSheetFragment.SKILLS:
-			((DetailFragment) mSectionsPagerAdapter.skillsFragment()).refresh();
+			((DetailFragment) mSectionsPagerAdapter.skillsFragment()).loadData();
 			break;
 		case CharacterSheetFragment.WALLET:
-			((DetailFragment) mSectionsPagerAdapter.walletFragment()).refresh();
+			((DetailFragment) mSectionsPagerAdapter.walletFragment()).loadData();
 			break;
 		}
 	}

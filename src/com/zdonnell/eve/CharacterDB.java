@@ -10,8 +10,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.zdonnell.eve.api.APICredentials;
-import com.zdonnell.eve.api.account.EveCharacter;
+import com.beimin.eveapi.account.characters.EveCharacter;
+import com.beimin.eveapi.core.ApiAuth;
+import com.beimin.eveapi.core.ApiAuthorization;
+import com.zdonnell.eve.apilink.account.EdenEveCharacter;
 
 public class CharacterDB {
 	// the Activity or Application that is creating an object from this class.
@@ -38,7 +40,6 @@ public class CharacterDB {
 	public final static String CHAR_TABLE_ENABLED = "char_enabled";
 	public final static String CHAR_TABLE_QUEUETIME = "char_queuetime";
 
-
 	public CharacterDB(Context context) {
 		this.context = context;
 
@@ -46,17 +47,16 @@ public class CharacterDB {
 		CustomSQLiteOpenHelper helper = new CustomSQLiteOpenHelper(context);
 		this.db = helper.getWritableDatabase();
 	}
-
 	
-	public void addCharacter(EveCharacter character, APICredentials credentials, boolean enabled) {
+	public void addCharacter(EveCharacter character, ApiAuth<?> apiAuth, boolean enabled) {
 		// this is a key value pair holder used by android's SQLite functions
 		ContentValues values = new ContentValues();
-		values.put(CHAR_TABLE_NAME, character.name);
-		values.put(CHAR_TABLE_EVEID, character.charID);
-		values.put(CHAR_TABLE_CORPNAME, character.corpName);
-		values.put(CHAR_TABLE_CORPID, character.corpID);
-		values.put(CHAR_TABLE_KEYID, credentials.keyID);
-		values.put(CHAR_TABLE_VCODE, credentials.verificationCode);
+		values.put(CHAR_TABLE_NAME, character.getName());
+		values.put(CHAR_TABLE_EVEID, character.getCharacterID());
+		values.put(CHAR_TABLE_CORPNAME, character.getCorporationName());
+		values.put(CHAR_TABLE_CORPID, character.getCorporationID());
+		values.put(CHAR_TABLE_KEYID, apiAuth.getKeyID());
+		values.put(CHAR_TABLE_VCODE, apiAuth.getVCode());
 		values.put(CHAR_TABLE_ENABLED, enabled ? "1" : "0");
 		values.put(CHAR_TABLE_QUEUETIME, 0);
 
@@ -73,7 +73,6 @@ public class CharacterDB {
 
 	public Cursor allCharacters() 
 	{
-
 		// this is a database call that creates a "cursor" object.
 		// the cursor object store the information collected from the
 		// database and is used to iterate through the data.
@@ -96,7 +95,6 @@ public class CharacterDB {
 	
 	public Cursor getEnabledCharacters() 
 	{
-
 		// this is a database call that creates a "cursor" object.
 		// the cursor object store the information collected from the
 		// database and is used to iterate through the data.
@@ -117,9 +115,8 @@ public class CharacterDB {
 		return cursor;
 	}
 	
-	public EveCharacter[] getEnabledCharactersAsArray() 
+	public EdenEveCharacter[] getEnabledCharactersAsArray() 
 	{
-
 		// this is a database call that creates a "cursor" object.
 		// the cursor object store the information collected from the
 		// database and is used to iterate through the data.
@@ -135,15 +132,24 @@ public class CharacterDB {
 			e.printStackTrace();
 		}
 		
-		ArrayList<EveCharacter> charArrayList = new ArrayList<EveCharacter>(cursor.getCount());
+		ArrayList<EdenEveCharacter> charArrayList = new ArrayList<EdenEveCharacter>(cursor.getCount());
 		while (cursor.moveToNext())
 		{
-			EveCharacter newChar = new EveCharacter(cursor.getString(1), cursor.getInt(0), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getString(5));
+			EdenEveCharacter newChar = new EdenEveCharacter();
+			
+			newChar.setCharacterID(cursor.getInt(0));
+			newChar.setName(cursor.getString(1));
+			newChar.setCorporationID(cursor.getInt(3));
+			newChar.setCorporationName(cursor.getString(2));
+			
+			ApiAuthorization apiAuth = new ApiAuthorization(cursor.getInt(4), cursor.getInt(0), cursor.getString(5));
+			newChar.setApiAuth(apiAuth);
 			newChar.setQueueTimeRemaining(cursor.getLong(6));
+			
 			charArrayList.add(newChar);
 		}
 		
-		EveCharacter[] charArray = new EveCharacter[charArrayList.size()];
+		EdenEveCharacter[] charArray = new EdenEveCharacter[charArrayList.size()];
 		charArrayList.toArray(charArray);
 		
 		cursor.close();
@@ -155,9 +161,20 @@ public class CharacterDB {
 	public String getCharacterName(int characterID)
 	{
 		String query = "SELECT " + CHAR_TABLE_NAME + " FROM " + CHAR_TABLE + " WHERE " + CHAR_TABLE_EVEID + "=?";
+				
+		Cursor c = db.rawQuery(query, new String[]{ String.valueOf(characterID) });
 		
-		Log.d("TEST VALUE", "IS: " + String.valueOf(characterID));
+		String name = "";
+		if (c.moveToFirst()) name = c.getString(0);
+		c.close();
 		
+		return name;
+	}
+	
+	public String getCorpName(int characterID)
+	{
+		String query = "SELECT " + CHAR_TABLE_CORPNAME + " FROM " + CHAR_TABLE + " WHERE " + CHAR_TABLE_EVEID + "=?";
+				
 		Cursor c = db.rawQuery(query, new String[]{ String.valueOf(characterID) });
 		
 		String name = "";

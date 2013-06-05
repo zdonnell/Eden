@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    
     <color name="transDarkGrey">#99000000</color>
+    
+    <color name="primary_accent_color">#FFFFBB33</color>
+    <color name="secondary_accent_color">#FFFF8800</color>
+    
 </resources>
