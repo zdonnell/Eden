@@ -236,7 +236,6 @@ public class SkillQueueFragment extends DetailFragment {
 			
 			rowView.setOnLongClickListener(new View.OnLongClickListener() 
 			{	
-				@Override
 				public boolean onLongClick(View v) 
 				{
 	            	startActivity(intent);

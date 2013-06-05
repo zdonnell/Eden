@@ -11,7 +11,6 @@ public class BasicOnTouchListener implements View.OnTouchListener
 {
 	int originalBackground;
 	
-	@Override
 	public boolean onTouch(View v, MotionEvent event) 
 	{
 		if (event.getAction() == MotionEvent.ACTION_DOWN)

@@ -128,13 +128,11 @@ public class CharacterInfoTask extends AsyncTask<Void, Void, CharacterInfoRespon
 		callback.onUpdate(cachedData);
 	}
 	
-	@Override
 	public int requestTypeHash() 
 	{
 		return ApiPath.CHARACTER.getPath().concat(ApiPage.CHARACTER_INFO.getPage()).hashCode();
 	}
 
-	@Override
 	public CharacterInfoResponse buildResponseFromDatabase() 
 	{	
 		return new CharacterInfoData(context).getCharacterInfo(apiAuth.getCharacterID().intValue());

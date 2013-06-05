@@ -282,15 +282,12 @@ public class SkillsFragment extends DetailFragment {
         	
         	Arrays.sort(skillTreeTrainedSkills, new SkillsSort.SkillGroupAlpha());
         }
-
         
-		@Override
 		public boolean areAllItemsEnabled() {
 			// TODO Auto-generated method stub
 			return false;
 		}
 
-		@Override
 		public Object getChild(int groupPosition, int childPosition) 
 		{
 			ApiSkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
@@ -302,7 +299,6 @@ public class SkillsFragment extends DetailFragment {
 			return groupSkills[childPosition];
 		}
 
-		@Override
 		public long getChildId(int groupPosition, int childPosition) 
 		{
 			ApiSkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
@@ -316,7 +312,6 @@ public class SkillsFragment extends DetailFragment {
 			return childSkill.getTypeID();
 		}
 
-		@Override
 		public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) 
 		{
 			View preparedView;
@@ -332,7 +327,6 @@ public class SkillsFragment extends DetailFragment {
 			
 			preparedView.setOnLongClickListener(new View.OnLongClickListener() 
 			{	
-				@Override
 				public boolean onLongClick(View v) 
 				{
 	            	startActivity(intent);
@@ -407,47 +401,40 @@ public class SkillsFragment extends DetailFragment {
 			
 		}
 		
-		@Override
 		public int getChildrenCount(int groupPosition) 
 		{
 			ApiSkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
 			return skillTreeType[groupPosition].getSkills().size();
 		}
 
-		@Override
 		public long getCombinedChildId(long groupId, long childId)
 		{
 			return childId;
 		}
 
-		@Override
 		public long getCombinedGroupId(long groupId) 
 		{
 			return groupId;
 		}
 
-		@Override
 		public Object getGroup(int groupPosition) 
 		{
 			ApiSkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
 			return skillTreeType[groupPosition];
 		}
 
-		@Override
 		public int getGroupCount() 
 		{
 			ApiSkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
 			return skillTreeType.length;
 		}
 
-		@Override
 		public long getGroupId(int groupPosition) 
 		{
 			ApiSkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
 			return skillTreeType[groupPosition].getGroupID();
 		}
 
-		@Override
 		public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) 
 		{
 			View preparedView;
@@ -511,43 +498,36 @@ public class SkillsFragment extends DetailFragment {
 			}
 		}
 
-		@Override
 		public boolean hasStableIds() 
 		{
 			return true;
 		}
 
-		@Override
 		public boolean isChildSelectable(int groupPosition, int childPosition) 
 		{
 			return false;
 		}
 
-		@Override
 		public boolean isEmpty() 
 		{
 			return skillTree.length == 0;
 		}
 
-		@Override
 		public void onGroupCollapsed(int groupPosition) 
 		{
 			
 		}
 
-		@Override
 		public void onGroupExpanded(int groupPosition) 
 		{
 						
 		}
 
-		@Override
 		public void registerDataSetObserver(DataSetObserver observer) 
 		{
 
 		}
 
-		@Override
 		public void unregisterDataSetObserver(DataSetObserver observer) 
 		{
 			

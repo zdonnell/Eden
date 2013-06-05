@@ -23,7 +23,6 @@ public class CharacterSort {
 
 	public static class Alpha implements Comparator<EveCharacter>
 	{
-		@Override
 		public int compare(EveCharacter lhs, EveCharacter rhs) 
 		{
 			return lhs.getName().compareTo(rhs.getName());
@@ -32,7 +31,6 @@ public class CharacterSort {
 	
 	public static class TrainingTimeRemaining implements Comparator<EdenEveCharacter>
 	{		
-		@Override
 		public int compare(EdenEveCharacter lhs, EdenEveCharacter rhs)
 		{
 			Long lhsTimeRemaining = lhs.getQueueTimeRemaining();

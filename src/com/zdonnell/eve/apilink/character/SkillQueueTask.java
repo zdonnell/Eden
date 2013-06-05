@@ -128,13 +128,11 @@ public class SkillQueueTask extends AsyncTask<Void, Void, SkillQueueResponse> im
 		callback.onUpdate(cachedData);
 	}
 	
-	@Override
 	public int requestTypeHash() 
 	{
 		return ApiPath.CHARACTER.getPath().concat(ApiPage.SKILL_QUEUE.getPage()).hashCode();
 	}
 
-	@Override
 	public SkillQueueResponse buildResponseFromDatabase() 
 	{
 		SkillQueueResponse response = new SkillQueueResponse();

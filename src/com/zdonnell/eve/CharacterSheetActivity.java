@@ -57,7 +57,6 @@ public class CharacterSheetActivity extends NavDrawerActivity implements Charact
         
     }
 
-    @Override
     public void onItemSelected(int id) 
     {
         if (mTwoPane) 

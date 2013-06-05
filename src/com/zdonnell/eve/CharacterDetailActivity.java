@@ -118,19 +118,18 @@ public class CharacterDetailActivity extends NavDrawerActivity implements Action
         mViewPager.setCurrentItem(getIntent().getExtras().getInt("position"));
     }
 	
-    @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    	
     }
 
-    @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
         invalidateOptionsMenu();
     }
 
-    @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    	
     }
     
 	/**
@@ -299,8 +298,6 @@ public class CharacterDetailActivity extends NavDrawerActivity implements Action
     	MenuItem searchViewMenuItem = menu.getItem(0);
     	searchView.setOnQueryTextListener(new SearchQueryUpdatedListener());
     	searchViewMenuItem.setOnActionExpandListener(new OnActionExpandListener(){
-
-			@Override
 			public boolean onMenuItemActionCollapse(MenuItem item) 
 			{
 				if (mViewPager.getCurrentItem() == CharacterSheetFragment.ASSETS)
@@ -311,7 +308,6 @@ public class CharacterDetailActivity extends NavDrawerActivity implements Action
 				return true;
 			}
 
-			@Override
 			public boolean onMenuItemActionExpand(MenuItem item) 
 			{
 				searchOpenedAtLevel = mSectionsPagerAdapter.assetsFragment().parentStack.size();
@@ -322,7 +318,6 @@ public class CharacterDetailActivity extends NavDrawerActivity implements Action
     	            	
     	searchView.setOnKeyListener(new OnKeyListener() 
     	{
-			@Override
 			public boolean onKey(View view, int keyCode, KeyEvent arg2) 
 			{									
 				if (keyCode == KeyEvent.KEYCODE_BACK)
@@ -464,14 +459,12 @@ public class CharacterDetailActivity extends NavDrawerActivity implements Action
     
     private class SearchQueryUpdatedListener implements OnQueryTextListener
     {
-		@Override
 		public boolean onQueryTextChange(String searchString) 
 		{			
 			ifStillOnAssetsSearch(searchString);
 			return false;
 		}
 
-		@Override
 		public boolean onQueryTextSubmit(String searchString) 
 		{
 			ifStillOnAssetsSearch(searchString);

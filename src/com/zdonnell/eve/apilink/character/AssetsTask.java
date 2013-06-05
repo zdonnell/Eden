@@ -125,13 +125,11 @@ public class AssetsTask extends AsyncTask<Void, Void, AssetListResponse> impleme
 		callback.onUpdate(cachedData);
 	}
 	
-	@Override
 	public int requestTypeHash() 
 	{
 		return ApiPath.CHARACTER.getPath().concat(ApiPage.ASSET_LIST.getPage()).hashCode();
 	}
 
-	@Override
 	public AssetListResponse buildResponseFromDatabase() 
 	{		
 		AssetListResponse response = new AssetListResponse();

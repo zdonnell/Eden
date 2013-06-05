@@ -41,7 +41,6 @@ public class AddAPIDialog extends DialogFragment
 			// Assume invalid at start
 			private boolean valid = false;
 			
-			@Override
 			public void afterTextChanged(Editable editable)
 			{
 				// Text is valid when the string isn't empty
@@ -50,13 +49,11 @@ public class AddAPIDialog extends DialogFragment
 				EnableButtonMultiWatcher.this.check();
 			}
 
-			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count, int after)
 			{
 				// Do nothing
 			}
 
-			@Override
 			public void onTextChanged(CharSequence s, int start, int before, int count)
 			{
 				// Do nothing
@@ -160,7 +157,6 @@ public class AddAPIDialog extends DialogFragment
 		
 		getCharsButton.setOnClickListener(new View.OnClickListener() 
 		{
-			@Override
 			public void onClick(View v)
 			{
 				keyID = Integer.parseInt(keyIDField.getText().toString());
@@ -177,7 +173,6 @@ public class AddAPIDialog extends DialogFragment
 		
 		addCharsButton.setOnClickListener(new View.OnClickListener() 
 		{			
-			@Override
 			public void onClick(View v) 
 			{
 				saveCharacters();
@@ -233,7 +228,6 @@ public class AddAPIDialog extends DialogFragment
 					
 					characterTile.setOnClickListener(new View.OnClickListener() 
 					{
-						@Override
 						public void onClick(View arg0) 
 						{
 							loadCharAsEnabled[finalCharIndex] = !loadCharAsEnabled[finalCharIndex];

@@ -57,13 +57,11 @@ public class ConquerableStationsTask extends AsyncTask<Void, Void, StationListRe
 		}
     }
 	
-	@Override
 	public int requestTypeHash() 
 	{
 		return ApiPath.EVE.getPath().concat(ApiPage.CONQUERABLE_STATION_LIST.getPage()).hashCode();
 	}
 
-	@Override
 	public StationListResponse buildResponseFromDatabase() 
 	{
 		return null;

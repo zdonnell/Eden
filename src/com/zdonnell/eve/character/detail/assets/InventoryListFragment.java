@@ -84,20 +84,17 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 	
 	private int[] savedScrollPoint;
 	
-	@Override
 	public void setParent(ParentAssetsFragment parent)
 	{
 		this.parentFragment = parent;
 	}
 	
-	@Override
 	public void assetsUpdated(AssetsEntity[] assets) 
 	{			
 		this.currentItemList = assets;
 		if (isFragmentCreated) updateView();
 	}
 	
-	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
     {
     	if (parentFragment == null) parentFragment = (ParentAssetsFragment) getParentFragment();
@@ -308,7 +305,6 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			
 			itemView.setOnClickListener(new View.OnClickListener() 
 			{	
-				@Override
 				public void onClick(View v) 
 				{
 					if (assetItem.containsAssets()) 
@@ -334,7 +330,6 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			
 			itemView.setOnLongClickListener(new View.OnLongClickListener() 
 			{	
-				@Override
 				public boolean onLongClick(View v) 
 				{
 	            	startActivity(intent);
@@ -450,7 +445,6 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 		}
 	}
 
-	@Override
 	public SparseArray<String> getNames() 
 	{		
 		SparseArray<TypeInfo> typeInfo = parentFragment.getTypeInfo();
@@ -464,27 +458,23 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 		return typeNames;
 	}
 
-	@Override
 	public SparseArray<Float> getValues() 
 	{
 		return parentFragment.getPrices();
 	}
 
-	@Override
 	public void obtainedPrices() 
 	{
 		adapter.obtainedTypeValues();
 		calculatePrices(currentItemList);
 	}
 
-	@Override
 	public void obtainedTypeInfo() 
 	{
 		adapter.obtainedTypeNames();
 		updateParentInfo();
 	}
 
-	@Override
 	public void updateLayoutStyle(int type) 
 	{
 		setupMainView(rootView, type);
@@ -492,13 +482,11 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 		updateView();
 	}
 
-	@Override
 	public void obtainedStationInfo() 
 	{
 		updateParentInfo();
 	}
 
-	@Override
 	public int[] getScrollPoint() 
 	{
 		int index = absListView.getFirstVisiblePosition();
@@ -508,7 +496,6 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 		return new int[] { index, top };
 	}
 
-	@Override
 	public void setScrollPoint(int[] scrollPoint) 
 	{
 		if (adapter != null)

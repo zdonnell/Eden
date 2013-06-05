@@ -133,13 +133,11 @@ public class CharacterSheetTask extends AsyncTask<Void, Void, CharacterSheetResp
 		callback.onUpdate(cachedData);
 	}
 	
-	@Override
 	public int requestTypeHash() 
 	{
 		return ApiPath.CHARACTER.getPath().concat(ApiPage.CHARACTER_SHEET.getPage()).hashCode();
 	}
 
-	@Override
 	public CharacterSheetResponse buildResponseFromDatabase() 
 	{
 		CharacterSheetResponse response = new CharacterSheetData(context).getCharacterSheet(apiAuth.getCharacterID().intValue());

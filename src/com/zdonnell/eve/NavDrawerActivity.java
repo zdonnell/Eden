@@ -187,7 +187,6 @@ public abstract class NavDrawerActivity extends FragmentActivity implements ILoa
 			convertView.setOnTouchListener(new BasicOnTouchListener());
 			convertView.setOnClickListener(new View.OnClickListener() 
 			{
-				@Override
 				public void onClick(View v) 
 				{
 					Intent intent;

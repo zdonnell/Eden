@@ -28,7 +28,6 @@ public class InventorySort
 	
 	public static class Count implements Comparator<AssetsEntity>
 	{
-		@Override
 		public int compare(AssetsEntity lhs, AssetsEntity rhs) 
 		{
 			if (lhs instanceof AssetsEntity.Item)
@@ -66,7 +65,6 @@ public class InventorySort
 			this.typeNames = typeNames;
 		}
 		
-		@Override
 		public int compare(AssetsEntity lhs, AssetsEntity rhs) 
 		{
 			if (lhs instanceof AssetsEntity.Item)
@@ -112,7 +110,6 @@ public class InventorySort
 			this.values = typeValues;
 		}
 		
-		@Override
 		public int compare(AssetsEntity lhs, AssetsEntity rhs) 
 		{
 			if (lhs instanceof AssetsEntity.Item)

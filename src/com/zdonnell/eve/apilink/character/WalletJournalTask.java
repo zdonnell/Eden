@@ -148,13 +148,11 @@ public class WalletJournalTask extends AsyncTask<Void, Void, WalletJournalRespon
 		callback.onUpdate(cachedData);
 	}
 	
-	@Override
 	public int requestTypeHash() 
 	{
 		return ApiPath.CHARACTER.getPath().concat(ApiPage.WALLET_JOURNAL.getPage()).hashCode();
 	}
 
-	@Override
 	public WalletJournalResponse buildResponseFromDatabase() 
 	{
 		WalletJournalResponse response = new WalletJournalResponse();

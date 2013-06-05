@@ -65,21 +65,17 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	
 	private int[] savedScrollPoint;
 
-	
-	@Override
 	public void setParent(ParentAssetsFragment parent) 
 	{
 		this.parentFragment = parent;
 	}
 	
-	@Override
 	public void assetsUpdated(AssetsEntity[] assets) 
 	{	
 		this.currentStationList = assets;
 		if (isFragmentCreated) updateListView();
 	}
 	
-	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) 
     {
 		if (parentFragment == null) parentFragment = (ParentAssetsFragment) getParentFragment();
@@ -258,7 +254,6 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 			
 			itemView.setOnClickListener(new View.OnClickListener() 
 			{	
-				@Override
 				public void onClick(View v) 
 				{
 					ArrayList<AssetsEntity> listAssets = curStation.getContainedAssets();
@@ -304,7 +299,6 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		}     
 	}
 
-	@Override
 	public SparseArray<String> getNames() 
 	{
 		SparseArray<String> stationNames = new SparseArray<String>(currentStationInfo.size());
@@ -317,7 +311,6 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		return stationNames;
 	}
 
-	@Override
 	public SparseArray<Float> getValues() 
 	{
 		SparseArray<Float> floatStationValues = new SparseArray<Float>(stationValues.size());
@@ -331,32 +324,27 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		return floatStationValues;
 	}
 
-	@Override
 	public void obtainedPrices() 
 	{
 		if (adapter != null) calculateStationValues(currentStationList);
 	}
 
-	@Override
 	public void obtainedTypeInfo() 
 	{
 		
 	}
 
-	@Override
 	public void updateLayoutStyle(int type) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void obtainedStationInfo() 
 	{
 		currentStationInfo = parentFragment.getStationInfo();
 		if (adapter != null) adapter.obtainedStationInfo();
 	}
 
-	@Override
 	public int[] getScrollPoint() 
 	{
 		int index = stationListView.getFirstVisiblePosition();
@@ -366,7 +354,6 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		return new int[] { index, top };
 	}
 
-	@Override
 	public void setScrollPoint(int[] scrollPoint) 
 	{
 		if (adapter != null)

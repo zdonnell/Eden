@@ -142,15 +142,11 @@ public class SkillTreeTask extends AsyncTask<Void, Void, SkillTreeResponse> impl
 		for (int i = 0; i < correctedSkillGroups.size(); i++) response.add(correctedSkillGroups.valueAt(i));
 	}
 
-	
-	
-	@Override
 	public int requestTypeHash() 
 	{
 		return ApiPath.EVE.getPath().concat(ApiPage.SKILL_TREE.getPage()).hashCode();
 	}
 
-	@Override
 	public SkillTreeResponse buildResponseFromDatabase() 
 	{
 		SkillTreeResponse response = new SkillTreeResponse();

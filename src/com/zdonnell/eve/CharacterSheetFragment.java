@@ -116,8 +116,8 @@ public class CharacterSheetFragment extends Fragment
     }
 
     private static Callbacks sDummyCallbacks = new Callbacks() {
-        @Override
         public void onItemSelected(int id) {
+        	
         }
     };
 
@@ -350,7 +350,6 @@ public class CharacterSheetFragment extends Fragment
 			image.setImageResource(items[position].imageID);
 			
 			preparedView.setOnClickListener(new OnClickListener() {
-				@Override
 				public void onClick(View v) {
 					 mCallbacks.onItemSelected(position);
 				}

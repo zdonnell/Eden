@@ -149,7 +149,6 @@ public class PinnedHeaderListView extends AutoScrollListView
         super.setOnItemSelectedListener(this);
     }
 
-    @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
             int totalItemCount) {
         if (mAdapter != null) {
@@ -188,7 +187,6 @@ public class PinnedHeaderListView extends AutoScrollListView
         return mSize > 0 ? 0 : super.getTopFadingEdgeStrength();
     }
 
-    @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         mScrollState = scrollState;
         if (mOnScrollListener != null) {
@@ -200,7 +198,6 @@ public class PinnedHeaderListView extends AutoScrollListView
      * Ensures that the selected item is positioned below the top-pinned headers
      * and above the bottom-pinned ones.
      */
-    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         int height = getHeight();
 
@@ -233,7 +230,6 @@ public class PinnedHeaderListView extends AutoScrollListView
         }
     }
 
-    @Override
     public void onNothingSelected(AdapterView<?> parent) {
         if (mOnItemSelectedListener != null) {
             mOnItemSelectedListener.onNothingSelected(parent);

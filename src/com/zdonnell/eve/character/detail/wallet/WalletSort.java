@@ -11,7 +11,6 @@ public class WalletSort {
 	{
 		public static class RefID implements Comparator<ApiJournalEntry>
 		{
-			@Override
 			public int compare(ApiJournalEntry lhs, ApiJournalEntry rhs) 
 			{			
 				if (lhs.getRefID() < rhs.getRefID()) return -1;
@@ -21,7 +20,6 @@ public class WalletSort {
 		
 		public static class DateTime implements Comparator<ApiJournalEntry>
 		{
-			@Override
 			public int compare(ApiJournalEntry lhs, ApiJournalEntry rhs) 
 			{			
 				// the wallet entry dateTime string is properly formatted such that
@@ -35,7 +33,6 @@ public class WalletSort {
 	{
 		public static class ID implements Comparator<ApiWalletTransaction>
 		{
-			@Override
 			public int compare(ApiWalletTransaction lhs, ApiWalletTransaction rhs) 
 			{			
 				if (lhs.getTransactionID() < rhs.getTransactionID()) return -1;
@@ -45,7 +42,6 @@ public class WalletSort {
 		
 		public static class DateTime implements Comparator<ApiWalletTransaction>
 		{
-			@Override
 			public int compare(ApiWalletTransaction lhs, ApiWalletTransaction rhs) 
 			{			
 				// the wallet entry dateTime string is properly formatted such that

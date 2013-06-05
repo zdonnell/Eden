@@ -242,7 +242,6 @@ public class APIKeysFragment extends Fragment
 		{
 			deleteIcon.setOnClickListener(new View.OnClickListener() 
 			{	
-				@Override
 				public void onClick(View v) 
 				{
 					((APIKeysActivity) getActivity()).showDeleteKeyDialog(keyID);
@@ -265,7 +264,6 @@ public class APIKeysFragment extends Fragment
 			
 			portrait.setOnClickListener(new View.OnClickListener() 		
 			{		
-				@Override
 				public void onClick(View v) 
 				{	
 					// toggle the boolean storing whether the char is enabled
