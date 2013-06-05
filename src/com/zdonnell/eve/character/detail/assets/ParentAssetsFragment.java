@@ -1,4 +1,4 @@
-package com.zdonnell.eve.character.detail;
+package com.zdonnell.eve.character.detail.assets;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +30,8 @@ import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.character.APICharacter;
 import com.zdonnell.eve.apilink.character.AssetsEntity;
+import com.zdonnell.eve.character.detail.DetailFragment;
+import com.zdonnell.eve.character.detail.InventorySort;
 import com.zdonnell.eve.priceservice.PriceService;
 import com.zdonnell.eve.staticdata.StaticData;
 import com.zdonnell.eve.staticdata.StationInfo;

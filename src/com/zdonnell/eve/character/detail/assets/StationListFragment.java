@@ -1,4 +1,4 @@
-package com.zdonnell.eve.character.detail;
+package com.zdonnell.eve.character.detail.assets;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;

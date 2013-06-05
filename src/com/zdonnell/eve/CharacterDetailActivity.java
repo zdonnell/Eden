@@ -29,9 +29,9 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 
 import com.zdonnell.eve.character.detail.DetailFragment;
-import com.zdonnell.eve.character.detail.InventoryListFragment;
 import com.zdonnell.eve.character.detail.InventorySort;
-import com.zdonnell.eve.character.detail.ParentAssetsFragment;
+import com.zdonnell.eve.character.detail.assets.InventoryListFragment;
+import com.zdonnell.eve.character.detail.assets.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.attributes.AttributesFragment;
 import com.zdonnell.eve.character.detail.queue.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.skills.SkillsFragment;
