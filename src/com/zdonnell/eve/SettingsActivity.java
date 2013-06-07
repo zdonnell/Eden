@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -58,6 +59,7 @@ public class SettingsActivity extends PreferenceActivity {
 	{
 		super.onCreate(savedInstanceState);
 		getActionBar().setDisplayHomeAsUpEnabled(true);	
+		getListView().setBackgroundColor(Color.parseColor("#151515"));
 	}
 	
 	@Override
