@@ -48,7 +48,7 @@ public class SettingsActivity extends PreferenceActivity {
 	    switch (item.getItemId())
 	    {
 	    case android.R.id.home:
-			return true;
+	    	 finish();
 	    }
 	    return true;
     }
@@ -57,8 +57,7 @@ public class SettingsActivity extends PreferenceActivity {
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
-	
+		getActionBar().setDisplayHomeAsUpEnabled(true);	
 	}
 	
 	@Override

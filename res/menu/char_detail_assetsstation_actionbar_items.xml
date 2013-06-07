@@ -11,6 +11,12 @@
           android:icon="@drawable/sort"
           android:showAsAction="ifRoom|withText"
            />
+    
+    <item android:id="@+id/settings"
+          android:icon="@drawable/settings"
+          android:title="Settings"
+          android:showAsAction="ifRoom|withText"
+          />
     <!-- <item android:id="@+id/settings"
           android:icon="@drawable/settings"
           android:title="@string/settings"

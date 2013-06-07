@@ -55,14 +55,14 @@ public class ParentAssetsFragment extends DetailFragment
                                     
 	/**
 	 * Stack of Asset sets that represent each level of assets the 
-	 * user has traversed.  Calling {@link Stack#pop} would return
-	 * and remove the last set of assets viewed before the current.
+	 * user has traversed.  Calling {@link Stack#peek} would return
+	 * the last set of assets viewed before the current.
 	 */
     public Stack<AssetsEntity[]> parentStack = new Stack<AssetsEntity[]>();
     
     /**
      * Stack of AssetEntities that representing the hierarchy of
-     * assets that were opened.  Calling {@link Stack#pop} would return
+     * assets that were opened.  Calling {@link Stack#peek} would return
      * the AssetEntity that contains the currently viewed assets.
      */
     Stack<AssetsEntity> parentItemStack = new Stack<AssetsEntity>();

@@ -38,30 +38,30 @@ public abstract class NavDrawerActivity extends FragmentActivity implements ILoa
     private final static int CHARS = 0;
 	//private final static int CORPS = 1;
 	private final static int ACCOUNTS = 1;
-	private final static int SETTINGS = 2;
+	//private final static int SETTINGS = 2;
 	
 	/**
 	 * Array of Strings for the menu item titles
 	 */
-	private static String[] mainMenuItems = new String[3];
+	private static String[] mainMenuItems = new String[2];
 	static
 	{
 		mainMenuItems[CHARS] = "Characters";
 		//mainMenuItems[CORPS] = "Corporations";
 		mainMenuItems[ACCOUNTS] = "API Keys";
-		mainMenuItems[SETTINGS] = "Settings";
+		//mainMenuItems[SETTINGS] = "Settings";
 	}
 	
 	/**
 	 * Array of Resource IDs for the menu item icons
 	 */
-	private static int[] ItemImageResources = new int[3];
+	private static int[] ItemImageResources = new int[2];
 	static
 	{
 		ItemImageResources[CHARS] = R.drawable.characters_icon;
 		//ItemImageResources[CORPS] = R.drawable.corporations_icon;
 		ItemImageResources[ACCOUNTS] = R.drawable.accounts_icon;
-		ItemImageResources[SETTINGS] = R.drawable.settings_icon;
+		//ItemImageResources[SETTINGS] = R.drawable.settings_icon;
 	}
 	
 	public NavDrawerActivity(int titleRes) {
@@ -132,6 +132,11 @@ public abstract class NavDrawerActivity extends FragmentActivity implements ILoa
 		case R.id.refresh_loading:
 			refresh();
 			break;
+		case R.id.settings:
+			Intent intent = new Intent(activity, SettingsActivity.class);
+			startActivity(intent);
+			
+			break;
 		}
 		
 		return super.onOptionsItemSelected(item);
@@ -199,9 +204,6 @@ public abstract class NavDrawerActivity extends FragmentActivity implements ILoa
 						break;
 					case ACCOUNTS:
 						intent = new Intent(activity, APIKeysActivity.class);
-						break;
-					case SETTINGS:
-						intent = new Intent(activity, SettingsActivity.class);
 						break;
 					default:
 						intent = null;
