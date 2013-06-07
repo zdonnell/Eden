@@ -294,8 +294,9 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 			
 			for (TextView textView : stationNameMappings.keySet())
 			{
-				int stationID = stationNameMappings.get(textView);		
-				textView.setText(currentStationInfo.get(stationID).stationName);
+				StationInfo stationInfo = currentStationInfo.get(stationNameMappings.get(textView));
+				if(stationInfo != null)
+					textView.setText(stationInfo.stationName);
 			}
 		}     
 	}
