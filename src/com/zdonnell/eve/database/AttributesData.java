@@ -7,7 +7,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.beimin.eveapi.character.sheet.ApiAttributeEnhancer;
@@ -17,28 +16,34 @@ import com.beimin.eveapi.character.sheet.MemoryBonus;
 import com.beimin.eveapi.character.sheet.PerceptionBonus;
 import com.beimin.eveapi.character.sheet.WillpowerBonus;
 
-public class AttributesData {
-
+public class AttributesData extends DatabaseTable {
 	public final static String TABLE = "attributes";
-	
 	public final static String COL_UNIQUE_ID = "_id";
 	public final static String COL_CHAR_ID = "attr_charid";
 	public final static String COL_IMPLANT_NAME = "attr_implant";
 	public final static String COL_IMPLANT_BONUS = "attr_implant_bonus";
 	public final static String COL_IMPLANT_SLOT = "attr_slot";
 	
-	// the Activity or Application that is creating an object from this class.
-	Context context;
+	public AttributesData(Context context) {
+		super(new DatabaseTable.DatabaseOpenHelper(context) {
+			@Override
+			public void onCreate(SQLiteDatabase db) {
+				String newTableQueryString = "create table " + TABLE + " ("
+					+ COL_UNIQUE_ID + " integer primary key not null," 
+					+ COL_CHAR_ID + " integer," 
+					+ COL_IMPLANT_NAME + " text,"
+					+ COL_IMPLANT_BONUS + " integer,"
+					+ COL_IMPLANT_SLOT + " integer,"			
+					+ "UNIQUE (" + COL_CHAR_ID + "," + COL_IMPLANT_SLOT + ") ON CONFLICT REPLACE);";
 
-	// a reference to the database used by this application/object
-	private SQLiteDatabase db;
-	
-	public AttributesData(Context context) 
-	{
-		this.context = context;
+				db.execSQL(newTableQueryString);
+			}
 
-		CustomSQLiteOpenHelper helper = new CustomSQLiteOpenHelper(context);
-		this.db = helper.getWritableDatabase();
+			@Override
+			public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+				// TODO
+			}
+		});
 	}
 	
 	/**
@@ -47,36 +52,41 @@ public class AttributesData {
 	 * @param characterID
 	 * @return The set of implants.  Or an empty set if the character has no implants.
 	 */
-	public Set<ApiAttributeEnhancer> getImplants(int characterID)
+	public Set<ApiAttributeEnhancer> getImplants(final int characterID)
 	{
-		Set<ApiAttributeEnhancer> implants = new HashSet<ApiAttributeEnhancer>();
-		String[] columnsToReturn = new String[] { COL_IMPLANT_NAME, COL_IMPLANT_BONUS, COL_IMPLANT_SLOT };
-		
-		Cursor c = db.query(TABLE, columnsToReturn, COL_CHAR_ID + " = ?", new String[] { String.valueOf(characterID) }, null, null, null);
-		while (c.moveToNext())
-		{
-			ApiAttributeEnhancer enhancer;
-			
-			int slot = c.getInt(c.getColumnIndex(COL_IMPLANT_SLOT));
-			Log.d("SLOT", "SLOT: " + slot);
-			switch (slot)
-			{
-			case 1: enhancer = new IntelligenceBonus(); break;
-			case 2: enhancer = new MemoryBonus(); break;
-			case 3: enhancer = new CharismaBonus(); break;
-			case 4: enhancer = new PerceptionBonus(); break;
-			case 5: enhancer = new WillpowerBonus(); break;
-			default: enhancer = new WillpowerBonus(); break;
+		return performTransaction(new DatabaseTable.Transaction<Set<ApiAttributeEnhancer>>() {
+			@Override
+			public Set<ApiAttributeEnhancer> perform(SQLiteDatabase db) {
+				Set<ApiAttributeEnhancer> implants = new HashSet<ApiAttributeEnhancer>();
+				String[] columnsToReturn = new String[] { COL_IMPLANT_NAME, COL_IMPLANT_BONUS, COL_IMPLANT_SLOT };
+				
+				Cursor c = db.query(TABLE, columnsToReturn, COL_CHAR_ID + " = ?", new String[] { String.valueOf(characterID) }, null, null, null);
+				while (c.moveToNext())
+				{
+					ApiAttributeEnhancer enhancer;
+					
+					int slot = c.getInt(c.getColumnIndex(COL_IMPLANT_SLOT));
+					Log.d("SLOT", "SLOT: " + slot);
+					switch (slot)
+					{
+					case 1: enhancer = new IntelligenceBonus(); break;
+					case 2: enhancer = new MemoryBonus(); break;
+					case 3: enhancer = new CharismaBonus(); break;
+					case 4: enhancer = new PerceptionBonus(); break;
+					case 5: enhancer = new WillpowerBonus(); break;
+					default: enhancer = new WillpowerBonus(); break;
+					}
+					
+					enhancer.setAugmentatorName(c.getString(c.getColumnIndex(COL_IMPLANT_NAME)));
+					enhancer.setAugmentatorValue(c.getInt(c.getColumnIndex(COL_IMPLANT_BONUS)));
+					
+					implants.add(enhancer);
+				}
+				c.close();
+				
+				return implants;
 			}
-			
-			enhancer.setAugmentatorName(c.getString(c.getColumnIndex(COL_IMPLANT_NAME)));
-			enhancer.setAugmentatorValue(c.getInt(c.getColumnIndex(COL_IMPLANT_BONUS)));
-			
-			implants.add(enhancer);
-		}
-		c.close();
-		
-		return implants;
+		});
 	}
 	
 	/**
@@ -85,52 +95,32 @@ public class AttributesData {
 	 * @param characterID
 	 * @param enhancers
 	 */
-	public void setImplants(int characterID, Set<ApiAttributeEnhancer> enhancers)
+	public void setImplants(final int characterID, final Set<ApiAttributeEnhancer> enhancers)
 	{
-		db.beginTransaction();
-		
-		ContentValues insertValues = new ContentValues();
-		
-		for (ApiAttributeEnhancer enhancer : enhancers)
-		{
-			int slot = 0;
-			if (enhancer.getAttribute().equals("intelligence")) slot = 1;
-			else if (enhancer.getAttribute().equals("memory")) slot = 2;
-			else if (enhancer.getAttribute().equals("charisma")) slot = 3;
-			else if (enhancer.getAttribute().equals("perception")) slot = 4;
-			else if (enhancer.getAttribute().equals("willpower")) slot = 5;
-			
-			insertValues.put(COL_CHAR_ID, characterID);
-			insertValues.put(COL_IMPLANT_NAME, enhancer.getAugmentatorName());
-			insertValues.put(COL_IMPLANT_BONUS, enhancer.getAugmentatorValue());
-			insertValues.put(COL_IMPLANT_SLOT, slot);
-			
-			db.insertWithOnConflict(TABLE, null, insertValues, SQLiteDatabase.CONFLICT_REPLACE);
-			insertValues.clear();
-		}
-		
-		db.setTransactionSuccessful();
-		db.endTransaction();
-	}
-	
-	
-	private class CustomSQLiteOpenHelper extends SQLiteOpenHelper {
-		
-		public CustomSQLiteOpenHelper(Context context) 
-		{
-			super(context, Database.DB_NAME, null, Database.DB_VERSION);
-		}
-
-		@Override
-		public void onCreate(SQLiteDatabase db) 
-		{
-			Database.onCreate(db);
-		}
-
-		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) 
-		{
-			Database.onUpdate(db, oldVersion, newVersion);
-		}
+		performTransaction(new DatabaseTable.Transaction<Void>() {
+			@Override
+			public Void perform(SQLiteDatabase db) {
+				ContentValues insertValues = new ContentValues();
+				
+				for(ApiAttributeEnhancer enhancer : enhancers) {
+					int slot = 0;
+					if (enhancer.getAttribute().equals("intelligence")) slot = 1;
+					else if (enhancer.getAttribute().equals("memory")) slot = 2;
+					else if (enhancer.getAttribute().equals("charisma")) slot = 3;
+					else if (enhancer.getAttribute().equals("perception")) slot = 4;
+					else if (enhancer.getAttribute().equals("willpower")) slot = 5;
+					
+					insertValues.put(COL_CHAR_ID, characterID);
+					insertValues.put(COL_IMPLANT_NAME, enhancer.getAugmentatorName());
+					insertValues.put(COL_IMPLANT_BONUS, enhancer.getAugmentatorValue());
+					insertValues.put(COL_IMPLANT_SLOT, slot);
+					
+					db.insertWithOnConflict(TABLE, null, insertValues, SQLiteDatabase.CONFLICT_REPLACE);
+					insertValues.clear();
+				}
+				
+				return null;
+			}
+		});
 	}
 }
