@@ -18,4 +18,9 @@
                     android:icon="@drawable/refresh"
           
            />
+    <item android:id="@+id/settings"
+          android:icon="@drawable/settings"
+          android:title="Settings"
+          android:showAsAction="ifRoom|withText"
+          />
 </menu>

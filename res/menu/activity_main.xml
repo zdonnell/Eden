@@ -5,5 +5,10 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/menu_addaccount"/>
+    <item android:id="@+id/settings"
+          android:icon="@drawable/settings"
+          android:title="Settings"
+          android:showAsAction="ifRoom|withText"
+          />
 
 </menu>
