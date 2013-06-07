@@ -10,7 +10,7 @@ public class Database {
 	public static void onCreate(SQLiteDatabase db)
 	{
 		createSkillsTable(db);
-		createSkillTreeTable(db);
+		createSkillTreeDataTable(db);
 		createSkillQueueTable(db);
 		createCharacterInfoTable(db);
 		createCharacterSheetTable(db);
@@ -174,20 +174,20 @@ public class Database {
 		db.execSQL(newTableQueryString);
 	}
 	
-	private static void createSkillTreeTable(SQLiteDatabase db)
+	private static void createSkillTreeDataTable(SQLiteDatabase db)
 	{
-		String newTableQueryString = "create table " + SkillTree.TABLE + " ("
-				+ SkillTree.COL_SKILL_TYPE_ID + " integer primary key not null," 
-				+ SkillTree.COL_SKILL_NAME + " text," 
-				+ SkillTree.COL_SKILL_DESCRIPTION + " text,"
-				+ SkillTree.COL_SKILL_RANK + " integer,"
-				+ SkillTree.COL_SKILL_PUBLISHED + " integer,"
-				+ SkillTree.COL_SKILL_PRIM_ATTR + " integer,"
-				+ SkillTree.COL_SKILL_SEC_ATTR + " integer,"
-				+ SkillTree.COL_SKILL_PREREQUESITES + " text,"
-				+ SkillTree.COL_SKILL_GROUP_ID + " integer,"
-				+ SkillTree.COL_SKILL_GROUP_NAME + " text,"				
-				+ "UNIQUE (" + SkillTree.COL_SKILL_TYPE_ID + ") ON CONFLICT REPLACE);";
+		String newTableQueryString = "create table " + SkillTreeData.TABLE + " ("
+				+ SkillTreeData.COL_SKILL_TYPE_ID + " integer primary key not null," 
+				+ SkillTreeData.COL_SKILL_NAME + " text," 
+				+ SkillTreeData.COL_SKILL_DESCRIPTION + " text,"
+				+ SkillTreeData.COL_SKILL_RANK + " integer,"
+				+ SkillTreeData.COL_SKILL_PUBLISHED + " integer,"
+				+ SkillTreeData.COL_SKILL_PRIM_ATTR + " integer,"
+				+ SkillTreeData.COL_SKILL_SEC_ATTR + " integer,"
+				+ SkillTreeData.COL_SKILL_PREREQUESITES + " text,"
+				+ SkillTreeData.COL_SKILL_GROUP_ID + " integer,"
+				+ SkillTreeData.COL_SKILL_GROUP_NAME + " text,"				
+				+ "UNIQUE (" + SkillTreeData.COL_SKILL_TYPE_ID + ") ON CONFLICT REPLACE);";
 
 		db.execSQL(newTableQueryString);
 	}

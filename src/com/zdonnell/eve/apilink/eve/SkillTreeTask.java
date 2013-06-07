@@ -14,7 +14,7 @@ import com.beimin.eveapi.exception.ApiException;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.CacheDatabase;
 import com.zdonnell.eve.apilink.IApiTask;
-import com.zdonnell.eve.database.SkillTree;
+import com.zdonnell.eve.database.SkillTreeData;
 
 public class SkillTreeTask extends AsyncTask<Void, Void, SkillTreeResponse> implements IApiTask<SkillTreeResponse>
 {
@@ -70,7 +70,7 @@ public class SkillTreeTask extends AsyncTask<Void, Void, SkillTreeResponse> impl
 	        	fixSkillGroups(response);
 	        	
 	        	cacheDatabase.updateCache(requestHash, response.getCachedUntil());
-	        	new SkillTree(context).setSkillTree(response.getAll());
+	        	new SkillTreeData(context).setSkillTree(response.getAll());
 	        }
 			catch (ApiException e) 
 			{
@@ -151,7 +151,7 @@ public class SkillTreeTask extends AsyncTask<Void, Void, SkillTreeResponse> impl
 	{
 		SkillTreeResponse response = new SkillTreeResponse();
 		
-		SkillTree skillTree = new SkillTree(context);
+		SkillTreeData skillTree = new SkillTreeData(context);
 		for (ApiSkillGroup group : skillTree.getSkillTree()) response.add(group);
 		
 		return response;

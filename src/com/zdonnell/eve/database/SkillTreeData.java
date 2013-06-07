@@ -16,7 +16,7 @@ import com.beimin.eveapi.eve.skilltree.ApiSkill;
 import com.beimin.eveapi.eve.skilltree.ApiSkillGroup;
 import com.beimin.eveapi.eve.skilltree.CharacterAttribute;
 
-public class SkillTree {
+public class SkillTreeData {
 	
 	public final static String TABLE = "skill_tree";
 	
@@ -48,7 +48,7 @@ public class SkillTree {
 	// a reference to the database used by this application/object
 	private SQLiteDatabase db;
 	
-	public SkillTree(Context context) 
+	public SkillTreeData(Context context) 
 	{
 		this.context = context;
 
