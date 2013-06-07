@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 		
 	private SparseArray<StationInfo> currentStationInfo = new SparseArray<StationInfo>();
 	
-	SparseArray<SparseArray<Integer>> itemCounts;
+	SparseArray<SparseIntArray> itemCounts;
 	
 	private StationArrayAdapter adapter;
 	
@@ -118,12 +119,12 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 	
 	private void countAssets()
 	{
-		itemCounts = new SparseArray<SparseArray<Integer>>(currentStationList.length);
+		itemCounts = new SparseArray<SparseIntArray>(currentStationList.length);
 		
 		for (AssetsEntity assetsEntity : currentStationList) 
 		{
 			AssetsEntity.Station station = (AssetsEntity.Station) assetsEntity;
-			itemCounts.put(station.getLocationID(), new SparseArray<Integer>());
+			itemCounts.put(station.getLocationID(), new SparseIntArray());
 			
 			countSubAssets(station.getContainedAssets(), station.getLocationID());
 		}
@@ -161,7 +162,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 			
 			AssetsEntity.Station station = (AssetsEntity.Station) assetsEntity;
 			int stationID = station.getLocationID();
-			SparseArray<Integer> curStationAssetCounts = itemCounts.get(stationID);
+			SparseIntArray curStationAssetCounts = itemCounts.get(stationID);
 			int uniqueItemsInStation = curStationAssetCounts.size();
 			
 			for (int i = 0; i < uniqueItemsInStation; ++i)
