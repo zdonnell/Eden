@@ -209,7 +209,7 @@ public abstract class NavDrawerActivity extends FragmentActivity implements ILoa
 					}
 					
 					startActivity(intent);
-					//((BaseActivity) activity).toggle();
+					mDrawerLayout.closeDrawers();
 				}
 			});
 			
