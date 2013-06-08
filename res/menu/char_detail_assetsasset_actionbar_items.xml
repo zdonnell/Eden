@@ -16,6 +16,11 @@
           android:showAsAction="ifRoom|withText"
           android:icon="@drawable/layout"
            />
+    <item android:id="@+id/settings"
+          android:icon="@drawable/settings"
+          android:title="Settings"
+          android:showAsAction="ifRoom|withText"
+          />
     <!-- <item android:id="@+id/settings"
           android:icon="@drawable/settings"
           android:title="@string/settings"

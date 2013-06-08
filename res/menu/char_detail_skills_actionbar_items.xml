@@ -4,4 +4,9 @@
           android:title="Show"
           android:showAsAction="ifRoom|withText"
            />
+    <item android:id="@+id/settings"
+          android:icon="@drawable/settings"
+          android:title="Settings"
+          android:showAsAction="ifRoom|withText"
+          />
 </menu>
