@@ -28,7 +28,7 @@ import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
 import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
 import com.beimin.eveapi.eve.character.CharacterInfoResponse;
 import com.beimin.eveapi.exception.ApiException;
-import com.squareup.picasso.Picasso;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.character.APICharacter;
@@ -208,7 +208,7 @@ public class CharacterSheetFragment extends Fragment
 		final ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
 		int characterID = character.getApiAuth().getCharacterID().intValue();
 		
-		Picasso.with(context).load(ImageURL.forChar(characterID)).into(portrait);
+		ImageLoader.getInstance().displayImage(ImageURL.forChar(characterID), portrait);
 		
 		final long starttime1 = System.currentTimeMillis();
 		// get character's skill queue

@@ -22,7 +22,7 @@ import com.beimin.eveapi.account.characters.EveCharacter;
 import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.core.ApiAuthorization;
 import com.beimin.eveapi.exception.ApiException;
-import com.squareup.picasso.Picasso;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.account.Account;
 import com.zdonnell.eve.helpers.ImageURL;
@@ -224,7 +224,7 @@ public class AddAPIDialog extends DialogFragment
 					
 					characterName.setText(character.getName());
 					
-					Picasso.with(AddAPIDialog.this.getActivity()).load(ImageURL.forChar((int) character.getCharacterID())).placeholder(R.drawable.unkown_portrait).into(characterIcon);
+					ImageLoader.getInstance().displayImage(ImageURL.forChar((int) character.getCharacterID()), characterIcon);
 					
 					characterTile.setOnClickListener(new View.OnClickListener() 
 					{

@@ -13,14 +13,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.beimin.eveapi.shared.wallet.transactions.ApiWalletTransaction;
-import com.squareup.picasso.Picasso;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.helpers.ImageURL;
 
 public class WalletTransactionAdapter extends ArrayAdapter<ApiWalletTransaction>
 {
 	private LayoutInflater inflater;
-	private Context context;
 	
 	private final int RED = Color.parseColor("#FF4444");
 	private final int GREEN = Color.parseColor("#449944");	
@@ -33,7 +32,6 @@ public class WalletTransactionAdapter extends ArrayAdapter<ApiWalletTransaction>
 	{
 		super(context, layoutID, entries);
 		
-		this.context = context;
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	
@@ -61,7 +59,8 @@ public class WalletTransactionAdapter extends ArrayAdapter<ApiWalletTransaction>
 		price.setTextColor(isBuy ? RED : GREEN);
 		
 		typeIcon.setImageDrawable(null);
-		Picasso.with(context).load(ImageURL.forType(transaction.getTypeID())).into(typeIcon);
+		
+		ImageLoader.getInstance().displayImage(ImageURL.forType(transaction.getTypeID()), typeIcon);
 		
 		return convertView;
 	}

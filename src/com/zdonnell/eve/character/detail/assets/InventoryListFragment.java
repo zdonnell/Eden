@@ -22,7 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.apilink.character.AssetsEntity;
@@ -132,7 +132,8 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			if (parentStationInfo != null)
 			{
 				parentAssetName.setText(parentStationInfo.stationName);
-				Picasso.with(getActivity()).load(ImageURL.forType(parentStationInfo.stationTypeID)).into(parentAssetIcon);
+				
+				ImageLoader.getInstance().displayImage(ImageURL.forType(parentStationInfo.stationTypeID), parentAssetIcon);
 			}
 		}
 		else if (parent instanceof AssetsEntity.Item)
@@ -142,7 +143,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			
 			if (parentItemInfo != null) parentAssetName.setText(parentItemInfo.typeName);
 
-			Picasso.with(getActivity()).load(ImageURL.forType(parentItem.attributes().typeID)).into(parentAssetIcon);
+			ImageLoader.getInstance().displayImage(ImageURL.forType(parentItem.attributes().typeID), parentAssetIcon);
 		}
 	}
 	
@@ -433,7 +434,7 @@ public class InventoryListFragment extends Fragment implements IAssetsSubFragmen
 			icon.setTag(typeID);
 			icon.setImageBitmap(null);
 			
-			Picasso.with(context).load(ImageURL.forType(typeID)).into(icon);
+			ImageLoader.getInstance().displayImage(ImageURL.forType(typeID), icon);
 			
 			if (displayType == GRID)
 			{
