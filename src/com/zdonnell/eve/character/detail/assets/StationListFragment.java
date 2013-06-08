@@ -18,7 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.apilink.character.AssetsEntity;
 import com.zdonnell.eve.apilink.character.AssetsEntity.Station;
@@ -238,7 +238,7 @@ public class StationListFragment extends Fragment implements IAssetsSubFragment
 				
 				stationNameTextView.setText(stationName);
 				
-				Picasso.with(getContext()).load(ImageURL.forType(stationTypeID)).into(icon);
+				ImageLoader.getInstance().displayImage(ImageURL.forType(stationTypeID), icon);
 			}
 			else
 			{

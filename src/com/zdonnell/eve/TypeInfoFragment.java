@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zdonnell.eve.apilink.APICallback;
 import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.priceservice.PriceService;
@@ -37,7 +37,7 @@ public class TypeInfoFragment extends Fragment {
 		final TextView typeM3 = (TextView) mainView.findViewById(R.id.type_info_m3);
 		final TextView typeDescription = (TextView) mainView.findViewById(R.id.type_info_description);
 		
-		Picasso.with(getActivity()).load(ImageURL.forType(typeID)).into(typeIcon);
+		ImageLoader.getInstance().displayImage(ImageURL.forType(typeID), typeIcon);
 		
 		new StaticData(inflater.getContext()).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity()) 
 		{
