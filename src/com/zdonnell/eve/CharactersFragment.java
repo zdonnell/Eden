@@ -32,7 +32,7 @@ import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
 import com.beimin.eveapi.eve.conquerablestationlist.ApiStation;
 import com.beimin.eveapi.eve.conquerablestationlist.StationListResponse;
 import com.beimin.eveapi.exception.ApiException;
-import com.squareup.picasso.Picasso;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.apilink.account.EdenEveCharacter;
 import com.zdonnell.eve.apilink.character.APICharacter;
@@ -212,7 +212,7 @@ public class CharactersFragment extends Fragment {
 		}
 		
 		/**
-		 * Handles the acquisition of the character portrait from the local instance of the {@link ImageService}
+		 * Handles the acquisition of the character portrait
 		 * 
 		 * @param mainView
 		 * @param characterID
@@ -222,7 +222,7 @@ public class CharactersFragment extends Fragment {
 			final ImageView portrait = (ImageView) mainView.findViewById(R.id.char_image);			
 			portrait.setImageBitmap(null);
 
-			Picasso.with(context).load(ImageURL.forChar(characterID)).placeholder(R.drawable.unkown_portrait).into(portrait);
+			ImageLoader.getInstance().displayImage(ImageURL.forChar(characterID), portrait);
 			
 			/* Set the correct size for the ImageView */
 			int width = mainView.getLayoutParams().width;
@@ -231,7 +231,7 @@ public class CharactersFragment extends Fragment {
 		}
 		
 		/**
-		 * Handles the acquisition of the characters corporation logo from the local instance of the {@link ImageService}
+		 * Handles the acquisition of the characters corporation logo
 		 * 
 		 * @param mainView
 		 * @param corpID
@@ -240,7 +240,8 @@ public class CharactersFragment extends Fragment {
 		{
 			final ImageView corpLogo = (ImageView) mainView.findViewById(R.id.corp_image);
 			
-			Picasso.with(context).load(ImageURL.forCorp(corpID)).into(corpLogo);
+			ImageLoader.getInstance().displayImage(ImageURL.forCorp(corpID), corpLogo);
+			//Picasso.with(context).load(ImageURL.forCorp(corpID)).into(corpLogo);
 		}
 		
 		/**
