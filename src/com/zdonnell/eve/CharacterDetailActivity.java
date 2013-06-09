@@ -33,6 +33,7 @@ import com.zdonnell.eve.character.detail.InventorySort;
 import com.zdonnell.eve.character.detail.assets.InventoryListFragment;
 import com.zdonnell.eve.character.detail.assets.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.attributes.AttributesFragment;
+import com.zdonnell.eve.character.detail.mail.MailFragment;
 import com.zdonnell.eve.character.detail.queue.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.skills.SkillsFragment;
 import com.zdonnell.eve.character.detail.wallet.WalletFragment;
@@ -138,10 +139,13 @@ public class CharacterDetailActivity extends NavDrawerActivity implements Action
      */
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
     	
-    	private static final int COUNT = 5;
+    	private static final int COUNT = 6;
     	
     	private ParentAssetsFragment assetsFragment;
     	public ParentAssetsFragment assetsFragment() { return assetsFragment; }
+    	
+    	private MailFragment mailFragment;
+    	public MailFragment mailFragment() { return mailFragment; }
     	
     	private SkillsFragment skillsFragment;
     	public SkillsFragment skillsFragment() { return skillsFragment; }
@@ -172,6 +176,9 @@ public class CharacterDetailActivity extends NavDrawerActivity implements Action
         	
         	switch (i)
         	{
+        	case CharacterSheetFragment.MAIL:
+        		fragment = mailFragment = new MailFragment();
+        		break;
         	case CharacterSheetFragment.SKILLS:
         		fragment = skillsFragment = new SkillsFragment();
         		break;

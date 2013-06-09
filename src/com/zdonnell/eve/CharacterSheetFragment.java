@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.text.Html;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,18 +41,20 @@ public class CharacterSheetFragment extends Fragment
 {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     
-    public final static int SKILLS = 0;
-    public final static int SKILL_QUEUE = 1;
-    public final static int ATTRIBUTES = 2;
-    public final static int WALLET = 3;
-    public final static int ASSETS = 4;
+    public final static int MAIL = 0;
+    public final static int SKILLS = 1;
+    public final static int SKILL_QUEUE = 2;
+    public final static int ATTRIBUTES = 3;
+    public final static int WALLET = 4;
+    public final static int ASSETS = 5;
     
     /**
      * Static array of text strings for the character sheet list
      */
-    public final static String[] sheetItems = new String[5];
+    public final static String[] sheetItems = new String[6];
     static 
     {
+    	sheetItems[MAIL] = "Mail";
     	sheetItems[SKILLS] = "Skills";
     	sheetItems[SKILL_QUEUE] = "Skill Queue";
     	sheetItems[ATTRIBUTES] = "Attributes";
@@ -64,9 +65,10 @@ public class CharacterSheetFragment extends Fragment
     /**
      * Static array to hold drawable id's for the sheet item images
      */
-    public final static int[] sheetItemImageIDs = new int[5];
+    public final static int[] sheetItemImageIDs = new int[6];
     static
     {
+    	sheetItemImageIDs[MAIL] = R.drawable.mail;
     	sheetItemImageIDs[SKILLS] = R.drawable.skills;
     	sheetItemImageIDs[SKILL_QUEUE] = R.drawable.skillqueue;
     	sheetItemImageIDs[ATTRIBUTES] = R.drawable.attributes;
@@ -74,16 +76,16 @@ public class CharacterSheetFragment extends Fragment
     	sheetItemImageIDs[ASSETS] = R.drawable.assets;
     }
     
-    private final static SheetItem[] items = new SheetItem[5];
+    private final static SheetItem[] items = new SheetItem[6];
     static
     {
-    	for (int x = 0; x < 5; x++)
+    	for (int x = 0; x < items.length; x++)
     	{
     		items[x] = new SheetItem(sheetItems[x], sheetItemImageIDs[x]);
     	}
     }
 
-    private TextView[] subTexts = new TextView[5];
+    private TextView[] subTexts = new TextView[6];
     
     private Callbacks mCallbacks = sDummyCallbacks;
     private int mActivatedPosition = ListView.INVALID_POSITION;
@@ -208,15 +210,12 @@ public class CharacterSheetFragment extends Fragment
 		
 		ImageLoader.getInstance().displayImage(ImageURL.forChar(characterID), portrait);
 		
-		final long starttime1 = System.currentTimeMillis();
 		// get character's skill queue
 		character.getSkillQueue(new APIExceptionCallback<SkillQueueResponse>((ILoadingActivity) getActivity())
 		{
 			@Override
 			public void onUpdate(SkillQueueResponse response) 
 			{
-				Log.d("Eden", "SKILL QUEUE END LOAD: " + (System.currentTimeMillis() - starttime1));
-
 				skillQueue.clear();
 				skillQueue.addAll(response.getAll());
 				configureSkillQueueTimer();
@@ -228,16 +227,13 @@ public class CharacterSheetFragment extends Fragment
 				
 			}
 		});
-    	
-		final long starttime = System.currentTimeMillis();
-		// get character's character sheet
+		
+   		// get character's character sheet
     	character.getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>((ILoadingActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(CharacterSheetResponse rCharacterSheet) 
 			{
-				Log.d("Eden", "CHARACTER SHEET END LOAD: " + (System.currentTimeMillis() - starttime));
-
 				characterSheet = rCharacterSheet;
 				obtainedCharacterInfoSheet();
 			}
@@ -249,16 +245,12 @@ public class CharacterSheetFragment extends Fragment
 			}
     	});
     	
-		final long starttime2 = System.currentTimeMillis();
-
     	// get character's info
     	character.getCharacterInfo(new APIExceptionCallback<CharacterInfoResponse>((ILoadingActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(CharacterInfoResponse response) 
 			{
-				Log.d("Eden", "CHARACTER INFO END LOAD: " + (System.currentTimeMillis() - starttime2));
-
 				characterInfo = response;
 				obtainedCharacterInfoSheet();
 			}

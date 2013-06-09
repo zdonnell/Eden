@@ -11,6 +11,7 @@ import com.beimin.eveapi.core.ApiAuthorization;
 import com.zdonnell.eve.apilink.character.APICharacter;
 import com.zdonnell.eve.character.detail.assets.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.attributes.AttributesFragment;
+import com.zdonnell.eve.character.detail.mail.MailFragment;
 import com.zdonnell.eve.character.detail.queue.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.skills.SkillsFragment;
 import com.zdonnell.eve.character.detail.wallet.WalletFragment;
@@ -70,6 +71,9 @@ public class CharacterSheetActivity extends NavDrawerActivity implements Charact
         	
         	switch (id)
         	{
+        	case CharacterSheetFragment.MAIL:
+        		fragment = new MailFragment();
+        		break;
         	case CharacterSheetFragment.SKILLS:
         		fragment = new SkillsFragment();
         		break;

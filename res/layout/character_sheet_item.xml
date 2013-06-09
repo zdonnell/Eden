@@ -3,13 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal" 
-    android:padding="10dp"
+    android:padding="8dp"
    	>
 	<ImageView
 	    android:id="@+id/character_sheet_item_image"
 	    android:layout_width="36dp"
 	    android:layout_height="36dp"
-	    android:layout_marginRight="10dp">
+	    android:layout_marginRight="8dp">
 	    <!--android:background="#222"--></ImageView>
 	<View
 	    android:layout_width="1px"
@@ -29,7 +29,7 @@
 		    android:layout_height="0dp"
 		    android:layout_weight="1"
 		    android:textSize="16sp"
-		    android:textColor="#BBB"/>
+		    android:textColor="#CCC"/>
 		<TextView 
 		    android:id="@+id/character_sheet_item_subtext"
 		    android:layout_width="wrap_content"

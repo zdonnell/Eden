@@ -3,6 +3,7 @@ package com.zdonnell.eve.apilink.character;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.beimin.eveapi.character.mail.messages.MailMessagesResponse;
 import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
 import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
 import com.beimin.eveapi.core.ApiAuth;
@@ -56,5 +57,10 @@ public class APICharacter
 	public void getAssets(APIExceptionCallback<AssetListResponse> callback)
 	{
 		new AssetsTask(callback, apiAuth, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+	
+	public void getMailHeaders(APIExceptionCallback<MailMessagesResponse> callback)
+	{
+		new MailHeadersTask(callback, apiAuth, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 }
