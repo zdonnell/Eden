@@ -1,19 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical" >
-	<TextView 
-	    android:id="@+id/char_detail_mail_list_item_text"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:textSize="14sp"
-	    android:textStyle="bold"
-	    android:textColor="#BBB"/>
-	<TextView 
-	    android:id="@+id/char_detail_mail_list_item_subText"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:textSize="12sp"
-	    android:textColor="#999"/>
+    android:layout_height="56dp"
+    android:padding="8dp"
+    android:orientation="horizontal" >
+    <com.zdonnell.eve.character.detail.SquareLinearLayout
+	    android:id="@+id/char_detail_mail_list_item_typeIconBorder"
+	   	android:background="#000"
+	   	android:layout_height="40dp"
+        android:layout_marginRight="8dp"
+        android:padding="1dp"
+        android:layout_width="40dp">
+	   	    <ImageView 
+		        android:id="@+id/char_detail_mail_list_item_icon"
+		        android:layout_width="match_parent"
+		        android:scaleType="fitCenter"
+		        android:layout_height="match_parent"
+		        android:background="#242424"/>
+	   	</com.zdonnell.eve.character.detail.SquareLinearLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
+		<TextView 
+		    android:id="@+id/char_detail_mail_list_item_text"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:textSize="14sp"
+		    android:textStyle="bold"
+		    android:textColor="#BBB"/>
+		<TextView 
+		    android:id="@+id/char_detail_mail_list_item_subText"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:textSize="12sp"
+		    android:textColor="#999"/>
+		</LinearLayout>
 </LinearLayout>
