@@ -1,55 +1,29 @@
 package com.zdonnell.eve.apilink.server;
 
-import android.os.AsyncTask;
+import android.content.Context;
 
 import com.beimin.eveapi.exception.ApiException;
 import com.beimin.eveapi.server.ServerStatusParser;
 import com.beimin.eveapi.server.ServerStatusResponse;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
+import com.zdonnell.eve.apilink.APITask;
 
-public class ServerStatusTask extends AsyncTask<Void, Void, ServerStatusResponse>
+public class ServerStatusTask extends APITask<Void, Void, ServerStatusResponse>
 {
-	private APIExceptionCallback<ServerStatusResponse> callback;
-	
-	private boolean apiExceptionOccured = false;
-	private ApiException exception;
-	
-	public ServerStatusTask(APIExceptionCallback<ServerStatusResponse> callback)
+	public ServerStatusTask(APIExceptionCallback<ServerStatusResponse> callback, Context context)
 	{
-		this.callback = callback;
-		
-		// We don't cache server status, so just notify the callback that we didn't find any
-		callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_NOT_FOUND);
+		super(callback, context, false, new EveApiInteraction<ServerStatusResponse>()
+		{
+			@Override
+			public ServerStatusResponse perform() throws ApiException 
+			{
+				ServerStatusParser parser = ServerStatusParser.getInstance();		
+				return parser.getServerStatus();
+			}
+		});
 	}
-	
-	@Override
-	protected ServerStatusResponse doInBackground(Void... params)
-	{
-		ServerStatusParser parser = ServerStatusParser.getInstance();		
-		ServerStatusResponse response = null;
-		
-        try { response = parser.getServerStatus(); }
-		catch (ApiException e) 
-		{
-			apiExceptionOccured = true;
-			exception = e;
-		}
-        
-        return response;
-	}
-	
-	@Override
-	protected void onPostExecute(ServerStatusResponse response) 
-	{
-		if (apiExceptionOccured) 
-		{
-			callback.onError(response, exception);
-			callback.updateState(APIExceptionCallback.STATE_SERVER_RESPONSE_FAILED);
-		}
-		else 
-		{
-			callback.onUpdate(response);
-			callback.updateState(APIExceptionCallback.STATE_SERVER_RESPONSE_ACQUIRED);
-		}
-    }
+
+	public int requestTypeHash() { return 0; /* cache not used */ }
+
+	public ServerStatusResponse buildResponseFromDatabase() { return null; /* cache not used */ }
 }

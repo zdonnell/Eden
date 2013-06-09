@@ -202,7 +202,7 @@ public class AddAPIDialog extends DialogFragment
 		loadCharAsEnabled[0] = loadCharAsEnabled[1] = loadCharAsEnabled[2] = true;
 		
 		apiAuth = new ApiAuthorization(keyID, vCode);
-		new Account(apiAuth).getCharacters(new APIExceptionCallback<CharactersResponse>(null) 
+		new Account(apiAuth, getActivity()).getCharacters(new APIExceptionCallback<CharactersResponse>(null) 
 		{
 			@Override
 			public void onUpdate(CharactersResponse response) 

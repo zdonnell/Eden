@@ -1,58 +1,33 @@
 package com.zdonnell.eve.apilink.account;
 
-import android.os.AsyncTask;
+import android.content.Context;
 
 import com.beimin.eveapi.account.characters.CharactersParser;
 import com.beimin.eveapi.account.characters.CharactersResponse;
 import com.beimin.eveapi.core.ApiAuth;
 import com.beimin.eveapi.exception.ApiException;
 import com.zdonnell.eve.apilink.APIExceptionCallback;
+import com.zdonnell.eve.apilink.APITask;
 
-public class CharactersTask extends AsyncTask<Void, Void, CharactersResponse>
+public class CharactersTask extends APITask<Void, Void, CharactersResponse>
 {
-	private APIExceptionCallback<CharactersResponse> callback;
-	
-	private boolean apiExceptionOccured = false;
-	private ApiException exception;
-	private ApiAuth<?> apiAuth;
-	
-	public CharactersTask(APIExceptionCallback<CharactersResponse> callback, ApiAuth<?> apiAuth)
+	public CharactersTask(APIExceptionCallback<CharactersResponse> callback, final Context context, final ApiAuth<?> apiAuth)
 	{
-		this.callback = callback;
-		this.apiAuth = apiAuth;
-		
-		// We don't cache characters resposnes, so just notify the callback that we didn't find any
-		callback.updateState(APIExceptionCallback.STATE_CACHED_RESPONSE_NOT_FOUND);
+		super(callback, context, false, new EveApiInteraction<CharactersResponse>()
+		{
+			@Override
+			public CharactersResponse perform() throws ApiException 
+			{
+				CharactersParser parser = CharactersParser.getInstance();		
+				return parser.getResponse(apiAuth);
+			}
+			
+		});
 	}
-	
+
 	@Override
-	protected CharactersResponse doInBackground(Void... params)
-	{
-		CharactersParser parser = CharactersParser.getInstance();		
-		CharactersResponse response = null;
-		
-        try { response = parser.getResponse(apiAuth); }
-		catch (ApiException e) 
-		{
-			apiExceptionOccured = true;
-			exception = e;
-		}
-        
-        return response;
-	}
-	
+	protected int requestTypeHash() { return 0; /* no hash needed, not using cache database */ }
+
 	@Override
-	protected void onPostExecute(CharactersResponse response) 
-	{
-		if (apiExceptionOccured) 
-		{
-			callback.onError(response, exception);
-			callback.updateState(APIExceptionCallback.STATE_SERVER_RESPONSE_FAILED);
-		}
-		else 
-		{
-			callback.onUpdate(response);
-			callback.updateState(APIExceptionCallback.STATE_SERVER_RESPONSE_ACQUIRED);
-		}
-    }
+	protected CharactersResponse buildResponseFromDatabase() { return null; /* not using cache database */ }
 }
