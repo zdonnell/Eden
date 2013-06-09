@@ -129,10 +129,8 @@ public class CharacterSheetFragment extends Fragment
     	rootView = inflater.inflate(R.layout.character_sheet, container, false);
     	listView = (ListView) rootView.findViewById(R.id.char_sheet_list);
     	
-    	LinearLayout headerText = (LinearLayout) inflater.inflate(R.layout.char_sheet_header_text, container, false);
     	skillTimeRemaining = (TextView) rootView.findViewById(R.id.current_skill_time);
     	
-    	listView.addHeaderView(headerText, null, false);  	
     	listView.setAdapter(new CharacterSheetAdapater(context, R.layout.character_sheet_item, items));
     	        	
     	return rootView;
