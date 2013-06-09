@@ -1,32 +1,45 @@
 package com.zdonnell.eve.database;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 public class Database {
 
 	public static final String DB_NAME = "api_data_db";
 	public static final int DB_VERSION = 1;
 	
-	public static void onCreate(SQLiteDatabase db)
-	{
-		createSkillsTable(db);
-		createSkillTreeDataTable(db);
-		createSkillQueueTable(db);
-		createCharacterInfoTable(db);
-		createCharacterSheetTable(db);
-		createCharacterAttributesTable(db);
+	public static class OpenHelper extends SQLiteOpenHelper {
 		
-		createCharacterWalletJournalTable(db);
-		createCharacterWalletTransactionTable(db);
-		
-		createAssetsTable(db);
+		public OpenHelper(Context context) 
+		{
+			super(context, Database.DB_NAME, null, Database.DB_VERSION);
+		}
+
+		@Override
+		public void onCreate(SQLiteDatabase db) 
+		{
+			createSkillsTable(db);
+			createSkillTreeDataTable(db);
+			createSkillQueueTable(db);
+			createCharacterInfoTable(db);
+			createCharacterSheetTable(db);
+			createCharacterAttributesTable(db);
+			
+			createCharacterWalletJournalTable(db);
+			createCharacterWalletTransactionTable(db);
+			
+			createAssetsTable(db);
+		}
+
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) 
+		{
+
+		}
 	}
-	
-	public static void onUpdate(SQLiteDatabase db, int oldVersion, int newVersion)
-	{
+
 		
-	}
-	
 	private static void createAssetsTable(SQLiteDatabase db)
 	{	
 		String newTableQueryString = "create table " + AssetsData.TABLE + " ("

@@ -8,7 +8,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.SparseArray;
 
 import com.beimin.eveapi.eve.skilltree.ApiRequirement;
@@ -42,18 +41,12 @@ public class SkillTreeData {
 	private int groupIDIndex;
 	private int groupNameIndex;
 	
-	// the Activity or Application that is creating an object from this class.
-	Context context;
-
 	// a reference to the database used by this application/object
 	private SQLiteDatabase db;
 	
 	public SkillTreeData(Context context) 
 	{
-		this.context = context;
-
-		CustomSQLiteOpenHelper helper = new CustomSQLiteOpenHelper(context);
-		this.db = helper.getWritableDatabase();
+		db = new Database.OpenHelper(context).getWritableDatabase();
 	}
 	
 	/**
@@ -247,25 +240,5 @@ public class SkillTreeData {
 		if (attribute == CharacterAttribute.MEMORY) return 4;
 		
 		return 0;
-	}
-	
-	private class CustomSQLiteOpenHelper extends SQLiteOpenHelper {
-		
-		public CustomSQLiteOpenHelper(Context context) 
-		{
-			super(context, Database.DB_NAME, null, Database.DB_VERSION);
-		}
-
-		@Override
-		public void onCreate(SQLiteDatabase db) 
-		{
-			Database.onCreate(db);
-		}
-
-		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) 
-		{
-			Database.onUpdate(db, oldVersion, newVersion);
-		}
 	}
 }

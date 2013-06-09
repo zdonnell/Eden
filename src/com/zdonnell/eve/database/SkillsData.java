@@ -3,13 +3,12 @@ package com.zdonnell.eve.database;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.beimin.eveapi.character.sheet.ApiSkill;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+
+import com.beimin.eveapi.character.sheet.ApiSkill;
 
 public class SkillsData {
 
@@ -22,18 +21,12 @@ public class SkillsData {
 	public final static String COL_LEVEL = "skill_level";
 	public final static String COL_UNPUBLISHED = "skill_published";
 	
-	// the Activity or Application that is creating an object from this class.
-	Context context;
-
 	// a reference to the database used by this application/object
 	private SQLiteDatabase db;
 	
 	public SkillsData(Context context) 
 	{
-		this.context = context;
-
-		CustomSQLiteOpenHelper helper = new CustomSQLiteOpenHelper(context);
-		this.db = helper.getWritableDatabase();
+		db = new Database.OpenHelper(context).getWritableDatabase();
 	}
 	
 	/**
@@ -90,26 +83,5 @@ public class SkillsData {
 		
 		db.setTransactionSuccessful();
 		db.endTransaction();
-	}
-	
-	
-	private class CustomSQLiteOpenHelper extends SQLiteOpenHelper {
-		
-		public CustomSQLiteOpenHelper(Context context) 
-		{
-			super(context, Database.DB_NAME, null, Database.DB_VERSION);
-		}
-
-		@Override
-		public void onCreate(SQLiteDatabase db) 
-		{
-			Database.onCreate(db);
-		}
-
-		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) 
-		{
-			Database.onUpdate(db, oldVersion, newVersion);
-		}
 	}
 }

@@ -10,7 +10,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.beimin.eveapi.shared.wallet.journal.ApiJournalEntry;
@@ -35,9 +34,6 @@ public class WalletJournalData {
 	public final static String COL_TAX_RECEIVER_ID = "journal_tax_receiever_id";
 	public final static String COL_TAX_AMOUNT = "journal_tax_amount";
 	
-	// the Activity or Application that is creating an object from this class.
-	Context context;
-
 	// a reference to the database used by this application/object
 	private SQLiteDatabase db;
 	
@@ -45,11 +41,7 @@ public class WalletJournalData {
 	
 	public WalletJournalData(Context context) 
 	{
-		this.context = context;
-
-		CustomSQLiteOpenHelper helper = new CustomSQLiteOpenHelper(context);
-		this.db = helper.getWritableDatabase();
-		
+		db = new Database.OpenHelper(context).getWritableDatabase();
 		formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 	}
 	
@@ -160,25 +152,5 @@ public class WalletJournalData {
 		
 		if (c.moveToFirst()) return c.getLong(c.getColumnIndex(COL_REF_ID));
 		else return 0;
-	}
-	
-	private class CustomSQLiteOpenHelper extends SQLiteOpenHelper {
-		
-		public CustomSQLiteOpenHelper(Context context) 
-		{
-			super(context, Database.DB_NAME, null, Database.DB_VERSION);
-		}
-
-		@Override
-		public void onCreate(SQLiteDatabase db) 
-		{
-			Database.onCreate(db);
-		}
-
-		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) 
-		{
-			Database.onUpdate(db, oldVersion, newVersion);
-		}
 	}
 }
