@@ -12,7 +12,6 @@ import android.database.sqlite.SQLiteDatabase;
 import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
 import com.beimin.eveapi.shared.character.EveAncestry;
 import com.beimin.eveapi.shared.character.EveBloodline;
-import com.beimin.eveapi.shared.character.EveRace;
 
 public class CharacterSheetData {
 	
@@ -93,13 +92,13 @@ public class CharacterSheetData {
 		{
 			characterSheet.setCharacterID(c.getLong(c.getColumnIndex(COL_CHARACTER_ID)));
 			characterSheet.setName(c.getString(c.getColumnIndex(COL_NAME)));
-			//characterSheet.setRace(stringToEveRace(c.getString(c.getColumnIndex(COL_RACE)))); TODO Fix eve race.
+			//characterSheet.setRace(EveRace.valueOf(c.getString(c.getColumnIndex(COL_RACE)))); TODO Fix eve race.
 			
 			try { characterSheet.setDateOfBirth(formatter.parse(c.getString(c.getColumnIndex(COL_DOB)))); } 
 			catch (ParseException e) { e.printStackTrace(); }
 			
-			characterSheet.setBloodLine(stringToEveBloodline(c.getString(c.getColumnIndex(COL_BLOODLINE))));
-			characterSheet.setAncestry(stringToEveAncestry(c.getString(c.getColumnIndex(COL_ANCESTRY))));
+			characterSheet.setBloodLine(EveBloodline.valueOf(c.getString(c.getColumnIndex(COL_BLOODLINE))));
+			characterSheet.setAncestry(EveAncestry.valueOf(c.getString(c.getColumnIndex(COL_ANCESTRY))));
 			characterSheet.setGender(c.getString(c.getColumnIndex(COL_GENDER)));
 			characterSheet.setCorporationName(c.getString(c.getColumnIndex(COL_CORP_NAME)));
 			characterSheet.setCorporationID(c.getLong(c.getColumnIndex(COL_CORP_ID)));
@@ -117,54 +116,5 @@ public class CharacterSheetData {
 		c.close();
 				
 		return characterSheet;
-	}
-	
-	/**
-	 * Converts a string representing an eve race to it's {@link EveRace} representation
-	 * 
-	 * @param raceString
-	 * @return
-	 */
-	@SuppressWarnings("unused")
-	private EveRace stringToEveRace(String raceString)
-	{
-		for (EveRace race : EveRace.values())
-		{
-			if (race.name().equals(raceString)) return race;
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Converts a string representing an eve ancestry to it's {@link EveAncestry} representation
-	 * 
-	 * @param bloodlineString
-	 * @return
-	 */
-	private EveAncestry stringToEveAncestry(String ancestryString)
-	{
-		for (EveAncestry ancestry : EveAncestry.values())
-		{
-			if (ancestry.name().equals(ancestryString)) return ancestry;
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Converts a string representing an eve bloodline to it's {@link EveBloodline} representation
-	 * 
-	 * @param bloodlineString
-	 * @return
-	 */
-	private EveBloodline stringToEveBloodline(String bloodlineString)
-	{
-		for (EveBloodline bloodline : EveBloodline.values())
-		{
-			if (bloodline.name().equals(bloodlineString)) return bloodline;
-		}
-		
-		return null;
 	}
 }
