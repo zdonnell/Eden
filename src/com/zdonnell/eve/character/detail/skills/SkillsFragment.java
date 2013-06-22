@@ -21,18 +21,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.beimin.eveapi.character.sheet.ApiSkill;
-import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
-import com.beimin.eveapi.core.ApiAuthorization;
-import com.beimin.eveapi.eve.skilltree.ApiRequirement;
-import com.beimin.eveapi.eve.skilltree.ApiSkillGroup;
-import com.beimin.eveapi.eve.skilltree.CharacterAttribute;
-import com.beimin.eveapi.eve.skilltree.SkillTreeResponse;
-import com.beimin.eveapi.exception.ApiException;
+import com.zdonnell.androideveapi.character.sheet.ApiSkill;
+import com.zdonnell.androideveapi.character.sheet.CharacterSheetResponse;
+import com.zdonnell.androideveapi.core.ApiAuthorization;
+import com.zdonnell.androideveapi.eve.skilltree.ApiRequirement;
+import com.zdonnell.androideveapi.eve.skilltree.ApiSkillGroup;
+import com.zdonnell.androideveapi.eve.skilltree.CharacterAttribute;
+import com.zdonnell.androideveapi.eve.skilltree.SkillTreeResponse;
+import com.zdonnell.androideveapi.exception.ApiException;
+import com.zdonnell.androideveapi.link.APIExceptionCallback;
+import com.zdonnell.androideveapi.link.character.APICharacter;
+import com.zdonnell.androideveapi.link.eve.Eve;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
-import com.zdonnell.eve.apilink.APIExceptionCallback;
-import com.zdonnell.eve.apilink.eve.Eve;
 import com.zdonnell.eve.character.detail.DetailFragment;
 import com.zdonnell.eve.character.detail.SkillLevelIndicator;
 
@@ -104,7 +105,7 @@ public class SkillsFragment extends DetailFragment {
 	{   
     	// Load in Character Sheet to get Character Skills
 		ApiAuthorization apiAuth = new ApiAuthorization(getArguments().getInt("keyID"), getArguments().getInt("characterID"), getArguments().getString("vCode"));
-		new com.zdonnell.eve.apilink.character.APICharacter(context, apiAuth).getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>(parentActivity)
+		new APICharacter(context, apiAuth).getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>(parentActivity)
 		{
 			@Override
 			public void onUpdate(CharacterSheetResponse response) 
@@ -259,9 +260,9 @@ public class SkillsFragment extends DetailFragment {
         	ArrayList<ApiSkillGroup> groupsWithSkillsTrained = new ArrayList<ApiSkillGroup>();
         	for (ApiSkillGroup skillGroup : skillTree)
         	{
-        		ArrayList<com.beimin.eveapi.eve.skilltree.ApiSkill> trainedSkills = new ArrayList<com.beimin.eveapi.eve.skilltree.ApiSkill>();
+        		ArrayList<com.zdonnell.androideveapi.eve.skilltree.ApiSkill> trainedSkills = new ArrayList<com.zdonnell.androideveapi.eve.skilltree.ApiSkill>();
         		
-        		for (com.beimin.eveapi.eve.skilltree.ApiSkill skillInfo : skillGroup.getSkills())
+        		for (com.zdonnell.androideveapi.eve.skilltree.ApiSkill skillInfo : skillGroup.getSkills())
         		{
         			if (characterSkills.get(skillInfo.getTypeID()) != null) trainedSkills.add(skillInfo);
         		}
@@ -271,7 +272,7 @@ public class SkillsFragment extends DetailFragment {
         			ApiSkillGroup newGroup = new ApiSkillGroup();
         			newGroup.setGroupID(skillGroup.getGroupID());
         			newGroup.setGroupName(skillGroup.getGroupName());
-        			for (com.beimin.eveapi.eve.skilltree.ApiSkill skill : trainedSkills) newGroup.add(skill);
+        			for (com.zdonnell.androideveapi.eve.skilltree.ApiSkill skill : trainedSkills) newGroup.add(skill);
         			
         			groupsWithSkillsTrained.add(newGroup);
         		}
@@ -291,7 +292,7 @@ public class SkillsFragment extends DetailFragment {
 		public Object getChild(int groupPosition, int childPosition) 
 		{
 			ApiSkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
-			com.beimin.eveapi.eve.skilltree.ApiSkill[] groupSkills = new com.beimin.eveapi.eve.skilltree.ApiSkill[skillTreeType[groupPosition].getSkills().size()];
+			com.zdonnell.androideveapi.eve.skilltree.ApiSkill[] groupSkills = new com.zdonnell.androideveapi.eve.skilltree.ApiSkill[skillTreeType[groupPosition].getSkills().size()];
 			skillTreeType[groupPosition].getSkills().toArray(groupSkills);
 			
 			Arrays.sort(groupSkills, new SkillsSort.SkillInfoAlpha());
@@ -302,12 +303,12 @@ public class SkillsFragment extends DetailFragment {
 		public long getChildId(int groupPosition, int childPosition) 
 		{
 			ApiSkillGroup[] skillTreeType = showAll ? skillTree : skillTreeTrainedSkills;
-			com.beimin.eveapi.eve.skilltree.ApiSkill[] groupSkills = new com.beimin.eveapi.eve.skilltree.ApiSkill[skillTreeType[groupPosition].getSkills().size()];
+			com.zdonnell.androideveapi.eve.skilltree.ApiSkill[] groupSkills = new com.zdonnell.androideveapi.eve.skilltree.ApiSkill[skillTreeType[groupPosition].getSkills().size()];
 			skillTreeType[groupPosition].getSkills().toArray(groupSkills);
 			
 			Arrays.sort(groupSkills, new SkillsSort.SkillInfoAlpha());
 			
-			com.beimin.eveapi.eve.skilltree.ApiSkill childSkill = groupSkills[childPosition];
+			com.zdonnell.androideveapi.eve.skilltree.ApiSkill childSkill = groupSkills[childPosition];
 			
 			return childSkill.getTypeID();
 		}
@@ -319,7 +320,7 @@ public class SkillsFragment extends DetailFragment {
 			if (convertView != null) preparedView = convertView;
 			else preparedView = inflater.inflate(childLayoutID, parent, false);
 			
-			com.beimin.eveapi.eve.skilltree.ApiSkill skillInfo = (com.beimin.eveapi.eve.skilltree.ApiSkill) getChild(groupPosition, childPosition);
+			com.zdonnell.androideveapi.eve.skilltree.ApiSkill skillInfo = (com.zdonnell.androideveapi.eve.skilltree.ApiSkill) getChild(groupPosition, childPosition);
 			prepareChild(skillInfo, preparedView);
 			
 			final Intent intent = new Intent(context, TypeInfoActivity.class);
@@ -337,7 +338,7 @@ public class SkillsFragment extends DetailFragment {
 			return preparedView;
 		}
 		
-		protected void prepareChild(com.beimin.eveapi.eve.skilltree.ApiSkill skillInfo, View preparedView)
+		protected void prepareChild(com.zdonnell.androideveapi.eve.skilltree.ApiSkill skillInfo, View preparedView)
 		{
 			TextView skillName = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_skillname);
 			TextView spText = (TextView) preparedView.findViewById(R.id.char_detail_skills_list_item_skillsptext);
@@ -465,7 +466,7 @@ public class SkillsFragment extends DetailFragment {
 			
 			int totalSkillsCount = getSkillCount(groupPosition); 
 			int currentSkillsCount = 0;
-			for (com.beimin.eveapi.eve.skilltree.ApiSkill skill : skillGroup.getSkills())
+			for (com.zdonnell.androideveapi.eve.skilltree.ApiSkill skill : skillGroup.getSkills())
 			{
 				if (characterSkills.get(skill.getTypeID()) != null) ++currentSkillsCount;
 			}
@@ -473,7 +474,7 @@ public class SkillsFragment extends DetailFragment {
 			skillCount.setText("Skills: " + currentSkillsCount + " of " + totalSkillsCount);
 			
 			int groupSPCount = 0;
-			for (com.beimin.eveapi.eve.skilltree.ApiSkill skill : skillGroup.getSkills())
+			for (com.zdonnell.androideveapi.eve.skilltree.ApiSkill skill : skillGroup.getSkills())
 			{
 				if (characterSkills.get(skill.getTypeID()) != null) groupSPCount += characterSkills.get(skill.getTypeID()).getSkillpoints();
 			}

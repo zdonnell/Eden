@@ -6,7 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 
-import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
+import com.zdonnell.androideveapi.character.skill.queue.ApiSkillQueueItem;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.helpers.Tools;
 

@@ -11,15 +11,15 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.beimin.eveapi.character.sheet.ApiAttributeEnhancer;
-import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
-import com.beimin.eveapi.core.ApiAuth;
-import com.beimin.eveapi.core.ApiAuthorization;
-import com.beimin.eveapi.exception.ApiException;
-import com.zdonnell.eve.ILoadingActivity;
+import com.zdonnell.androideveapi.character.sheet.ApiAttributeEnhancer;
+import com.zdonnell.androideveapi.character.sheet.CharacterSheetResponse;
+import com.zdonnell.androideveapi.core.ApiAuth;
+import com.zdonnell.androideveapi.core.ApiAuthorization;
+import com.zdonnell.androideveapi.exception.ApiException;
+import com.zdonnell.androideveapi.link.APIExceptionCallback;
+import com.zdonnell.androideveapi.link.ILoadingActivity;
+import com.zdonnell.androideveapi.link.character.APICharacter;
 import com.zdonnell.eve.R;
-import com.zdonnell.eve.apilink.APIExceptionCallback;
-import com.zdonnell.eve.apilink.character.APICharacter;
 import com.zdonnell.eve.character.detail.DetailFragment;
 
 public class AttributesFragment extends DetailFragment {

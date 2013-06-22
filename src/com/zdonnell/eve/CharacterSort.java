@@ -2,8 +2,8 @@ package com.zdonnell.eve;
 
 import java.util.Comparator;
 
-import com.beimin.eveapi.account.characters.EveCharacter;
-import com.zdonnell.eve.apilink.account.EdenEveCharacter;
+import com.zdonnell.androideveapi.account.characters.EveCharacter;
+import com.zdonnell.androideveapi.link.account.EdenEveCharacter;
 
 public class CharacterSort {
 	

@@ -17,17 +17,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.beimin.eveapi.account.characters.CharactersResponse;
-import com.beimin.eveapi.account.characters.EveCharacter;
-import com.beimin.eveapi.core.ApiAuth;
-import com.beimin.eveapi.core.ApiAuthorization;
-import com.beimin.eveapi.exception.ApiException;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.zdonnell.eve.apilink.APIExceptionCallback;
-import com.zdonnell.eve.apilink.account.Account;
+import com.zdonnell.androideveapi.account.characters.CharactersResponse;
+import com.zdonnell.androideveapi.account.characters.EveCharacter;
+import com.zdonnell.androideveapi.core.ApiAuth;
+import com.zdonnell.androideveapi.core.ApiAuthorization;
+import com.zdonnell.androideveapi.exception.ApiException;
+import com.zdonnell.androideveapi.link.APIExceptionCallback;
+import com.zdonnell.androideveapi.link.account.Account;
 import com.zdonnell.eve.helpers.ImageURL;
 
-public class AddAPIDialog extends DialogFragment 
+public class AddAPIDialog extends DialogFragment
 {
 	/**
 	 * Manages a list of TextWatchers that, when all not empty will enable a button

@@ -13,7 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.zdonnell.eve.apilink.APICallback;
+import com.zdonnell.androideveapi.link.APICallback;
+import com.zdonnell.androideveapi.link.ILoadingActivity;
 import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.priceservice.PriceService;
 import com.zdonnell.eve.staticdata.StaticData;

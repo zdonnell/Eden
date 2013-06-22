@@ -8,8 +8,8 @@ import android.graphics.Paint.Style;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.beimin.eveapi.character.sheet.ApiSkill;
-import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
+import com.zdonnell.androideveapi.character.sheet.ApiSkill;
+import com.zdonnell.androideveapi.character.skill.queue.ApiSkillQueueItem;
 import com.zdonnell.eve.helpers.Tools;
 
 public class SkillLevelIndicator extends View {

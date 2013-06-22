@@ -2,8 +2,8 @@ package com.zdonnell.eve.character.detail.skills;
 
 import java.util.Comparator;
 
-import com.beimin.eveapi.eve.skilltree.ApiSkill;
-import com.beimin.eveapi.eve.skilltree.ApiSkillGroup;
+import com.zdonnell.androideveapi.eve.skilltree.ApiSkill;
+import com.zdonnell.androideveapi.eve.skilltree.ApiSkillGroup;
 
 public class SkillsSort 
 {

@@ -19,17 +19,17 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import com.beimin.eveapi.core.ApiAuth;
-import com.beimin.eveapi.core.ApiAuthorization;
-import com.beimin.eveapi.exception.ApiException;
-import com.beimin.eveapi.shared.assetlist.AssetListResponse;
-import com.beimin.eveapi.shared.assetlist.EveAsset;
-import com.zdonnell.eve.ILoadingActivity;
+import com.zdonnell.androideveapi.core.ApiAuth;
+import com.zdonnell.androideveapi.core.ApiAuthorization;
+import com.zdonnell.androideveapi.exception.ApiException;
+import com.zdonnell.androideveapi.link.APICallback;
+import com.zdonnell.androideveapi.link.APIExceptionCallback;
+import com.zdonnell.androideveapi.link.ILoadingActivity;
+import com.zdonnell.androideveapi.link.character.APICharacter;
+import com.zdonnell.androideveapi.link.character.AssetsEntity;
+import com.zdonnell.androideveapi.shared.assetlist.AssetListResponse;
+import com.zdonnell.androideveapi.shared.assetlist.EveAsset;
 import com.zdonnell.eve.R;
-import com.zdonnell.eve.apilink.APICallback;
-import com.zdonnell.eve.apilink.APIExceptionCallback;
-import com.zdonnell.eve.apilink.character.APICharacter;
-import com.zdonnell.eve.apilink.character.AssetsEntity;
 import com.zdonnell.eve.character.detail.DetailFragment;
 import com.zdonnell.eve.character.detail.InventorySort;
 import com.zdonnell.eve.priceservice.PriceService;
@@ -43,7 +43,7 @@ import com.zdonnell.eve.staticdata.TypeInfo;
  * @author Zach
  *
  */
-public class ParentAssetsFragment extends DetailFragment 
+public class ParentAssetsFragment extends DetailFragment
 {    
     public final static int STATION = 0;
     public final static int ASSET = 1;

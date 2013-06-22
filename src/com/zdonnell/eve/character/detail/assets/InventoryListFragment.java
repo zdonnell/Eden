@@ -23,16 +23,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.zdonnell.androideveapi.link.character.AssetsEntity;
+import com.zdonnell.androideveapi.link.character.AssetsEntity.Item;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
-import com.zdonnell.eve.apilink.character.AssetsEntity;
-import com.zdonnell.eve.apilink.character.AssetsEntity.Item;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.staticdata.StationInfo;
 import com.zdonnell.eve.staticdata.TypeInfo;
 
-public class InventoryListFragment extends Fragment implements IAssetsSubFragment 
+public class InventoryListFragment extends Fragment implements IAssetsSubFragment
 {
 	private static final int GRID = 0;
 	private static final int LIST = 1;

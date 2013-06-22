@@ -5,9 +5,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 
+import com.zdonnell.androideveapi.link.ILoadingActivity;
 import com.zdonnell.eve.CharacterDetailActivity;
 import com.zdonnell.eve.CharacterSheetActivity;
-import com.zdonnell.eve.ILoadingActivity;
 
 /**
  * This is a base {@link Fragment} which all Character Detail Fragments should extend

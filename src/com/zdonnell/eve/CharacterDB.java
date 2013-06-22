@@ -10,10 +10,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.beimin.eveapi.account.characters.EveCharacter;
-import com.beimin.eveapi.core.ApiAuth;
-import com.beimin.eveapi.core.ApiAuthorization;
-import com.zdonnell.eve.apilink.account.EdenEveCharacter;
+import com.zdonnell.androideveapi.account.characters.EveCharacter;
+import com.zdonnell.androideveapi.core.ApiAuth;
+import com.zdonnell.androideveapi.core.ApiAuthorization;
+import com.zdonnell.androideveapi.link.account.EdenEveCharacter;
 
 public class CharacterDB {
 	// the Activity or Application that is creating an object from this class.

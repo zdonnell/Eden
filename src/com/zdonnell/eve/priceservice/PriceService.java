@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.SparseArray;
 
-import com.zdonnell.eve.apilink.APICallback;
+import com.zdonnell.androideveapi.link.APICallback;
 import com.zdonnell.eve.helpers.Tools;
 
 public class PriceService {

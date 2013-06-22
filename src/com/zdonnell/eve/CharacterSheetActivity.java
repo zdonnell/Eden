@@ -6,16 +6,16 @@ import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuInflater;
 
-import com.beimin.eveapi.core.ApiAuth;
-import com.beimin.eveapi.core.ApiAuthorization;
-import com.zdonnell.eve.apilink.character.APICharacter;
+import com.zdonnell.androideveapi.core.ApiAuth;
+import com.zdonnell.androideveapi.core.ApiAuthorization;
+import com.zdonnell.androideveapi.link.character.APICharacter;
 import com.zdonnell.eve.character.detail.assets.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.attributes.AttributesFragment;
 import com.zdonnell.eve.character.detail.queue.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.skills.SkillsFragment;
 import com.zdonnell.eve.character.detail.wallet.WalletFragment;
 
-public class CharacterSheetActivity extends NavDrawerActivity implements CharacterSheetFragment.Callbacks 
+public class CharacterSheetActivity extends NavDrawerActivity implements CharacterSheetFragment.Callbacks
 {
 	public CharacterSheetActivity(int titleRes) 
 	{

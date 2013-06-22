@@ -6,7 +6,7 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.SparseArray;
 
-import com.zdonnell.eve.apilink.APICallback;
+import com.zdonnell.androideveapi.link.APICallback;
 
 public class PriceDatabaseTask extends AsyncTask<Integer, Integer, SparseArray<Float>>
 {		
