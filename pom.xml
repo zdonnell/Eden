@@ -52,7 +52,6 @@
 			<groupId>com.zdonnell</groupId>
 			<artifactId>androideveapi</artifactId>
 			<version>0.1.4</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 		    <groupId>com.nostra13.universalimageloader</groupId>
