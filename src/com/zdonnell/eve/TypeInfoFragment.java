@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.zdonnell.androideveapi.link.APICallback;
+import com.zdonnell.androideveapi.link.ApiCallback;
 import com.zdonnell.androideveapi.link.ILoadingActivity;
 import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.priceservice.PriceService;
@@ -40,7 +40,7 @@ public class TypeInfoFragment extends Fragment {
 		
 		ImageLoader.getInstance().displayImage(ImageURL.forType(typeID), typeIcon);
 		
-		new StaticData(inflater.getContext()).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity()) 
+		new StaticData(inflater.getContext()).getTypeInfo(new ApiCallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity()) 
 		{
 			@Override
 			public void onUpdate(SparseArray<TypeInfo> typeInfo) 
@@ -54,7 +54,7 @@ public class TypeInfoFragment extends Fragment {
 			}
 		}, typeID);
 		
-		PriceService.getInstance(inflater.getContext()).getValues(new Integer[] { typeID }, new APICallback<SparseArray<Float>>((ILoadingActivity) getActivity()) 
+		PriceService.getInstance(inflater.getContext()).getValues(new Integer[] { typeID }, new ApiCallback<SparseArray<Float>>((ILoadingActivity) getActivity()) 
 		{
 			@Override
 			public void onUpdate(SparseArray<Float> prices) 

@@ -18,7 +18,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.zdonnell.androideveapi.link.APICallback;
+import com.zdonnell.androideveapi.link.ApiCallback;
 import com.zdonnell.eve.helpers.Tools;
 
 public class StaticData {
@@ -34,23 +34,23 @@ public class StaticData {
 		stationDatabase = new StationDatabase(context);
 	}
 	
-	public void getTypeInfo(APICallback<SparseArray<TypeInfo>> callback, Integer... typeIDs)
+	public void getTypeInfo(ApiCallback<SparseArray<TypeInfo>> callback, Integer... typeIDs)
 	{
 		new StaticTypeDatabaseRequest(callback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Tools.stripDuplicateIDs(typeIDs));	
 	}
 	
-	public void getStationInfo(APICallback<SparseArray<StationInfo>> callback, Integer... stationIDs)
+	public void getStationInfo(ApiCallback<SparseArray<StationInfo>> callback, Integer... stationIDs)
 	{
 		new StationDatabaseRequest(callback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Tools.stripDuplicateIDs(stationIDs));	
 	}	
 	
 	private class StationDatabaseRequest extends AsyncTask<Integer, Integer, SparseArray<StationInfo>>
 	{
-		private APICallback<SparseArray<StationInfo>> onCompleteRequestCallback;
+		private ApiCallback<SparseArray<StationInfo>> onCompleteRequestCallback;
 		
 		private Integer[] requestedTypeIDs;
 		
-		public StationDatabaseRequest(APICallback<SparseArray<StationInfo>> callback)
+		public StationDatabaseRequest(ApiCallback<SparseArray<StationInfo>> callback)
 		{
 			onCompleteRequestCallback = callback;
 		}
@@ -83,7 +83,7 @@ public class StaticData {
 				}
 								
 				/* Request the rest from the server, and let that AsyncTask finish the overall request */
-				onCompleteRequestCallback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
+				onCompleteRequestCallback.updateState(ApiCallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
 				new StationServerRequest(storedTypes, onCompleteRequestCallback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, unobtainedTypeIDs);
 			}
 			/* All requested information was obtained from the database, tell the requesting
@@ -91,7 +91,7 @@ public class StaticData {
 			 */
 			else if (amountOfTypesNotFound == 0)
 			{
-				onCompleteRequestCallback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_VALID);
+				onCompleteRequestCallback.updateState(ApiCallback.STATE_CACHED_RESPONSE_ACQUIRED_VALID);
 				onCompleteRequestCallback.onUpdate(storedTypes);
 			}
 			
@@ -100,11 +100,11 @@ public class StaticData {
 	
 	private class StaticTypeDatabaseRequest extends AsyncTask<Integer, Integer, SparseArray<TypeInfo>>
 	{
-		private APICallback<SparseArray<TypeInfo>> onCompleteRequestCallback;
+		private ApiCallback<SparseArray<TypeInfo>> onCompleteRequestCallback;
 		
 		private Integer[] requestedTypeIDs;
 		
-		public StaticTypeDatabaseRequest(APICallback<SparseArray<TypeInfo>> callback)
+		public StaticTypeDatabaseRequest(ApiCallback<SparseArray<TypeInfo>> callback)
 		{
 			onCompleteRequestCallback = callback;
 		}
@@ -140,7 +140,7 @@ public class StaticData {
 				for (int id : unobtainedTypeIDs) Log.d("unobtainedTypeIDs", "unobtainedTypeIDs: " + id);
 								
 				/* Request the rest from the server, and let that AsyncTask finish the overall request */
-				onCompleteRequestCallback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
+				onCompleteRequestCallback.updateState(ApiCallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
 				new StaticTypeServerRequest(storedTypes, onCompleteRequestCallback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, unobtainedTypeIDs);
 			}
 			/* All requested information was obtained from the database, tell the requesting
@@ -148,7 +148,7 @@ public class StaticData {
 			 */
 			else if (amountOfTypesNotFound == 0)
 			{
-				onCompleteRequestCallback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_VALID);
+				onCompleteRequestCallback.updateState(ApiCallback.STATE_CACHED_RESPONSE_ACQUIRED_VALID);
 				onCompleteRequestCallback.onUpdate(storedTypes);
 			}
 			
@@ -161,9 +161,9 @@ public class StaticData {
 		
 		private SparseArray<StationInfo> stationSetFromDatabase;
 		
-		private APICallback<SparseArray<StationInfo>> onCompleteRequestCallback;
+		private ApiCallback<SparseArray<StationInfo>> onCompleteRequestCallback;
 		
-		public StationServerRequest(SparseArray<StationInfo> stationSetFromDatabase, APICallback<SparseArray<StationInfo>> onCompleteRequestCallback)
+		public StationServerRequest(SparseArray<StationInfo> stationSetFromDatabase, ApiCallback<SparseArray<StationInfo>> onCompleteRequestCallback)
 		{
 			this.stationSetFromDatabase = stationSetFromDatabase;
 			this.onCompleteRequestCallback = onCompleteRequestCallback;
@@ -215,9 +215,9 @@ public class StaticData {
 				}
 				
 				onCompleteRequestCallback.onUpdate(stationSetFromDatabase);
-				onCompleteRequestCallback.updateState(APICallback.STATE_SERVER_RESPONSE_ACQUIRED);
+				onCompleteRequestCallback.updateState(ApiCallback.STATE_SERVER_RESPONSE_ACQUIRED);
 			}
-			else onCompleteRequestCallback.updateState(APICallback.STATE_SERVER_RESPONSE_FAILED);
+			else onCompleteRequestCallback.updateState(ApiCallback.STATE_SERVER_RESPONSE_FAILED);
 
 		}
 		
@@ -262,9 +262,9 @@ public class StaticData {
 		
 		private SparseArray<TypeInfo> typeInfoSetFromDatabase;
 		
-		private APICallback<SparseArray<TypeInfo>> onCompleteRequestCallback;
+		private ApiCallback<SparseArray<TypeInfo>> onCompleteRequestCallback;
 		
-		public StaticTypeServerRequest(SparseArray<TypeInfo> typeInfoSetFromDatabase, APICallback<SparseArray<TypeInfo>> onCompleteRequestCallback)
+		public StaticTypeServerRequest(SparseArray<TypeInfo> typeInfoSetFromDatabase, ApiCallback<SparseArray<TypeInfo>> onCompleteRequestCallback)
 		{
 			this.typeInfoSetFromDatabase = typeInfoSetFromDatabase;
 			this.onCompleteRequestCallback = onCompleteRequestCallback;
@@ -321,14 +321,14 @@ public class StaticData {
 				}
 				
 				onCompleteRequestCallback.onUpdate(typeInfoSetFromDatabase);
-				onCompleteRequestCallback.updateState(APICallback.STATE_SERVER_RESPONSE_ACQUIRED);
+				onCompleteRequestCallback.updateState(ApiCallback.STATE_SERVER_RESPONSE_ACQUIRED);
 			}
 			else if (typeInfoSetFromDatabase.size() > 0)
 			{
 				onCompleteRequestCallback.onUpdate(typeInfoSetFromDatabase);
-				onCompleteRequestCallback.updateState(APICallback.STATE_SERVER_RESPONSE_ACQUIRED);
+				onCompleteRequestCallback.updateState(ApiCallback.STATE_SERVER_RESPONSE_ACQUIRED);
 			}
-			else onCompleteRequestCallback.updateState(APICallback.STATE_SERVER_RESPONSE_FAILED);
+			else onCompleteRequestCallback.updateState(ApiCallback.STATE_SERVER_RESPONSE_FAILED);
 			
 		}
 		

@@ -16,9 +16,9 @@ import com.zdonnell.androideveapi.character.sheet.CharacterSheetResponse;
 import com.zdonnell.androideveapi.core.ApiAuth;
 import com.zdonnell.androideveapi.core.ApiAuthorization;
 import com.zdonnell.androideveapi.exception.ApiException;
-import com.zdonnell.androideveapi.link.APIExceptionCallback;
+import com.zdonnell.androideveapi.link.ApiExceptionCallback;
 import com.zdonnell.androideveapi.link.ILoadingActivity;
-import com.zdonnell.androideveapi.link.character.APICharacter;
+import com.zdonnell.androideveapi.link.character.ApiCharacter;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.character.detail.DetailFragment;
 
@@ -43,7 +43,7 @@ public class AttributesFragment extends DetailFragment {
     	icons[INTELLIGENCE] = R.drawable.intelligence_icon;
     }
     
-    private APICharacter character;
+    private ApiCharacter character;
         
     /**
      * Array storing attribute values
@@ -73,7 +73,7 @@ public class AttributesFragment extends DetailFragment {
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_attributes, container, false);
     	
     	ApiAuth<?> apiAuth = new ApiAuthorization(getArguments().getInt("keyID"), getArguments().getInt("characterID"), getArguments().getString("vCode"));
-    	character = new APICharacter(context, apiAuth);
+    	character = new ApiCharacter(context, apiAuth);
     	
     	attributesListView = (ListView) inflatedView.findViewById(R.id.char_detail_attributes_list);
     	loadData();
@@ -148,7 +148,7 @@ public class AttributesFragment extends DetailFragment {
 	@Override
 	public void loadData() 
 	{
-		character.getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>((ILoadingActivity) getActivity())
+		character.getCharacterSheet(new ApiExceptionCallback<CharacterSheetResponse>((ILoadingActivity) getActivity())
 		{
 			@Override
 			public void onUpdate(CharacterSheetResponse response) 

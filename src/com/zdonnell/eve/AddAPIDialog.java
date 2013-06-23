@@ -23,8 +23,8 @@ import com.zdonnell.androideveapi.account.characters.EveCharacter;
 import com.zdonnell.androideveapi.core.ApiAuth;
 import com.zdonnell.androideveapi.core.ApiAuthorization;
 import com.zdonnell.androideveapi.exception.ApiException;
-import com.zdonnell.androideveapi.link.APIExceptionCallback;
-import com.zdonnell.androideveapi.link.account.Account;
+import com.zdonnell.androideveapi.link.ApiExceptionCallback;
+import com.zdonnell.androideveapi.link.account.ApiAccount;
 import com.zdonnell.eve.helpers.ImageURL;
 
 public class AddAPIDialog extends DialogFragment
@@ -202,7 +202,7 @@ public class AddAPIDialog extends DialogFragment
 		loadCharAsEnabled[0] = loadCharAsEnabled[1] = loadCharAsEnabled[2] = true;
 		
 		apiAuth = new ApiAuthorization(keyID, vCode);
-		new Account(apiAuth, getActivity()).getCharacters(new APIExceptionCallback<CharactersResponse>(null) 
+		new ApiAccount(apiAuth, getActivity()).getCharacters(new ApiExceptionCallback<CharactersResponse>(null) 
 		{
 			@Override
 			public void onUpdate(CharactersResponse response) 

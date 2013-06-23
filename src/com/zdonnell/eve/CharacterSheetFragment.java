@@ -28,10 +28,10 @@ import com.zdonnell.androideveapi.character.skill.queue.ApiSkillQueueItem;
 import com.zdonnell.androideveapi.character.skill.queue.SkillQueueResponse;
 import com.zdonnell.androideveapi.eve.character.CharacterInfoResponse;
 import com.zdonnell.androideveapi.exception.ApiException;
-import com.zdonnell.androideveapi.link.APICallback;
-import com.zdonnell.androideveapi.link.APIExceptionCallback;
+import com.zdonnell.androideveapi.link.ApiCallback;
+import com.zdonnell.androideveapi.link.ApiExceptionCallback;
 import com.zdonnell.androideveapi.link.ILoadingActivity;
-import com.zdonnell.androideveapi.link.character.APICharacter;
+import com.zdonnell.androideveapi.link.character.ApiCharacter;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.helpers.Tools;
@@ -203,14 +203,14 @@ public class CharacterSheetFragment extends Fragment
      * 
      * @param characterID
      */
-	public void setCharacter(APICharacter character) 
+	public void setCharacter(ApiCharacter character) 
 	{
 		final ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
 		int characterID = character.getApiAuth().getCharacterID().intValue();
 		
 		ImageLoader.getInstance().displayImage(ImageURL.forChar(characterID), portrait);
 		
-		character.getSkillQueue(new APIExceptionCallback<SkillQueueResponse>((ILoadingActivity) getActivity())
+		character.getSkillQueue(new ApiExceptionCallback<SkillQueueResponse>((ILoadingActivity) getActivity())
 		{
 			@Override
 			public void onUpdate(SkillQueueResponse response) 
@@ -227,7 +227,7 @@ public class CharacterSheetFragment extends Fragment
 			}
 		});
     	
-    	character.getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>((ILoadingActivity) getActivity()) 
+    	character.getCharacterSheet(new ApiExceptionCallback<CharacterSheetResponse>((ILoadingActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(CharacterSheetResponse rCharacterSheet) 
@@ -243,7 +243,7 @@ public class CharacterSheetFragment extends Fragment
 			}
     	});
     	
-    	character.getCharacterInfo(new APIExceptionCallback<CharacterInfoResponse>((ILoadingActivity) getActivity()) 
+    	character.getCharacterInfo(new ApiExceptionCallback<CharacterInfoResponse>((ILoadingActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(CharacterInfoResponse response) 
@@ -276,7 +276,7 @@ public class CharacterSheetFragment extends Fragment
 			} 
 			catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
 						
-			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
+			new StaticData(context).getTypeInfo(new ApiCallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
 			{
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> updatedData) 

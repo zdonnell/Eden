@@ -29,9 +29,9 @@ import com.zdonnell.androideveapi.eve.skilltree.ApiSkillGroup;
 import com.zdonnell.androideveapi.eve.skilltree.CharacterAttribute;
 import com.zdonnell.androideveapi.eve.skilltree.SkillTreeResponse;
 import com.zdonnell.androideveapi.exception.ApiException;
-import com.zdonnell.androideveapi.link.APIExceptionCallback;
-import com.zdonnell.androideveapi.link.character.APICharacter;
-import com.zdonnell.androideveapi.link.eve.Eve;
+import com.zdonnell.androideveapi.link.ApiExceptionCallback;
+import com.zdonnell.androideveapi.link.character.ApiCharacter;
+import com.zdonnell.androideveapi.link.eve.ApiEve;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
 import com.zdonnell.eve.character.detail.DetailFragment;
@@ -105,7 +105,7 @@ public class SkillsFragment extends DetailFragment {
 	{   
     	// Load in Character Sheet to get Character Skills
 		ApiAuthorization apiAuth = new ApiAuthorization(getArguments().getInt("keyID"), getArguments().getInt("characterID"), getArguments().getString("vCode"));
-		new APICharacter(context, apiAuth).getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>(parentActivity)
+		new ApiCharacter(context, apiAuth).getCharacterSheet(new ApiExceptionCallback<CharacterSheetResponse>(parentActivity)
 		{
 			@Override
 			public void onUpdate(CharacterSheetResponse response) 
@@ -127,7 +127,7 @@ public class SkillsFragment extends DetailFragment {
 		});
 		
 		// Load in the Skill Tree
-		new Eve(context).skillTree(new APIExceptionCallback<SkillTreeResponse>(parentActivity)
+		new ApiEve(context).skillTree(new ApiExceptionCallback<SkillTreeResponse>(parentActivity)
 		{
 			@Override
 			public void onUpdate(SkillTreeResponse response) 

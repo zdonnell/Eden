@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.SparseArray;
 
-import com.zdonnell.androideveapi.link.APICallback;
+import com.zdonnell.androideveapi.link.ApiCallback;
 import com.zdonnell.eve.helpers.Tools;
 
 public class PriceService {
@@ -34,7 +34,7 @@ public class PriceService {
 		this.context = context;
 	}
 	
-	public void getValues(Integer[] typeIDs, APICallback<SparseArray<Float>> callback)
+	public void getValues(Integer[] typeIDs, ApiCallback<SparseArray<Float>> callback)
 	{			
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 		if (preferences.getBoolean("price_enabled", true))
