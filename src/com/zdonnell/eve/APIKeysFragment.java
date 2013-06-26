@@ -16,10 +16,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.beimin.eveapi.account.characters.EveCharacter;
-import com.beimin.eveapi.core.ApiAuth;
-import com.beimin.eveapi.core.ApiAuthorization;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.zdonnell.androideveapi.account.characters.EveCharacter;
+import com.zdonnell.androideveapi.core.ApiAuth;
+import com.zdonnell.androideveapi.core.ApiAuthorization;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.ImageURL;
 
@@ -31,7 +31,7 @@ import com.zdonnell.eve.helpers.ImageURL;
  * @see {@link APIKeysActivity}
  *
  */
-public class APIKeysFragment extends Fragment 
+public class APIKeysFragment extends Fragment
 {
 	/**
 	 * List of all {@link APICredentials} 

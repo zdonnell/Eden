@@ -6,16 +6,16 @@ import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuInflater;
 
-import com.beimin.eveapi.core.ApiAuth;
-import com.beimin.eveapi.core.ApiAuthorization;
-import com.zdonnell.eve.apilink.character.APICharacter;
+import com.zdonnell.androideveapi.core.ApiAuth;
+import com.zdonnell.androideveapi.core.ApiAuthorization;
+import com.zdonnell.androideveapi.link.character.ApiCharacter;
 import com.zdonnell.eve.character.detail.assets.ParentAssetsFragment;
 import com.zdonnell.eve.character.detail.attributes.AttributesFragment;
 import com.zdonnell.eve.character.detail.queue.SkillQueueFragment;
 import com.zdonnell.eve.character.detail.skills.SkillsFragment;
 import com.zdonnell.eve.character.detail.wallet.WalletFragment;
 
-public class CharacterSheetActivity extends NavDrawerActivity implements CharacterSheetFragment.Callbacks 
+public class CharacterSheetActivity extends NavDrawerActivity implements CharacterSheetFragment.Callbacks
 {
 	public CharacterSheetActivity(int titleRes) 
 	{
@@ -29,7 +29,7 @@ public class CharacterSheetActivity extends NavDrawerActivity implements Charact
 	
 	private boolean mTwoPane;
             
-    APICharacter assembledChar;
+    ApiCharacter assembledChar;
     
     private String[] characterInfo;
     
@@ -43,7 +43,7 @@ public class CharacterSheetActivity extends NavDrawerActivity implements Charact
 		characterInfo = getIntent().getExtras().getStringArray("character");
         
         ApiAuth<?> apiAuth = new ApiAuthorization(Integer.valueOf(characterInfo[1]), Long.valueOf(characterInfo[0]), characterInfo[2]);
-        assembledChar = new APICharacter(getBaseContext(), apiAuth);
+        assembledChar = new ApiCharacter(getBaseContext(), apiAuth);
         ((CharacterSheetFragment) getSupportFragmentManager().findFragmentById(R.id.content_frame)).setCharacter(assembledChar);
         
         getActionBar().setTitle(new CharacterDB(this).getCharacterName(assembledChar.getApiAuth().getCharacterID().intValue()));

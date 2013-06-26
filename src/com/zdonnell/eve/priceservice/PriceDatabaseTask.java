@@ -6,11 +6,11 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.SparseArray;
 
-import com.zdonnell.eve.apilink.APICallback;
+import com.zdonnell.androideveapi.link.ApiCallback;
 
 public class PriceDatabaseTask extends AsyncTask<Integer, Integer, SparseArray<Float>>
 {		
-	private APICallback<SparseArray<Float>> callback;
+	private ApiCallback<SparseArray<Float>> callback;
 	
 	private static final int HOURLY = 0;
 	private static final int DAILY = 1;
@@ -32,7 +32,7 @@ public class PriceDatabaseTask extends AsyncTask<Integer, Integer, SparseArray<F
 	
 	private Integer[] strippedTypeIDs;
 	
-	public PriceDatabaseTask(APICallback<SparseArray<Float>> callback, Context context)
+	public PriceDatabaseTask(ApiCallback<SparseArray<Float>> callback, Context context)
 	{
 		this.callback = callback;
 		this.context = context;
@@ -55,7 +55,7 @@ public class PriceDatabaseTask extends AsyncTask<Integer, Integer, SparseArray<F
 		/* If the returned SparseArray is of the same size as the Integer array then it contains all prices requested */
 		if (cachedPrices.size() == strippedTypeIDs.length) 
 		{
-			callback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_VALID);
+			callback.updateState(ApiCallback.STATE_CACHED_RESPONSE_ACQUIRED_VALID);
 			callback.onUpdate(cachedPrices);
 		}
 		else
@@ -75,7 +75,7 @@ public class PriceDatabaseTask extends AsyncTask<Integer, Integer, SparseArray<F
 				}
 			}
 			
-			callback.updateState(APICallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
+			callback.updateState(ApiCallback.STATE_CACHED_RESPONSE_ACQUIRED_INVALID);
 			new PriceCheckTask(callback, cachedPrices, context).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, nonCachedTypeIDs);
 		}	
 	}

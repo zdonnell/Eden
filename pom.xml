@@ -9,10 +9,10 @@
 	<name>Eden</name>
 
 	<repositories>
-		<!-- EveAPI Repository -->
+		<!-- AndroidEveApi Repository -->
 		<repository>
-			<id>eveapi</id>
-			<url>https://eveapi.googlecode.com/svn/m2/releases</url>
+			<id>androideveapi</id>
+			<url>https://raw.github.com/zdonnell/androideveapi/master/m2/releases</url>
 		</repository>
 		<!-- Sonyatype -->
 		<repository>
@@ -49,9 +49,9 @@
 			<version>1.7.5</version>
 		</dependency>
 		<dependency>
-			<groupId>com.beimin</groupId>
-			<artifactId>eveapi</artifactId>
-			<version>5.1.2</version>
+			<groupId>com.zdonnell</groupId>
+			<artifactId>androideveapi</artifactId>
+			<version>0.1.9</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.nostra13.universalimageloader</groupId>
@@ -59,7 +59,7 @@
 		    <version>1.8.4</version>
 		</dependency>
 	</dependencies>
-
+	
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>

@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
 import android.text.Html;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,16 +21,17 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.beimin.eveapi.character.sheet.ApiSkill;
-import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
-import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
-import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
-import com.beimin.eveapi.eve.character.CharacterInfoResponse;
-import com.beimin.eveapi.exception.ApiException;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.zdonnell.eve.apilink.APICallback;
-import com.zdonnell.eve.apilink.APIExceptionCallback;
-import com.zdonnell.eve.apilink.character.APICharacter;
+import com.zdonnell.androideveapi.character.sheet.ApiSkill;
+import com.zdonnell.androideveapi.character.sheet.CharacterSheetResponse;
+import com.zdonnell.androideveapi.character.skill.queue.ApiSkillQueueItem;
+import com.zdonnell.androideveapi.character.skill.queue.SkillQueueResponse;
+import com.zdonnell.androideveapi.eve.character.CharacterInfoResponse;
+import com.zdonnell.androideveapi.exception.ApiException;
+import com.zdonnell.androideveapi.link.ApiCallback;
+import com.zdonnell.androideveapi.link.ApiExceptionCallback;
+import com.zdonnell.androideveapi.link.ILoadingActivity;
+import com.zdonnell.androideveapi.link.character.ApiCharacter;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.helpers.Tools;
@@ -203,22 +203,18 @@ public class CharacterSheetFragment extends Fragment
      * 
      * @param characterID
      */
-	public void setCharacter(APICharacter character) 
+	public void setCharacter(ApiCharacter character) 
 	{
 		final ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
 		int characterID = character.getApiAuth().getCharacterID().intValue();
 		
 		ImageLoader.getInstance().displayImage(ImageURL.forChar(characterID), portrait);
 		
-		final long starttime1 = System.currentTimeMillis();
-		// get character's skill queue
-		character.getSkillQueue(new APIExceptionCallback<SkillQueueResponse>((ILoadingActivity) getActivity())
+		character.getSkillQueue(new ApiExceptionCallback<SkillQueueResponse>((ILoadingActivity) getActivity())
 		{
 			@Override
 			public void onUpdate(SkillQueueResponse response) 
 			{
-				Log.d("Eden", "SKILL QUEUE END LOAD: " + (System.currentTimeMillis() - starttime1));
-
 				skillQueue.clear();
 				skillQueue.addAll(response.getAll());
 				configureSkillQueueTimer();
@@ -231,15 +227,11 @@ public class CharacterSheetFragment extends Fragment
 			}
 		});
     	
-		final long starttime = System.currentTimeMillis();
-		// get character's character sheet
-    	character.getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>((ILoadingActivity) getActivity()) 
+    	character.getCharacterSheet(new ApiExceptionCallback<CharacterSheetResponse>((ILoadingActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(CharacterSheetResponse rCharacterSheet) 
 			{
-				Log.d("Eden", "CHARACTER SHEET END LOAD: " + (System.currentTimeMillis() - starttime));
-
 				characterSheet = rCharacterSheet;
 				obtainedCharacterInfoSheet();
 			}
@@ -251,16 +243,11 @@ public class CharacterSheetFragment extends Fragment
 			}
     	});
     	
-		final long starttime2 = System.currentTimeMillis();
-
-    	// get character's info
-    	character.getCharacterInfo(new APIExceptionCallback<CharacterInfoResponse>((ILoadingActivity) getActivity()) 
+    	character.getCharacterInfo(new ApiExceptionCallback<CharacterInfoResponse>((ILoadingActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(CharacterInfoResponse response) 
 			{
-				Log.d("Eden", "CHARACTER INFO END LOAD: " + (System.currentTimeMillis() - starttime2));
-
 				characterInfo = response;
 				obtainedCharacterInfoSheet();
 			}
@@ -271,19 +258,6 @@ public class CharacterSheetFragment extends Fragment
 				
 			}
     	});
-    	
-    	/*com.zdonnell.eve.api.character.APICharacter testchar = new com.zdonnell.eve.api.character.APICharacter(new APICredentials(character.getApiAuth().getKeyID(), character.getApiAuth().getVCode()), character.getApiAuth().getCharacterID().intValue(), context);
-    	testchar.getCharacterInfo(new APICallback<CharacterInfo>((ILoadingActivity) getActivity()){
-
-			@Override
-			public void onUpdate(CharacterInfo updatedData) {
-				Log.d("Eden", "CHARACTER INFO END LOAD: " + (System.currentTimeMillis() - starttime2));
-
-				// TODO Auto-generated method stub
-				
-			}
-    		
-    	});*/
 	}
 	
 	private void configureSkillQueueTimer()
@@ -302,7 +276,7 @@ public class CharacterSheetFragment extends Fragment
 			} 
 			catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
 						
-			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
+			new StaticData(context).getTypeInfo(new ApiCallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
 			{
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> updatedData) 
@@ -375,15 +349,12 @@ public class CharacterSheetFragment extends Fragment
 			TextView characterSPView = (TextView) rootView.findViewById(R.id.current_sp);
 			characterSPView.setText(formatter.format(characterInfo.getSkillPoints()) + " SP");
 									
-			/*
-			 * TODO enable clone info when eveapi supports clone info
-			 * 
-			 * TextView cloneNameView = (TextView) rootView.findViewById(R.id.current_clone);
+			TextView cloneNameView = (TextView) rootView.findViewById(R.id.current_clone);
 			if (characterInfo.getSkillPoints() > characterSheet.getCloneSkillPoints())
 			{
 				cloneNameView.setText(Html.fromHtml("<FONT COLOR='#FF4444'>" + formatter.format(characterSheet.getCloneSkillPoints()) + " SP</FONT>"));
 			}
-			else cloneNameView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + formatter.format(characterSheet.getCloneSkillPoints()) + " SP</FONT>")); */
+			else cloneNameView.setText(Html.fromHtml("<FONT COLOR='#99CC00'>" + formatter.format(characterSheet.getCloneSkillPoints()) + " SP</FONT>"));
 			
 			setSubTexts();
 		}

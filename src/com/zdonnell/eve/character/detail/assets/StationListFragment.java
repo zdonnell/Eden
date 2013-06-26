@@ -19,14 +19,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.zdonnell.androideveapi.link.character.AssetsEntity;
+import com.zdonnell.androideveapi.link.character.AssetsEntity.Station;
 import com.zdonnell.eve.R;
-import com.zdonnell.eve.apilink.character.AssetsEntity;
-import com.zdonnell.eve.apilink.character.AssetsEntity.Station;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.staticdata.StationInfo;
 
-public class StationListFragment extends Fragment implements IAssetsSubFragment 
+public class StationListFragment extends Fragment implements IAssetsSubFragment
 {
 	/**
 	 * Reference to the layout to use for list item construction

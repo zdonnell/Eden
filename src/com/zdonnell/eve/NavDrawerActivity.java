@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.zdonnell.androideveapi.link.ILoadingActivity;
 import com.zdonnell.eve.helpers.BasicOnTouchListener;
 
 public abstract class NavDrawerActivity extends FragmentActivity implements ILoadingActivity {

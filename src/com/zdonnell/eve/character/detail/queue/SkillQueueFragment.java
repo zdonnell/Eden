@@ -16,15 +16,16 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
-import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
-import com.beimin.eveapi.core.ApiAuthorization;
-import com.beimin.eveapi.exception.ApiException;
-import com.zdonnell.eve.ILoadingActivity;
+import com.zdonnell.androideveapi.character.skill.queue.ApiSkillQueueItem;
+import com.zdonnell.androideveapi.character.skill.queue.SkillQueueResponse;
+import com.zdonnell.androideveapi.core.ApiAuthorization;
+import com.zdonnell.androideveapi.exception.ApiException;
+import com.zdonnell.androideveapi.link.ApiCallback;
+import com.zdonnell.androideveapi.link.ApiExceptionCallback;
+import com.zdonnell.androideveapi.link.ILoadingActivity;
+import com.zdonnell.androideveapi.link.character.ApiCharacter;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.TypeInfoActivity;
-import com.zdonnell.eve.apilink.APICallback;
-import com.zdonnell.eve.apilink.APIExceptionCallback;
 import com.zdonnell.eve.character.detail.DetailFragment;
 import com.zdonnell.eve.character.detail.SkillLevelIndicator;
 import com.zdonnell.eve.helpers.TimeRemainingCountdown;
@@ -111,7 +112,7 @@ public class SkillQueueFragment extends DetailFragment {
 	{  
 		// Load in Character Sheet to get Character Skills
 		ApiAuthorization apiAuth = new ApiAuthorization(getArguments().getInt("keyID"), getArguments().getInt("characterID"), getArguments().getString("vCode"));
-		new com.zdonnell.eve.apilink.character.APICharacter(context, apiAuth).getSkillQueue(new APIExceptionCallback<SkillQueueResponse>(parentActivity)
+		new ApiCharacter(context, apiAuth).getSkillQueue(new ApiExceptionCallback<SkillQueueResponse>(parentActivity)
 		{
 			@Override
 			public void onUpdate(SkillQueueResponse response) 
@@ -212,7 +213,7 @@ public class SkillQueueFragment extends DetailFragment {
 			
 			// Skill Name Text
 			final TextView skillName = (TextView) mainView.findViewById(R.id.skillqueue_detail_list_item_skillname);
-			new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
+			new StaticData(context).getTypeInfo(new ApiCallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
 			{
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> updatedData) 
