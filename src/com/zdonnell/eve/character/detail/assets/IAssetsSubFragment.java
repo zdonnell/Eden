@@ -2,9 +2,9 @@ package com.zdonnell.eve.character.detail.assets;
 
 import android.util.SparseArray;
 
-import com.zdonnell.eve.apilink.character.AssetsEntity;
+import com.zdonnell.androideveapi.link.character.AssetsEntity;
 
-public interface IAssetsSubFragment 
+public interface IAssetsSubFragment
 {
 	public void setParent(ParentAssetsFragment parent);
 	

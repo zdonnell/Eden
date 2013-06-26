@@ -29,7 +29,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.zdonnell.eve.apilink.APICallback;
+import com.zdonnell.androideveapi.link.ApiCallback;
 
 public class PriceCheckTask extends AsyncTask<Integer, Integer, SparseArray<Float>>
 {
@@ -37,13 +37,13 @@ public class PriceCheckTask extends AsyncTask<Integer, Integer, SparseArray<Floa
 	
 	private final int chunkSize = 1000;
 	
-	private APICallback<SparseArray<Float>> callback;
+	private ApiCallback<SparseArray<Float>> callback;
 	
 	private SparseArray<Float> cachedPrices;
 	
 	private PriceDatabase priceDatabase;
 	
-	public PriceCheckTask(APICallback<SparseArray<Float>> callback, SparseArray<Float> cachedPrices, Context context)
+	public PriceCheckTask(ApiCallback<SparseArray<Float>> callback, SparseArray<Float> cachedPrices, Context context)
 	{
 		this.callback = callback;
 		this.cachedPrices = cachedPrices;
@@ -101,7 +101,7 @@ public class PriceCheckTask extends AsyncTask<Integer, Integer, SparseArray<Floa
 			}
 		}
 		
-		callback.updateState(APICallback.STATE_SERVER_RESPONSE_ACQUIRED);
+		callback.updateState(ApiCallback.STATE_SERVER_RESPONSE_ACQUIRED);
 		callback.onUpdate(values);
 	}
 	

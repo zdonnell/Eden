@@ -19,17 +19,17 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
-import com.beimin.eveapi.core.ApiAuth;
-import com.beimin.eveapi.core.ApiAuthorization;
-import com.beimin.eveapi.exception.ApiException;
-import com.beimin.eveapi.shared.assetlist.AssetListResponse;
-import com.beimin.eveapi.shared.assetlist.EveAsset;
-import com.zdonnell.eve.ILoadingActivity;
+import com.zdonnell.androideveapi.core.ApiAuth;
+import com.zdonnell.androideveapi.core.ApiAuthorization;
+import com.zdonnell.androideveapi.exception.ApiException;
+import com.zdonnell.androideveapi.link.ApiCallback;
+import com.zdonnell.androideveapi.link.ApiExceptionCallback;
+import com.zdonnell.androideveapi.link.ILoadingActivity;
+import com.zdonnell.androideveapi.link.character.ApiCharacter;
+import com.zdonnell.androideveapi.link.character.AssetsEntity;
+import com.zdonnell.androideveapi.shared.assetlist.AssetListResponse;
+import com.zdonnell.androideveapi.shared.assetlist.EveAsset;
 import com.zdonnell.eve.R;
-import com.zdonnell.eve.apilink.APICallback;
-import com.zdonnell.eve.apilink.APIExceptionCallback;
-import com.zdonnell.eve.apilink.character.APICharacter;
-import com.zdonnell.eve.apilink.character.AssetsEntity;
 import com.zdonnell.eve.character.detail.DetailFragment;
 import com.zdonnell.eve.character.detail.InventorySort;
 import com.zdonnell.eve.priceservice.PriceService;
@@ -43,7 +43,7 @@ import com.zdonnell.eve.staticdata.TypeInfo;
  * @author Zach
  *
  */
-public class ParentAssetsFragment extends DetailFragment 
+public class ParentAssetsFragment extends DetailFragment
 {    
     public final static int STATION = 0;
     public final static int ASSET = 1;
@@ -51,7 +51,7 @@ public class ParentAssetsFragment extends DetailFragment
     /**
      * API Object for requesting assets
      */
-	private APICharacter character;
+	private ApiCharacter character;
                                     
 	/**
 	 * Stack of Asset sets that represent each level of assets the 
@@ -128,7 +128,7 @@ public class ParentAssetsFragment extends DetailFragment
     	int characterID = getArguments().getInt("characterID");
     	
     	ApiAuth<?> apiAuth = new ApiAuthorization(keyID, characterID, vCode);
-    	character = new APICharacter(context, apiAuth);
+    	character = new ApiCharacter(context, apiAuth);
     	    	
     	LinearLayout inflatedView = (LinearLayout) inflater.inflate(R.layout.char_detail_assets_childfragment_frame, container, false);
 
@@ -245,7 +245,7 @@ public class ParentAssetsFragment extends DetailFragment
      */
     private void getStationInfo(final Integer[] stationIDs)
     {
-		new StaticData(context).getStationInfo(new APICallback<SparseArray<StationInfo>>((ILoadingActivity) getActivity()) 
+		new StaticData(context).getStationInfo(new ApiCallback<SparseArray<StationInfo>>((ILoadingActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(SparseArray<StationInfo> stationInformation) 
@@ -272,7 +272,7 @@ public class ParentAssetsFragment extends DetailFragment
     	Integer[] uniqueTypeIDs = new Integer[uniqueTypeIDsList.size()];
     	uniqueTypeIDsList.toArray(uniqueTypeIDs);
     	
-    	new StaticData(context).getTypeInfo(new APICallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
+    	new StaticData(context).getTypeInfo(new ApiCallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
     	{
 			@Override
 			public void onUpdate(SparseArray<TypeInfo> rTypeInfo) 
@@ -303,7 +303,7 @@ public class ParentAssetsFragment extends DetailFragment
 		Integer[] marketTypeIDs = new Integer[marketTypeIDsList.size()];
 		marketTypeIDsList.toArray(marketTypeIDs);
 				
-		PriceService.getInstance(context).getValues(marketTypeIDs, new APICallback<SparseArray<Float>>((ILoadingActivity) getActivity()) 
+		PriceService.getInstance(context).getValues(marketTypeIDs, new ApiCallback<SparseArray<Float>>((ILoadingActivity) getActivity()) 
 		{
 			@Override
 			public void onUpdate(SparseArray<Float> updatedData) 
@@ -480,7 +480,7 @@ public class ParentAssetsFragment extends DetailFragment
 	    prices = new SparseArray<Float>();
 	    searchFilter = null;
 	    
-	    character.getAssets(new APIExceptionCallback<AssetListResponse>((ILoadingActivity) getActivity())
+	    character.getAssets(new ApiExceptionCallback<AssetListResponse>((ILoadingActivity) getActivity())
 	    {
 			@Override
 			public void onUpdate(AssetListResponse response) 

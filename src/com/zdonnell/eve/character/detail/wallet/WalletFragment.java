@@ -14,18 +14,18 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.beimin.eveapi.character.sheet.CharacterSheetResponse;
-import com.beimin.eveapi.core.ApiAuth;
-import com.beimin.eveapi.core.ApiAuthorization;
-import com.beimin.eveapi.exception.ApiException;
-import com.beimin.eveapi.shared.wallet.journal.ApiJournalEntry;
-import com.beimin.eveapi.shared.wallet.journal.WalletJournalResponse;
-import com.beimin.eveapi.shared.wallet.transactions.ApiWalletTransaction;
-import com.beimin.eveapi.shared.wallet.transactions.WalletTransactionsResponse;
-import com.zdonnell.eve.ILoadingActivity;
+import com.zdonnell.androideveapi.character.sheet.CharacterSheetResponse;
+import com.zdonnell.androideveapi.core.ApiAuth;
+import com.zdonnell.androideveapi.core.ApiAuthorization;
+import com.zdonnell.androideveapi.exception.ApiException;
+import com.zdonnell.androideveapi.link.ApiExceptionCallback;
+import com.zdonnell.androideveapi.link.ILoadingActivity;
+import com.zdonnell.androideveapi.link.character.ApiCharacter;
+import com.zdonnell.androideveapi.shared.wallet.journal.ApiJournalEntry;
+import com.zdonnell.androideveapi.shared.wallet.journal.WalletJournalResponse;
+import com.zdonnell.androideveapi.shared.wallet.transactions.ApiWalletTransaction;
+import com.zdonnell.androideveapi.shared.wallet.transactions.WalletTransactionsResponse;
 import com.zdonnell.eve.R;
-import com.zdonnell.eve.apilink.APIExceptionCallback;
-import com.zdonnell.eve.apilink.character.APICharacter;
 import com.zdonnell.eve.character.detail.DetailFragment;
 
 public class WalletFragment extends DetailFragment {
@@ -40,7 +40,7 @@ public class WalletFragment extends DetailFragment {
 		displayTypeNames[JOURNAL] = "Journal Entries";
 	}
 		    
-    private APICharacter character;
+    private ApiCharacter character;
         
     private Context context;
     
@@ -74,7 +74,7 @@ public class WalletFragment extends DetailFragment {
     	formatter.setMinimumFractionDigits(2);
 
     	ApiAuth<?> apiAuth = new ApiAuthorization(getArguments().getInt("keyID"), (long) getArguments().getInt("characterID"), getArguments().getString("vCode"));
-    	character = new APICharacter(context, apiAuth);
+    	character = new ApiCharacter(context, apiAuth);
     	
     	characterName = getArguments().getString("characterName");
     	
@@ -103,7 +103,7 @@ public class WalletFragment extends DetailFragment {
     
     public void loadInJournal()
     {
-    	character.getWalletJournal(new APIExceptionCallback<WalletJournalResponse>((ILoadingActivity) getActivity())
+    	character.getWalletJournal(new ApiExceptionCallback<WalletJournalResponse>((ILoadingActivity) getActivity())
     	{
 			@Override
 			public void onUpdate(WalletJournalResponse response) 
@@ -126,7 +126,7 @@ public class WalletFragment extends DetailFragment {
     
     public void loadInTransactions()
     {
-    	character.getWalletTransactions(new APIExceptionCallback<WalletTransactionsResponse>((ILoadingActivity) getActivity())
+    	character.getWalletTransactions(new ApiExceptionCallback<WalletTransactionsResponse>((ILoadingActivity) getActivity())
     	{
 			@Override
 			public void onUpdate(WalletTransactionsResponse response) 
@@ -160,7 +160,7 @@ public class WalletFragment extends DetailFragment {
     		break;
     	}
     	
-    	character.getCharacterSheet(new APIExceptionCallback<CharacterSheetResponse>((ILoadingActivity) getActivity())
+    	character.getCharacterSheet(new ApiExceptionCallback<CharacterSheetResponse>((ILoadingActivity) getActivity())
     	{
 			@Override
 			public void onUpdate(CharacterSheetResponse response) 

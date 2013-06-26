@@ -2,8 +2,8 @@ package com.zdonnell.eve.character.detail.wallet;
 
 import java.util.Comparator;
 
-import com.beimin.eveapi.shared.wallet.journal.ApiJournalEntry;
-import com.beimin.eveapi.shared.wallet.transactions.ApiWalletTransaction;
+import com.zdonnell.androideveapi.shared.wallet.journal.ApiJournalEntry;
+import com.zdonnell.androideveapi.shared.wallet.transactions.ApiWalletTransaction;
 
 public class WalletSort {
 

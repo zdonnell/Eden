@@ -11,7 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.beimin.eveapi.shared.wallet.journal.ApiJournalEntry;
+import com.zdonnell.androideveapi.shared.wallet.journal.ApiJournalEntry;
 import com.zdonnell.eve.R;
 
 public class WalletJournalAdapter extends ArrayAdapter<ApiJournalEntry>

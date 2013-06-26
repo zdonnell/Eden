@@ -12,8 +12,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.beimin.eveapi.shared.wallet.transactions.ApiWalletTransaction;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.zdonnell.androideveapi.shared.wallet.transactions.ApiWalletTransaction;
 import com.zdonnell.eve.R;
 import com.zdonnell.eve.helpers.ImageURL;
 

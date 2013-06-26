@@ -27,16 +27,17 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.beimin.eveapi.character.skill.queue.ApiSkillQueueItem;
-import com.beimin.eveapi.character.skill.queue.SkillQueueResponse;
-import com.beimin.eveapi.eve.conquerablestationlist.ApiStation;
-import com.beimin.eveapi.eve.conquerablestationlist.StationListResponse;
-import com.beimin.eveapi.exception.ApiException;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.zdonnell.eve.apilink.APIExceptionCallback;
-import com.zdonnell.eve.apilink.account.EdenEveCharacter;
-import com.zdonnell.eve.apilink.character.APICharacter;
-import com.zdonnell.eve.apilink.eve.Eve;
+import com.zdonnell.androideveapi.character.skill.queue.ApiSkillQueueItem;
+import com.zdonnell.androideveapi.character.skill.queue.SkillQueueResponse;
+import com.zdonnell.androideveapi.eve.conquerablestationlist.ApiStation;
+import com.zdonnell.androideveapi.eve.conquerablestationlist.StationListResponse;
+import com.zdonnell.androideveapi.exception.ApiException;
+import com.zdonnell.androideveapi.link.ApiExceptionCallback;
+import com.zdonnell.androideveapi.link.ILoadingActivity;
+import com.zdonnell.androideveapi.link.account.EdenEveCharacter;
+import com.zdonnell.androideveapi.link.character.ApiCharacter;
+import com.zdonnell.androideveapi.link.eve.ApiEve;
 import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.helpers.Tools;
 import com.zdonnell.eve.staticdata.StationDatabase;
@@ -255,7 +256,7 @@ public class CharactersFragment extends Fragment {
 			final TextView timeRemainingTextView = (TextView) mainView.findViewById(R.id.char_tile_training);			
 			timeRemainingTextView.setText("");
 						
-			new APICharacter(context, character.getApiAuth()).getSkillQueue(new APIExceptionCallback<SkillQueueResponse>((ILoadingActivity) getActivity()) 
+			new ApiCharacter(context, character.getApiAuth()).getSkillQueue(new ApiExceptionCallback<SkillQueueResponse>((ILoadingActivity) getActivity()) 
 			{
 				@Override
 				public void onUpdate(SkillQueueResponse response) 
@@ -331,7 +332,7 @@ public class CharactersFragment extends Fragment {
 	
 	private void loadStationInfo()
 	{		
-		new Eve(context).conqStationsList(new APIExceptionCallback<StationListResponse>((NavDrawerActivity) getActivity())
+		new ApiEve(context).conqStationsList(new ApiExceptionCallback<StationListResponse>((NavDrawerActivity) getActivity())
 		{
 			@Override
 			public void onUpdate(StationListResponse response) 
