@@ -12,7 +12,7 @@
 		<!-- AndroidEveApi Repository -->
 		<repository>
 			<id>androideveapi</id>
-			<url>https://github.com/zdonnell/AndroidEveApi/tree/master/m2/releases</url>
+			<url>https://raw.github.com/zdonnell/androideveapi/master/m2/releases</url>
 		</repository>
 		<!-- Sonyatype -->
 		<repository>
@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>com.zdonnell</groupId>
 			<artifactId>androideveapi</artifactId>
-			<version>0.1.4</version>
+			<version>0.1.9</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.nostra13.universalimageloader</groupId>
@@ -59,7 +59,7 @@
 		    <version>1.8.4</version>
 		</dependency>
 	</dependencies>
-
+	
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
