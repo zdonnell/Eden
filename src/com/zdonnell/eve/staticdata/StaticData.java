@@ -35,8 +35,7 @@ public class StaticData {
 	}
 
 	public StaticData(Context context) {
-		typeDatabase = new StaticTypeDatabase(context);
-		stationDatabase = new StationDatabase(context);
+
 	}
 
 	public void getTypeInfo(ApiCallback<SparseArray<TypeInfo>> callback, Integer... typeIDs) {

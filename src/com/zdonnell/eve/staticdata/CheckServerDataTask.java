@@ -91,7 +91,7 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 	 */
 	private void downloadNewStaticData(int newDBVersion, StaticData.Table table) {
 		Class<?> dataClazz = table.clazz();
-		Set<Object> dataSet = new HashSet<Object>();
+		final Set<Object> dataSet = new HashSet<Object>();
 
 		try {
 			URL url = new URL(SERVER_GENERIC_URL + "/" + table);
@@ -115,15 +115,7 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 			jsonReader.endArray();
 			jsonReader.close();
 
-			// TODO replace this code with more generic ORM db code
-			switch(table) {
-				case INV_TYPES:
-					new StaticTypeDatabase(context).insertTypeInfo(dataSet);
-					break;
-				case STA_STATIONS:
-					new StationDatabase(context).insertStationInfo(dataSet);
-					break;
-			}
+			new StaticDataDBHelper(context).basicStaticDataInsert(table.getClass(), dataSet);
 
 			updateLocalDBVersion(newDBVersion, table);
 		} catch(Exception e) {
