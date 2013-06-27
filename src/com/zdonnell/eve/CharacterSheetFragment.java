@@ -276,7 +276,7 @@ public class CharacterSheetFragment extends Fragment
 			} 
 			catch (IndexOutOfBoundsException e) { e.printStackTrace(); }
 						
-			new StaticData(context).getTypeInfo(new ApiCallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
+			new StaticData(context).getStaticData(new ApiCallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
 			{
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> updatedData) 
@@ -285,7 +285,7 @@ public class CharacterSheetFragment extends Fragment
 					else currentSkillView.setText(updatedData.valueAt(0).typeName + " " + Tools.skillLevelToString(skillQueue.get(0).getLevel()));
 
 				}
-			}, skillQueue.get(0).getTypeID());
+			}, TypeInfo.class, skillQueue.get(0).getTypeID());
 		}
 		else
 		{

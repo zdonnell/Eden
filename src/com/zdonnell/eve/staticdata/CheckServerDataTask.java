@@ -114,8 +114,8 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 			}
 			jsonReader.endArray();
 			jsonReader.close();
-
-			new StaticDataDBHelper(context).basicStaticDataInsert(table.getClass(), dataSet);
+			
+			new StaticDataDBHelper(context).genericDataInsert(dataClazz, dataSet);
 
 			updateLocalDBVersion(newDBVersion, table);
 		} catch(Exception e) {

@@ -2,6 +2,7 @@ package com.zdonnell.eve.staticdata;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -11,6 +12,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.zdonnell.eve.R;
@@ -61,26 +64,29 @@ public class StaticDataDBHelper extends OrmLiteSqliteOpenHelper {
 			throw new RuntimeException(e);
 		}
 	}
-
-	public void basicStaticDataInsert(final Class<?> clazz, final Set<?> dataObjects) throws Exception {
-		getDao(clazz).callBatchTasks(new Callable<Void>() {
+	
+	@SuppressWarnings("unchecked")
+	public <T> void genericDataInsert(Class<T> clazz, final Set<?> dataSet) throws Exception {
+		final Dao<T, ?> dao = getDao(clazz);
+		dao.callBatchTasks(new Callable<Void>() {
 			public Void call() throws Exception {
-
-				if(clazz == TypeInfo.class) {
-					Dao<TypeInfo, Integer> dao = getDao(TypeInfo.class);
-					for(Object o : dataObjects)
-						dao.createOrUpdate((TypeInfo) o);
-				} else if(clazz == StationInfo.class) {
-					Dao<StationInfo, Integer> dao = getDao(StationInfo.class);
-					for(Object o : dataObjects)
-						dao.createOrUpdate((StationInfo) o);
-				}
-
+				for (Object data : dataSet) 
+					dao.create((T) data);
 				return null;
 			}
 		});
 	}
-
+	
+	public <T> List<T> genericDataQuery(Class<T> clazz, PreparedQuery<T> preppedQuery) throws Exception {
+		final Dao<T, ?> dao = getDao(clazz);
+		return dao.query(preppedQuery);
+	}
+	
+	public <T> QueryBuilder<T, Integer> getQueryBuilder(Class<T> clazz) throws Exception {
+		final Dao<T, Integer> dao = getDao(clazz);
+		return dao.queryBuilder();
+	}
+	
 	/**
 	 * Close the database connections and clear any cached DAOs.
 	 */

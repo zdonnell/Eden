@@ -40,7 +40,7 @@ public class TypeInfoFragment extends Fragment {
 		
 		ImageLoader.getInstance().displayImage(ImageURL.forType(typeID), typeIcon);
 		
-		new StaticData(inflater.getContext()).getTypeInfo(new ApiCallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity()) 
+		new StaticData(inflater.getContext()).getStaticData(new ApiCallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity()) 
 		{
 			@Override
 			public void onUpdate(SparseArray<TypeInfo> typeInfo) 
@@ -52,7 +52,7 @@ public class TypeInfoFragment extends Fragment {
 				DecimalFormat twoDForm = new DecimalFormat("#,###");				
 				typeM3.setText(twoDForm.format(typeInfo.get(typeID).volume) + " m3");
 			}
-		}, typeID);
+		}, TypeInfo.class, typeID);
 		
 		PriceService.getInstance(inflater.getContext()).getValues(new Integer[] { typeID }, new ApiCallback<SparseArray<Float>>((ILoadingActivity) getActivity()) 
 		{

@@ -4,7 +4,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "typeInfo")
-public class TypeInfo {
+public class TypeInfo implements IStaticDataType {
 
 	@DatabaseField(id = true)
 	public int typeID;
@@ -23,4 +23,12 @@ public class TypeInfo {
 
 	@DatabaseField
 	public String description;
+
+	public int uniqueId() {
+		return typeID;
+	}
+
+	public String uniqueIdName() {
+		return "typeID";
+	}
 }
