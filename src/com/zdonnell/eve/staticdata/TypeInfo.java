@@ -5,13 +5,13 @@ public class TypeInfo {
 	public int typeID;
 
 	public int groupID;
-	
-	public float m3;
-	
+
+	public double volume;
+
 	public int marketGroupID = -1;
-	
+
 	public String typeName;
-	
+
 	public String description;
-	
+
 }

@@ -50,7 +50,7 @@ public class TypeInfoFragment extends Fragment {
 				typeDescription.setMovementMethod(new ScrollingMovementMethod());
 				
 				DecimalFormat twoDForm = new DecimalFormat("#,###");				
-				typeM3.setText(twoDForm.format(typeInfo.get(typeID).m3) + " m3");
+				typeM3.setText(twoDForm.format(typeInfo.get(typeID).volume) + " m3");
 			}
 		}, typeID);
 		
