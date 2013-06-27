@@ -9,12 +9,10 @@ import java.util.Set;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
@@ -70,12 +68,8 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 				JSONObject jsonResponse = new JSONObject(rawResponse);
 				dbVersion = jsonResponse.getInt("DBVersionCode");
 			}
-		} catch(ClientProtocolException e) {
-			e.printStackTrace();
-		} catch(IOException e) {
-			e.printStackTrace();
-		} catch(JSONException e) {
-			e.printStackTrace();
+		} catch(Exception e) {
+			Log.w("Eden: Static Data Downloader", "Failed to obtain server database version code");
 		}
 
 		return dbVersion;
@@ -101,8 +95,7 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 
 		try {
 			URL url = new URL(SERVER_GENERIC_URL + "/" + table);
-			InputStreamReader reader = new InputStreamReader(url.openStream());
-			JsonReader jsonReader = new JsonReader(reader);
+			JsonReader jsonReader = new JsonReader(new InputStreamReader(url.openStream()));
 
 			jsonReader.beginArray();
 			while(jsonReader.hasNext()) {
@@ -133,7 +126,6 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 			}
 
 			updateLocalDBVersion(newDBVersion, table);
-
 		} catch(Exception e) {
 			Log.w("Eden: Static Data Downloader", "Failed to acquire " + table + " dataset");
 		}
@@ -175,6 +167,6 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 	 */
 	private void updateLocalDBVersion(int newDBVersion, StaticData.Table table) {
 		SharedPreferences prefs = context.getSharedPreferences("Eden_static_data", Context.MODE_PRIVATE);
-		prefs.edit().putInt("static_data_dbversion_" + table, newDBVersion);
+		prefs.edit().putInt("static_data_dbversion_" + table, newDBVersion).commit();
 	}
 }
