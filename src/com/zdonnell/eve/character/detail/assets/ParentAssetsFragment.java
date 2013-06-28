@@ -526,10 +526,14 @@ public class ParentAssetsFragment extends DetailFragment
 		Set<EveAsset<EveAsset<?>>> rawAssetSet = response.getAll();
 				
 		for (EveAsset<EveAsset<?>> asset : rawAssetSet)
-		{			
-			ArrayList<AssetsEntity> assetsAtLocation = arrangedAssets.get(asset.getLocationID().intValue(), new ArrayList<AssetsEntity>());
-			assetsAtLocation.add(convertAsset(asset));
-			arrangedAssets.put(asset.getLocationID().intValue(), assetsAtLocation);
+		{		
+			// TODO REMOVE THIS CHECK WHEN SUPPORTING ASSETS IN SPACE
+			if (asset.getLocationID() > 60000000) 
+			{
+				ArrayList<AssetsEntity> assetsAtLocation = arrangedAssets.get(asset.getLocationID().intValue(), new ArrayList<AssetsEntity>());
+				assetsAtLocation.add(convertAsset(asset));
+				arrangedAssets.put(asset.getLocationID().intValue(), assetsAtLocation);
+			}
 		}
 		
 		AssetsEntity[] locationArray = new AssetsEntity[arrangedAssets.size()];

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import android.app.Activity;
 import android.content.Context;
@@ -40,6 +42,7 @@ import com.zdonnell.androideveapi.link.character.ApiCharacter;
 import com.zdonnell.androideveapi.link.eve.ApiEve;
 import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.helpers.Tools;
+import com.zdonnell.eve.staticdata.StaticDataDBHelper;
 import com.zdonnell.eve.staticdata.StationInfo;
 
 /**
@@ -371,8 +374,16 @@ public class CharactersFragment extends Fragment {
 
 		@Override
 		protected Void doInBackground(Void... arg0) {
-			//new StationDatabase(context).insertStationInfo(stationInfo);	
-
+			Set<StationInfo> stations = new HashSet<StationInfo>();
+			for (int i = 0; i < stationInfo.size(); i++) {
+				stations.add(stationInfo.valueAt(i));
+			}
+			
+			try {
+				new StaticDataDBHelper(context).genericDataInsert(StationInfo.class, stations);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			return null;
 		}
 	}
