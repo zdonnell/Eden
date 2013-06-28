@@ -22,6 +22,14 @@ import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.Log;
 
+/**
+ * This Task serves as the primary means of keeping the local static data
+ * database up to do. This should be called whenever it is assumed data may be
+ * out of date or a new table becomes "tracked"
+ * 
+ * @author zach
+ * 
+ */
 public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 
 	private final static String SERVER_STATUS_URL = "http://zdonnell.com/eve/api/status";
@@ -87,7 +95,21 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 	}
 
 	/**
-	 * Attempts to download and store the recently updated static data.
+	 * Downloads the static data and uses ORMLite to store the data<br>
+	 * <br>
+	 * 
+	 * This works by using reflection to instantiate the correct Data classes as
+	 * specified by the provided table enum. The values are set from the json by
+	 * matching the json attribute names to field names in the corresponding
+	 * class type. If the class type does not have a field with a name matching
+	 * any given json attribute name, it will be skipped.<br>
+	 * 
+	 * @param newDBVersion
+	 *            the database version for the data on the server
+	 * @param table
+	 *            the Table that needs to be downloaded.
+	 * 
+	 * @see IStaticDataType
 	 */
 	private void downloadNewStaticData(int newDBVersion, StaticData.Table table) {
 		Class<?> dataClazz = table.clazz();
@@ -96,12 +118,15 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 		try {
 			URL url = new URL(SERVER_GENERIC_URL + "/" + table);
 			JsonReader jsonReader = new JsonReader(new InputStreamReader(url.openStream()));
-
 			jsonReader.beginArray();
+
+			// Loop through all rows in the table
 			while(jsonReader.hasNext()) {
 				try {
 					Object data = dataClazz.newInstance();
 					jsonReader.beginObject();
+					// Loop through all attributes of the jsonObject and try to
+					// set a matching field in the instantiated data class.
 					while(jsonReader.hasNext()) {
 						String name = jsonReader.nextName();
 						setField(name, data, jsonReader);
@@ -114,7 +139,7 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 			}
 			jsonReader.endArray();
 			jsonReader.close();
-			
+
 			new StaticDataDBHelper(context).genericDataInsert(dataClazz, dataSet);
 
 			updateLocalDBVersion(newDBVersion, table);
@@ -123,6 +148,30 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 		}
 	}
 
+	/**
+	 * Sets field with the given name in the given object to the next value in
+	 * the jsonReader.<br>
+	 * <br>
+	 * 
+	 * It is not assumed that there will be a field matching the provided field
+	 * name as this method is called for every jsonEntry for a given jsonObject.
+	 * If there is no field of the given name, the current value is skipped.<br>
+	 * <br>
+	 * 
+	 * If the field is found, but it's type cannot be determined, the value will
+	 * be skipped.<br>
+	 * 
+	 * @param fieldName
+	 *            the string name of the field to set
+	 * @param data
+	 *            the object to check for the fieldName in
+	 * @param jsonReader
+	 *            the jsonReader which should be pointing to the next available
+	 *            value.
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws IOException
+	 */
 	private void setField(String fieldName, Object data, JsonReader jsonReader) throws IllegalArgumentException, IllegalAccessException, IOException {
 		Field field = null;
 		try {
