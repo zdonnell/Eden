@@ -7,6 +7,7 @@ import java.util.Set;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +18,13 @@ import android.widget.TextView;
 import com.zdonnell.androideveapi.character.sheet.CharacterSheetResponse;
 import com.zdonnell.androideveapi.core.ApiAuth;
 import com.zdonnell.androideveapi.core.ApiAuthorization;
+import com.zdonnell.androideveapi.eve.reftypes.ApiRefType;
+import com.zdonnell.androideveapi.eve.reftypes.RefTypesResponse;
 import com.zdonnell.androideveapi.exception.ApiException;
 import com.zdonnell.androideveapi.link.ApiExceptionCallback;
 import com.zdonnell.androideveapi.link.ILoadingActivity;
 import com.zdonnell.androideveapi.link.character.ApiCharacter;
+import com.zdonnell.androideveapi.link.eve.ApiEve;
 import com.zdonnell.androideveapi.shared.wallet.journal.ApiJournalEntry;
 import com.zdonnell.androideveapi.shared.wallet.journal.WalletJournalResponse;
 import com.zdonnell.androideveapi.shared.wallet.transactions.ApiWalletTransaction;
@@ -53,6 +57,8 @@ public class WalletFragment extends DetailFragment {
 	private TextView walletBalance;
 	
 	private SharedPreferences prefs;
+	
+	private SparseArray<ApiRefType> refTypes = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) 
@@ -113,7 +119,7 @@ public class WalletFragment extends DetailFragment {
 				entrySet.toArray(entryArray);
 				
 				Arrays.sort(entryArray, new WalletSort.Journal.DateTime());
-				walletListView.setAdapter(new WalletJournalAdapter(context, entryArray, characterName));
+				walletListView.setAdapter(new WalletJournalAdapter(context, entryArray, characterName, refTypes));
 			}
 
 			@Override
@@ -121,6 +127,26 @@ public class WalletFragment extends DetailFragment {
 			{
 				
 			}
+    	});
+    	
+    	new ApiEve(context).refTypes(new ApiExceptionCallback<RefTypesResponse>((ILoadingActivity) getActivity()) {
+			@Override
+			public void onUpdate(RefTypesResponse response) 
+			{
+				refTypes = new SparseArray<ApiRefType>();
+				for (ApiRefType refType : response.getAll())
+					refTypes.put(refType.getRefTypeID(), refType);
+				
+				if (walletListView.getAdapter() != null && walletListView.getAdapter() instanceof WalletJournalAdapter) 
+					((WalletJournalAdapter) walletListView.getAdapter()).provideRefTypes(refTypes);
+			}
+
+			@Override
+			public void onError(RefTypesResponse response, ApiException exception) 
+			{
+				
+			}
+    		
     	});
     }
     

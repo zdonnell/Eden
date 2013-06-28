@@ -1,9 +1,12 @@
 package com.zdonnell.eve.character.detail.wallet;
 
 import java.text.NumberFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.zdonnell.androideveapi.eve.reftypes.ApiRefType;
 import com.zdonnell.androideveapi.shared.wallet.journal.ApiJournalEntry;
 import com.zdonnell.eve.R;
 
@@ -25,9 +29,13 @@ public class WalletJournalAdapter extends ArrayAdapter<ApiJournalEntry>
 	
 	private NumberFormat formatter = NumberFormat.getInstance();
 	
+	private SparseArray<ApiRefType> refTypes;
+	
+	private Map<TextView, Integer> refTypeMap = new HashMap<TextView, Integer>();
+	
 	private String characterName;
 	
-	public WalletJournalAdapter(Context context, ApiJournalEntry[] entries, String characterName) 
+	public WalletJournalAdapter(Context context, ApiJournalEntry[] entries, String characterName, SparseArray<ApiRefType> refTypes) 
 	{
 		super(context, layout, entries);
 		inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -36,6 +44,16 @@ public class WalletJournalAdapter extends ArrayAdapter<ApiJournalEntry>
 		
 		formatter.setMaximumFractionDigits(2);
     	formatter.setMinimumFractionDigits(2);
+    	
+    	this.refTypes = refTypes;
+	}
+	
+	public void provideRefTypes(SparseArray<ApiRefType> refTypes) {
+		this.refTypes = refTypes;
+		for (TextView textView : refTypeMap.keySet()) {
+			textView.setText(refTypes.get(refTypeMap.get(textView).intValue()).getRefTypeName());
+		}
+		refTypeMap.clear();
 	}
 	
 	@Override
@@ -56,7 +74,15 @@ public class WalletJournalAdapter extends ArrayAdapter<ApiJournalEntry>
 		final TextView amount = (TextView) itemView.findViewById(R.id.char_detail_wallet_list_item_journalAmount);
 		final TextView balance = (TextView) itemView.findViewById(R.id.char_detail_wallet_list_item_journalBalance);
 
-		journalType.setText(entry.getRefType().name());
+		if (refTypes != null)
+		{
+			journalType.setText(refTypes.get(entry.getRefType().getId()).getRefTypeName());	
+		}
+		else
+		{
+			journalType.setText(entry.getRefType().name());
+			refTypeMap.put(journalType, entry.getRefType().getId());
+		}
 		description.setText(generateDescription(entry));
 		
 		amount.setTextColor(entry.getAmount() < 0 ? RED : GREEN);
