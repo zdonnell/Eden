@@ -15,12 +15,17 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
 import android.util.JsonReader;
 import android.util.JsonToken;
 import android.util.Log;
+
+import com.zdonnell.eve.R;
 
 /**
  * This Task serves as the primary means of keeping the local static data
@@ -36,20 +41,24 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 	private final static String SERVER_GENERIC_URL = "http://zdonnell.com/eve/api/";
 
 	private final Context context;
-
+	
 	public CheckServerDataTask(Context context) {
 		this.context = context;
 	}
 
 	@Override
 	protected Void doInBackground(Void... params) {
-		int serverStaticDBVersion = checkServerStaticDBVersion();
-
+		ServerVersionInfo info = checkServerStaticDBVersion();
+		NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		
 		// Check to see if any of the static data tables are "out of date"
 		for(StaticData.Table table : StaticData.Table.values())
-			if(serverStaticDBVersion > checkLocalStaticDBVersion(table))
-				downloadNewStaticData(serverStaticDBVersion, table);
+			if(info.versionNumber > checkLocalStaticDBVersion(table)) {
+				notificationManager.notify(0, makeNotification(table, info.versionString));			
+				downloadNewStaticData(info.versionNumber, table);
+			}
 
+		notificationManager.cancel(0);
 		return null;
 	}
 
@@ -60,13 +69,15 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 	 * @return the version of the current static data db, or
 	 *         {@link Integer#MIN_VALUE} if the value could not be determined.
 	 */
-	private int checkServerStaticDBVersion() {
+	private ServerVersionInfo checkServerStaticDBVersion() {
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost(SERVER_STATUS_URL);
 
 		String rawResponse = null;
-		int dbVersion = Integer.MIN_VALUE;
 
+		ServerVersionInfo info = new ServerVersionInfo();
+		info.versionNumber = Integer.MIN_VALUE;
+		
 		try {
 			HttpResponse response = httpclient.execute(httppost);
 			HttpEntity returnEntity = response.getEntity();
@@ -74,13 +85,14 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 			if(returnEntity != null) {
 				rawResponse = EntityUtils.toString(returnEntity);
 				JSONObject jsonResponse = new JSONObject(rawResponse);
-				dbVersion = jsonResponse.getInt("DBVersionCode");
+				info.versionNumber = jsonResponse.getInt("DBVersionCode");
+				info.versionString = jsonResponse.getString("DBVersionName");
 			}
 		} catch(Exception e) {
 			Log.w("Eden: Static Data Downloader", "Failed to obtain server database version code");
 		}
 
-		return dbVersion;
+		return info;
 	}
 
 	/**
@@ -209,5 +221,32 @@ public class CheckServerDataTask extends AsyncTask<Void, Void, Void> {
 	private void updateLocalDBVersion(int newDBVersion, StaticData.Table table) {
 		SharedPreferences prefs = context.getSharedPreferences("Eden_static_data", Context.MODE_PRIVATE);
 		prefs.edit().putInt("static_data_dbversion_" + table, newDBVersion).commit();
+	}
+	
+	/**
+	 * returns an assembled notification
+	 * 
+	 * @param table
+	 * @param dbString
+	 * @return
+	 */
+	private Notification makeNotification(StaticData.Table table, String dbString) {
+		return new NotificationCompat.Builder(context)
+		        .setSmallIcon(R.drawable.ic_launcher)
+		        .setContentTitle("Downloading: " + dbString + " static data")
+		        .setContentText("table: " + table)
+		        .setTicker("Downloading: " + dbString + " static data")
+		        .setOngoing(true).build();
+	}
+	
+	/**
+	 * Simple wrapper class for the server db info
+	 * 
+	 * @author zdonnell
+	 *
+	 */
+	private class ServerVersionInfo {
+		public String versionString = "";
+		public int versionNumber = Integer.MIN_VALUE;
 	}
 }
