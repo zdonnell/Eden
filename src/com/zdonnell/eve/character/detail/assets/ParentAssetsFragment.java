@@ -245,7 +245,7 @@ public class ParentAssetsFragment extends DetailFragment
      */
     private void getStationInfo(final Integer[] stationIDs)
     {
-		new StaticData(context).getStationInfo(new ApiCallback<SparseArray<StationInfo>>((ILoadingActivity) getActivity()) 
+		new StaticData(context).getStaticData(new ApiCallback<SparseArray<StationInfo>>((ILoadingActivity) getActivity()) 
     	{
 			@Override
 			public void onUpdate(SparseArray<StationInfo> stationInformation) 
@@ -253,7 +253,7 @@ public class ParentAssetsFragment extends DetailFragment
 				currentStationInfo = stationInformation;
 				childFragment.obtainedStationInfo();
 			}
-    	}, stationIDs);
+    	}, StationInfo.class, stationIDs);
     }
     
     /**
@@ -272,7 +272,7 @@ public class ParentAssetsFragment extends DetailFragment
     	Integer[] uniqueTypeIDs = new Integer[uniqueTypeIDsList.size()];
     	uniqueTypeIDsList.toArray(uniqueTypeIDs);
     	
-    	new StaticData(context).getTypeInfo(new ApiCallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
+    	new StaticData(context).getStaticData(new ApiCallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
     	{
 			@Override
 			public void onUpdate(SparseArray<TypeInfo> rTypeInfo) 
@@ -281,7 +281,7 @@ public class ParentAssetsFragment extends DetailFragment
 				getPriceInformation(rTypeInfo);
 				childFragment.obtainedTypeInfo();
 			}
-    	}, uniqueTypeIDs);
+    	}, TypeInfo.class, uniqueTypeIDs);
     }
     
     /**

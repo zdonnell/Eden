@@ -213,7 +213,7 @@ public class SkillQueueFragment extends DetailFragment {
 			
 			// Skill Name Text
 			final TextView skillName = (TextView) mainView.findViewById(R.id.skillqueue_detail_list_item_skillname);
-			new StaticData(context).getTypeInfo(new ApiCallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
+			new StaticData(context).getStaticData(new ApiCallback<SparseArray<TypeInfo>>((ILoadingActivity) getActivity())
 			{
 				@Override
 				public void onUpdate(SparseArray<TypeInfo> updatedData) 
@@ -221,7 +221,7 @@ public class SkillQueueFragment extends DetailFragment {
 					if (updatedData.valueAt(0) == null) skillName.setText("Skill ID: " + queuedSkill.getTypeID());
 					else skillName.setText(updatedData.valueAt(0).typeName);
 				}
-			}, queuedSkill.getTypeID());
+			}, TypeInfo.class, queuedSkill.getTypeID());
 		}
 		
 		/**

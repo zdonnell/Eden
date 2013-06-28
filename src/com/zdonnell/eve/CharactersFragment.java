@@ -40,7 +40,6 @@ import com.zdonnell.androideveapi.link.character.ApiCharacter;
 import com.zdonnell.androideveapi.link.eve.ApiEve;
 import com.zdonnell.eve.helpers.ImageURL;
 import com.zdonnell.eve.helpers.Tools;
-import com.zdonnell.eve.staticdata.StationDatabase;
 import com.zdonnell.eve.staticdata.StationInfo;
 
 /**
@@ -372,7 +371,7 @@ public class CharactersFragment extends Fragment {
 
 		@Override
 		protected Void doInBackground(Void... arg0) {
-			new StationDatabase(context).insertStationInfo(stationInfo);	
+			//new StationDatabase(context).insertStationInfo(stationInfo);	
 
 			return null;
 		}
