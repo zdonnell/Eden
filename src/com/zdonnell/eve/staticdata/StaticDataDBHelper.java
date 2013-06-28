@@ -71,7 +71,7 @@ public class StaticDataDBHelper extends OrmLiteSqliteOpenHelper {
 		dao.callBatchTasks(new Callable<Void>() {
 			public Void call() throws Exception {
 				for (Object data : dataSet) 
-					dao.create((T) data);
+					dao.createOrUpdate((T) data);
 				return null;
 			}
 		});
