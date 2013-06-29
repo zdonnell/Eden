@@ -5,7 +5,7 @@
     android:padding="4dp"
     android:orientation="horizontal"
     android:background="#151515" >
-    <com.zdonnell.eve.character.detail.SquareLinearLayout
+    <com.zdonnell.eden.character.detail.SquareLinearLayout
 	    android:id="@+id/char_detail_assets_station_item_typeIconBorder"
 	   	android:background="#000"
 	   	android:layout_height="48dp"
@@ -18,7 +18,7 @@
 		        android:scaleType="fitCenter"
 		        android:layout_height="match_parent"
 		        android:background="#242424"/>
-	   	</com.zdonnell.eve.character.detail.SquareLinearLayout>
+	   	</com.zdonnell.eden.character.detail.SquareLinearLayout>
     <TextView
         android:textColor="#BBB"
         android:layout_width="0dp"

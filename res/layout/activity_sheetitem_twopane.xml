@@ -11,7 +11,7 @@
 
     <fragment
         android:id="@+id/sheetitem_list"
-        android:name="com.zdonnell.eve.CharacterSheetFragment"
+        android:name="com.zdonnell.eden.CharacterSheetFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1" />

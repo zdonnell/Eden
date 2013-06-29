@@ -7,7 +7,7 @@
     <!-- The main content view -->
    <fragment 
 		    android:id="@+id/content_frame"
-		    android:name="com.zdonnell.eve.CharacterSheetFragment"
+		    android:name="com.zdonnell.eden.CharacterSheetFragment"
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent"
 		 />

@@ -39,7 +39,7 @@
         android:layout_height="50dp"
         android:background="#000"
         android:padding="6dp" >
-        <com.zdonnell.eve.character.detail.SquareLinearLayout
+        <com.zdonnell.eden.character.detail.SquareLinearLayout
 		   	android:background="#444"
 		   	android:layout_height="38dp"
 	        android:layout_marginRight="6dp"
@@ -51,7 +51,7 @@
 		        android:scaleType="fitCenter"
 		        android:layout_height="match_parent"
 		        android:background="#181818"/>
-	   	</com.zdonnell.eve.character.detail.SquareLinearLayout>
+	   	</com.zdonnell.eden.character.detail.SquareLinearLayout>
         <TextView 
             android:id="@+id/char_detail_assets_inventory_parentName"
             android:layout_width="0dp"

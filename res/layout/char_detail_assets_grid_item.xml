@@ -7,7 +7,7 @@
 	<RelativeLayout
 	    android:layout_width="match_parent"
 	   	android:layout_height="match_parent">
-	   	<com.zdonnell.eve.character.detail.SquareLinearLayout
+	   	<com.zdonnell.eden.character.detail.SquareLinearLayout
 	   	    android:id="@+id/char_detail_assets_list_item_typeIconBorder"
 	   	    android:padding="1dp"
 	   	    android:background="#000"
@@ -19,7 +19,7 @@
 		        android:scaleType="fitCenter"
 		        android:layout_height="match_parent"
 		        android:background="#242424"/>
-	   	</com.zdonnell.eve.character.detail.SquareLinearLayout>
+	   	</com.zdonnell.eden.character.detail.SquareLinearLayout>
 	    <TextView 
 		    android:id="@+id/char_detail_assets_list_item_count"
 		    android:layout_width="35dp"

@@ -72,7 +72,7 @@
 		    android:layout_height="wrap_content"
 		    android:layout_gravity="center_vertical"
 		    android:orientation="vertical" >
-		    <com.zdonnell.eve.character.detail.SkillLevelIndicator
+		    <com.zdonnell.eden.character.detail.SkillLevelIndicator
 		        android:id="@+id/skill_level_indicator"
 		    	android:layout_width="50dp"
 		    	android:layout_height="12dp"/>

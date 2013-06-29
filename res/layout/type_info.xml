@@ -10,7 +10,7 @@
         android:orientation="horizontal"
         android:background="#242424"
         android:padding="10dp">
-        <com.zdonnell.eve.character.detail.SquareLinearLayout
+        <com.zdonnell.eden.character.detail.SquareLinearLayout
 	   	    android:id="@+id/char_detail_assets_list_item_typeIconBorder"
 	   	    android:padding="1dp"
 	   	    android:background="#000"
@@ -23,7 +23,7 @@
 		        android:scaleType="fitCenter"
 		        android:layout_height="match_parent"
 		        android:background="#181818"/>
-	   	</com.zdonnell.eve.character.detail.SquareLinearLayout>
+	   	</com.zdonnell.eden.character.detail.SquareLinearLayout>
 	   	<LinearLayout
 	        android:layout_height="wrap_content"
 	        android:layout_width="0dp"
