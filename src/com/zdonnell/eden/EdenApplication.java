@@ -30,8 +30,8 @@ public class EdenApplication extends Application {
 		// Create global configuration and initialize ImageLoader with this
 		// configuration
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext()).memoryCache(new LruMemoryCache(2 * 1024 * 1024)).memoryCacheSize(2 * 1024 * 1024).discCache(new UnlimitedDiscCache(cacheDir)) // default
-		.defaultDisplayImageOptions(defaultOptions) // default
-		.build();
+				.defaultDisplayImageOptions(defaultOptions) // default
+				.build();
 
 		ImageLoader.getInstance().init(config);
 	}

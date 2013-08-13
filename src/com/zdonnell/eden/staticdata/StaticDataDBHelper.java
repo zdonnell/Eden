@@ -43,7 +43,7 @@ public class StaticDataDBHelper extends OrmLiteSqliteOpenHelper {
 		try {
 			TableUtils.createTable(connectionSource, TypeInfo.class);
 			TableUtils.createTable(connectionSource, StationInfo.class);
-		} catch(SQLException e) {
+		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -60,33 +60,33 @@ public class StaticDataDBHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, StationInfo.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
-		} catch(SQLException e) {
+		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public <T> void genericDataInsert(Class<T> clazz, final Set<?> dataSet) throws Exception {
 		final Dao<T, ?> dao = getDao(clazz);
 		dao.callBatchTasks(new Callable<Void>() {
 			public Void call() throws Exception {
-				for (Object data : dataSet) 
+				for (Object data : dataSet)
 					dao.createOrUpdate((T) data);
 				return null;
 			}
 		});
 	}
-	
+
 	public <T> List<T> genericDataQuery(Class<T> clazz, PreparedQuery<T> preppedQuery) throws Exception {
 		final Dao<T, ?> dao = getDao(clazz);
 		return dao.query(preppedQuery);
 	}
-	
+
 	public <T> QueryBuilder<T, Integer> getQueryBuilder(Class<T> clazz) throws Exception {
 		final Dao<T, Integer> dao = getDao(clazz);
 		return dao.queryBuilder();
 	}
-	
+
 	/**
 	 * Close the database connections and clear any cached DAOs.
 	 */

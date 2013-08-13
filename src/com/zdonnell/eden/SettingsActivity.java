@@ -27,7 +27,7 @@ import android.view.MenuItem;
  * handset devices, settings are presented as a single list. On tablets,
  * settings are split by category, with category headers shown to the left of
  * the list of settings.
- * <p>
+ * <p/>
  * See <a href="http://developer.android.com/design/patterns/settings.html">
  * Android Design: Settings</a> for design guidelines and the <a
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
@@ -44,24 +44,22 @@ public class SettingsActivity extends PreferenceActivity {
 
 	protected Fragment mFrag;
 
-	public boolean onOptionsItemSelected (MenuItem item) {
-    	
-	    switch (item.getItemId())
-	    {
-	    case android.R.id.home:
-	    	 finish();
-	    }
-	    return true;
-    }
-	
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch (item.getItemId()) {
+			case android.R.id.home:
+				finish();
+		}
+		return true;
+	}
+
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		getActionBar().setDisplayHomeAsUpEnabled(true);	
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getListView().setBackgroundColor(Color.parseColor("#151515"));
 	}
-	
+
 	@Override
 	public void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -96,7 +94,9 @@ public class SettingsActivity extends PreferenceActivity {
 		bindPreferenceSummaryToValue(findPreference("price_frequency"));
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean onIsMultiPane() {
 		return isXLargeTablet(this) && !isSimplePreferences(this);
@@ -123,7 +123,9 @@ public class SettingsActivity extends PreferenceActivity {
 				|| !isXLargeTablet(context);
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public void onBuildHeaders(List<Header> target) {
@@ -189,7 +191,7 @@ public class SettingsActivity extends PreferenceActivity {
 	 * preference title) is updated to reflect the value. The summary is also
 	 * immediately updated upon calling this method. The exact display format is
 	 * dependent on the type of preference.
-	 * 
+	 *
 	 * @see #sBindPreferenceSummaryToValueListener
 	 */
 	private static void bindPreferenceSummaryToValue(Preference preference) {
@@ -206,7 +208,6 @@ public class SettingsActivity extends PreferenceActivity {
 						""));
 	}
 
-	
 
 	/**
 	 * This fragment shows notification preferences only. It is used when the

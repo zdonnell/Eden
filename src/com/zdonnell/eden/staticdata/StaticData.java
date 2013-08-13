@@ -18,9 +18,8 @@ public class StaticData {
 	 * This enum reflects the current tables being "monitored" by the local
 	 * static data database. To download (and track updates for) an additional
 	 * table, add an entry to list.
-	 * 
+	 *
 	 * @author zach
-	 * 
 	 */
 	public enum Table {
 		INV_TYPES("invTypes", TypeInfo.class), STA_STATIONS("staStations", StationInfo.class);
@@ -29,14 +28,11 @@ public class StaticData {
 		private Class<?> clazz;
 
 		/**
-		 * 
-		 * @param name
-		 *            the String name of the class. This string name will be
-		 *            used in the {@link CheckServerDataTask} to query the
-		 *            correct server table
-		 * @param clazz
-		 *            The class that is represented by this entry for access
-		 *            purposes. for example: {@link TypeInfo}
+		 * @param name  the String name of the class. This string name will be
+		 *              used in the {@link CheckServerDataTask} to query the
+		 *              correct server table
+		 * @param clazz The class that is represented by this entry for access
+		 *              purposes. for example: {@link TypeInfo}
 		 */
 		private Table(String name, Class<?> clazz) {
 			this.name = name;
@@ -61,13 +57,10 @@ public class StaticData {
 	 * Obtains static data (if it exists) and provides it to the specified
 	 * callback as a SparseArray indexed by the provided classes uniqueId
 	 * method.
-	 * 
-	 * @param callback
-	 *            the callback to provide the acquired data to.
-	 * @param clazz
-	 *            the class of the individual items to be obtained
-	 * @param uniqueIDs
-	 *            the set of unique ids to obtain info for.
+	 *
+	 * @param callback  the callback to provide the acquired data to.
+	 * @param clazz     the class of the individual items to be obtained
+	 * @param uniqueIDs the set of unique ids to obtain info for.
 	 */
 	public <D extends IStaticDataType> void getStaticData(ApiCallback<SparseArray<D>> callback, Class<D> clazz, Integer... uniqueIDs) {
 		new StaticDataRequest<D>(callback, clazz).execute(uniqueIDs);
@@ -76,12 +69,10 @@ public class StaticData {
 	/**
 	 * This task takes the provided Class type and callback to check the
 	 * corresponding ORMLite table for matching entries.
-	 * 
-	 * @author zach
-	 * 
-	 * @param <T>
-	 *            The {@link IStaticDataType} implementation for the requested
+	 *
+	 * @param <T> The {@link IStaticDataType} implementation for the requested
 	 *            data
+	 * @author zach
 	 */
 	private class StaticDataRequest<T extends IStaticDataType> extends AsyncTask<Integer, Integer, SparseArray<T>> {
 		/**
@@ -95,10 +86,8 @@ public class StaticData {
 		Class<T> dataClazz;
 
 		/**
-		 * @param callback
-		 *            callback to provide the obtained info to.
-		 * @param clazz
-		 *            the Class type of the response elements
+		 * @param callback callback to provide the obtained info to.
+		 * @param clazz    the Class type of the response elements
 		 */
 		public StaticDataRequest(ApiCallback<SparseArray<T>> callback, Class<T> clazz) {
 			onCompleteRequestCallback = callback;
@@ -115,11 +104,11 @@ public class StaticData {
 				List<T> typeList = staticDataHelper.genericDataQuery(dataClazz, preppedQuery);
 
 				// Convert the returned List into the Eden SparseArray format.
-				for(T info : typeList)
+				for (T info : typeList)
 					typeInfo.put(info.uniqueId(), info);
 
 				return typeInfo;
-			} catch(Exception e) {
+			} catch (Exception e) {
 				// If there is an error parsing, return an empty sparse Array
 				return typeInfo;
 			}

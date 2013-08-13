@@ -47,7 +47,7 @@ public class CharacterDB {
 		CustomSQLiteOpenHelper helper = new CustomSQLiteOpenHelper(context);
 		this.db = helper.getWritableDatabase();
 	}
-	
+
 	public void addCharacter(EveCharacter character, ApiAuth<?> apiAuth, boolean enabled) {
 		// this is a key value pair holder used by android's SQLite functions
 		ContentValues values = new ContentValues();
@@ -71,8 +71,7 @@ public class CharacterDB {
 		}
 	}
 
-	public Cursor allCharacters() 
-	{
+	public Cursor allCharacters() {
 		// this is a database call that creates a "cursor" object.
 		// the cursor object store the information collected from the
 		// database and is used to iterate through the data.
@@ -80,21 +79,20 @@ public class CharacterDB {
 
 		try {
 			// ask the database object to create the cursor.
-			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_NAME, CHAR_TABLE_EVEID, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE, CHAR_TABLE_QUEUETIME },
+			cursor = db.query(CHAR_TABLE, new String[]{CHAR_TABLE_NAME, CHAR_TABLE_EVEID, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE, CHAR_TABLE_QUEUETIME},
 					null, null, null, null, null);
 
 		} catch (SQLException e) {
 			Log.e("DB Error", e.toString());
 			e.printStackTrace();
 		}
-		
+
 		// return the ArrayList that holds the data collected from
 		// the database.
 		return cursor;
 	}
-	
-	public Cursor getEnabledCharacters() 
-	{
+
+	public Cursor getEnabledCharacters() {
 		// this is a database call that creates a "cursor" object.
 		// the cursor object store the information collected from the
 		// database and is used to iterate through the data.
@@ -102,21 +100,20 @@ public class CharacterDB {
 
 		try {
 			// ask the database object to create the cursor.
-			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_EVEID, CHAR_TABLE_NAME, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE, CHAR_TABLE_QUEUETIME },
+			cursor = db.query(CHAR_TABLE, new String[]{CHAR_TABLE_EVEID, CHAR_TABLE_NAME, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE, CHAR_TABLE_QUEUETIME},
 					CHAR_TABLE_ENABLED + " = 1", null, null, null, null);
 
 		} catch (SQLException e) {
 			Log.e("DB Error", e.toString());
 			e.printStackTrace();
 		}
-		
+
 		// return the ArrayList that holds the data collected from
 		// the database.
 		return cursor;
 	}
-	
-	public EdenEveCharacter[] getEnabledCharactersAsArray() 
-	{
+
+	public EdenEveCharacter[] getEnabledCharactersAsArray() {
 		// this is a database call that creates a "cursor" object.
 		// the cursor object store the information collected from the
 		// database and is used to iterate through the data.
@@ -124,97 +121,90 @@ public class CharacterDB {
 
 		try {
 			// ask the database object to create the cursor.
-			cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_EVEID, CHAR_TABLE_NAME, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE, CHAR_TABLE_QUEUETIME },
+			cursor = db.query(CHAR_TABLE, new String[]{CHAR_TABLE_EVEID, CHAR_TABLE_NAME, CHAR_TABLE_CORPNAME, CHAR_TABLE_CORPID, CHAR_TABLE_KEYID, CHAR_TABLE_VCODE, CHAR_TABLE_QUEUETIME},
 					CHAR_TABLE_ENABLED + " = 1", null, null, null, null);
 
 		} catch (SQLException e) {
 			Log.e("DB Error", e.toString());
 			e.printStackTrace();
 		}
-		
+
 		ArrayList<EdenEveCharacter> charArrayList = new ArrayList<EdenEveCharacter>(cursor.getCount());
-		while (cursor.moveToNext())
-		{
+		while (cursor.moveToNext()) {
 			EdenEveCharacter newChar = new EdenEveCharacter();
-			
+
 			newChar.setCharacterID(cursor.getInt(0));
 			newChar.setName(cursor.getString(1));
 			newChar.setCorporationID(cursor.getInt(3));
 			newChar.setCorporationName(cursor.getString(2));
-			
+
 			ApiAuthorization apiAuth = new ApiAuthorization(cursor.getInt(4), cursor.getInt(0), cursor.getString(5));
 			newChar.setApiAuth(apiAuth);
 			newChar.setQueueTimeRemaining(cursor.getLong(6));
-			
+
 			charArrayList.add(newChar);
 		}
-		
+
 		EdenEveCharacter[] charArray = new EdenEveCharacter[charArrayList.size()];
 		charArrayList.toArray(charArray);
-		
+
 		cursor.close();
 		// return the ArrayList that holds the data collected from
 		// the database.
 		return charArray;
 	}
-	
-	public String getCharacterName(int characterID)
-	{
+
+	public String getCharacterName(int characterID) {
 		String query = "SELECT " + CHAR_TABLE_NAME + " FROM " + CHAR_TABLE + " WHERE " + CHAR_TABLE_EVEID + "=?";
-				
-		Cursor c = db.rawQuery(query, new String[]{ String.valueOf(characterID) });
-		
+
+		Cursor c = db.rawQuery(query, new String[]{String.valueOf(characterID)});
+
 		String name = "";
 		if (c.moveToFirst()) name = c.getString(0);
 		c.close();
-		
+
 		return name;
 	}
-	
-	public String getCorpName(int characterID)
-	{
+
+	public String getCorpName(int characterID) {
 		String query = "SELECT " + CHAR_TABLE_CORPNAME + " FROM " + CHAR_TABLE + " WHERE " + CHAR_TABLE_EVEID + "=?";
-				
-		Cursor c = db.rawQuery(query, new String[]{ String.valueOf(characterID) });
-		
+
+		Cursor c = db.rawQuery(query, new String[]{String.valueOf(characterID)});
+
 		String name = "";
 		if (c.moveToFirst()) name = c.getString(0);
 		c.close();
-		
+
 		return name;
 	}
-	
-	public void setCharEnabled(int characterID, boolean enabled)
-	{
+
+	public void setCharEnabled(int characterID, boolean enabled) {
 		ContentValues values = new ContentValues();
 		values.put(CHAR_TABLE_ENABLED, enabled ? "1" : "0");
-		
-		db.update(CHAR_TABLE, values, CHAR_TABLE_EVEID + " = ?", new String[] { String.valueOf(characterID) });
+
+		db.update(CHAR_TABLE, values, CHAR_TABLE_EVEID + " = ?", new String[]{String.valueOf(characterID)});
 	}
-	
-	public void setCharQueueTime(int characterID, long queueTime)
-	{
+
+	public void setCharQueueTime(int characterID, long queueTime) {
 		ContentValues values = new ContentValues();
 		values.put(CHAR_TABLE_QUEUETIME, queueTime);
-		
-		db.update(CHAR_TABLE, values, CHAR_TABLE_EVEID + " = ?", new String[] { String.valueOf(characterID) });
+
+		db.update(CHAR_TABLE, values, CHAR_TABLE_EVEID + " = ?", new String[]{String.valueOf(characterID)});
 	}
-	
-	public boolean isCharEnabled(int characterID)
-	{
+
+	public boolean isCharEnabled(int characterID) {
 		boolean isEnabled = false;
-		
-		Cursor cursor = db.query(CHAR_TABLE, new String[] { CHAR_TABLE_ENABLED }, CHAR_TABLE_EVEID + " = " + characterID, null, null, null, null);
+
+		Cursor cursor = db.query(CHAR_TABLE, new String[]{CHAR_TABLE_ENABLED}, CHAR_TABLE_EVEID + " = " + characterID, null, null, null, null);
 		if (cursor.moveToFirst()) isEnabled = (cursor.getInt(0) != 0);
-		
+
 		cursor.close();
-		
+
 		return isEnabled;
 	}
-	
-	public int deleteCharactersByKeyID(int apiKey)
-	{
-		return db.delete(CHAR_TABLE, CHAR_TABLE_KEYID + " = ?", new String[] { String.valueOf(apiKey) });
+
+	public int deleteCharactersByKeyID(int apiKey) {
+		return db.delete(CHAR_TABLE, CHAR_TABLE_KEYID + " = ?", new String[]{String.valueOf(apiKey)});
 	}
 
 	/**
@@ -224,9 +214,8 @@ public class CharacterDB {
 	 * open the database for use. Most of this functionality will be handled by
 	 * the SQLiteOpenHelper parent class. The purpose of extending this class is
 	 * to tell the class how to create (or update) the database.
-	 * 
+	 *
 	 * @author Randall Mitchell
-	 * 
 	 */
 	private class CustomSQLiteOpenHelper extends SQLiteOpenHelper {
 		public CustomSQLiteOpenHelper(Context context) {
@@ -238,8 +227,8 @@ public class CharacterDB {
 			// This string is used to create the database. It should
 			// be changed to suit your needs.
 			String newTableQueryString = "create table " + CHAR_TABLE
-					+ " (" + CHAR_TABLE_NAME + " string," 
-					+ CHAR_TABLE_EVEID + " integer primary key not null," 
+					+ " (" + CHAR_TABLE_NAME + " string,"
+					+ CHAR_TABLE_EVEID + " integer primary key not null,"
 					+ CHAR_TABLE_CORPNAME + " string,"
 					+ CHAR_TABLE_CORPID + " integer,"
 					+ CHAR_TABLE_KEYID + " integer,"
@@ -252,9 +241,8 @@ public class CharacterDB {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			
-			if (oldVersion == 1)
-			{
+
+			if (oldVersion == 1) {
 				db.execSQL("alter table " + CHAR_TABLE + " add column " + CHAR_TABLE_QUEUETIME + " integer;");
 			}
 		}

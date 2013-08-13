@@ -11,9 +11,8 @@ import com.zdonnell.eden.CharacterSheetActivity;
 
 /**
  * This is a base {@link Fragment} which all Character Detail Fragments should extend
- * 
- * @author Zach
  *
+ * @author Zach
  */
 public abstract class DetailFragment extends Fragment {
 
@@ -21,29 +20,28 @@ public abstract class DetailFragment extends Fragment {
 	 * Reference to the parent activity.  This will either be {@link CharacterDetailActivity} or {@link CharacterSheetActivity}
 	 * depending on layout configuration.
 	 */
-    protected ILoadingActivity parentActivity; 
-    
-    /**
-     * Reference to the context of the application.
-     */
-    protected Context context;
-    
-    /**
-     * Reference to the app's shared preferences.
-     */
-    protected SharedPreferences sharedPreferences;
+	protected ILoadingActivity parentActivity;
 
-    @Override
-    public void onAttach(Activity activity)
-    {
-    	super.onAttach(activity);
-    	
-    	parentActivity = (ILoadingActivity) activity;
-    	context = activity.getApplicationContext();
-    	
-    	sharedPreferences = context.getSharedPreferences("eden_chardetail_preferences", Context.MODE_PRIVATE);
-    }
-    
+	/**
+	 * Reference to the context of the application.
+	 */
+	protected Context context;
+
+	/**
+	 * Reference to the app's shared preferences.
+	 */
+	protected SharedPreferences sharedPreferences;
+
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+
+		parentActivity = (ILoadingActivity) activity;
+		context = activity.getApplicationContext();
+
+		sharedPreferences = context.getSharedPreferences("eden_chardetail_preferences", Context.MODE_PRIVATE);
+	}
+
 	/**
 	 * Forces a reload of the current fragments data.<br><br>Implementations of this should not
 	 * be expected to forcibly request new API data, simply load it from where ever is appropriate.
