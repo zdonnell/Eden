@@ -186,7 +186,7 @@ public class CharacterSheetFragment extends Fragment {
 	/**
 	 * A call made to load up character information.  Should be called immediately after the fragment has been inflated.
 	 *
-	 * @param characterID
+	 * @param character
 	 */
 	public void setCharacter(ApiCharacter character) {
 		final ImageView portrait = (ImageView) rootView.findViewById(R.id.char_sheet_portrait);
