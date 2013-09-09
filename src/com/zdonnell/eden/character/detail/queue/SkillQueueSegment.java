@@ -11,81 +11,81 @@ import com.zdonnell.eden.R;
 import com.zdonnell.eden.helpers.Tools;
 
 public class SkillQueueSegment extends View {
-	private static final long DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
+    private static final long DAY_IN_MILLIS = 24 * 60 * 60 * 1000;
 
-	int width, height;
+    int width, height;
 
-	private Paint paint = new Paint();
-	;
+    private Paint paint = new Paint();
+    ;
 
-	private int manual_padding = 10;
+    private int manual_padding = 10;
 
-	private ApiSkillQueueItem skillInQueue;
+    private ApiSkillQueueItem skillInQueue;
 
-	private int skillNumber;
+    private int skillNumber;
 
-	int[] colors;
+    int[] colors;
 
-	public SkillQueueSegment(Context context) {
-		super(context);
+    public SkillQueueSegment(Context context) {
+        super(context);
 
-		colors = new int[2];
-		colors[0] = getResources().getColor(R.color.primary_accent_color);
-		colors[1] = getResources().getColor(R.color.secondary_accent_color);
+        colors = new int[2];
+        colors[0] = getResources().getColor(R.color.primary_accent_color);
+        colors[1] = getResources().getColor(R.color.secondary_accent_color);
 
-		manual_padding = Tools.dp2px(10, context);
+        manual_padding = Tools.dp2px(10, context);
 
-		paint.setStyle(Paint.Style.FILL);
-	}
+        paint.setStyle(Paint.Style.FILL);
+    }
 
-	/**
-	 * Sets the skillQueue to draw from. Forces a redraw.
-	 *
-	 * @param skillQueue
-	 */
-	public void setQueue(ApiSkillQueueItem skillInQueue, int skillNumber) {
-		this.skillInQueue = skillInQueue;
-		this.skillNumber = skillNumber;
+    /**
+     * Sets the skillQueue to draw from. Forces a redraw.
+     *
+     * @param skillQueue
+     */
+    public void setQueue(ApiSkillQueueItem skillInQueue, int skillNumber) {
+        this.skillInQueue = skillInQueue;
+        this.skillNumber = skillNumber;
 
-		invalidate();
-	}
+        invalidate();
+    }
 
-	/**
-	 * Draws the bar, only refreshed when {@link setQueue} is called
-	 *
-	 * @param canvas
-	 */
-	@Override
-	protected void onDraw(Canvas canvas) {
-		paint.setColor(Color.parseColor("#AFAFAF"));
+    /**
+     * Draws the bar, only refreshed when {@link setQueue} is called
+     *
+     * @param canvas
+     */
+    @Override
+    protected void onDraw(Canvas canvas) {
+        paint.setColor(Color.parseColor("#AFAFAF"));
 
-		long timeUntilStart, timeUntilEnd;
+        long timeUntilStart, timeUntilEnd;
 
-		timeUntilStart = Tools.timeUntilUTCTime(skillInQueue.getStartTime());
-		timeUntilEnd = Tools.timeUntilUTCTime(skillInQueue.getEndTime());
+        timeUntilStart = Tools.timeUntilUTCTime(skillInQueue.getStartTime());
+        timeUntilEnd = Tools.timeUntilUTCTime(skillInQueue.getEndTime());
 
-		if (timeUntilStart < 0) timeUntilStart = 0;
+        if (timeUntilStart < 0) timeUntilStart = 0;
 
-		paint.setColor(colors[skillNumber % 2]);
-		
+        paint.setColor(colors[skillNumber % 2]);
+
 		/* If the skill fits in the 24 hour period */
-		if (timeUntilStart < DAY_IN_MILLIS) {
-			double percentOfBar = (double) (timeUntilEnd - timeUntilStart) / DAY_IN_MILLIS;
-			int widthOfSegment = (int) (percentOfBar * (width - (manual_padding * 2)));
+        if (timeUntilStart < DAY_IN_MILLIS) {
+            double percentOfBar = (double) (timeUntilEnd - timeUntilStart) / DAY_IN_MILLIS;
+            int widthOfSegment = (int) (percentOfBar * (width - (manual_padding * 2)));
 
-			int startOfSegment = manual_padding + (int) (((double) timeUntilStart / (double) DAY_IN_MILLIS) * (width - (manual_padding * 2)));
-			int endOfSegment = startOfSegment + widthOfSegment;
+            int startOfSegment = manual_padding + (int) (((double) timeUntilStart / (double) DAY_IN_MILLIS) * (width - (manual_padding * 2)));
+            int endOfSegment = startOfSegment + widthOfSegment;
 
-			if (endOfSegment > width) endOfSegment = width;
+            if (endOfSegment > width) endOfSegment = width;
 
-			canvas.drawRect(startOfSegment, 0, endOfSegment, height, paint);
-		}
-	}
+            canvas.drawRect(startOfSegment, 0, endOfSegment, height, paint);
+        }
+    }
 
-	@Override
-	public void onSizeChanged(int w, int h, int oldw, int oldh) {
-		super.onSizeChanged(w, h, oldw, oldh);
-		width = w;
-		height = h;
-	}
+    @Override
+    public void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        width = w;
+        height = h;
+    }
 }

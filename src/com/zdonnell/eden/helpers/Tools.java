@@ -14,159 +14,159 @@ import android.util.DisplayMetrics;
 
 public class Tools {
 
-	private static long D_MILLIS = 24 * 60 * 60 * 1000;
-	private static long H_MILLIS = 60 * 60 * 1000;
-	private static long M_MILLIS = 60 * 1000;
+    private static long D_MILLIS = 24 * 60 * 60 * 1000;
+    private static long H_MILLIS = 60 * 60 * 1000;
+    private static long M_MILLIS = 60 * 1000;
 
-	/**
-	 * Check and see how much time until the UTC Time string provided
-	 *
-	 * @param UTCString the time to check against in the format yyyy-MM-dd HH:mm:ss
-	 * @return the time until the UTC Time specified in milliseconds
-	 * @throws ParseException
-	 */
-	public static long timeUntilUTCTime(String UTCString) {
-		Calendar now = Calendar.getInstance();
+    /**
+     * Check and see how much time until the UTC Time string provided
+     *
+     * @param UTCString the time to check against in the format yyyy-MM-dd HH:mm:ss
+     * @return the time until the UTC Time specified in milliseconds
+     * @throws ParseException
+     */
+    public static long timeUntilUTCTime(String UTCString) {
+        Calendar now = Calendar.getInstance();
 
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-		Date thenDate = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date thenDate = new Date();
 
-		try {
-			thenDate = formatter.parse(UTCString);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+        try {
+            thenDate = formatter.parse(UTCString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-		Calendar then = Calendar.getInstance();
-		then.setTime(thenDate);
+        Calendar then = Calendar.getInstance();
+        then.setTime(thenDate);
 
-		return (then.getTimeInMillis() - now.getTimeInMillis());
-	}
+        return (then.getTimeInMillis() - now.getTimeInMillis());
+    }
 
-	/**
-	 * Check and see how much time until the UTC Time string provided
-	 *
-	 * @param UTCString the time to check against in the format yyyy-MM-dd HH:mm:ss
-	 * @return the time until the UTC Time specified in milliseconds
-	 * @throws ParseException
-	 */
-	public static long timeUntilUTCTime(Date time) {
-		Calendar now = Calendar.getInstance();
-		Calendar then = Calendar.getInstance();
+    /**
+     * Check and see how much time until the UTC Time string provided
+     *
+     * @param UTCString the time to check against in the format yyyy-MM-dd HH:mm:ss
+     * @return the time until the UTC Time specified in milliseconds
+     * @throws ParseException
+     */
+    public static long timeUntilUTCTime(Date time) {
+        Calendar now = Calendar.getInstance();
+        Calendar then = Calendar.getInstance();
 
-		then.setTime(time);
+        then.setTime(time);
 
-		return (then.getTimeInMillis() - now.getTimeInMillis());
-	}
+        return (then.getTimeInMillis() - now.getTimeInMillis());
+    }
 
-	/**
-	 * Converts a time value into the specified String representation
-	 *
-	 * @param millis the time in milliseconds to format
-	 * @return a string representation of the time, fomatted xxd xxh xxm xxs
-	 */
-	public static String millisToEveFormatString(long millis) {
-		long daysRounded = (int) Math.floor(millis / (24 * 60 * 60 * 1000));
-		long hoursRounded = (int) Math.floor((millis - (daysRounded * D_MILLIS)) / (60 * 60 * 1000));
-		long minutesRounded = (int) Math.floor((millis - (daysRounded * D_MILLIS) - (hoursRounded * H_MILLIS)) / (60 * 1000));
-		long secondsRounded = (int) Math.floor((millis - (daysRounded * D_MILLIS) - (hoursRounded * H_MILLIS) - (minutesRounded * M_MILLIS)) / (1000));
+    /**
+     * Converts a time value into the specified String representation
+     *
+     * @param millis the time in milliseconds to format
+     * @return a string representation of the time, fomatted xxd xxh xxm xxs
+     */
+    public static String millisToEveFormatString(long millis) {
+        long daysRounded = (int) Math.floor(millis / (24 * 60 * 60 * 1000));
+        long hoursRounded = (int) Math.floor((millis - (daysRounded * D_MILLIS)) / (60 * 60 * 1000));
+        long minutesRounded = (int) Math.floor((millis - (daysRounded * D_MILLIS) - (hoursRounded * H_MILLIS)) / (60 * 1000));
+        long secondsRounded = (int) Math.floor((millis - (daysRounded * D_MILLIS) - (hoursRounded * H_MILLIS) - (minutesRounded * M_MILLIS)) / (1000));
 
-		String formattedString = "";
+        String formattedString = "";
 
-		if (daysRounded != 0) formattedString += daysRounded + "d ";
-		if (hoursRounded != 0) formattedString += hoursRounded + "h ";
-		if (minutesRounded != 0) formattedString += minutesRounded + "m ";
-		if (secondsRounded != 0) formattedString += secondsRounded + "s ";
+        if (daysRounded != 0) formattedString += daysRounded + "d ";
+        if (hoursRounded != 0) formattedString += hoursRounded + "h ";
+        if (minutesRounded != 0) formattedString += minutesRounded + "m ";
+        if (secondsRounded != 0) formattedString += secondsRounded + "s ";
 
-		return formattedString;
-	}
+        return formattedString;
+    }
 
-	/**
-	 * Returns a pixel value in dips
-	 *
-	 * @param px      the value in pixels to be converted
-	 * @param context required to get Display Density
-	 * @return
-	 */
-	public static int dp2px(float dp, Context context) {
-		return (int) (dp * context.getResources().getDisplayMetrics().density);
-	}
+    /**
+     * Returns a pixel value in dips
+     *
+     * @param px      the value in pixels to be converted
+     * @param context required to get Display Density
+     * @return
+     */
+    public static int dp2px(float dp, Context context) {
+        return (int) (dp * context.getResources().getDisplayMetrics().density);
+    }
 
 
-	/**
-	 * Calculates the number of columns that should be displayed given an intended width (in dp) and
-	 * the width of the encompassing area.
-	 *
-	 * @param context
-	 * @param intendedColumnWidth
-	 * @param viewWidth
-	 * @param columnMin
-	 * @return
-	 */
-	public static int columnCountBySize(Context context, float intendedColumnWidth, float viewWidth, int columnMin) {
-		Point screenDimensions = new Point(0, 0);
-		((Activity) context).getWindowManager().getDefaultDisplay().getSize(screenDimensions);
+    /**
+     * Calculates the number of columns that should be displayed given an intended width (in dp) and
+     * the width of the encompassing area.
+     *
+     * @param context
+     * @param intendedColumnWidth
+     * @param viewWidth
+     * @param columnMin
+     * @return
+     */
+    public static int columnCountBySize(Context context, float intendedColumnWidth, float viewWidth, int columnMin) {
+        Point screenDimensions = new Point(0, 0);
+        ((Activity) context).getWindowManager().getDefaultDisplay().getSize(screenDimensions);
 
-		DisplayMetrics metrics = new DisplayMetrics();
-		((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        DisplayMetrics metrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-		float logicalDensity = metrics.density;
+        float logicalDensity = metrics.density;
 
-		float dp = (float) viewWidth / logicalDensity;
+        float dp = (float) viewWidth / logicalDensity;
 
-		int columns = (int) Math.round(dp / intendedColumnWidth);
-		if (columns < 2) columns = 2;
+        int columns = (int) Math.round(dp / intendedColumnWidth);
+        if (columns < 2) columns = 2;
 
-		int[] calculatedColumnWidths = new int[columns];
+        int[] calculatedColumnWidths = new int[columns];
 
-		int widthForSeperation = columns - 1;
-		double widthForColumns = screenDimensions.x - widthForSeperation;
+        int widthForSeperation = columns - 1;
+        double widthForColumns = screenDimensions.x - widthForSeperation;
 
-		int totalColumnWidthUsed = 0, roundedColumnWidth = 0;
+        int totalColumnWidthUsed = 0, roundedColumnWidth = 0;
 
-		for (int x = 0; x < columns; x++) {
-			roundedColumnWidth = (int) Math.floor(widthForColumns / (double) columns);
-			calculatedColumnWidths[x] = roundedColumnWidth;
+        for (int x = 0; x < columns; x++) {
+            roundedColumnWidth = (int) Math.floor(widthForColumns / (double) columns);
+            calculatedColumnWidths[x] = roundedColumnWidth;
 
-			totalColumnWidthUsed += roundedColumnWidth;
+            totalColumnWidthUsed += roundedColumnWidth;
 
-			if (x == columns - 1 && totalColumnWidthUsed != widthForColumns)
-				calculatedColumnWidths[x] += 1;
-		}
+            if (x == columns - 1 && totalColumnWidthUsed != widthForColumns)
+                calculatedColumnWidths[x] += 1;
+        }
 
-		return columns;
-	}
+        return columns;
+    }
 
-	public static Integer[] stripDuplicateIDs(Integer[] idsWithDups) {
-		ArrayList<Integer> listOfNonDups = new ArrayList<Integer>(idsWithDups.length);
+    public static Integer[] stripDuplicateIDs(Integer[] idsWithDups) {
+        ArrayList<Integer> listOfNonDups = new ArrayList<Integer>(idsWithDups.length);
 
-		for (int id : idsWithDups) if (!listOfNonDups.contains(id)) listOfNonDups.add(id);
+        for (int id : idsWithDups) if (!listOfNonDups.contains(id)) listOfNonDups.add(id);
 
-		Integer[] idsWithoutDups = new Integer[listOfNonDups.size()];
+        Integer[] idsWithoutDups = new Integer[listOfNonDups.size()];
 
-		for (int i = 0; i < listOfNonDups.size(); ++i) idsWithoutDups[i] = listOfNonDups.get(i);
+        for (int i = 0; i < listOfNonDups.size(); ++i) idsWithoutDups[i] = listOfNonDups.get(i);
 
-		return idsWithoutDups;
-	}
+        return idsWithoutDups;
+    }
 
-	/**
-	 * Formats a skill level to roman numerals
-	 */
-	public static String skillLevelToString(int skillLevel) {
-		switch (skillLevel) {
-			case 1:
-				return "I";
-			case 2:
-				return "II";
-			case 3:
-				return "III";
-			case 4:
-				return "IV";
-			case 5:
-				return "V";
-		}
+    /**
+     * Formats a skill level to roman numerals
+     */
+    public static String skillLevelToString(int skillLevel) {
+        switch (skillLevel) {
+            case 1:
+                return "I";
+            case 2:
+                return "II";
+            case 3:
+                return "III";
+            case 4:
+                return "IV";
+            case 5:
+                return "V";
+        }
 
-		throw new IllegalArgumentException("Invalid skill level specified");
-	}
+        throw new IllegalArgumentException("Invalid skill level specified");
+    }
 }

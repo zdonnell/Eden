@@ -28,210 +28,210 @@ import com.zdonnell.androideveapi.link.account.ApiAccount;
 import com.zdonnell.eden.helpers.ImageURL;
 
 public class AddAPIDialog extends DialogFragment {
-	/**
-	 * Manages a list of TextWatchers that, when all not empty will enable a button
-	 */
-	private static class EnableButtonMultiWatcher {
-		/**
-		 * Watches for empty text
-		 */
-		private class EmptyTextWatcher implements TextWatcher {
-			// Assume invalid at start
-			private boolean valid = false;
+    /**
+     * Manages a list of TextWatchers that, when all not empty will enable a button
+     */
+    private static class EnableButtonMultiWatcher {
+        /**
+         * Watches for empty text
+         */
+        private class EmptyTextWatcher implements TextWatcher {
+            // Assume invalid at start
+            private boolean valid = false;
 
-			public void afterTextChanged(Editable editable) {
-				// Text is valid when the string isn't empty
-				valid = (editable.length() != 0);
+            public void afterTextChanged(Editable editable) {
+                // Text is valid when the string isn't empty
+                valid = (editable.length() != 0);
 
-				EnableButtonMultiWatcher.this.check();
-			}
+                EnableButtonMultiWatcher.this.check();
+            }
 
-			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-				// Do nothing
-			}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Do nothing
+            }
 
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				// Do nothing
-			}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Do nothing
+            }
 
-			public boolean isValid() {
-				return valid;
-			}
+            public boolean isValid() {
+                return valid;
+            }
 
-			public void setValid(boolean valid) {
-				this.valid = valid;
-			}
-		}
+            public void setValid(boolean valid) {
+                this.valid = valid;
+            }
+        }
 
-		private ArrayList<EmptyTextWatcher> watchers = new ArrayList<EmptyTextWatcher>();
-		private Button button;
+        private ArrayList<EmptyTextWatcher> watchers = new ArrayList<EmptyTextWatcher>();
+        private Button button;
 
-		public EnableButtonMultiWatcher(Button button) {
-			this.button = button;
+        public EnableButtonMultiWatcher(Button button) {
+            this.button = button;
 
-			// First check
-			check();
-		}
+            // First check
+            check();
+        }
 
-		public TextWatcher createWatcher() {
-			EmptyTextWatcher newWatcher = new EmptyTextWatcher();
-			watchers.add(newWatcher);
+        public TextWatcher createWatcher() {
+            EmptyTextWatcher newWatcher = new EmptyTextWatcher();
+            watchers.add(newWatcher);
 
-			return newWatcher;
-		}
+            return newWatcher;
+        }
 
-		public void addTextView(TextView textView) {
-			EmptyTextWatcher watcher = (EmptyTextWatcher) createWatcher();
+        public void addTextView(TextView textView) {
+            EmptyTextWatcher watcher = (EmptyTextWatcher) createWatcher();
 
-			textView.addTextChangedListener(watcher);
-			watcher.setValid(textView.getText().length() != 0);
+            textView.addTextChangedListener(watcher);
+            watcher.setValid(textView.getText().length() != 0);
 
-			check();
-		}
+            check();
+        }
 
-		public void check() {
-			// Assume valid until one is invalid
-			boolean valid = true;
-			for (EmptyTextWatcher watcher : watchers)
-				valid &= watcher.isValid();
+        public void check() {
+            // Assume valid until one is invalid
+            boolean valid = true;
+            for (EmptyTextWatcher watcher : watchers)
+                valid &= watcher.isValid();
 
-			button.setEnabled(valid);
-		}
-	}
+            button.setEnabled(valid);
+        }
+    }
 
-	SparseArray<ArrayList<EveCharacter>> characters = new SparseArray<ArrayList<EveCharacter>>();
+    SparseArray<ArrayList<EveCharacter>> characters = new SparseArray<ArrayList<EveCharacter>>();
 
-	boolean refreshRequired = false, passedKey = false;
+    boolean refreshRequired = false, passedKey = false;
 
-	int keyID;
+    int keyID;
 
-	String vCode;
+    String vCode;
 
-	boolean[] loadCharAsEnabled = new boolean[3];
+    boolean[] loadCharAsEnabled = new boolean[3];
 
-	EveCharacter[] loadedCharacters = new EveCharacter[3];
+    EveCharacter[] loadedCharacters = new EveCharacter[3];
 
-	private Button getCharsButton, addCharsButton;
+    private Button getCharsButton, addCharsButton;
 
-	private ApiAuth<?> apiAuth;
+    private ApiAuth<?> apiAuth;
 
-	public AddAPIDialog setKey(int keyID, String vCode) {
-		this.keyID = keyID;
-		this.vCode = vCode;
+    public AddAPIDialog setKey(int keyID, String vCode) {
+        this.keyID = keyID;
+        this.vCode = vCode;
 
-		passedKey = true;
+        passedKey = true;
 
-		return this;
-	}
+        return this;
+    }
 
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		LayoutInflater inflater = getActivity().getLayoutInflater();
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
 
-		View root = inflater.inflate(R.layout.characters_add_characters, null);
-		final LinearLayout dynamicContentArea = (LinearLayout) root.findViewById(R.id.characters_add_characters_dynamic_content);
+        View root = inflater.inflate(R.layout.characters_add_characters, null);
+        final LinearLayout dynamicContentArea = (LinearLayout) root.findViewById(R.id.characters_add_characters_dynamic_content);
 
-		getCharsButton = (Button) root.findViewById(R.id.characters_add_characters_get_button);
-		addCharsButton = (Button) root.findViewById(R.id.characters_add_characters_add_button);
+        getCharsButton = (Button) root.findViewById(R.id.characters_add_characters_get_button);
+        addCharsButton = (Button) root.findViewById(R.id.characters_add_characters_add_button);
 
-		final EnableButtonMultiWatcher getCharsWatcher = new EnableButtonMultiWatcher(getCharsButton);
-		final EditText keyIDField = (EditText) root.findViewById(R.id.characters_add_characters_api_field);
-		final EditText vCodeField = (EditText) root.findViewById(R.id.characters_add_characters_vcode_field);
+        final EnableButtonMultiWatcher getCharsWatcher = new EnableButtonMultiWatcher(getCharsButton);
+        final EditText keyIDField = (EditText) root.findViewById(R.id.characters_add_characters_api_field);
+        final EditText vCodeField = (EditText) root.findViewById(R.id.characters_add_characters_vcode_field);
 
-		getCharsWatcher.addTextView(keyIDField);
-		getCharsWatcher.addTextView(vCodeField);
+        getCharsWatcher.addTextView(keyIDField);
+        getCharsWatcher.addTextView(vCodeField);
 
-		getCharsButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				keyID = Integer.parseInt(keyIDField.getText().toString());
-				vCode = vCodeField.getText().toString();
+        getCharsButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                keyID = Integer.parseInt(keyIDField.getText().toString());
+                vCode = vCodeField.getText().toString();
 
-				keyIDField.setEnabled(false);
-				vCodeField.setEnabled(false);
+                keyIDField.setEnabled(false);
+                vCodeField.setEnabled(false);
 
-				getCharsButton.setEnabled(false);
+                getCharsButton.setEnabled(false);
 
-				loadCharacters(dynamicContentArea);
-			}
-		});
+                loadCharacters(dynamicContentArea);
+            }
+        });
 
-		addCharsButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				saveCharacters();
-				((APIKeysActivity) getActivity()).refresh();
-				AddAPIDialog.this.dismiss();
-			}
-		});
+        addCharsButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                saveCharacters();
+                ((APIKeysActivity) getActivity()).refresh();
+                AddAPIDialog.this.dismiss();
+            }
+        });
 
-		if (passedKey) {
-			keyIDField.setVisibility(View.GONE);
-			vCodeField.setVisibility(View.GONE);
+        if (passedKey) {
+            keyIDField.setVisibility(View.GONE);
+            vCodeField.setVisibility(View.GONE);
 
-			loadCharacters(dynamicContentArea);
-		}
+            loadCharacters(dynamicContentArea);
+        }
 
-		builder.setView(root).setTitle("Add API Key");
+        builder.setView(root).setTitle("Add API Key");
 
-		return builder.create();
-	}
+        return builder.create();
+    }
 
-	private void loadCharacters(final LinearLayout dynamicContentArea) {
-		dynamicContentArea.removeAllViews();
+    private void loadCharacters(final LinearLayout dynamicContentArea) {
+        dynamicContentArea.removeAllViews();
 
-		// All characters are set to "enabled" status
-		loadCharAsEnabled[0] = loadCharAsEnabled[1] = loadCharAsEnabled[2] = true;
+        // All characters are set to "enabled" status
+        loadCharAsEnabled[0] = loadCharAsEnabled[1] = loadCharAsEnabled[2] = true;
 
-		apiAuth = new ApiAuthorization(keyID, vCode);
-		new ApiAccount(apiAuth, getActivity()).getCharacters(new ApiExceptionCallback<CharactersResponse>(null) {
-			@Override
-			public void onUpdate(CharactersResponse response) {
-				int charIndex = 0;
-				for (EveCharacter character : response.getAll()) {
-					getCharsButton.setVisibility(View.GONE);
-					addCharsButton.setVisibility(View.VISIBLE);
+        apiAuth = new ApiAuthorization(keyID, vCode);
+        new ApiAccount(apiAuth, getActivity()).getCharacters(new ApiExceptionCallback<CharactersResponse>(null) {
+            @Override
+            public void onUpdate(CharactersResponse response) {
+                int charIndex = 0;
+                for (EveCharacter character : response.getAll()) {
+                    getCharsButton.setVisibility(View.GONE);
+                    addCharsButton.setVisibility(View.VISIBLE);
 
-					final int finalCharIndex = charIndex;
-					loadedCharacters[charIndex] = character;
+                    final int finalCharIndex = charIndex;
+                    loadedCharacters[charIndex] = character;
 
-					LinearLayout characterTile = (LinearLayout) View.inflate(getActivity(), R.layout.characters_add_characters_character_tile, null);
-					dynamicContentArea.addView(characterTile);
+                    LinearLayout characterTile = (LinearLayout) View.inflate(getActivity(), R.layout.characters_add_characters_character_tile, null);
+                    dynamicContentArea.addView(characterTile);
 
-					final ImageView characterIcon = (ImageView) characterTile.findViewById(R.id.characters_add_characters_character_tile_image);
-					final TextView characterName = (TextView) characterTile.findViewById(R.id.characters_add_characters_character_tile_name);
+                    final ImageView characterIcon = (ImageView) characterTile.findViewById(R.id.characters_add_characters_character_tile_image);
+                    final TextView characterName = (TextView) characterTile.findViewById(R.id.characters_add_characters_character_tile_name);
 
-					characterName.setText(character.getName());
+                    characterName.setText(character.getName());
 
-					ImageLoader.getInstance().displayImage(ImageURL.forChar((int) character.getCharacterID()), characterIcon);
+                    ImageLoader.getInstance().displayImage(ImageURL.forChar((int) character.getCharacterID()), characterIcon);
 
-					characterTile.setOnClickListener(new View.OnClickListener() {
-						public void onClick(View arg0) {
-							loadCharAsEnabled[finalCharIndex] = !loadCharAsEnabled[finalCharIndex];
-							characterIcon.setAlpha(loadCharAsEnabled[finalCharIndex] ? 1f : 0.25f);
-							characterName.setAlpha(loadCharAsEnabled[finalCharIndex] ? 1f : 0.25f);
-						}
-					});
+                    characterTile.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View arg0) {
+                            loadCharAsEnabled[finalCharIndex] = !loadCharAsEnabled[finalCharIndex];
+                            characterIcon.setAlpha(loadCharAsEnabled[finalCharIndex] ? 1f : 0.25f);
+                            characterName.setAlpha(loadCharAsEnabled[finalCharIndex] ? 1f : 0.25f);
+                        }
+                    });
 
-					++charIndex;
-				}
-			}
+                    ++charIndex;
+                }
+            }
 
-			@Override
-			public void onError(CharactersResponse response, ApiException exception) {
-				// TODO add UI indication that response failed
-			}
-		});
-	}
+            @Override
+            public void onError(CharactersResponse response, ApiException exception) {
+                // TODO add UI indication that response failed
+            }
+        });
+    }
 
-	/**
-	 * Saves all characters to the characters database
-	 */
-	public void saveCharacters() {
-		CharacterDB charDB = new CharacterDB(getActivity());
+    /**
+     * Saves all characters to the characters database
+     */
+    public void saveCharacters() {
+        CharacterDB charDB = new CharacterDB(getActivity());
 
-		for (int i = 0; i < 3; i++) {
-			if (loadedCharacters[i] != null)
-				charDB.addCharacter(loadedCharacters[i], apiAuth, loadCharAsEnabled[i]);
-		}
-	}
+        for (int i = 0; i < 3; i++) {
+            if (loadedCharacters[i] != null)
+                charDB.addCharacter(loadedCharacters[i], apiAuth, loadCharAsEnabled[i]);
+        }
+    }
 }

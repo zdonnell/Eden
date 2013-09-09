@@ -16,36 +16,36 @@ import com.zdonnell.eden.CharacterSheetActivity;
  */
 public abstract class DetailFragment extends Fragment {
 
-	/**
-	 * Reference to the parent activity.  This will either be {@link CharacterDetailActivity} or {@link CharacterSheetActivity}
-	 * depending on layout configuration.
-	 */
-	protected ILoadingActivity parentActivity;
+    /**
+     * Reference to the parent activity.  This will either be {@link CharacterDetailActivity} or {@link CharacterSheetActivity}
+     * depending on layout configuration.
+     */
+    protected ILoadingActivity parentActivity;
 
-	/**
-	 * Reference to the context of the application.
-	 */
-	protected Context context;
+    /**
+     * Reference to the context of the application.
+     */
+    protected Context context;
 
-	/**
-	 * Reference to the app's shared preferences.
-	 */
-	protected SharedPreferences sharedPreferences;
+    /**
+     * Reference to the app's shared preferences.
+     */
+    protected SharedPreferences sharedPreferences;
 
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
-		parentActivity = (ILoadingActivity) activity;
-		context = activity.getApplicationContext();
+        parentActivity = (ILoadingActivity) activity;
+        context = activity.getApplicationContext();
 
-		sharedPreferences = context.getSharedPreferences("eden_chardetail_preferences", Context.MODE_PRIVATE);
-	}
+        sharedPreferences = context.getSharedPreferences("eden_chardetail_preferences", Context.MODE_PRIVATE);
+    }
 
-	/**
-	 * Forces a reload of the current fragments data.<br><br>Implementations of this should not
-	 * be expected to forcibly request new API data, simply load it from where ever is appropriate.
-	 * From the cached data if the cache is valid, or the API if the cache is invalid/unavailable
-	 */
-	public abstract void loadData();
+    /**
+     * Forces a reload of the current fragments data.<br><br>Implementations of this should not
+     * be expected to forcibly request new API data, simply load it from where ever is appropriate.
+     * From the cached data if the cache is valid, or the API if the cache is invalid/unavailable
+     */
+    public abstract void loadData();
 }

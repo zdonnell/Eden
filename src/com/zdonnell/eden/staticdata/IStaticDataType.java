@@ -13,13 +13,13 @@ package com.zdonnell.eden.staticdata;
  * @see StationInfo
  */
 public interface IStaticDataType {
-	/**
-	 * @return the value of the primary key
-	 */
-	public int uniqueId();
+    /**
+     * @return the value of the primary key
+     */
+    public int uniqueId();
 
-	/**
-	 * @return the name of the primary key field.
-	 */
-	public String uniqueIdName();
+    /**
+     * @return the name of the primary key field.
+     */
+    public String uniqueIdName();
 }
